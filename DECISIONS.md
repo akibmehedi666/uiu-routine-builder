@@ -99,3 +99,17 @@ This document tracks all design decisions, assumptions, and edge case resolution
   - Left sidebar sized to content (`position: sticky`, `max-height: calc(100vh - 88px)`, thin custom scrollbar).
   - Ghost timetable empty state replacing large marketing hero when 0 courses are selected.
   - Timetable elevated as the primary visual hero in the right pane with compact routine toolbar and collapsible analysis drawer.
+
+## Decision 7: Phase 10 Dedicated Faculty Directory & Cross-Navigation
+- **Shared Site Navigation (`<SiteNav />`)**:
+  - Unified across `/`, `/builder`, and `/faculty` with brand mark, term badge, active item highlight (orange text with 2px underline), and responsive hamburger menu.
+  - Builder retains its compact 56px (`h-14`) height while incorporating links to `/` and `/faculty`.
+- **Dedicated Faculty Directory (`/faculty`)**:
+  - Two-pane layout on desktop (max 1400px): left sticky searchable/filterable faculty list with letter jump bar (A–Z), right pane for selected faculty details.
+  - Faculty details view: live weekly timetable showing this faculty's sections in matching course colors, sections grouped by course with room and time, direct "Prefer" / "Avoid" toggles, and "Copy schedule".
+  - Shareable routing: `/faculty?f=<slug>` using deterministic slugs normalized from faculty name with numerical collision resolution.
+  - Preference state synchronization: Preferences set in `/faculty` immediately persist and sync with `/builder` and the slide-over course explorer.
+- **Cross-Linking**:
+  - In the course Faculty Explorer panel, clicking a faculty name routes to `/faculty?f=<slug>` while maintaining current course selection.
+  - Zero modifications to solver core, worker, or extracted data files.
+

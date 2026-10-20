@@ -12,7 +12,7 @@ import {
   SolveRequest,
 } from '../../types';
 import { useSolver } from '../../hooks/useSolver';
-import { Header } from '../../components/Header';
+import { SiteNav } from '../../components/SiteNav';
 import { CourseSelector } from '../../components/CourseSelector';
 import { Timetable } from '../../components/Timetable';
 import { ScheduleComparison } from '../../components/ScheduleComparison';
@@ -378,7 +378,7 @@ export default function BuilderPage() {
   return (
     <div className="min-h-screen flex flex-col bg-page text-text-primary">
       {/* 1. Header */}
-      <Header
+      <SiteNav
         onOpenHelp={() => setIsHelpOpen(true)}
         onOpenShortcuts={() => setIsShortcutsOpen(true)}
         totalSaved={favorites.length}

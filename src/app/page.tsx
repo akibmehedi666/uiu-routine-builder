@@ -27,6 +27,8 @@ import {
 } from 'lucide-react';
 import { formatTime24 } from '../utils/export';
 
+import { SiteNav } from '../components/SiteNav';
+
 // Live metadata numbers directly from extracted datasets
 const STATS = {
   sections: 791,
@@ -37,7 +39,6 @@ const STATS = {
 
 export default function LandingPage() {
   const router = useRouter();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
 
   // Redirect old shared links from /?... to /builder?... preserving query string
@@ -76,103 +77,8 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-page text-text-primary selection:bg-orange-500 selection:text-white">
-      {/* 1. Sticky Navbar */}
-      <nav className="sticky top-0 z-50 bg-surface/90 backdrop-blur-md border-b border-app-border">
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          {/* Brand */}
-          <Link href="/" className="flex items-center space-x-3 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-warm text-white font-black text-xl tracking-tight group-hover:scale-105 transition-transform">
-              UIU
-            </div>
-            <div>
-              <div className="flex items-center space-x-2">
-                <span className="text-base font-bold text-text-primary tracking-tight">
-                  Routine Builder
-                </span>
-                <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-orange-50 text-orange-600 border border-orange-200">
-                  Fall 2026
-                </span>
-              </div>
-              <p className="text-[11px] text-text-muted hidden sm:block">
-                Dept. of CSE & Data Science
-              </p>
-            </div>
-          </Link>
-
-          {/* Desktop Nav Links */}
-          <div className="hidden md:flex items-center space-x-6 text-sm font-medium text-text-secondary">
-            <a href="#how-it-works" className="hover:text-orange-600 transition-colors">
-              How it works
-            </a>
-            <a href="#features" className="hover:text-orange-600 transition-colors">
-              Features
-            </a>
-            <a href="#explorer" className="hover:text-orange-600 transition-colors">
-              Faculty Explorer
-            </a>
-            <a href="#faq" className="hover:text-orange-600 transition-colors">
-              FAQ
-            </a>
-            <Link
-              href="/builder"
-              className="px-4 py-2 rounded-btn bg-orange-500 hover:bg-orange-600 text-white font-semibold shadow-xs flex items-center gap-1.5 transition-colors"
-            >
-              <span>Build my routine</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 rounded-btn text-text-secondary hover:text-text-primary hover:bg-subtle"
-            aria-label="Toggle menu"
-          >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-        </div>
-
-        {/* Mobile Dropdown */}
-        {mobileMenuOpen && (
-          <div className="md:hidden bg-surface border-b border-app-border px-4 py-3 space-y-2">
-            <a
-              href="#how-it-works"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-sm text-text-secondary hover:text-orange-600"
-            >
-              How it works
-            </a>
-            <a
-              href="#features"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-sm text-text-secondary hover:text-orange-600"
-            >
-              Features
-            </a>
-            <a
-              href="#explorer"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-sm text-text-secondary hover:text-orange-600"
-            >
-              Faculty Explorer
-            </a>
-            <a
-              href="#faq"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-sm text-text-secondary hover:text-orange-600"
-            >
-              FAQ
-            </a>
-            <Link
-              href="/builder"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block w-full text-center py-2.5 rounded-btn bg-orange-500 hover:bg-orange-600 text-white font-semibold"
-            >
-              Build my routine →
-            </Link>
-          </div>
-        )}
-      </nav>
+      {/* 1. Sticky SiteNav */}
+      <SiteNav />
 
       {/* 2. Hero Section */}
       <section className="relative overflow-hidden pt-12 pb-16 md:pt-16 md:pb-24 bg-page">
@@ -454,26 +360,32 @@ export default function LandingPage() {
       </section>
 
       {/* 5. Faculty Explorer Teaser */}
-      <section id="explorer" className="py-16 md:py-24 bg-surface border-y border-app-border">
+      <section id="explorer" className="py-10 md:py-16 bg-surface border-y border-app-border">
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
             <div className="text-left space-y-4">
               <span className="text-xs font-bold text-orange-600 tracking-wider uppercase">
-                New In Phase 9
+                Faculty Explorer
               </span>
               <h2 className="text-2xl sm:text-4xl font-extrabold text-text-primary tracking-tight">
-                Course-Wise Faculty & Section Explorer
+                Course-Wise Faculty &amp; Section Explorer
               </h2>
               <p className="text-sm text-text-secondary leading-relaxed">
                 See every faculty, section, and time for a course before you decide. Compare morning vs afternoon offerings, view 5-day distribution, and set your preferences in one unified view.
               </p>
-              <div className="pt-2">
+              <div className="pt-2 flex flex-wrap gap-3">
                 <Link
                   href="/builder"
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-btn bg-orange-500 hover:bg-orange-600 text-white font-semibold text-sm shadow-xs transition-colors"
                 >
-                  <span>Explore in the builder</span>
+                  <span>Explore in builder</span>
                   <ArrowRight className="w-4 h-4" />
+                </Link>
+                <Link
+                  href="/faculty"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-btn bg-surface hover:bg-subtle text-text-primary font-semibold text-sm border border-app-border shadow-2xs transition-colors hover:border-orange-300"
+                >
+                  <span>Browse all faculty &rarr;</span>
                 </Link>
               </div>
             </div>
@@ -541,7 +453,7 @@ export default function LandingPage() {
               </div>
 
               <p className="text-[11px] text-text-muted text-center pt-1 italic">
-                Caption: See every faculty, section and time for a course before you decide.
+                See every faculty, section and time for a course before you decide.
               </p>
             </div>
           </div>
