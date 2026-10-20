@@ -1,25 +1,31 @@
 /**
  * Centralized Site and Creator Configuration.
- * Edit links, creator information, feedback URL, and disclaimers here.
+ * Edit all footer links, creator information, feedback URL, and disclaimers here.
  */
 
 export interface SiteConfig {
   name: string;
-  trimester: string;
   creator: {
     name: string;
     department: string;
     university: string;
+    creditPrefix: string;
     creditText: string;
     github: string;
     linkedin: string;
     email: string;
+    labels: {
+      github: string;
+      linkedin: string;
+      email: string;
+    };
   };
   feedback: {
     label: string;
     url: string;
   };
   disclaimer: string;
+  copyright: string;
   links: {
     routineBuilder: string;
     courseDirectory: string;
@@ -30,15 +36,20 @@ export interface SiteConfig {
 
 export const siteConfig: SiteConfig = {
   name: 'UIU Routine Builder',
-  trimester: 'Fall 2026 Trimester • Dept. of CSE & BSDS',
   creator: {
     name: 'Md. Akib Mehedi',
     department: 'CSE',
     university: 'United International University',
+    creditPrefix: 'Built by',
     creditText: 'Built by Md. Akib Mehedi · CSE, United International University',
     github: 'https://github.com/akibmehedi666/',
     linkedin: 'https://www.linkedin.com/in/akib-mehedi',
     email: 'mailto:akibmehedi666@gmail.com',
+    labels: {
+      github: 'GitHub',
+      linkedin: 'LinkedIn',
+      email: 'Email',
+    },
   },
   feedback: {
     label: 'Report a wrong section / feedback',
@@ -46,6 +57,7 @@ export const siteConfig: SiteConfig = {
   },
   disclaimer:
     'Unofficial student project, not affiliated with UIU. Confirm sections in UCAM before registering.',
+  copyright: '© 2026',
   links: {
     routineBuilder: '/builder',
     courseDirectory: '/faculty',

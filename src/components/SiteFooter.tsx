@@ -13,41 +13,39 @@ import { siteConfig } from '../config/site';
 
 interface SiteFooterProps {
   className?: string;
-  compact?: boolean;
 }
 
-export function SiteFooter({ className = '', compact = false }: SiteFooterProps) {
+export function SiteFooter({ className = '' }: SiteFooterProps) {
   return (
     <footer
-      className={`border-t border-app-border bg-surface text-text-muted text-xs ${
-        compact ? 'py-5' : 'py-8'
-      } ${className}`}
+      className={`border-t border-app-border bg-surface text-text-muted py-3 md:py-3.5 ${className}`}
     >
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 space-y-4">
-        {/* Creator Info & Social Links */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
-          <div className="space-y-1">
-            <p className="font-semibold text-text-primary text-[13px] tracking-tight">
-              {siteConfig.creator.creditText}
-            </p>
-            <p className="text-[11px] text-text-muted">
-              {siteConfig.name} • {siteConfig.trimester}
-            </p>
-          </div>
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 space-y-2.5">
+        {/* Row 1: Creator Credit & Social / Feedback Actions */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-2.5 text-center md:text-left">
+          {/* Creator Credit: 13px font-medium, name semibold in primary text */}
+          <p className="text-[13px] font-medium text-text-muted md:whitespace-nowrap leading-tight">
+            {siteConfig.creator.creditPrefix}{' '}
+            <span className="font-semibold text-text-primary">
+              {siteConfig.creator.name}
+            </span>
+            {' · '}
+            {siteConfig.creator.department}, {siteConfig.creator.university}
+          </p>
 
-          {/* Social Icons & Feedback Link */}
-          <div className="flex items-center gap-3">
+          {/* Icon Buttons & Feedback Link */}
+          <div className="flex items-center gap-2 flex-wrap justify-center">
             {/* GitHub */}
             {siteConfig.creator.github && (
               <a
                 href={siteConfig.creator.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 rounded-full bg-subtle hover:bg-orange-50 border border-app-border hover:border-orange-200 text-text-secondary hover:text-orange-600 flex items-center justify-center transition-colors shadow-2xs"
-                aria-label="GitHub Profile"
-                title="GitHub: Md. Akib Mehedi"
+                className="w-8 h-8 rounded-full bg-orange-50/70 hover:bg-orange-100 border border-orange-200/80 hover:border-orange-300 text-text-secondary hover:text-orange-600 flex items-center justify-center transition-colors shadow-2xs focus:outline-none focus:ring-2 focus:ring-orange-500/30 relative after:absolute after:-inset-1.5 after:content-['']"
+                aria-label={siteConfig.creator.labels.github}
+                title={siteConfig.creator.labels.github}
               >
-                <Github className="w-4 h-4" />
+                <Github className="w-4 h-4 shrink-0" />
               </a>
             )}
 
@@ -57,11 +55,11 @@ export function SiteFooter({ className = '', compact = false }: SiteFooterProps)
                 href={siteConfig.creator.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 rounded-full bg-subtle hover:bg-orange-50 border border-app-border hover:border-orange-200 text-text-secondary hover:text-orange-600 flex items-center justify-center transition-colors shadow-2xs"
-                aria-label="LinkedIn Profile"
-                title="LinkedIn: Md. Akib Mehedi"
+                className="w-8 h-8 rounded-full bg-orange-50/70 hover:bg-orange-100 border border-orange-200/80 hover:border-orange-300 text-text-secondary hover:text-orange-600 flex items-center justify-center transition-colors shadow-2xs focus:outline-none focus:ring-2 focus:ring-orange-500/30 relative after:absolute after:-inset-1.5 after:content-['']"
+                aria-label={siteConfig.creator.labels.linkedin}
+                title={siteConfig.creator.labels.linkedin}
               >
-                <Linkedin className="w-4 h-4" />
+                <Linkedin className="w-4 h-4 shrink-0" />
               </a>
             )}
 
@@ -69,39 +67,40 @@ export function SiteFooter({ className = '', compact = false }: SiteFooterProps)
             {siteConfig.creator.email && (
               <a
                 href={siteConfig.creator.email}
-                className="w-8 h-8 rounded-full bg-subtle hover:bg-orange-50 border border-app-border hover:border-orange-200 text-text-secondary hover:text-orange-600 flex items-center justify-center transition-colors shadow-2xs"
-                aria-label="Send Email"
-                title="Email: akibmehedi666@gmail.com"
+                className="w-8 h-8 rounded-full bg-orange-50/70 hover:bg-orange-100 border border-orange-200/80 hover:border-orange-300 text-text-secondary hover:text-orange-600 flex items-center justify-center transition-colors shadow-2xs focus:outline-none focus:ring-2 focus:ring-orange-500/30 relative after:absolute after:-inset-1.5 after:content-['']"
+                aria-label={siteConfig.creator.labels.email}
+                title={siteConfig.creator.labels.email}
               >
-                <Mail className="w-4 h-4" />
+                <Mail className="w-4 h-4 shrink-0" />
               </a>
             )}
 
-            <span className="w-px h-5 bg-app-border mx-1" aria-hidden="true" />
-
-            {/* Report wrong section / Feedback */}
+            {/* Quiet Outline Feedback Button */}
             {siteConfig.feedback.url && (
               <a
                 href={siteConfig.feedback.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-2.5 py-1.5 rounded-btn bg-subtle hover:bg-orange-50 border border-app-border hover:border-orange-200 text-text-secondary hover:text-orange-600 font-semibold text-[11px] inline-flex items-center gap-1.5 transition-colors shadow-2xs"
-                title="Report an error in class timings, rooms, or submit feedback"
+                className="h-8 px-2.5 rounded-btn bg-surface hover:bg-orange-50/60 border border-app-border hover:border-orange-200 text-text-primary hover:text-orange-600 font-medium text-[12px] inline-flex items-center gap-1.5 transition-colors shadow-2xs focus:outline-none focus:ring-2 focus:ring-orange-500/30 shrink-0"
+                title={siteConfig.feedback.label}
               >
-                <MessageSquarePlus className="w-3.5 h-3.5 text-orange-500" />
+                <MessageSquarePlus className="w-3.5 h-3.5 text-orange-500 shrink-0" />
                 <span>{siteConfig.feedback.label}</span>
               </a>
             )}
           </div>
         </div>
 
-        {/* Disclaimer & Nav Links */}
-        <div className="pt-3 border-t border-app-border/60 flex flex-col sm:flex-row items-center justify-between gap-2.5 text-[11px]">
-          <p className="text-text-muted text-center sm:text-left max-w-2xl">
+        {/* Row 2: Divider & Disclaimer + Nav Links */}
+        <div className="pt-2 border-t border-app-border/60 flex flex-col md:flex-row items-center justify-between gap-2 text-[12px]">
+          {/* Disclaimer on left */}
+          <p className="text-text-muted text-center md:text-left max-w-2xl leading-normal">
+            <span className="font-medium text-text-secondary">{siteConfig.copyright}</span>{' '}
             {siteConfig.disclaimer}
           </p>
 
-          <div className="flex items-center gap-3 text-text-secondary flex-wrap justify-center">
+          {/* Navigation Links on right */}
+          <div className="flex items-center gap-3 text-text-secondary flex-wrap justify-center shrink-0">
             <Link
               href={siteConfig.links.routineBuilder}
               className="hover:text-orange-600 transition-colors inline-flex items-center gap-1"
@@ -109,7 +108,7 @@ export function SiteFooter({ className = '', compact = false }: SiteFooterProps)
               <Calendar className="w-3 h-3 text-orange-500" />
               <span>Routine Builder</span>
             </Link>
-            <span>•</span>
+            <span className="text-text-muted/60" aria-hidden="true">•</span>
             <Link
               href={siteConfig.links.courseDirectory}
               className="hover:text-orange-600 transition-colors inline-flex items-center gap-1"
@@ -117,7 +116,7 @@ export function SiteFooter({ className = '', compact = false }: SiteFooterProps)
               <BookOpen className="w-3 h-3 text-orange-500" />
               <span>Course Directory</span>
             </Link>
-            <span>•</span>
+            <span className="text-text-muted/60" aria-hidden="true">•</span>
             <a
               href={siteConfig.links.userGuide}
               target="_blank"
