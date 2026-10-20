@@ -18,7 +18,11 @@ export function exportToText(schedule: ScheduleResult): string {
   lines.push('============================================================\n');
 
   schedule.sections.forEach((sec, idx) => {
-    const fixedLabel = sec.fixed ? ' [Fixed Schedule]' : '';
+    const fixedLabel = sec.manual
+      ? ' [Manual Schedule]'
+      : sec.fixed
+      ? ' [Fixed Schedule]'
+      : '';
     lines.push(`[${idx + 1}] ${sec.courseCode} (Section: ${sec.section}) — ${sec.credit} Credit(s)${fixedLabel}`);
     lines.push(`    Title:   ${sec.title}`);
     lines.push(`    Faculty: ${sec.faculty.join(', ')}`);

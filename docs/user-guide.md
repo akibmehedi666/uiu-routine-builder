@@ -42,7 +42,7 @@ Welcome to the **UIU Routine Builder** for the United International University (
    - Use the **Schedule Comparison & Diff** table to see exactly which sections change between Rank 1, 2, and 3.
 
 5. **Final Year Design Project (FYDP)**:
-   - FYDP has a fixed time (Saturday, 11:11 AM-01:40 PM); it is added automatically around your other courses.
+   - FYDP schedules differ per student, so after adding FYDP you enter your own section, days and time. A modal prompt lets you specify your section label (e.g. `I`), meeting days, start and end times (or quick-fill standard UIU lab slots), and optional room/faculty. The solver treats your manual FYDP as a locked schedule and fits other selected courses around it without conflicts. You can edit the schedule at any time using the "Edit" button on the course row.
 
 
 ---

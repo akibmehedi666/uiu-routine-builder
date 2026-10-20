@@ -245,6 +245,47 @@ Following a session interruption audit:
   - Total test suite: 47 tests passing across 5 test suites.
   - Next.js production build (`npm run build`) compiles cleanly.
 
+## Decision 11: Phase 14 Search List Deduplication & Manual FYDP Course Schedule
+- **Part 1: Root Cause Analysis of Directory Search Duplicates & Full List Rendering**:
+  - **109 vs 107 Courses**: `data/courses.json` contains 107 course records (101 unique codes + 6 courses dual-listed under both `BSCSE` and `BSDS`: `CSE 2215`, `CSE 2216`, `CSE 2217`, `CSE 2218`, `CSE 3521`, `CSE 3522`). In Phase 13, `applyFixedCourseOverlay` synthetically injected `CSE 4000B` and `CSE 4000C`, inflating catalog length to 109.
+  - **Duplicate Course Rendering & Reconciler Desync**: React elements in `src/app/faculty/page.tsx` were keyed with `key={c.code}`. Because the 6 dual-listed courses had identical codes, React Fiber reconciler threw duplicate key warnings. When `filteredCourses` shrunk upon search query (e.g. searching "cse 4509"), React's reconciler failed to delete the orphan DOM elements with duplicate keys, leaving the initial duplicate-keyed sequence stuck on screen while the header correctly reported 1 result.
+  - **Fixes Applied**:
+    - Updated React keys to `key={`${c.code}-${c.program}`}` in both desktop list and mobile accordion.
+    - Deduped search results by `courseCode` in `src/lib/courseSearch.ts` and `src/lib/courseDirectory.ts`.
+    - **Relevance Cutoff**: Exact code matches (`matchType === 'code-exact'`, e.g. "cse 4509", "cse4509") return only the exact course. Code-prefix queries (e.g. "cse 45") return only code-prefix courses. Score threshold drops weak faculty or typo matches whenever strong matches exist.
+    - Total catalog and directory index size strictly restored to 107 real courses.
+- **Part 2: Manual-Input FYDP Schedule Architecture**:
+  - **Context**: Students taking FYDP are assigned distinct sections and meeting times; hardcoding Saturday 11:11–13:40 was inaccurate as a universal default.
+  - **Configuration (`src/lib/fixedCourses.ts`)**:
+    - Replaced hardcoded slot with configurable `MANUAL_SCHEDULE_COURSES = ['CSE 4000A', 'CSE 4000B', 'CSE 4000C']`.
+    - Preserved catalog length at 107; removed synthetic course catalog injection.
+  - **Modal & UI Input (`src/components/ManualScheduleModal.tsx`)**:
+    - Accessible dialog with focus trap and `Escape` support.
+    - Free-text section label (1–4 characters, e.g. "I").
+    - Day chips (Sat, Sun, Mon, Tue, Wed) multi-select.
+    - Start and end time inputs with 5-minute step validation (end > start, within 08:00–21:00).
+    - Dynamic UIU lab slots quick-fill dropdown derived dynamically from `data/sections.json` via `extractLabSlotsFromSections` (e.g. 08:30–11:00, 11:11–13:40, 14:00–16:30) without hardcoding.
+    - Optional room and faculty text fields.
+    - Form cancellation on first addition safely removes the unconfigured course from selection.
+  - **Solver & Clash Detection**:
+    - `buildManualSection` converts input into an in-memory `Section` with `manual: true`, `fixed: true`, and `synthetic: true`.
+    - Solver receives the course with exactly 1 candidate section, locking it into every generated routine.
+    - `computeManualClashes` calculates clashing sections of other courses using bitmasks read-only, rendering `"Hidden by FYDP"` accordions and `"No section of <CODE> fits around FYDP (<Schedule>)"` warnings when all sections conflict.
+  - **Timetable & Course Cards**:
+    - Timetable card displays `"Manual • Sec <Label>"` with a `Pencil` icon.
+    - Course row displays `"Manual: <Schedule>, Sec <Label>"` with an `Edit` button and credits intact.
+  - **Persistence & URL Sharing**:
+    - Saved to `localStorage` under `uiu_manual_schedules` with `try/catch`.
+    - Compact shareable URL parameter `mx=CSE4000A.I.Sat-Tue.1111-1340` deserialized via `decodeManualScheduleUrl`.
+  - **Exports**:
+    - Copy UCAM text export, iCal, and print/PDF output include manual sections labeled with `[Manual Schedule]`.
+  - **Course Directory (`/faculty`)**:
+    - Displays `"Schedule set manually"` with builder CTA when data has 0 sections for a manual course.
+    - Displays real sections with a manual schedule callout banner when data has departmental sections.
+- **Verification**:
+  - 48 tests passing across all 5 test suites.
+  - Next.js production build (`npm run build`) compiles cleanly with 0 type errors.
+
 
 
 
