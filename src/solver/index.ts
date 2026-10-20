@@ -30,9 +30,11 @@ interface CourseDomain {
 
 export function solveSchedules(
   allSections: Section[],
-  request: SolveRequest
+  request: SolveRequest,
+  onProgress?: (checkedCount: number, validCount: number) => void
 ): SolveResponse {
   const startTime = Date.now();
+  let lastProgressTime = startTime;
   const limit = request.limit ?? 50;
   const maxNodes = 200000;
   const timeoutMs = 2000;
@@ -178,7 +180,19 @@ export function solveSchedules(
   function search(depth: number, currentMask: ScheduleBitmask) {
     nodesExplored++;
 
-    if (nodesExplored >= maxNodes || ((nodesExplored & 2047) === 0 && Date.now() - startTime >= timeoutMs)) {
+    if ((nodesExplored & 2047) === 0) {
+      const now = Date.now();
+      if (now - startTime >= timeoutMs) {
+        truncated = true;
+        return;
+      }
+      if (onProgress && now - lastProgressTime >= 100) {
+        onProgress(nodesExplored, totalValidCombinations);
+        lastProgressTime = now;
+      }
+    }
+
+    if (nodesExplored >= maxNodes) {
       truncated = true;
       return;
     }

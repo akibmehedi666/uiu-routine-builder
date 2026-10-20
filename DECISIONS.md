@@ -52,3 +52,10 @@ This document tracks all design decisions, assumptions, and edge case resolution
   5. Scorer ordering with preferred faculty
   6. Theory/Lab co-requisite validation without internal collision
   7. 5-course heavy benchmark (< 200ms)
+
+## Decision 4: Web Worker Integration & Hook State Machine (Phase 3)
+- **Worker File**: Dedicated `src/workers/solver.worker.ts` executing the solver on a background thread.
+- **Progress Reporting**: Emits progress events (`{ type: 'progress', checkedCount, validCount }`) throttled to ~100ms intervals, allowing fluid UI progress updates without thread blocking.
+- **Worker Lifecycle & Abort**: `useSolver` hook handles worker spawning, message routing, error capture, termination on unmount, and immediate worker cancellation/respawn when a new solve request arrives.
+- **In-Memory Cache**: Deterministic hashing of `SolveRequest` in memory ensures repeated solves with the same course selection/filters resolve instantaneously with 0ms overhead.
+- **SSR & Fallback Resilience**: If Web Worker is unavailable (e.g. during SSR or specific environments), the hook falls back seamlessly to the synchronous solver function.
