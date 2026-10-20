@@ -45,6 +45,7 @@ import {
   FacultyCrossReferenceItem,
 } from '../../lib/courseDirectory';
 import { SiteNav } from '../../components/SiteNav';
+import { SiteFooter } from '../../components/SiteFooter';
 import { getCourseColor } from '../../utils/colors';
 import { formatTime24 } from '../../utils/export';
 import { applyFixedCourseOverlay, isFixedCourse, isManualScheduleCourse } from '../../lib/fixedCourses';
@@ -1100,6 +1101,9 @@ function CourseDirectoryContent() {
           )}
         </div>
       </main>
+
+      {/* Footer */}
+      <SiteFooter />
 
       {/* 5. Faculty Cross-Reference Popover (11D) */}
       {popoverFaculty && (

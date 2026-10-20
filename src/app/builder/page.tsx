@@ -13,6 +13,7 @@ import {
 } from '../../types';
 import { useSolver } from '../../hooks/useSolver';
 import { SiteNav } from '../../components/SiteNav';
+import { SiteFooter } from '../../components/SiteFooter';
 import { CourseSelector } from '../../components/CourseSelector';
 import { Timetable } from '../../components/Timetable';
 import { ScheduleComparison } from '../../components/ScheduleComparison';
@@ -592,6 +593,9 @@ export default function BuilderPage() {
           )}
         </div>
       </main>
+
+      {/* Footer */}
+      <SiteFooter />
 
       {/* 3. Course-Wise Faculty Explorer Slide-Over Panel */}
       {explorerCourseCode && (
