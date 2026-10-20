@@ -17,6 +17,7 @@ export function ShortcutsModal({ isOpen, onClose }: ShortcutsModalProps) {
     { key: '←', desc: 'Navigate to previous routine' },
     { key: '→', desc: 'Navigate to next routine' },
     { key: '/', desc: 'Focus course search input' },
+    { key: 'Enter', desc: 'Open faculty explorer for selected course' },
     { key: 'f', desc: 'Toggle favorite for current routine' },
     { key: 'p', desc: 'Print or export schedule to PDF' },
     { key: 'Esc', desc: 'Close modals or explorer panel' },

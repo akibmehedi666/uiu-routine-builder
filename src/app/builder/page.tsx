@@ -17,6 +17,7 @@ import { CourseSelector } from '../../components/CourseSelector';
 import { Timetable } from '../../components/Timetable';
 import { ScheduleComparison } from '../../components/ScheduleComparison';
 import { EmptyState } from '../../components/EmptyState';
+import { FacultyExplorer } from '../../components/FacultyExplorer';
 import { HelpGuideModal, ShortcutsModal, FavoritesModal } from '../../components/Modals';
 import { parseFromParams, serializeToParams } from '../../utils/urlSync';
 import confetti from 'canvas-confetti';
@@ -56,6 +57,10 @@ export default function BuilderPage() {
   const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
   const [favorites, setFavorites] = useState<SavedFavorite[]>([]);
 
+  // Faculty Explorer state
+  const [explorerCourseCode, setExplorerCourseCode] = useState<string | null>(null);
+  const [previewSection, setPreviewSection] = useState<Section | null>(null);
+
   // Hook for solving
   const {
     solve,
@@ -77,6 +82,12 @@ export default function BuilderPage() {
 
       // 1. Read URL query
       if (window.location.search) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const openCourse = urlParams.get('course');
+        if (openCourse) {
+          setExplorerCourseCode(openCourse);
+        }
+
         const fromUrl = parseFromParams(window.location.search);
         setRequest((prev) => ({
           ...prev,
@@ -97,18 +108,25 @@ export default function BuilderPage() {
     }
   }, []);
 
-  // Sync state to URL query string whenever request changes
+  // Sync state to URL query string whenever request or explorer changes
   useEffect(() => {
     if (!hasInitialized.current) return;
     if (typeof window === 'undefined') return;
 
-    const queryString = serializeToParams(request);
+    const baseParams = serializeToParams(request);
+    const params = new URLSearchParams(baseParams);
+
+    if (explorerCourseCode) {
+      params.set('course', explorerCourseCode);
+    }
+
+    const queryString = params.toString();
     const newRelativePath = queryString
       ? `${window.location.pathname}?${queryString}`
       : window.location.pathname;
 
     window.history.replaceState(null, '', newRelativePath);
-  }, [request]);
+  }, [request, explorerCourseCode]);
 
   // Trigger solve on debounced request changes
   useEffect(() => {
@@ -145,6 +163,88 @@ export default function BuilderPage() {
     }
   }, [currentSchedule]);
 
+  // Course addition / removal helpers (synced with explorer)
+  const handleAddCourse = useCallback((courseCode: string) => {
+    setRequest((prev) => {
+      if ((prev.selectedCourses || []).includes(courseCode)) return prev;
+      return {
+        ...prev,
+        selectedCourses: [...(prev.selectedCourses || []), courseCode],
+      };
+    });
+  }, []);
+
+  const handleRemoveCourse = useCallback((courseCode: string) => {
+    setRequest((prev) => {
+      const newCourses = (prev.selectedCourses || []).filter((c) => c !== courseCode);
+      const newPref = { ...prev.preferredFaculty };
+      delete newPref[courseCode];
+      const newAvoid = { ...prev.avoidFaculty };
+      delete newAvoid[courseCode];
+      const newLock = { ...prev.lockedSections };
+      delete newLock[courseCode];
+
+      return {
+        ...prev,
+        selectedCourses: newCourses,
+        preferredFaculty: newPref,
+        avoidFaculty: newAvoid,
+        lockedSections: newLock,
+      };
+    });
+  }, []);
+
+  // Faculty preference toggles (synced with explorer and sidebar)
+  const toggleFacultyPref = useCallback((courseCode: string, facultyId: string) => {
+    setRequest((prev) => {
+      const current = prev.preferredFaculty?.[courseCode] || [];
+      const isSelected = current.includes(facultyId);
+      const updated = isSelected
+        ? current.filter((id) => id !== facultyId)
+        : [...current, facultyId];
+
+      const avoidCurrent = prev.avoidFaculty?.[courseCode] || [];
+      const updatedAvoid = avoidCurrent.filter((id) => id !== facultyId);
+
+      return {
+        ...prev,
+        preferredFaculty: {
+          ...prev.preferredFaculty,
+          [courseCode]: updated,
+        },
+        avoidFaculty: {
+          ...prev.avoidFaculty,
+          [courseCode]: updatedAvoid,
+        },
+      };
+    });
+  }, []);
+
+  const toggleFacultyAvoid = useCallback((courseCode: string, facultyId: string) => {
+    setRequest((prev) => {
+      const current = prev.avoidFaculty?.[courseCode] || [];
+      const isSelected = current.includes(facultyId);
+      const updatedAvoid = isSelected
+        ? current.filter((id) => id !== facultyId)
+        : [...current, facultyId];
+
+      const prefCurrent = prev.preferredFaculty?.[courseCode] || [];
+      const updatedPref = prefCurrent.filter((id) => id !== facultyId);
+
+      return {
+        ...prev,
+        preferredFaculty: {
+          ...prev.preferredFaculty,
+          [courseCode]: updatedPref,
+        },
+        avoidFaculty: {
+          ...prev.avoidFaculty,
+          [courseCode]: updatedAvoid,
+        },
+      };
+    });
+  }, []);
+
   // Global Keyboard Navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -171,6 +271,12 @@ export default function BuilderPage() {
           'input[type="text"]'
         ) as HTMLInputElement | null;
         searchInput?.focus();
+      } else if (e.key === 'Enter') {
+        // Open explorer for first selected course if none open
+        if (!explorerCourseCode && request.selectedCourses.length > 0) {
+          e.preventDefault();
+          setExplorerCourseCode(request.selectedCourses[0]);
+        }
       } else if (e.key === 'f' || e.key === 'F') {
         e.preventDefault();
         if (currentSchedule) {
@@ -180,6 +286,7 @@ export default function BuilderPage() {
         e.preventDefault();
         window.print();
       } else if (e.key === 'Escape') {
+        setExplorerCourseCode(null);
         setIsHelpOpen(false);
         setIsShortcutsOpen(false);
         setIsFavoritesOpen(false);
@@ -188,7 +295,7 @@ export default function BuilderPage() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentRank, results, currentSchedule, setRank]);
+  }, [currentRank, results, currentSchedule, setRank, explorerCourseCode, request.selectedCourses]);
 
   // Reset filters
   const handleResetFilters = () => {
@@ -255,7 +362,6 @@ export default function BuilderPage() {
   };
 
   const handleSelectFavorite = (schedule: ScheduleResult) => {
-    // Re-populate request courses and lock those sections
     const courses = schedule.sections.map((s) => s.courseCode);
     const locks: Record<string, string> = {};
     for (const s of schedule.sections) {
@@ -288,6 +394,7 @@ export default function BuilderPage() {
           faculty={allFaculty}
           request={request}
           onRequestChange={setRequest}
+          onOpenExplorer={(code) => setExplorerCourseCode(code)}
         />
 
         {/* Right Content Area */}
@@ -337,6 +444,7 @@ export default function BuilderPage() {
                   isFavorite={isCurrentFavorite}
                   onToggleFavorite={toggleFavorite}
                   isTruncated={results.truncated}
+                  previewSection={previewSection}
                 />
               )}
 
@@ -351,7 +459,29 @@ export default function BuilderPage() {
         </div>
       </main>
 
-      {/* 3. Modals */}
+      {/* 3. Course-Wise Faculty Explorer Slide-Over Panel */}
+      {explorerCourseCode && (
+        <FacultyExplorer
+          courseCode={explorerCourseCode}
+          onClose={() => {
+            setExplorerCourseCode(null);
+            setPreviewSection(null);
+          }}
+          courses={allCourses}
+          sections={allSections}
+          selectedCourses={request.selectedCourses}
+          preferredFaculty={request.preferredFaculty}
+          avoidFaculty={request.avoidFaculty}
+          onTogglePreferred={toggleFacultyPref}
+          onToggleAvoid={toggleFacultyAvoid}
+          onAddCourse={handleAddCourse}
+          onRemoveCourse={handleRemoveCourse}
+          activeScheduleSections={currentSchedule?.sections || []}
+          onHoverSection={(sec) => setPreviewSection(sec)}
+        />
+      )}
+
+      {/* 4. Modals */}
       <ShortcutsModal
         isOpen={isShortcutsOpen}
         onClose={() => setIsShortcutsOpen(false)}

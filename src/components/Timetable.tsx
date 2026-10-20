@@ -30,6 +30,7 @@ interface TimetableProps {
   isFavorite: boolean;
   onToggleFavorite: (schedule: ScheduleResult) => void;
   isTruncated?: boolean;
+  previewSection?: Section | null;
 }
 
 // 8 slot markers from 08:30 to 16:30
@@ -52,6 +53,7 @@ export function Timetable({
   isFavorite,
   onToggleFavorite,
   isTruncated,
+  previewSection,
 }: TimetableProps) {
   const [copied, setCopied] = useState(false);
   const [hoveredSection, setHoveredSection] = useState<{
@@ -417,6 +419,28 @@ export function Timetable({
                       </div>
                     );
                   })}
+                  {/* Faint dashed ghost block for explorer section preview */}
+                  {previewSection &&
+                    previewSection.meetings
+                      .filter((m) => m.day === day)
+                      .map((m, mIdx) => {
+                        const topPct = ((m.start - 510) / 480) * 100;
+                        const heightPct = ((m.end - m.start) / 480) * 100;
+                        return (
+                          <div
+                            key={`preview-${mIdx}`}
+                            style={{ top: `${topPct}%`, height: `${heightPct}%` }}
+                            className="absolute left-1 right-1 p-2 rounded-btn border-2 border-dashed border-orange-500 bg-orange-500/20 pointer-events-none z-30 flex flex-col justify-between shadow-warm"
+                          >
+                            <div className="font-extrabold text-xs text-orange-900">
+                              {previewSection.courseCode} (Sec {previewSection.section})
+                            </div>
+                            <div className="text-[10px] text-orange-950 font-bold">
+                              Previewing slot
+                            </div>
+                          </div>
+                        );
+                      })}
                 </div>
               );
             })}
