@@ -85,7 +85,7 @@ export function SiteNav({
                     : 'hover:text-orange-600'
                 }`}
               >
-                Faculty
+                Course Directory
               </Link>
               <a href="#faq" className="hover:text-orange-600 transition-colors py-1">
                 FAQ
@@ -112,7 +112,7 @@ export function SiteNav({
                     : 'hover:text-orange-600'
                 }`}
               >
-                Faculty
+                Course Directory
               </Link>
             </>
           )}
@@ -202,7 +202,7 @@ export function SiteNav({
             onClick={() => setMobileOpen(false)}
             className={`block py-1.5 font-medium ${isFaculty ? 'text-orange-600 font-bold' : 'text-text-secondary'}`}
           >
-            Faculty Directory
+            Course Directory
           </Link>
 
           {isHome && (
