@@ -385,7 +385,7 @@ export default function LandingPage() {
                   href="/faculty"
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-btn bg-surface hover:bg-subtle text-text-primary font-semibold text-sm border border-app-border shadow-2xs transition-colors hover:border-orange-300"
                 >
-                  <span>Browse all faculty &rarr;</span>
+                  <span>Browse course directory &rarr;</span>
                 </Link>
               </div>
             </div>

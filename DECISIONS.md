@@ -131,10 +131,51 @@ This document tracks all design decisions, assumptions, and edge case resolution
   - Toggling preference on an unselected course auto-adds the course with an informative toast notification.
 - **Cross-Linking Course Explorer Panel**:
   - The existing slide-over Faculty Explorer panel remains completely unchanged in layout and behavior, with faculty names now linking to `/faculty?f=<slug>`.
-- **Copy & Section Spacing Fixes**:
-  - Removed internal development label ("NEW IN PHASE 9") from landing page teaser.
-  - Stripped "Caption:" prefix from teaser preview.
-  - Tightened landing teaser section padding to `py-10 md:py-16` (approx. 40–48px mobile, 64px desktop).
-  - Cleaned user-facing copy: zero mentions of development phases in `src/` and `docs/user-guide.md`.
+## Decision 8: Phase 11 Course-First Directory Refactoring
+- **Architectural Shift: Course-First instead of Faculty-First**:
+  - Completely replaced the faculty-first design (faculty list on left, timetable on right) with a course-first directory modelled after the UCAM mobile portal experience.
+  - Page heading renamed to "Course Directory" with subtitle: "Pick a course to see which faculty teach which section, and when."
+  - Maintained route `/faculty` for compatibility and added seamless redirect `/courses -> /faculty`.
+  - Updated navbar label to "Course Directory" across landing, builder, and directory headers for clarity and consistency.
+- **Course List & Filtering**:
+  - Toolbar features live search matching course codes, titles, faculty names, and common aliases (`DSA`, `OOP`, `AI`, `DB`, `OS`, `FYDP`, `Compiler`, etc.).
+  - Program chips (`All`, `BSCSE`, `BSDS`), credit filter chips (`All`, `1 Cr`, `2 Cr`, `3 Cr`), type filter (`All`, `Theory`, `Lab`), and sorting (`Code A–Z`, `Title A–Z`, `Most sections`).
+  - Desktop (≥1024px) features two panes: left sticky scrollable course list, right selected course sections. Tablet (768–1023px) uses 300px left pane. Mobile (<768px) uses inline accordion expansion matching UCAM mobile.
+  - Theory/Lab co-requisite link chips allow 1-click jumping between paired courses.
+- **Section Rows (UCAM-Inspired Clean Design)**:
+  - Each section row ordered by natural alphabetical sort (`A, B, ... Z, AA, AB, ... A1, A2`).
+  - Faculty avatar circle with initials and deterministic soft light-theme color palette (WCAG AA compliant, avoiding harsh gradients).
+  - Meeting chips with clock icon showing day and times (full day names on desktop, 3-letter on narrow screens to prevent horizontal overflow).
+  - Room text separated by divider, tentative badges, and desktop-only mini 5-day occupancy strip.
+  - "Prefer" / "Avoid" toggles write directly to the shared solver preference state with auto-add toast notification.
+- **Within-Course Features**:
+  - Filter by faculty name, day chips, time-of-day chips, and section sorting (`By section`, `By faculty`, `By time`).
+  - "Group by faculty" toggle displays sections grouped under each instructor.
+  - "Add course" button and "Copy list" plain-text summary.
+- **Faculty Cross-Reference Popover**:
+  - Clicking any faculty name opens a compact popover detailing other courses and sections taught by that instructor this trimester.
+  - Includes "Show this faculty's courses" action to quickly filter the directory by that faculty member.
+- **Dead Code Cleanup**:
+  - Removed faculty weekly timetables, A–Z letter jump bar, and faculty-first helpers.
+  - Retained `slugifyFacultyName`, `resolveSlugCollisions`, and `normalizeForSearch` in `src/lib/facultyIndex.ts`.
+  - Pure course directory indexing, filtering, sorting, natural sorting, and cross-reference logic isolated in `src/lib/courseDirectory.ts`.
+
+### Phase 11 recovery notes
+Following a session interruption audit:
+- All uncommitted code was inspected and verified.
+- Fixed `getFacultyInitials` in `src/lib/courseDirectory.ts` to cleanly handle multiple chained honorific prefixes (`Prof. Dr. M.`) and uppercase initials from acronyms (`RaAN` -> `RN`).
+- Added accessible `aria-label` speech text on `SectionRowItem` matching the accessibility specification.
+- Sub-phases status audit:
+
+| Sub-phase | Description | Status |
+|---|---|---|
+| **11A** | Page structure, layout, navbar label, dead code removal | Done |
+| **11B** | Course rows, credit/program chips, theory-lab jump chips, selected styles | Done |
+| **11C** | Section list, UCAM-style rows, avatar initials, time chips, prefer/avoid, within-course filters, group-by-faculty | Done |
+| **11D** | Faculty cross-reference popover and "Show this faculty's courses" action | Done |
+| **11E** | URL routing (?c=...), shared builder state sync, pure helpers in courseDirectory.ts, accessibility & unit tests | Done |
+| **11F** | Metadata, landing page teaser update, user guide documentation, tests and build verification | Done |
+
+
 
 

@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import React from 'react';
 
 export const metadata: Metadata = {
-  title: 'Faculty & Sections | UIU Routine Builder',
+  title: 'Course Directory — UIU Routine Builder',
   description:
-    'Search faculty schedules, sections, and teaching timetables for UIU Fall 2026 trimester (Dept. of CSE & Data Science).',
+    'Browse courses, faculty assignments, and section meeting times for UIU Fall 2026 trimester (Dept. of CSE & Data Science).',
 };
 
 export default function FacultyLayout({
