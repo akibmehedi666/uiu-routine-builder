@@ -41,6 +41,10 @@ Welcome to the **UIU Routine Builder** for the United International University (
    - The score pill (e.g., `98/100`) reveals the weighted breakdown on hover.
    - Use the **Schedule Comparison & Diff** table to see exactly which sections change between Rank 1, 2, and 3.
 
+5. **Final Year Design Project (FYDP)**:
+   - FYDP has a fixed time (Saturday, 11:11 AM-01:40 PM); it is added automatically around your other courses.
+
+
 ---
 
 ## Course Directory (`/faculty` or `/courses`)

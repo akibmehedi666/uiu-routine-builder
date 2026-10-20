@@ -207,6 +207,45 @@ Following a session interruption audit:
   - **Group-by-Faculty View Toggle**: Fixed active filter accounting via `getActiveSectionFilterCount`. `groupByFaculty` is a view mode and does not increment active filters; the `"sections match active filters"` badge only renders when genuine section filters (faculty search, day, time) are active. Toggle button updated with `type="button"`, `aria-pressed`, and clear outlined (off) vs filled orange (on) styling.
   - **Search Enhancements**: 120ms debouncing (instant on clear), match highlighting using `<mark>` elements, match reason badges (`Matches: OS`, `Matches faculty: <name>`), rich empty state with suggestion pills, inline clear button (`X`), `/` and `Escape` shortcuts, URL synchronization without resets, and preserved selected course with an out-of-results notice banner.
 
+## Decision 10: Phase 13 FYDP fixed course overlay
+- **Context & Problem**:
+  - Final Year Design Project (FYDP) classes (`CSE 4000A`, `CSE 4000B`, `CSE 4000C`) are not scheduled like ordinary elective or core courses where students pick arbitrary sections.
+  - At UIU, all students enrolling in FYDP attend Section I, held on Saturday from 11:11 AM to 01:40 PM (minutes 671 to 820 from midnight).
+  - The routine builder must automatically schedule all other courses around this fixed slot and ensure every generated routine contains FYDP Section I.
+- **Hard Architectural Constraints**:
+  - The solver (`src/solver/*`), worker (`src/workers/*`), hook (`src/hooks/useSolver.ts`), and dataset files (`data/*`) are strictly immutable.
+  - Solution: UI-layer overlay (`src/lib/fixedCourses.ts`) that supplies an in-memory view of courses and sections to the builder and directory where FYDP courses have exactly 1 candidate section (Section I, fixed schedule).
+- **Inspection Findings**:
+  - `data/courses.json` has `CSE 4000A` (2 credits, BSCSE) and `DS 4000A` (2 credits, BSDS). `CSE 4000B` and `CSE 4000C` were absent in raw data.
+  - `data/sections.json` has 10 sections for `CSE 4000A` (`A`–`J`). Section `I` (`BSCSE-CSE 4000A-I`, sl: 388) already has the exact slot: Saturday 11:11 AM–01:40 PM (`start: 671, end: 820`).
+  - No legacy half-built generic "busy" features existed in the codebase.
+- **Config & Overlay Architecture (`src/lib/fixedCourses.ts`)**:
+  - `FYDP_FIXED` configuration specifying `courseCodes: ['CSE 4000A', 'CSE 4000B', 'CSE 4000C']`, `sectionLabel: 'I'`, `meetings: [{ day: 'Saturday', start: '11:11', end: '13:40' }]`.
+  - Extensible: additional meeting days (e.g. Sunday, Tuesday, Wednesday) can be added to `meetings` without modifying any other code.
+  - `applyFixedCourseOverlay`: Injects synthetic courses for `CSE 4000B`/`CSE 4000C` if not present in the catalog, filters out non-fixed sections (A–H, J) for fixed courses, and returns exactly Section I with `fixed: true` and `synthetic: boolean`.
+  - Pure read-only clash detection `computeFYDPClashes`: Computes union bitmask of active FYDP sections and identifies which sections of other courses clash (`availableSections`, `hiddenSections`, `allSectionsClash`).
+- **UI Behaviors & UX Details**:
+  - **Builder Course Selector**:
+    - Chip autocomplete marks FYDP courses with an orange `Fixed` badge.
+    - If multiple FYDP courses are selected (e.g. A and B), a gentle notice informs the user: *"FYDP courses usually run one at a time; check UCAM."*
+    - The selected course card renders `"Fixed: Sat 11:11 AM-01:40 PM"`, detailed meeting info (`"Section I • Saturday 11:11 AM–01:40 PM | Fixed Schedule"`), and hides faculty prefer/avoid and section lock controls.
+    - Other selected courses display `"N of M sections available"`, with an expandable muted accordion `"Hidden by FYDP (K)"` displaying the clashing section labels and times.
+    - Courses where all sections clash display a warning banner: `"No section of <CODE> fits around FYDP (Sat 11:11 AM-01:40 PM)"`, and the solver gracefully yields 0 routines with a clear explanation without crashing.
+  - **Timetable Card**:
+    - Fixed course card renders with a lock icon and `"Fixed • Sec I"` badge in amber styling.
+  - **Course Directory (`/faculty` & `/courses`)**:
+    - Lists Section I with `"Fixed schedule"` badge and `"Faculty TBA"`. Prefer/Avoid controls are replaced with `"Fixed schedule"`.
+  - **Exports & URL Sync**:
+    - Copy UCAM includes FYDP with `[Fixed Schedule]`.
+    - iCal export includes it as a recurring 12-week Saturday event.
+    - Shareable URLs encode only the course code (e.g., `courses=CSE+4000A`), and the overlay dynamically injects the fixed schedule on load.
+    - Header stat remains static at 791 sections from raw data.
+- **Verification**:
+  - 8 new Vitest tests covering bitmask alignment (matching `BSCSE-CSE 1110-J` lab slot), solver integration with `CSE 4509`, clashing warnings with real course `CSE 4817` and synthetic fixture, touching boundary time separation (0n mask overlap), multi-day extensibility, search indexing, and section count integrity.
+  - Total test suite: 47 tests passing across 5 test suites.
+  - Next.js production build (`npm run build`) compiles cleanly.
+
+
 
 
 
