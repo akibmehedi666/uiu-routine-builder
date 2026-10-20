@@ -80,7 +80,17 @@ export default function BuilderPage() {
     if (typeof window !== 'undefined' && !hasInitialized.current) {
       hasInitialized.current = true;
 
-      // 1. Read URL query
+      // 1. Read shared storage or URL query
+      let storedReq: Partial<SolveRequest> = {};
+      try {
+        const raw =
+          sessionStorage.getItem('uiu_routine_builder_state') ||
+          localStorage.getItem('uiu_routine_builder_state');
+        if (raw) storedReq = JSON.parse(raw);
+      } catch (e) {
+        console.warn('Failed to read builder state:', e);
+      }
+
       if (window.location.search) {
         const urlParams = new URLSearchParams(window.location.search);
         const openCourse = urlParams.get('course');
@@ -91,7 +101,14 @@ export default function BuilderPage() {
         const fromUrl = parseFromParams(window.location.search);
         setRequest((prev) => ({
           ...prev,
+          ...storedReq,
           ...fromUrl,
+          weights: prev.weights,
+        }));
+      } else if (Object.keys(storedReq).length > 0) {
+        setRequest((prev) => ({
+          ...prev,
+          ...storedReq,
           weights: prev.weights,
         }));
       }
@@ -108,10 +125,17 @@ export default function BuilderPage() {
     }
   }, []);
 
-  // Sync state to URL query string whenever request or explorer changes
+  // Sync state to URL query string and shared storage whenever request or explorer changes
   useEffect(() => {
     if (!hasInitialized.current) return;
     if (typeof window === 'undefined') return;
+
+    try {
+      sessionStorage.setItem('uiu_routine_builder_state', JSON.stringify(request));
+      localStorage.setItem('uiu_routine_builder_state', JSON.stringify(request));
+    } catch (e) {
+      console.warn('Failed to save builder state:', e);
+    }
 
     const baseParams = serializeToParams(request);
     const params = new URLSearchParams(baseParams);
