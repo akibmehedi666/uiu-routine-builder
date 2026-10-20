@@ -69,7 +69,7 @@ export interface SolveRequest {
   avoidFaculty: Record<string, string[]>;      // courseCode -> facultyId[]
   lockedSections: Record<string, string>;     // courseCode -> sectionId
   filterDayOff: Day[];                       // days that must have 0 classes
-  filterTimeWindow: FilterTimeWindow;
+  filterTimeWindow?: FilterTimeWindow;
   maxGapMinutesPerDay?: number;
   weights: ScoreWeights;
   limit?: number;                            // default 50

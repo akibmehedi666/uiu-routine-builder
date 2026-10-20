@@ -59,3 +59,15 @@ This document tracks all design decisions, assumptions, and edge case resolution
 - **Worker Lifecycle & Abort**: `useSolver` hook handles worker spawning, message routing, error capture, termination on unmount, and immediate worker cancellation/respawn when a new solve request arrives.
 - **In-Memory Cache**: Deterministic hashing of `SolveRequest` in memory ensures repeated solves with the same course selection/filters resolve instantaneously with 0ms overhead.
 - **SSR & Fallback Resilience**: If Web Worker is unavailable (e.g. during SSR or specific environments), the hook falls back seamlessly to the synchronous solver function.
+
+## Decision 5: UI/UX, Exports & Verification (Phases 4-8)
+- **Aesthetic Theme**: Dark slate palette (`#060913`, `#111827`) with UIU brand orange (`#F26522`), glassmorphic panels, and saturated pastel course cards.
+- **Credit Limits**: Enforces UIU standard limits (9 credits minimum, 18 credits maximum) with visible color-coded warnings for overload and underload.
+- **Co-requisite Lab Automation**: Theory courses with paired labs automatically display an animated one-click "Add Co-requisite Lab" button.
+- **Export Standards**:
+  - Plain-text summary custom-formatted for immediate copy-pasting into UIU UCAM registration.
+  - RFC 5545 iCalendar (`.ics`) file download with 12-week recurring schedule for Google/Apple Calendar.
+  - Print stylesheet stripping navigation bars and controls for clean PDF generation.
+- **State Synchronization**: Complete solve request (courses, preferences, filters, section locks) encoded in URL query parameters for shareability.
+- **Celebration Micro-interactions**: Confetti burst on achieving a 100/100 rated routine.
+- **Documentation**: Comprehensive `docs/solver-design.md`, `docs/user-guide.md`, and automated browser subagent test recorded in `uiu_routine_builder_test_*.webp`.
