@@ -6,16 +6,10 @@ Welcome to the **UIU Routine Builder** for the United International University (
 
 ## Getting Started
 
-1. **Quick Presets**:
-   Click on any of the preset cards on the homepage:
-   - **Freshman CSE (Trimester 1)**: CSE 1111, CSE 1112, MATH 1151, ENG 1011
-   - **Sophomore CSE (Trimester 4)**: CSE 2213, CSE 2215, CSE 2216, MATH 2183
-   - **Junior AI & Systems**: CSE 3811, CSE 3812, CSE 3411, CSE 3412
-   - **Data Science Core (BSDS)**: DS 1101, DS 1501, DS 1502, MATH 1151
-
-2. **Searching & Adding Courses**:
-   - Use the search bar in the left sidebar. Type course codes (`CSE 2215`, `1111`) or keywords (`DSA`, `OOP`, `AI`).
-   - Click the `+` button or course row to add it.
+1. **Searching & Adding Courses**:
+   - Use the search bar in the left sidebar or the Course-wise Faculty Explorer.
+   - Type course codes (`CSE 2215`, `1111`) or aliases (`DSA`, `OOP`, `AI`).
+   - Click any course to view all offering faculty, sections, meeting times, and rooms.
    - When you select a theory course that requires a laboratory, an emerald button `+ Add Co-requisite Lab` appears automatically.
 
 3. **Setting Preferences**:

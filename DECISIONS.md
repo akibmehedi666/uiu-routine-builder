@@ -83,8 +83,7 @@ This document tracks all design decisions, assumptions, and edge case resolution
     - Soft warm box-shadow: `0 1px 2px rgba(242,107,33,0.06), 0 4px 16px rgba(31,41,55,0.05)`
   - Contrast adherence: WCAG AA contrast (≥ 4.5:1 body text), using `orange-600` for small text and `orange-500` for primary button fills and large highlights.
   - Saturated pastel course palette in `src/utils/colors.ts`: 12 distinguishable light tints with 4px darker left border and high-contrast text within the same hue family on a white background.
-- **Preset Removal**:
-  - Presets removed completely (`src/utils/presets.ts` deleted, quick preset bar removed, empty state preset cards removed, preset logic purged from `urlSync.ts` and documentation).
+- **Preset Removal**: Removed completely (deleted preset file, sidebar quick bar, empty state cards, and all code references).
 - **Route Restructuring & Landing Page**:
   - Landing page placed at `/` with high-impact hero, static timetable mock using real sections, live metric chips (791 sections, 107 courses, 207 faculty), "How it works", 3×3 features grid, interactive faculty teaser, FAQ accordion, and footer.
   - Routine Builder moved to `/builder`.

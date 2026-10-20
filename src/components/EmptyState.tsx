@@ -1,13 +1,10 @@
 'use client';
 
 import React from 'react';
-import { COURSE_PRESETS, CoursePreset } from '../utils/presets';
 import {
-  Sparkles,
   Calendar,
   AlertTriangle,
   RotateCcw,
-  BookOpen,
   Zap,
   CheckCircle,
   HelpCircle,
@@ -18,7 +15,6 @@ interface EmptyStateProps {
   type: 'welcome' | 'conflict';
   request: SolveRequest;
   errorMessage?: string | null;
-  onApplyPreset?: (preset: CoursePreset) => void;
   onResetFilters: () => void;
 }
 
@@ -26,7 +22,6 @@ export function EmptyState({
   type,
   request,
   errorMessage,
-  onApplyPreset,
   onResetFilters,
 }: EmptyStateProps) {
   if (type === 'welcome') {
@@ -58,43 +53,6 @@ export function EmptyState({
             iCal (.ics) & PDF Export
           </span>
         </div>
-
-        {/* Quick Presets if provided */}
-        {onApplyPreset && (
-          <div className="mt-8 w-full max-w-2xl">
-            <div className="flex items-center justify-between text-xs text-text-muted mb-2 px-1">
-              <span className="font-semibold text-text-primary flex items-center gap-1.5">
-                <Sparkles className="w-4 h-4 text-orange-500" />
-                Popular Routine Presets:
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
-              {COURSE_PRESETS.map((preset) => (
-                <button
-                  key={preset.id}
-                  onClick={() => onApplyPreset(preset)}
-                  className="p-4 rounded-card bg-surface hover:bg-subtle border border-app-border hover:border-orange-400 transition-all group shadow-warm text-left"
-                >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="font-bold text-sm text-text-primary group-hover:text-orange-600 transition-colors">
-                      {preset.name}
-                    </span>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-subtle text-text-secondary border border-app-border">
-                      {preset.program}
-                    </span>
-                  </div>
-                  <p className="text-xs text-text-muted line-clamp-2">
-                    {preset.description}
-                  </p>
-                  <div className="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-orange-600 group-hover:translate-x-1 transition-transform">
-                    <span>Load Preset ({preset.courses.length} courses) →</span>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     );
   }

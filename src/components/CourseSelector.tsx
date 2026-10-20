@@ -9,7 +9,6 @@ import {
   Section,
   SolveRequest,
 } from '../types';
-import { COURSE_PRESETS, CoursePreset } from '../utils/presets';
 import {
   Search,
   Plus,
@@ -19,7 +18,6 @@ import {
   ChevronDown,
   ChevronUp,
   Sliders,
-  Sparkles,
   AlertTriangle,
   Beaker,
   X,
@@ -33,7 +31,6 @@ interface CourseSelectorProps {
   faculty: Faculty[];
   request: SolveRequest;
   onRequestChange: (newRequest: SolveRequest) => void;
-  onApplyPreset?: (preset: CoursePreset) => void;
   onOpenExplorer?: (courseCode: string) => void;
 }
 
@@ -43,7 +40,6 @@ export function CourseSelector({
   faculty,
   request,
   onRequestChange,
-  onApplyPreset,
   onOpenExplorer,
 }: CourseSelectorProps) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -300,34 +296,7 @@ export function CourseSelector({
         </div>
       )}
 
-      {/* Optional Presets Bar (removed in 9B) */}
-      {onApplyPreset && (
-        <div>
-          <div className="flex items-center justify-between text-xs text-text-muted mb-2">
-            <span className="flex items-center gap-1 font-medium text-text-primary">
-              <Sparkles className="w-3.5 h-3.5 text-orange-500" /> Quick Presets
-            </span>
-          </div>
-          <div className="grid grid-cols-2 gap-1.5">
-            {COURSE_PRESETS.map((preset) => (
-              <button
-                key={preset.id}
-                onClick={() => onApplyPreset(preset)}
-                className="text-left p-2 rounded-btn bg-subtle hover:bg-orange-50 border border-app-border hover:border-orange-400 text-xs transition-all group"
-              >
-                <div className="font-semibold text-text-primary group-hover:text-orange-600 truncate">
-                  {preset.name}
-                </div>
-                <div className="text-[10px] text-text-muted truncate">
-                  {preset.courses.length} courses
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* 2. Search & Autocomplete Input */}
+      {/* Search & Autocomplete Input */}
       <div className="relative">
         <div className="relative flex items-center">
           <Search className="w-4 h-4 absolute left-3 text-text-muted pointer-events-none" />

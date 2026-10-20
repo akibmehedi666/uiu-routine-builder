@@ -18,10 +18,9 @@ import { Timetable } from '../components/Timetable';
 import { ScheduleComparison } from '../components/ScheduleComparison';
 import { EmptyState } from '../components/EmptyState';
 import { HelpGuideModal, ShortcutsModal, FavoritesModal } from '../components/Modals';
-import { CoursePreset } from '../utils/presets';
 import { parseFromParams, serializeToParams } from '../utils/urlSync';
 import confetti from 'canvas-confetti';
-import { Loader2, Sparkles } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 const allSections = sectionsJson as unknown as Section[];
 const allCourses = coursesJson as unknown as Course[];
@@ -176,17 +175,6 @@ export default function Home() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [currentRank, results, currentSchedule, setRank]);
 
-  // Apply preset
-  const handleApplyPreset = (preset: CoursePreset) => {
-    setRequest((prev) => ({
-      ...prev,
-      selectedCourses: [...preset.courses],
-      preferredFaculty: {},
-      avoidFaculty: {},
-      lockedSections: {},
-      filterDayOff: [],
-    }));
-  };
 
   // Reset filters
   const handleResetFilters = () => {
@@ -291,7 +279,6 @@ export default function Home() {
           faculty={allFaculty}
           request={request}
           onRequestChange={setRequest}
-          onApplyPreset={handleApplyPreset}
         />
 
         {/* Right Content Area */}
@@ -301,7 +288,6 @@ export default function Home() {
             <EmptyState
               type="welcome"
               request={request}
-              onApplyPreset={handleApplyPreset}
               onResetFilters={handleResetFilters}
             />
           ) : isSolving ? (
@@ -327,7 +313,6 @@ export default function Home() {
               type="conflict"
               request={request}
               errorMessage={error}
-              onApplyPreset={handleApplyPreset}
               onResetFilters={handleResetFilters}
             />
           ) : (
