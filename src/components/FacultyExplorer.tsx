@@ -448,7 +448,7 @@ export function FacultyExplorer({
                         href={`/faculty?f=${group.facultyId}`}
                         onClick={onClose}
                         className="font-bold text-xs text-text-primary hover:text-orange-600 hover:underline transition-colors"
-                        title={`View ${group.facultyName} in faculty directory`}
+                        title={`View ${group.facultyName} in course directory`}
                       >
                         {group.facultyName}
                       </Link>
