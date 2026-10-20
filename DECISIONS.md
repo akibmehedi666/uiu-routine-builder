@@ -176,6 +176,37 @@ Following a session interruption audit:
 | **11E** | URL routing (?c=...), shared builder state sync, pure helpers in courseDirectory.ts, accessibility & unit tests | Done |
 | **11F** | Metadata, landing page teaser update, user guide documentation, tests and build verification | Done |
 
+## Decision 9: Phase 12 Search fix and Directory UI polish
+- **Search Root-Cause Analysis**:
+  - The legacy search logic in `courseDirectory.ts` used unranked continuous substring checks (`includes(term)`) against title and concatenated faculty names.
+  - For short queries like `"os"`, courses were matched against any faculty whose name contained `"os"` (e.g. `Hossain`, `Mostofa`, `Mosharraf`), flooding the results with almost all 107 courses in raw data order with zero relevance ranking.
+  - Multi-word queries required rigid exact substrings, failing queries like `"operating system"` against `"Operating Systems"` due to missing token stemming and word-order flexibility.
+- **Dedicated Pure Search Architecture (`src/lib/courseSearch.ts`)**:
+  - Single-pass search index built once (`useMemo`) indexing:
+    - Code forms: compact (`cse4509`), spaced (`cse 4509`), and raw code.
+    - Title tokens & stemmed forms (stripping trailing `'s'` so singular and plural forms match symmetrically).
+    - Auto-generated title abbreviations/initialisms (e.g., `"Operating Systems"` -> `"os"`; `"Operating Systems Laboratory"` -> `"os"`, `"osl"`; `"Data Structure and Algorithms I"` -> `"dsa"`, `"dsai"`, `"dsa1"`).
+    - Verified handwritten domain aliases (`OS`, `DSA`, `OOP`, `DBMS`, `SE`, `DLD`, `COA`, `CN`, `DS`, `BDS`, `AI`, etc.) mapped only to verified real courses in `data/courses.json`.
+    - Tokenized faculty names for each course.
+  - Token-level query normalization and token-based AND evaluation (order of words does not matter; `"database management"` and `"management database"` return identical results).
+  - Strict short-query guard: Queries of 1–3 characters only match code prefix, abbreviation/alias exact match, or title-word prefix. They explicitly forbid faculty substring or mid-word matches.
+  - Typo tolerance: For queries of $\ge 4$ characters yielding zero matches, Damerau-Levenshtein distance $\le 1$ allows adjacent character transpositions (e.g., `"opertaing"` -> `"operating"`).
+  - Relevance ranking hierarchy:
+    1. Exact code match (score 1000)
+    2. Exact alias or abbreviation match (score 800)
+    3. Code prefix (score 650)
+    4. Title prefix match (score 500)
+    5. Title word-prefix matches (score 350+)
+    6. Faculty name matches (score 200+)
+    7. Typo match (score 180)
+    - Tie-breaking defaults to natural course code order.
+- **Natural Course Code Sorting**:
+  - Replaced naive string sorting with `naturalCourseCodeSort` across directory creation, default sort, and tie-breakers. Correctly orders department prefix alphabetically (`ACT`, `BDS`, `BIO`, `CSE`), numeric parts as numbers (1110, 1111, 2215, 4509), and suffixes alphabetically.
+- **Course Directory UI Bug Fixes**:
+  - **Doubled Plus Icon**: Removed the literal `+` string inside `<span>+ Add course</span>`, rendering only the clean Lucide `Plus` SVG icon alongside `"Add course"`.
+  - **Group-by-Faculty View Toggle**: Fixed active filter accounting via `getActiveSectionFilterCount`. `groupByFaculty` is a view mode and does not increment active filters; the `"sections match active filters"` badge only renders when genuine section filters (faculty search, day, time) are active. Toggle button updated with `type="button"`, `aria-pressed`, and clear outlined (off) vs filled orange (on) styling.
+  - **Search Enhancements**: 120ms debouncing (instant on clear), match highlighting using `<mark>` elements, match reason badges (`Matches: OS`, `Matches faculty: <name>`), rich empty state with suggestion pills, inline clear button (`X`), `/` and `Escape` shortcuts, URL synchronization without resets, and preserved selected course with an out-of-results notice banner.
+
 
 
 
