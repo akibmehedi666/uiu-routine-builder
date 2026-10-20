@@ -448,7 +448,7 @@ export function searchCourses(
 
   if (qTokens.length === 0 && !qCompact) return [];
 
-  const results: CourseSearchResult[] = [];
+  let results: CourseSearchResult[] = [];
   const isShortQuery = rawQuery.length <= 3 && qTokens.length <= 1;
 
   for (const [code, entry] of index.entries()) {
@@ -649,5 +649,44 @@ export function searchCourses(
     return naturalCourseCodeSort(a.code, b.code);
   });
 
-  return results;
+  // Relevance cutoff:
+  // 1. Exact code match: if any course matches exactly (e.g. "cse 4509", "cse4509"), return ONLY exact code matches
+  const exactCodeMatches = results.filter((r) => r.matchType === 'code-exact');
+  if (exactCodeMatches.length > 0) {
+    return exactCodeMatches;
+  }
+
+  // 2. Code prefix match: if query looks like a course code prefix (e.g. "cse 45", "cse45", "cse") and code-prefix matches exist
+  const isCodeLikeQuery =
+    /^[a-z]{2,4}\s*[0-9]*$/i.test(rawQuery) || /^[0-9]+$/.test(rawQuery);
+  const codePrefixMatches = results.filter((r) => r.matchType === 'code-prefix');
+  if (isCodeLikeQuery && codePrefixMatches.length > 0) {
+    results = codePrefixMatches;
+  } else {
+    // 3. Score threshold: drop weak matches (faculty-only or typo hits) when at least one strong match exists
+    const hasStrongMatch = results.some(
+      (r) =>
+        r.matchType === 'alias-exact' ||
+        r.matchType === 'code-prefix' ||
+        r.matchType === 'title-prefix' ||
+        r.matchType === 'title-word'
+    );
+    if (hasStrongMatch) {
+      results = results.filter(
+        (r) => r.matchType !== 'faculty' && r.matchType !== 'typo' && r.score >= 350
+      );
+    }
+  }
+
+  // Deduplicate results by course code
+  const seenCodes = new Set<string>();
+  const dedupedResults: CourseSearchResult[] = [];
+  for (const r of results) {
+    if (!seenCodes.has(r.code)) {
+      seenCodes.add(r.code);
+      dedupedResults.push(r);
+    }
+  }
+
+  return dedupedResults;
 }

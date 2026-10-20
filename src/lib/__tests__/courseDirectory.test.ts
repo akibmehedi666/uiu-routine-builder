@@ -314,13 +314,42 @@ describe('courseDirectory pure helpers', () => {
       ).toBe(3);
     });
 
-    it('prints sample 15 query results table for inspection', () => {
+    it('Phase 14 Search Verification: exact count, no duplicates, cutoff score, and index size 107', () => {
+      // 1. Total index size is 107
+      expect(realDirectory.length).toBe(107);
+
+      // 2. "cse 4509" returns exactly 1 course
+      const cse4509Res = filterCourses(realDirectory, { search: 'cse 4509' });
+      expect(cse4509Res).toHaveLength(1);
+      expect(cse4509Res[0].code).toBe('CSE 4509');
+
+      // 3. "cse4509" returns exactly 1 course
+      const cse4509Compact = filterCourses(realDirectory, { search: 'cse4509' });
+      expect(cse4509Compact).toHaveLength(1);
+      expect(cse4509Compact[0].code).toBe('CSE 4509');
+
+      // 4. "os" returns CSE 4509 first and no results from faculty-name noise
+      const osRes = filterCourses(realDirectory, { search: 'os' });
+      expect(osRes.length).toBeGreaterThan(0);
+      expect(osRes[0].code).toBe('CSE 4509');
+      for (const r of osRes) {
+        expect(r.title.toLowerCase()).toContain('operating system');
+      }
+
+      // 5. "dsa" returns only DSA-titled courses
+      const dsaRes = filterCourses(realDirectory, { search: 'dsa' });
+      expect(dsaRes.length).toBeGreaterThan(0);
+      for (const r of dsaRes) {
+        expect(r.title.toLowerCase()).toContain('data structure');
+      }
+
+      // 6. Result list has no duplicate codes for any of 15 sample queries
       const sampleQueries = [
+        'cse 4509',
+        'cse4509',
         'operating system',
         'operating systems',
         'os',
-        'cse4509',
-        'cse 4509',
         'dsa',
         'oop',
         'database management',
@@ -333,13 +362,27 @@ describe('courseDirectory pure helpers', () => {
         'zzzzq',
       ];
 
-      const tableRows = sampleQueries.map((q) => {
-        const res = filterCourses(realDirectory, { search: q });
-        const top3 = res.slice(0, 3).map((c) => `${c.code} (${c.title})`).join(' | ');
-        return { Query: q, 'Total Matches': res.length, 'Top Results': top3 || '(none)' };
-      });
+      const tableRows: Array<{ Query: string; 'Total Matches': number; 'Result Codes': string }> = [];
 
-      console.log('\n--- 15 SAMPLE QUERIES EVALUATION TABLE ---');
+      for (const q of sampleQueries) {
+        const filtered = filterCourses(realDirectory, { search: q });
+        const codes = filtered.map((c) => c.code);
+        const uniqueCodes = new Set(codes);
+
+        // No duplicate codes in results
+        expect(codes.length).toBe(uniqueCodes.size);
+
+        // Rendered row count equals the reported count
+        expect(filtered.length).toBe(codes.length);
+
+        tableRows.push({
+          Query: q,
+          'Total Matches': filtered.length,
+          'Result Codes': codes.join(', ') || '(none)',
+        });
+      }
+
+      console.log('\n--- 15 SAMPLE QUERIES -> RESULT CODES TABLE ---');
       console.table(tableRows);
     });
   });

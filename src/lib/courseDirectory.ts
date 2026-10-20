@@ -6,6 +6,7 @@ import {
   naturalCourseCodeSort,
   CourseSearchIndexEntry,
 } from './courseSearch';
+import { isManualScheduleCourse } from './fixedCourses';
 
 export interface CourseDirectorySection {
   id: string;
@@ -27,6 +28,7 @@ export interface CourseDirectorySection {
   dayMask: boolean[]; // length 5 for Sat, Sun, Mon, Tue, Wed
   timeOfDay: ('Morning' | 'Midday' | 'Afternoon')[];
   fixed?: boolean;
+  manual?: boolean;
   synthetic?: boolean;
 }
 
@@ -40,6 +42,7 @@ export interface CourseDirectoryItem {
   theoryCode?: string;
   isLab: boolean;
   isFixed?: boolean;
+  isManual?: boolean;
   fixedSchedule?: string;
   pairedCourseCode?: string;
   sections: CourseDirectorySection[];
@@ -265,6 +268,7 @@ export function buildCourseDirectory(
         dayMask,
         timeOfDay: Array.from(timeOfDaySet),
         fixed: s.fixed,
+        manual: s.manual,
         synthetic: s.synthetic,
       };
     });
@@ -282,8 +286,8 @@ export function buildCourseDirectory(
         c.code.endsWith('8'));
 
     const facultyNames = Array.from(facultySet).sort();
+    const isManual = isManualScheduleCourse(c.code) || processedSections.some((s) => s.manual);
     const isFixed = processedSections.some((s) => s.fixed);
-    const fixedSchedule = isFixed ? 'Sat 11:11 AM-01:40 PM' : undefined;
 
     return {
       code: c.code,
@@ -295,7 +299,7 @@ export function buildCourseDirectory(
       theoryCode: c.theoryCode,
       isLab,
       isFixed,
-      fixedSchedule,
+      isManual,
       pairedCourseCode: c.labCode || c.theoryCode,
       sections: processedSections,
       sectionCount: processedSections.length,
@@ -350,7 +354,17 @@ export function filterCourses(
 
   const filtered = courses.filter((c) => matchAttributes(c) && resultMap.has(c.code));
 
-  return filtered
+  // Deduplicate by courseCode so search results never contain duplicate rows
+  const seenCodes = new Set<string>();
+  const dedupedFiltered: CourseDirectoryItem[] = [];
+  for (const c of filtered) {
+    if (!seenCodes.has(c.code)) {
+      seenCodes.add(c.code);
+      dedupedFiltered.push(c);
+    }
+  }
+
+  return dedupedFiltered
     .map((c) => {
       const match = resultMap.get(c.code);
       return {

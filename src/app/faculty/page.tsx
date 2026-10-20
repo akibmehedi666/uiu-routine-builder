@@ -24,6 +24,7 @@ import {
   Users,
   BookOpen,
   Lock,
+  Pencil,
 } from 'lucide-react';
 
 import sectionsJson from '../../../data/sections.json';
@@ -46,7 +47,7 @@ import {
 import { SiteNav } from '../../components/SiteNav';
 import { getCourseColor } from '../../utils/colors';
 import { formatTime24 } from '../../utils/export';
-import { applyFixedCourseOverlay, isFixedCourse } from '../../lib/fixedCourses';
+import { applyFixedCourseOverlay, isFixedCourse, isManualScheduleCourse } from '../../lib/fixedCourses';
 
 /**
  * Highlights matching search query substrings in text with a subtle orange mark
@@ -758,19 +759,21 @@ function CourseDirectoryContent() {
               filteredCourses.map((c) => {
                 const isSelected = selectedCourse?.code === c.code;
                 const hasSections = c.sectionCount > 0;
+                const isManualCourse = c.isManual || isManualScheduleCourse(c.code);
+                const canSelect = hasSections || isManualCourse;
 
                 return (
                   <button
-                    key={c.code}
+                    key={`${c.code}-${c.program}`}
                     role="option"
                     aria-selected={isSelected}
                     aria-current={isSelected ? 'true' : undefined}
-                    disabled={!hasSections}
-                    onClick={() => hasSections && handleSelectCourse(c.code)}
+                    disabled={!canSelect}
+                    onClick={() => canSelect && handleSelectCourse(c.code)}
                     className={`w-full text-left p-3 rounded-card transition-all flex flex-col gap-1 border ${
                       isSelected
                         ? 'bg-orange-50/80 border-orange-300 border-l-[3px] border-l-orange-500 shadow-2xs ring-1 ring-orange-400/20'
-                        : hasSections
+                        : canSelect
                         ? 'bg-page border-app-border hover:border-orange-200 hover:bg-subtle'
                         : 'bg-subtle/50 border-app-border/60 opacity-60 cursor-not-allowed'
                     }`}
@@ -795,16 +798,28 @@ function CourseDirectoryContent() {
 
                       {hasSections ? (
                         <div className="flex items-center gap-1 text-[11px] text-text-muted">
-                          {c.isFixed ? (
+                          {isManualCourse ? (
                             <span className="text-[10px] text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-300 font-semibold flex items-center gap-0.5">
-                              <Lock className="w-2.5 h-2.5 text-amber-600" />
-                              Fixed
+                              <Pencil className="w-2.5 h-2.5 text-amber-600" />
+                              Manual
                             </span>
                           ) : (
                             <span>
                               {c.sectionCount} sec • {c.facultyCount} fac
                             </span>
                           )}
+                          <ChevronRight
+                            className={`w-3.5 h-3.5 transition-transform ${
+                              isSelected ? 'text-orange-600 translate-x-0.5' : 'text-text-muted'
+                            }`}
+                          />
+                        </div>
+                      ) : isManualCourse ? (
+                        <div className="flex items-center gap-1 text-[11px] text-text-muted">
+                          <span className="text-[10px] text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-300 font-semibold flex items-center gap-0.5">
+                            <Pencil className="w-2.5 h-2.5 text-amber-600" />
+                            Manual
+                          </span>
                           <ChevronRight
                             className={`w-3.5 h-3.5 transition-transform ${
                               isSelected ? 'text-orange-600 translate-x-0.5' : 'text-text-muted'
@@ -957,22 +972,24 @@ function CourseDirectoryContent() {
             filteredCourses.map((c) => {
               const isExpanded = expandedMobileCodes.has(c.code);
               const hasSections = c.sectionCount > 0;
+              const isManualCourse = c.isManual || isManualScheduleCourse(c.code);
+              const canExpand = hasSections || isManualCourse;
 
               return (
                 <div
-                  key={c.code}
+                  key={`${c.code}-${c.program}`}
                   className={`border rounded-card transition-all overflow-hidden ${
                     isExpanded
                       ? 'border-orange-300 border-l-[3px] border-l-orange-500 bg-surface shadow-2xs'
-                      : hasSections
+                      : canExpand
                       ? 'border-app-border bg-surface'
                       : 'border-app-border/60 bg-subtle/50 opacity-60'
                   }`}
                 >
                   {/* Accordion Header Row */}
                   <button
-                    disabled={!hasSections}
-                    onClick={() => hasSections && handleToggleMobileAccordion(c.code)}
+                    disabled={!canExpand}
+                    onClick={() => canExpand && handleToggleMobileAccordion(c.code)}
                     aria-expanded={isExpanded}
                     className="w-full text-left p-3.5 flex items-center justify-between gap-2"
                   >
@@ -1002,8 +1019,27 @@ function CourseDirectoryContent() {
                     <div className="flex items-center gap-2 shrink-0">
                       {hasSections ? (
                         <>
-                          <span className="text-[11px] text-text-muted">
-                            {c.sectionCount} sec
+                          {isManualCourse ? (
+                            <span className="text-[10px] text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-300 font-semibold flex items-center gap-0.5">
+                              <Pencil className="w-2.5 h-2.5 text-amber-600" />
+                              Manual
+                            </span>
+                          ) : (
+                            <span className="text-[11px] text-text-muted">
+                              {c.sectionCount} sec
+                            </span>
+                          )}
+                          <ChevronDown
+                            className={`w-4 h-4 text-text-muted transition-transform duration-200 ${
+                              isExpanded ? 'rotate-180 text-orange-600' : ''
+                            }`}
+                          />
+                        </>
+                      ) : isManualCourse ? (
+                        <>
+                          <span className="text-[10px] text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-300 font-semibold flex items-center gap-0.5">
+                            <Pencil className="w-2.5 h-2.5 text-amber-600" />
+                            Manual
                           </span>
                           <ChevronDown
                             className={`w-4 h-4 text-text-muted transition-transform duration-200 ${
@@ -1018,7 +1054,7 @@ function CourseDirectoryContent() {
                   </button>
 
                   {/* Accordion Body: Section List */}
-                  {isExpanded && hasSections && (
+                  {isExpanded && canExpand && (
                     <div className="p-3 border-t border-app-border bg-page space-y-4">
                       <SelectedCourseSectionView
                         course={c}
@@ -1237,9 +1273,18 @@ function SelectedCourseSectionView({
               {course.title}
             </p>
             <div className="flex items-center gap-2 mt-1.5 text-xs text-text-muted">
-              <span>{course.sectionCount} Sections</span>
-              <span>•</span>
-              <span>{course.facultyCount} Faculty</span>
+              {course.isManual || isManualScheduleCourse(course.code) ? (
+                <span className="text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 font-semibold flex items-center gap-1">
+                  <Pencil className="w-3 h-3 text-amber-600" />
+                  Manual Schedule Course
+                </span>
+              ) : (
+                <>
+                  <span>{course.sectionCount} Sections</span>
+                  <span>•</span>
+                  <span>{course.facultyCount} Faculty</span>
+                </>
+              )}
             </div>
           </div>
 
@@ -1294,7 +1339,49 @@ function SelectedCourseSectionView({
         )}
       </div>
 
-      {/* 2. Within-Course Filters Bar */}
+      {/* If manual schedule course has no departmental sections */}
+      {course.sections.length === 0 && (course.isManual || isManualScheduleCourse(course.code)) ? (
+        <div className="p-8 text-center rounded-card bg-surface border border-dashed border-amber-300 text-xs space-y-3">
+          <div className="w-10 h-10 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center mx-auto border border-amber-200">
+            <Pencil className="w-5 h-5" />
+          </div>
+          <div className="space-y-1">
+            <h3 className="font-bold text-sm text-text-primary">Schedule set manually</h3>
+            <p className="text-text-secondary max-w-md mx-auto">
+              FYDP courses do not have fixed departmental timetable slots. In the Routine Builder, you can enter your custom section label, day, and time.
+            </p>
+          </div>
+          <Link
+            href={`/builder?course=${encodeURIComponent(course.code)}`}
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-btn bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs shadow-2xs transition-colors"
+          >
+            <span>Open in Routine Builder</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+      ) : (
+        <>
+          {/* If manual schedule course DOES have sections, offer the manual option banner */}
+          {(course.isManual || isManualScheduleCourse(course.code)) && (
+            <div className="p-3 rounded-card bg-amber-50/80 border border-amber-200 text-xs text-amber-900 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 shadow-2xs">
+              <div className="flex items-center gap-2">
+                <span className="font-bold px-1.5 py-0.5 rounded bg-amber-200 text-amber-900 text-[10px] uppercase tracking-wide">
+                  Manual Option
+                </span>
+                <span>
+                  Official departmental sections are shown below, or you can enter a custom schedule in the Routine Builder.
+                </span>
+              </div>
+              <Link
+                href={`/builder?course=${encodeURIComponent(course.code)}`}
+                className="px-2.5 py-1 rounded bg-surface hover:bg-amber-100 font-semibold text-amber-900 border border-amber-300 transition-colors shrink-0 text-[11px]"
+              >
+                Set custom schedule &rarr;
+              </Link>
+            </div>
+          )}
+
+          {/* 2. Within-Course Filters Bar */}
       <div className="p-3 rounded-card bg-surface border border-app-border shadow-2xs space-y-2 text-xs">
         <div className="flex flex-wrap items-center gap-2">
           {/* Faculty Search */}
@@ -1480,6 +1567,8 @@ function SelectedCourseSectionView({
           ))
         )}
       </div>
+        </>
+      )}
     </div>
   );
 }
