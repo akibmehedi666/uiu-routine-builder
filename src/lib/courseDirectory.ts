@@ -1,5 +1,11 @@
 import { Course, Day, DAYS_LIST, Meeting, Section, SolveRequest } from '../types';
 import { normalizeForSearch, slugifyFacultyName } from './facultyIndex';
+import {
+  buildSearchIndexFromDirectory,
+  searchCourses,
+  naturalCourseCodeSort,
+  CourseSearchIndexEntry,
+} from './courseSearch';
 
 export interface CourseDirectorySection {
   id: string;
@@ -37,6 +43,8 @@ export interface CourseDirectoryItem {
   facultyCount: number;
   facultyNames: string[];
   searchNormalized: string;
+  searchMatchDetail?: string;
+  _searchScore?: number;
 }
 
 export interface CourseFilterCriteria {
@@ -46,7 +54,7 @@ export interface CourseFilterCriteria {
   type?: 'ALL' | 'theory' | 'lab';
 }
 
-export type CourseSortOption = 'code-az' | 'title-az' | 'most-sections';
+export type CourseSortOption = 'relevance' | 'code-az' | 'title-az' | 'most-sections';
 
 export interface SectionFilterCriteria {
   facultySearch?: string;
@@ -208,7 +216,7 @@ export function buildCourseDirectory(
   }
 
   // Map each course into CourseDirectoryItem
-  return courses.map((c) => {
+  const result: CourseDirectoryItem[] = courses.map((c) => {
     const rawSections = sectionsByCourse.get(c.code) || [];
     const facultySet = new Set<string>();
 
@@ -286,18 +294,23 @@ export function buildCourseDirectory(
       searchNormalized: normalizeForSearch(`${c.code} ${c.title} ${facultyNames.join(' ')}`),
     };
   });
+
+  // Natural code sort by default: ACT, BDS, ..., CSE 1111, CSE 1112, ...
+  return result.sort((a, b) => naturalCourseCodeSort(a.code, b.code));
 }
 
 /**
- * Filter the course list based on search, program, credit, and type
+ * Filter the course list based on search, program, credit, and type.
+ * When search is provided, courses are filtered and ranked by relevance.
  */
 export function filterCourses(
   courses: CourseDirectoryItem[],
-  criteria: CourseFilterCriteria
+  criteria: CourseFilterCriteria,
+  searchIndex?: Map<string, CourseSearchIndexEntry>
 ): CourseDirectoryItem[] {
   const { search, program, credit, type } = criteria;
 
-  return courses.filter((c) => {
+  const matchAttributes = (c: CourseDirectoryItem) => {
     // 1. Program filter
     if (program && program !== 'ALL' && c.program !== program) {
       return false;
@@ -314,13 +327,33 @@ export function filterCourses(
       if (type === 'theory' && c.isLab) return false;
     }
 
-    // 4. Search query
-    if (search && !matchesCourseQuery(c, search)) {
-      return false;
-    }
-
     return true;
-  });
+  };
+
+  if (!search || !search.trim()) {
+    return courses.filter(matchAttributes);
+  }
+
+  const index = searchIndex || buildSearchIndexFromDirectory(courses);
+  const searchResults = searchCourses(search, index);
+  const resultMap = new Map(searchResults.map((r) => [r.code, r]));
+
+  const filtered = courses.filter((c) => matchAttributes(c) && resultMap.has(c.code));
+
+  return filtered
+    .map((c) => {
+      const match = resultMap.get(c.code);
+      return {
+        ...c,
+        searchMatchDetail: match?.matchDetail,
+        _searchScore: match?.score || 0,
+      };
+    })
+    .sort((a, b) => {
+      const scoreDiff = (b._searchScore || 0) - (a._searchScore || 0);
+      if (scoreDiff !== 0) return scoreDiff;
+      return naturalCourseCodeSort(a.code, b.code);
+    });
 }
 
 /**
@@ -332,14 +365,41 @@ export function sortCourses(
 ): CourseDirectoryItem[] {
   const copy = [...courses];
   switch (sortBy) {
+    case 'relevance':
+      return copy.sort((a, b) => {
+        const scoreDiff = (b._searchScore || 0) - (a._searchScore || 0);
+        if (scoreDiff !== 0) return scoreDiff;
+        return naturalCourseCodeSort(a.code, b.code);
+      });
     case 'title-az':
-      return copy.sort((a, b) => a.title.localeCompare(b.title) || a.code.localeCompare(b.code));
+      return copy.sort(
+        (a, b) => a.title.localeCompare(b.title) || naturalCourseCodeSort(a.code, b.code)
+      );
     case 'most-sections':
-      return copy.sort((a, b) => b.sectionCount - a.sectionCount || a.code.localeCompare(b.code));
+      return copy.sort(
+        (a, b) => b.sectionCount - a.sectionCount || naturalCourseCodeSort(a.code, b.code)
+      );
     case 'code-az':
     default:
-      return copy.sort((a, b) => a.code.localeCompare(b.code));
+      return copy.sort((a, b) => naturalCourseCodeSort(a.code, b.code));
   }
+}
+
+/**
+ * Computes count of active section filters.
+ * Note: groupByFaculty and sortBy are view options, NOT filters.
+ */
+export function getActiveSectionFilterCount(filters: {
+  facultySearch?: string;
+  days?: Day[];
+  timeSlots?: ('Morning' | 'Midday' | 'Afternoon')[];
+  groupByFaculty?: boolean;
+}): number {
+  return (
+    (filters.facultySearch ? 1 : 0) +
+    (filters.days?.length || 0) +
+    (filters.timeSlots?.length || 0)
+  );
 }
 
 /**
