@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import {
   Course,
   Day,
@@ -45,8 +45,15 @@ export function CourseSelector({
   const [searchTerm, setSearchTerm] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [programFilter, setProgramFilter] = useState<'ALL' | 'BSCSE' | 'BSDS'>('ALL');
-  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const [isFiltersOpen, setIsFiltersOpen] = useState(request.selectedCourses.length > 0);
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Auto-expand filters when courses are selected
+  useEffect(() => {
+    if (request.selectedCourses.length > 0) {
+      setIsFiltersOpen(true);
+    }
+  }, [request.selectedCourses.length]);
 
   // Group sections by courseCode for quick lookup
   const sectionsByCourse = useMemo(() => {
@@ -244,7 +251,7 @@ export function CourseSelector({
   };
 
   return (
-    <aside className="w-full lg:w-96 flex-shrink-0 flex flex-col space-y-4 bg-surface p-4 rounded-card border border-app-border shadow-warm">
+    <aside className="w-full flex-shrink-0 flex flex-col space-y-3.5 bg-surface p-4 rounded-card border border-app-border shadow-warm lg:sticky lg:top-[72px] lg:max-h-[calc(100vh-88px)] overflow-y-auto">
       {/* 1. Header with Credit Limit Badge */}
       <div className="flex items-center justify-between pb-3 border-b border-app-border">
         <div>

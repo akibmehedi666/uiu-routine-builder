@@ -386,7 +386,7 @@ export default function BuilderPage() {
       />
 
       {/* 2. Main Workspace Layout */}
-      <main className="flex-1 max-w-[1600px] w-full mx-auto p-4 sm:p-6 flex flex-col lg:flex-row gap-6">
+      <main className="flex-1 max-w-[1600px] w-full mx-auto px-4 sm:px-6 py-4 grid grid-cols-1 lg:grid-cols-[minmax(340px,400px)_1fr] gap-5 items-start">
         {/* Left Sidebar: Course & Faculty Selector */}
         <CourseSelector
           courses={allCourses}
