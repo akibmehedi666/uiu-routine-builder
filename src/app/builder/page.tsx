@@ -19,8 +19,19 @@ import { ScheduleComparison } from '../../components/ScheduleComparison';
 import { EmptyState } from '../../components/EmptyState';
 import { FacultyExplorer } from '../../components/FacultyExplorer';
 import { HelpGuideModal, ShortcutsModal, FavoritesModal } from '../../components/Modals';
+import { ManualScheduleModal } from '../../components/ManualScheduleModal';
 import { parseFromParams, serializeToParams } from '../../utils/urlSync';
-import { applyFixedCourseOverlay, computeFYDPClashes } from '../../lib/fixedCourses';
+import {
+  isManualScheduleCourse,
+  ManualScheduleInput,
+  applyManualCourseOverlay,
+  computeManualClashes,
+  loadManualSchedulesFromStorage,
+  saveManualSchedulesToStorage,
+  encodeManualScheduleUrl,
+  decodeManualScheduleUrl,
+} from '../../lib/fixedCourses';
+import { formatTime24 } from '../../utils/export';
 import confetti from 'canvas-confetti';
 import { Loader2 } from 'lucide-react';
 
@@ -35,10 +46,15 @@ interface SavedFavorite {
 }
 
 export default function BuilderPage() {
-  // Apply fixed course UI overlay
+  // Manual course schedule state (e.g. FYDP)
+  const [manualSchedules, setManualSchedules] = useState<Record<string, ManualScheduleInput>>({});
+  const [isManualModalOpen, setIsManualModalOpen] = useState(false);
+  const [modalCourseCode, setModalCourseCode] = useState<string | null>(null);
+
+  // Apply manual course UI overlay (keeps catalog strictly at 107 real courses)
   const { courses: effectiveCourses, sections: effectiveSections } = useMemo(
-    () => applyFixedCourseOverlay(allCourses, allSections),
-    []
+    () => applyManualCourseOverlay(allCourses, allSections, manualSchedules),
+    [manualSchedules]
   );
 
   // Solver request state
@@ -98,6 +114,7 @@ export default function BuilderPage() {
         console.warn('Failed to read builder state:', e);
       }
 
+      let fromUrl: Partial<SolveRequest> = {};
       if (window.location.search) {
         const urlParams = new URLSearchParams(window.location.search);
         const openCourse = urlParams.get('course');
@@ -105,7 +122,7 @@ export default function BuilderPage() {
           setExplorerCourseCode(openCourse);
         }
 
-        const fromUrl = parseFromParams(window.location.search);
+        fromUrl = parseFromParams(window.location.search);
         setRequest((prev) => ({
           ...prev,
           ...storedReq,
@@ -129,6 +146,29 @@ export default function BuilderPage() {
       } catch (e) {
         console.warn('Failed to read favorites:', e);
       }
+
+      // 3. Read manual schedules from storage & URL
+      const storedManual = loadManualSchedulesFromStorage();
+      let urlManual: Record<string, ManualScheduleInput> = {};
+      if (window.location.search) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const mxParam = urlParams.get('mx');
+        if (mxParam) {
+          urlManual = decodeManualScheduleUrl(mxParam);
+        }
+      }
+      const mergedManual = { ...storedManual, ...urlManual };
+      setManualSchedules(mergedManual);
+
+      // If a selected course is a manual-schedule course without schedule, prompt modal
+      const initialCourses = fromUrl.selectedCourses || storedReq.selectedCourses || [];
+      for (const c of initialCourses) {
+        if (isManualScheduleCourse(c) && !mergedManual[c]) {
+          setModalCourseCode(c);
+          setIsManualModalOpen(true);
+          break;
+        }
+      }
     }
   }, []);
 
@@ -151,13 +191,20 @@ export default function BuilderPage() {
       params.set('course', explorerCourseCode);
     }
 
+    const mxStr = encodeManualScheduleUrl(manualSchedules);
+    if (mxStr) {
+      params.set('mx', mxStr);
+    } else {
+      params.delete('mx');
+    }
+
     const queryString = params.toString();
     const newRelativePath = queryString
       ? `${window.location.pathname}?${queryString}`
       : window.location.pathname;
 
     window.history.replaceState(null, '', newRelativePath);
-  }, [request, explorerCourseCode]);
+  }, [request, explorerCourseCode, manualSchedules]);
 
   // Trigger solve on debounced request changes
   useEffect(() => {
@@ -173,19 +220,59 @@ export default function BuilderPage() {
     return () => clearTimeout(timer);
   }, [request, solve, cancel, effectiveSections]);
 
-  // Compute clash info with FYDP to show clear message if a course cannot fit around FYDP
+  // Compute active manual sections for clash detection
+  const activeManualSections = useMemo(() => {
+    return effectiveSections.filter(
+      (s) => s.manual && (request.selectedCourses || []).includes(s.courseCode)
+    );
+  }, [effectiveSections, request.selectedCourses]);
+
+  // Compute clash info with FYDP/manual courses to show clear message if a course cannot fit around FYDP
   const fydpClashes = useMemo(() => {
-    return computeFYDPClashes(request.selectedCourses || [], effectiveSections);
-  }, [request.selectedCourses, effectiveSections]);
+    return computeManualClashes(request.selectedCourses || [], allSections, activeManualSections);
+  }, [request.selectedCourses, activeManualSections]);
 
   const effectiveErrorMessage = useMemo(() => {
     for (const [code, info] of fydpClashes.entries()) {
       if (info.allSectionsClash) {
-        return `No section of ${code} fits around FYDP (Sat 11:11 AM-01:40 PM). Try removing or swapping courses.`;
+        const firstManual = activeManualSections[0];
+        const schedDesc = firstManual
+          ? firstManual.meetings
+              .map((m) => `${m.day} ${formatTime24(m.start)}–${formatTime24(m.end)}`)
+              .join(', ')
+          : 'Sat 11:11 AM-01:40 PM';
+        return `No section of ${code} fits around FYDP (${schedDesc}). Try removing or swapping courses.`;
       }
     }
     return error;
-  }, [fydpClashes, error]);
+  }, [fydpClashes, error, activeManualSections]);
+
+  const openManualModal = (code: string) => {
+    setModalCourseCode(code);
+    setIsManualModalOpen(true);
+  };
+
+  const handleSaveManualSchedule = (sched: ManualScheduleInput) => {
+    setManualSchedules((prev) => {
+      const next = { ...prev, [sched.courseCode]: sched };
+      saveManualSchedulesToStorage(next);
+      return next;
+    });
+    setIsManualModalOpen(false);
+    setModalCourseCode(null);
+  };
+
+  const handleCancelManualSchedule = () => {
+    setIsManualModalOpen(false);
+    if (modalCourseCode && !manualSchedules[modalCourseCode]) {
+      // Cancel on first add removes course from selection
+      setRequest((prev) => ({
+        ...prev,
+        selectedCourses: (prev.selectedCourses || []).filter((c) => c !== modalCourseCode),
+      }));
+    }
+    setModalCourseCode(null);
+  };
 
   // Helper to uniquely identify a schedule by its section IDs
   const getScheduleId = (schedule: ScheduleResult) =>
@@ -440,6 +527,8 @@ export default function BuilderPage() {
           request={request}
           onRequestChange={setRequest}
           onOpenExplorer={(code) => setExplorerCourseCode(code)}
+          manualSchedules={manualSchedules}
+          onOpenManualScheduleModal={openManualModal}
         />
 
         {/* Right Content Area */}
@@ -543,6 +632,16 @@ export default function BuilderPage() {
         favorites={favorites}
         onSelectFavorite={handleSelectFavorite}
         onRemoveFavorite={handleRemoveFavorite}
+      />
+
+      <ManualScheduleModal
+        isOpen={isManualModalOpen}
+        courseCode={modalCourseCode || ''}
+        courseTitle={effectiveCourses.find((c) => c.code === modalCourseCode)?.title}
+        initialSchedule={modalCourseCode ? manualSchedules[modalCourseCode] : null}
+        sections={allSections}
+        onSave={handleSaveManualSchedule}
+        onCancel={handleCancelManualSchedule}
       />
     </div>
   );

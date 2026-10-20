@@ -14,6 +14,7 @@ import {
   Calendar as CalendarIcon,
   Printer,
   Lock,
+  Pencil,
   AlertCircle,
   Clock,
   MapPin,
@@ -394,16 +395,22 @@ export function Timetable({
                           </span>
                           <span
                             className={`text-[10px] font-bold px-1.5 py-0.2 rounded border flex items-center gap-0.5 ${
-                              section.fixed || isFixedCourse(section.courseCode)
+                              section.manual || section.fixed || isFixedCourse(section.courseCode)
                                 ? 'bg-amber-100/90 text-amber-900 border-amber-300'
                                 : color.badgeBg
                             }`}
                           >
-                            {(section.fixed || isFixedCourse(section.courseCode)) && (
+                            {section.manual ? (
+                              <Pencil className="w-2.5 h-2.5 text-amber-700 shrink-0" />
+                            ) : (section.fixed || isFixedCourse(section.courseCode)) ? (
                               <Lock className="w-2.5 h-2.5 text-amber-700 shrink-0" />
-                            )}
+                            ) : null}
                             <span>
-                              {section.fixed || isFixedCourse(section.courseCode) ? 'Fixed • ' : ''}Sec {section.section}
+                              {section.manual
+                                ? 'Manual • '
+                                : section.fixed || isFixedCourse(section.courseCode)
+                                ? 'Fixed • '
+                                : ''}Sec {section.section}
                             </span>
                           </span>
                         </div>

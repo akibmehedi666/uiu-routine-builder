@@ -24,6 +24,7 @@ export interface Section {
   tentative: boolean;
   fixed?: boolean;
   synthetic?: boolean;
+  manual?: boolean;
 }
 
 export interface Course {

@@ -22,11 +22,14 @@ import {
   Beaker,
   X,
   RotateCcw,
+  Pencil,
 } from 'lucide-react';
 import { formatTime24 } from '../utils/export';
 import {
   isFixedCourse,
-  getFixedScheduleDescription,
+  isManualScheduleCourse,
+  ManualScheduleInput,
+  formatManualScheduleDescription,
   computeFYDPClashes,
 } from '../lib/fixedCourses';
 
@@ -37,6 +40,8 @@ interface CourseSelectorProps {
   request: SolveRequest;
   onRequestChange: (newRequest: SolveRequest) => void;
   onOpenExplorer?: (courseCode: string) => void;
+  manualSchedules?: Record<string, ManualScheduleInput>;
+  onOpenManualScheduleModal?: (courseCode: string) => void;
 }
 
 export function CourseSelector({
@@ -46,6 +51,8 @@ export function CourseSelector({
   request,
   onRequestChange,
   onOpenExplorer,
+  manualSchedules = {},
+  onOpenManualScheduleModal,
 }: CourseSelectorProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -151,6 +158,10 @@ export function CourseSelector({
     });
     setSearchTerm('');
     setIsSearchOpen(false);
+
+    if (isManualScheduleCourse(courseCode) && !manualSchedules[courseCode]) {
+      onOpenManualScheduleModal?.(courseCode);
+    }
   };
 
   const handleRemoveCourse = (courseCode: string) => {
@@ -404,10 +415,10 @@ export function CourseSelector({
                         <span className="text-[10px] px-1.5 py-0.2 rounded bg-subtle text-text-muted">
                           {course.program}
                         </span>
-                        {isFixedCourse(course.code) && (
+                        {isManualScheduleCourse(course.code) && (
                           <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-50 text-amber-800 border border-amber-300 font-semibold flex items-center gap-0.5">
-                            <Lock className="w-2.5 h-2.5 text-amber-600" />
-                            Fixed
+                            <Pencil className="w-2.5 h-2.5 text-amber-600" />
+                            Manual
                           </span>
                         )}
                       </div>
@@ -497,10 +508,12 @@ export function CourseSelector({
                       <span className="text-[10px] px-1.5 py-0.2 rounded bg-subtle text-text-secondary border border-app-border font-medium">
                         {course.credit} cr
                       </span>
-                      {isFixed ? (
+                      {isManualScheduleCourse(course.code) ? (
                         <span className="text-[10px] text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 font-semibold flex items-center gap-1">
-                          <Lock className="w-2.5 h-2.5 text-amber-600" />
-                          Fixed: Sat 11:11 AM-01:40 PM
+                          <Pencil className="w-2.5 h-2.5 text-amber-600" />
+                          {manualSchedules[course.code]
+                            ? `Manual: ${manualSchedules[course.code].days.join('-')} ${manualSchedules[course.code].startTime}-${manualSchedules[course.code].endTime}, Sec ${manualSchedules[course.code].section}`
+                            : 'Manual: Schedule required'}
                         </span>
                       ) : (
                         <span className="text-[10px] text-text-muted">
@@ -514,15 +527,26 @@ export function CourseSelector({
                   </div>
 
                   <div className="flex items-center gap-1">
-                    {onOpenExplorer && !isFixed && (
+                    {isManualScheduleCourse(course.code) ? (
                       <button
-                        onClick={() => onOpenExplorer(course.code)}
-                        className="p-1 text-text-muted hover:text-orange-600 hover:bg-subtle rounded-btn transition-colors text-[10px]"
-                        title="Faculty & sections explorer"
-                        aria-label={`Explore faculty for ${course.code}`}
+                        onClick={() => onOpenManualScheduleModal?.(course.code)}
+                        className="px-1.5 py-0.5 text-amber-800 hover:text-amber-950 bg-amber-100/70 hover:bg-amber-100 border border-amber-300 rounded-btn transition-colors text-[10px] font-semibold flex items-center gap-1"
+                        title="Edit schedule"
                       >
-                        Sections
+                        <Pencil className="w-2.5 h-2.5" />
+                        <span>Edit</span>
                       </button>
+                    ) : (
+                      onOpenExplorer && (
+                        <button
+                          onClick={() => onOpenExplorer(course.code)}
+                          className="p-1 text-text-muted hover:text-orange-600 hover:bg-subtle rounded-btn transition-colors text-[10px]"
+                          title="Faculty & sections explorer"
+                          aria-label={`Explore faculty for ${course.code}`}
+                        >
+                          Sections
+                        </button>
+                      )
                     )}
                     <button
                       onClick={() => handleRemoveCourse(course.code)}
@@ -546,16 +570,25 @@ export function CourseSelector({
                   </button>
                 )}
 
-                {/* Fixed Course Info Row vs Configurable Lock/Faculty */}
-                {isFixed ? (
+                {/* Manual Course Info Row vs Configurable Lock/Faculty */}
+                {isManualScheduleCourse(course.code) ? (
                   <div className="text-[11px] text-text-muted bg-amber-50/50 p-2 rounded border border-amber-200/60 flex items-center justify-between">
                     <span className="flex items-center gap-1.5 font-medium text-text-secondary">
-                      <Lock className="w-3 h-3 text-amber-600" />
-                      <span>Section I • Saturday 11:11 AM–01:40 PM</span>
+                      <Pencil className="w-3 h-3 text-amber-600" />
+                      <span>
+                        {manualSchedules[course.code]
+                          ? `Manual: ${formatManualScheduleDescription(manualSchedules[course.code])}`
+                          : 'No schedule configured yet'}
+                      </span>
                     </span>
-                    <span className="font-semibold text-amber-800 text-[10px] px-1.5 py-0.2 rounded bg-amber-100 border border-amber-200">
-                      Fixed Schedule
-                    </span>
+                    <button
+                      type="button"
+                      onClick={() => onOpenManualScheduleModal?.(course.code)}
+                      className="font-semibold text-amber-900 text-[10px] px-2 py-0.5 rounded bg-amber-100 hover:bg-amber-200 border border-amber-300 transition-colors flex items-center gap-1"
+                    >
+                      <Pencil className="w-2.5 h-2.5" />
+                      <span>{manualSchedules[course.code] ? 'Edit' : 'Set Schedule'}</span>
+                    </button>
                   </div>
                 ) : (
                   <>
@@ -652,11 +685,15 @@ export function CourseSelector({
                     {(() => {
                       const clashInfo = fydpClashes.get(course.code);
                       if (!clashInfo) return null;
+                      const activeManual = Object.values(manualSchedules)[0];
+                      const clashLabel = activeManual
+                        ? `${activeManual.days.join(', ')} ${activeManual.startTime}–${activeManual.endTime}`
+                        : 'Sat 11:11 AM-01:40 PM';
                       if (clashInfo.allSectionsClash) {
                         return (
                           <div className="p-2 rounded-btn bg-danger-bg border border-danger/30 text-danger text-xs flex items-start gap-1.5 font-medium">
                             <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
-                            <span>No section of {course.code} fits around FYDP (Sat 11:11 AM-01:40 PM)</span>
+                            <span>No section of {course.code} fits around FYDP ({clashLabel})</span>
                           </div>
                         );
                       }
@@ -685,7 +722,7 @@ export function CourseSelector({
                           </div>
                           {isExpanded && (
                             <div className="mt-1.5 p-2 rounded bg-subtle border border-app-border text-[10px] space-y-1">
-                              <div className="font-semibold text-text-muted">Clashes with Saturday 11:11 AM–01:40 PM:</div>
+                              <div className="font-semibold text-text-muted">Clashes with FYDP ({clashLabel}):</div>
                               {clashInfo.hiddenSections.map((h) => (
                                 <div key={h.section} className="flex items-center justify-between text-text-secondary">
                                   <span className="font-bold text-text-primary">Sec {h.section}</span>
