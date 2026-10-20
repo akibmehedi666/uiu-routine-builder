@@ -22,6 +22,8 @@ export interface Section {
   faculty: string[];
   facultyIds: string[];
   tentative: boolean;
+  fixed?: boolean;
+  synthetic?: boolean;
 }
 
 export interface Course {

@@ -26,6 +26,8 @@ export interface CourseDirectorySection {
   activeDays: Day[];
   dayMask: boolean[]; // length 5 for Sat, Sun, Mon, Tue, Wed
   timeOfDay: ('Morning' | 'Midday' | 'Afternoon')[];
+  fixed?: boolean;
+  synthetic?: boolean;
 }
 
 export interface CourseDirectoryItem {
@@ -37,6 +39,8 @@ export interface CourseDirectoryItem {
   labCode?: string;
   theoryCode?: string;
   isLab: boolean;
+  isFixed?: boolean;
+  fixedSchedule?: string;
   pairedCourseCode?: string;
   sections: CourseDirectorySection[];
   sectionCount: number;
@@ -260,6 +264,8 @@ export function buildCourseDirectory(
         activeDays,
         dayMask,
         timeOfDay: Array.from(timeOfDaySet),
+        fixed: s.fixed,
+        synthetic: s.synthetic,
       };
     });
 
@@ -276,6 +282,8 @@ export function buildCourseDirectory(
         c.code.endsWith('8'));
 
     const facultyNames = Array.from(facultySet).sort();
+    const isFixed = processedSections.some((s) => s.fixed);
+    const fixedSchedule = isFixed ? 'Sat 11:11 AM-01:40 PM' : undefined;
 
     return {
       code: c.code,
@@ -286,6 +294,8 @@ export function buildCourseDirectory(
       labCode: c.labCode,
       theoryCode: c.theoryCode,
       isLab,
+      isFixed,
+      fixedSchedule,
       pairedCourseCode: c.labCode || c.theoryCode,
       sections: processedSections,
       sectionCount: processedSections.length,
