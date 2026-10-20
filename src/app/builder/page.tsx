@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import sectionsJson from '../../../data/sections.json';
 import coursesJson from '../../../data/courses.json';
 import facultyJson from '../../../data/faculty.json';
@@ -20,6 +20,7 @@ import { EmptyState } from '../../components/EmptyState';
 import { FacultyExplorer } from '../../components/FacultyExplorer';
 import { HelpGuideModal, ShortcutsModal, FavoritesModal } from '../../components/Modals';
 import { parseFromParams, serializeToParams } from '../../utils/urlSync';
+import { applyFixedCourseOverlay, computeFYDPClashes } from '../../lib/fixedCourses';
 import confetti from 'canvas-confetti';
 import { Loader2 } from 'lucide-react';
 
@@ -34,6 +35,12 @@ interface SavedFavorite {
 }
 
 export default function BuilderPage() {
+  // Apply fixed course UI overlay
+  const { courses: effectiveCourses, sections: effectiveSections } = useMemo(
+    () => applyFixedCourseOverlay(allCourses, allSections),
+    []
+  );
+
   // Solver request state
   const [request, setRequest] = useState<SolveRequest>({
     selectedCourses: [],
@@ -160,11 +167,25 @@ export default function BuilderPage() {
     }
 
     const timer = setTimeout(() => {
-      solve(request, allSections);
+      solve(request, effectiveSections);
     }, 120);
 
     return () => clearTimeout(timer);
-  }, [request, solve, cancel]);
+  }, [request, solve, cancel, effectiveSections]);
+
+  // Compute clash info with FYDP to show clear message if a course cannot fit around FYDP
+  const fydpClashes = useMemo(() => {
+    return computeFYDPClashes(request.selectedCourses || [], effectiveSections);
+  }, [request.selectedCourses, effectiveSections]);
+
+  const effectiveErrorMessage = useMemo(() => {
+    for (const [code, info] of fydpClashes.entries()) {
+      if (info.allSectionsClash) {
+        return `No section of ${code} fits around FYDP (Sat 11:11 AM-01:40 PM). Try removing or swapping courses.`;
+      }
+    }
+    return error;
+  }, [fydpClashes, error]);
 
   // Helper to uniquely identify a schedule by its section IDs
   const getScheduleId = (schedule: ScheduleResult) =>
@@ -413,8 +434,8 @@ export default function BuilderPage() {
       <main className="flex-1 max-w-[1600px] w-full mx-auto px-4 sm:px-6 py-4 grid grid-cols-1 lg:grid-cols-[minmax(340px,400px)_1fr] gap-5 items-start">
         {/* Left Sidebar: Course & Faculty Selector */}
         <CourseSelector
-          courses={allCourses}
-          sections={allSections}
+          courses={effectiveCourses}
+          sections={effectiveSections}
           faculty={allFaculty}
           request={request}
           onRequestChange={setRequest}
@@ -452,7 +473,7 @@ export default function BuilderPage() {
             <EmptyState
               type="conflict"
               request={request}
-              errorMessage={error}
+              errorMessage={effectiveErrorMessage}
               onResetFilters={handleResetFilters}
             />
           ) : (
@@ -491,8 +512,8 @@ export default function BuilderPage() {
             setExplorerCourseCode(null);
             setPreviewSection(null);
           }}
-          courses={allCourses}
-          sections={allSections}
+          courses={effectiveCourses}
+          sections={effectiveSections}
           selectedCourses={request.selectedCourses}
           preferredFaculty={request.preferredFaculty}
           avoidFaculty={request.avoidFaculty}

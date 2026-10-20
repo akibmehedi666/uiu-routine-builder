@@ -23,6 +23,7 @@ import {
   UserX,
   Users,
   BookOpen,
+  Lock,
 } from 'lucide-react';
 
 import sectionsJson from '../../../data/sections.json';
@@ -45,6 +46,7 @@ import {
 import { SiteNav } from '../../components/SiteNav';
 import { getCourseColor } from '../../utils/colors';
 import { formatTime24 } from '../../utils/export';
+import { applyFixedCourseOverlay, isFixedCourse } from '../../lib/fixedCourses';
 
 /**
  * Highlights matching search query substrings in text with a subtle orange mark
@@ -102,10 +104,15 @@ function CourseDirectoryContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // 1. Build course directory index once
-  const courseDirectory = useMemo(
-    () => buildCourseDirectory(allCourses, allSections),
+  // 1. Build course directory index with fixed courses overlay
+  const { courses: effectiveCourses, sections: effectiveSections } = useMemo(
+    () => applyFixedCourseOverlay(allCourses, allSections),
     []
+  );
+
+  const courseDirectory = useMemo(
+    () => buildCourseDirectory(effectiveCourses, effectiveSections),
+    [effectiveCourses, effectiveSections]
   );
 
   // 2. Global Toolbar filter state
@@ -788,9 +795,16 @@ function CourseDirectoryContent() {
 
                       {hasSections ? (
                         <div className="flex items-center gap-1 text-[11px] text-text-muted">
-                          <span>
-                            {c.sectionCount} sec • {c.facultyCount} fac
-                          </span>
+                          {c.isFixed ? (
+                            <span className="text-[10px] text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-300 font-semibold flex items-center gap-0.5">
+                              <Lock className="w-2.5 h-2.5 text-amber-600" />
+                              Fixed
+                            </span>
+                          ) : (
+                            <span>
+                              {c.sectionCount} sec • {c.facultyCount} fac
+                            </span>
+                          )}
                           <ChevronRight
                             className={`w-3.5 h-3.5 transition-transform ${
                               isSelected ? 'text-orange-600 translate-x-0.5' : 'text-text-muted'
@@ -1532,6 +1546,13 @@ function SectionRowItem({
               {section.section}
             </span>
 
+            {(section.fixed || isFixedCourse(courseCode)) && (
+              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-300 flex items-center gap-1">
+                <Lock className="w-2.5 h-2.5 text-amber-600" />
+                Fixed schedule
+              </span>
+            )}
+
             {/* Clickable Faculty Name opens cross-reference popover */}
             <button
               onClick={(e) => onOpenFacultyPopover(section.primaryFaculty, courseCode, e)}
@@ -1555,7 +1576,7 @@ function SectionRowItem({
                 key={idx}
                 className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-page border border-app-border text-text-secondary whitespace-nowrap"
               >
-                <Clock className="w-3 h-3 text-orange-500 shrink-0" />
+                <Clock className="w-3.5 h-3.5 text-orange-500 shrink-0" />
                 <span className="hidden sm:inline">
                   {DAY_FULL_NAMES[m.day as Day] || m.day}
                 </span>
@@ -1602,35 +1623,41 @@ function SectionRowItem({
         </div>
 
         {/* Prefer & Avoid Action Buttons */}
-        <div className="flex items-center gap-1.5">
-          <button
-            onClick={() => onTogglePreference('prefer', courseCode, section.primaryFacultyId)}
-            aria-label={`Prefer faculty ${section.primaryFaculty} for ${courseCode}`}
-            title="Prefer this faculty in routine builder scoring"
-            className={`px-2.5 py-1 rounded text-xs font-semibold flex items-center gap-1 transition-colors ${
-              isPreferred
-                ? 'bg-success text-white shadow-2xs'
-                : 'bg-page text-text-secondary hover:text-success hover:bg-subtle border border-app-border'
-            }`}
-          >
-            <UserCheck className="w-3.5 h-3.5" />
-            <span>Prefer{isPreferred ? ' ✓' : ''}</span>
-          </button>
+        {section.fixed || isFixedCourse(courseCode) ? (
+          <span className="text-[11px] text-text-muted italic px-2 py-1 bg-subtle rounded border border-app-border">
+            Fixed schedule
+          </span>
+        ) : (
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => onTogglePreference('prefer', courseCode, section.primaryFacultyId)}
+              aria-label={`Prefer faculty ${section.primaryFaculty} for ${courseCode}`}
+              title="Prefer this faculty in routine builder scoring"
+              className={`px-2.5 py-1 rounded text-xs font-semibold flex items-center gap-1 transition-colors ${
+                isPreferred
+                  ? 'bg-success text-white shadow-2xs'
+                  : 'bg-page text-text-secondary hover:text-success hover:bg-subtle border border-app-border'
+              }`}
+            >
+              <UserCheck className="w-3.5 h-3.5" />
+              <span>Prefer{isPreferred ? ' ✓' : ''}</span>
+            </button>
 
-          <button
-            onClick={() => onTogglePreference('avoid', courseCode, section.primaryFacultyId)}
-            aria-label={`Avoid faculty ${section.primaryFaculty} for ${courseCode}`}
-            title="Avoid this faculty in routine builder scoring"
-            className={`px-2.5 py-1 rounded text-xs font-semibold flex items-center gap-1 transition-colors ${
-              isAvoided
-                ? 'bg-danger text-white shadow-2xs'
-                : 'bg-page text-text-secondary hover:text-danger hover:bg-subtle border border-app-border'
-            }`}
-          >
-            <UserX className="w-3.5 h-3.5" />
-            <span>Avoid{isAvoided ? ' ✓' : ''}</span>
-          </button>
-        </div>
+            <button
+              onClick={() => onTogglePreference('avoid', courseCode, section.primaryFacultyId)}
+              aria-label={`Avoid faculty ${section.primaryFaculty} for ${courseCode}`}
+              title="Avoid this faculty in routine builder scoring"
+              className={`px-2.5 py-1 rounded text-xs font-semibold flex items-center gap-1 transition-colors ${
+                isAvoided
+                  ? 'bg-danger text-white shadow-2xs'
+                  : 'bg-page text-text-secondary hover:text-danger hover:bg-subtle border border-app-border'
+              }`}
+            >
+              <UserX className="w-3.5 h-3.5" />
+              <span>Avoid{isAvoided ? ' ✓' : ''}</span>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

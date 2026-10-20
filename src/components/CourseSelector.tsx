@@ -24,6 +24,11 @@ import {
   RotateCcw,
 } from 'lucide-react';
 import { formatTime24 } from '../utils/export';
+import {
+  isFixedCourse,
+  getFixedScheduleDescription,
+  computeFYDPClashes,
+} from '../lib/fixedCourses';
 
 interface CourseSelectorProps {
   courses: Course[];
@@ -47,6 +52,19 @@ export function CourseSelector({
   const [programFilter, setProgramFilter] = useState<'ALL' | 'BSCSE' | 'BSDS'>('ALL');
   const [isFiltersOpen, setIsFiltersOpen] = useState(request.selectedCourses.length > 0);
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Track courses that have "Hidden by FYDP" expanded
+  const [expandedClashes, setExpandedClashes] = useState<Set<string>>(new Set());
+
+  // Clashes between non-FYDP courses and active FYDP courses
+  const fydpClashes = useMemo(() => {
+    return computeFYDPClashes(request.selectedCourses || [], sections);
+  }, [request.selectedCourses, sections]);
+
+  // Check if multiple FYDP courses selected
+  const selectedFYDPCourses = useMemo(() => {
+    return (request.selectedCourses || []).filter((code) => isFixedCourse(code));
+  }, [request.selectedCourses]);
 
   // Auto-expand filters when courses are selected
   useEffect(() => {
@@ -386,6 +404,12 @@ export function CourseSelector({
                         <span className="text-[10px] px-1.5 py-0.2 rounded bg-subtle text-text-muted">
                           {course.program}
                         </span>
+                        {isFixedCourse(course.code) && (
+                          <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-50 text-amber-800 border border-amber-300 font-semibold flex items-center gap-0.5">
+                            <Lock className="w-2.5 h-2.5 text-amber-600" />
+                            Fixed
+                          </span>
+                        )}
                       </div>
                       <div className="text-[11px] text-text-muted truncate">
                         {course.title}
@@ -413,6 +437,13 @@ export function CourseSelector({
 
       {/* 3. Selected Courses List */}
       <div className="space-y-2.5 max-h-[380px] overflow-y-auto pr-1">
+        {selectedFYDPCourses.length > 1 && (
+          <div className="p-2.5 rounded-btn bg-amber-50 border border-amber-300 text-amber-800 text-xs flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 flex-shrink-0 text-amber-600" />
+            <span>FYDP courses usually run one at a time; check UCAM.</span>
+          </div>
+        )}
+
         {selectedCourseObjs.length === 0 ? (
           <div className="p-6 text-center border border-dashed border-app-border rounded-card text-text-muted text-xs">
             No courses selected yet.
@@ -421,6 +452,7 @@ export function CourseSelector({
           </div>
         ) : (
           selectedCourseObjs.map((course) => {
+            const isFixed = isFixedCourse(course.code);
             const courseSections = sectionsByCourse.get(course.code) || [];
             const lockedSecId = request.lockedSections?.[course.code] || '';
             const preferredFids = request.preferredFaculty?.[course.code] || [];
@@ -442,6 +474,7 @@ export function CourseSelector({
 
             // Has paired lab not yet selected?
             const canAddLab =
+              !isFixed &&
               course.hasLab &&
               course.labCode &&
               !request.selectedCourses.includes(course.labCode);
@@ -464,9 +497,16 @@ export function CourseSelector({
                       <span className="text-[10px] px-1.5 py-0.2 rounded bg-subtle text-text-secondary border border-app-border font-medium">
                         {course.credit} cr
                       </span>
-                      <span className="text-[10px] text-text-muted">
-                        ({courseSections.length} secs)
-                      </span>
+                      {isFixed ? (
+                        <span className="text-[10px] text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 font-semibold flex items-center gap-1">
+                          <Lock className="w-2.5 h-2.5 text-amber-600" />
+                          Fixed: Sat 11:11 AM-01:40 PM
+                        </span>
+                      ) : (
+                        <span className="text-[10px] text-text-muted">
+                          ({courseSections.length} secs)
+                        </span>
+                      )}
                     </div>
                     <div className="text-[11px] text-text-secondary font-medium line-clamp-1">
                       {course.title}
@@ -474,7 +514,7 @@ export function CourseSelector({
                   </div>
 
                   <div className="flex items-center gap-1">
-                    {onOpenExplorer && (
+                    {onOpenExplorer && !isFixed && (
                       <button
                         onClick={() => onOpenExplorer(course.code)}
                         className="p-1 text-text-muted hover:text-orange-600 hover:bg-subtle rounded-btn transition-colors text-[10px]"
@@ -506,93 +546,158 @@ export function CourseSelector({
                   </button>
                 )}
 
-                {/* Section Lock Dropdown */}
-                <div className="flex items-center gap-2 text-xs">
-                  <span className="text-text-muted flex items-center gap-1 text-[11px]">
-                    {lockedSecId ? (
-                      <Lock className="w-3 h-3 text-orange-500" />
-                    ) : (
-                      <Unlock className="w-3 h-3 text-text-muted" />
-                    )}
-                    Lock:
-                  </span>
-                  <select
-                    value={lockedSecId}
-                    onChange={(e) => handleLockSection(course.code, e.target.value)}
-                    className="flex-1 bg-subtle border border-app-border rounded-btn py-1 px-2 text-[11px] text-text-primary focus:outline-none focus:ring-1 focus:ring-orange-400"
-                  >
-                    <option value="">Any Section ({courseSections.length} available)</option>
-                    {courseSections.map((s) => (
-                      <option key={s.id} value={s.id}>
-                        Sec {s.section} — {s.meetings.map((m) => `${m.day} ${formatTime24(m.start)}`).join(', ')} ({s.faculty.join(', ')})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Faculty Preferences */}
-                {facultyStats.size > 0 && (
-                  <details className="text-[11px] group/details">
-                    <summary className="cursor-pointer text-text-muted hover:text-text-primary select-none flex items-center justify-between py-1">
-                      <span>
-                        Faculty Preference{' '}
-                        {preferredFids.length > 0 && (
-                          <span className="text-success font-semibold">
-                            ({preferredFids.length} pref)
-                          </span>
+                {/* Fixed Course Info Row vs Configurable Lock/Faculty */}
+                {isFixed ? (
+                  <div className="text-[11px] text-text-muted bg-amber-50/50 p-2 rounded border border-amber-200/60 flex items-center justify-between">
+                    <span className="flex items-center gap-1.5 font-medium text-text-secondary">
+                      <Lock className="w-3 h-3 text-amber-600" />
+                      <span>Section I • Saturday 11:11 AM–01:40 PM</span>
+                    </span>
+                    <span className="font-semibold text-amber-800 text-[10px] px-1.5 py-0.2 rounded bg-amber-100 border border-amber-200">
+                      Fixed Schedule
+                    </span>
+                  </div>
+                ) : (
+                  <>
+                    {/* Section Lock Dropdown */}
+                    <div className="flex items-center gap-2 text-xs">
+                      <span className="text-text-muted flex items-center gap-1 text-[11px]">
+                        {lockedSecId ? (
+                          <Lock className="w-3 h-3 text-orange-500" />
+                        ) : (
+                          <Unlock className="w-3 h-3 text-text-muted" />
                         )}
-                        {avoidFids.length > 0 && (
-                          <span className="text-danger font-semibold">
-                            ({avoidFids.length} avoid)
-                          </span>
-                        )}
+                        Lock:
                       </span>
-                      <ChevronDown className="w-3 h-3 group-open/details:rotate-180 transition-transform" />
-                    </summary>
+                      <select
+                        value={lockedSecId}
+                        onChange={(e) => handleLockSection(course.code, e.target.value)}
+                        className="flex-1 bg-subtle border border-app-border rounded-btn py-1 px-2 text-[11px] text-text-primary focus:outline-none focus:ring-1 focus:ring-orange-400"
+                      >
+                        <option value="">Any Section ({courseSections.length} available)</option>
+                        {courseSections.map((s) => (
+                          <option key={s.id} value={s.id}>
+                            Sec {s.section} — {s.meetings.map((m) => `${m.day} ${formatTime24(m.start)}`).join(', ')} ({s.faculty.join(', ')})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
 
-                    <div className="pt-1.5 space-y-1">
-                      {Array.from(facultyStats.values()).map(({ faculty: f, count }) => {
-                        const isPref = preferredFids.includes(f.id);
-                        const isAvoid = avoidFids.includes(f.id);
+                    {/* Faculty Preferences */}
+                    {facultyStats.size > 0 && (
+                      <details className="text-[11px] group/details">
+                        <summary className="cursor-pointer text-text-muted hover:text-text-primary select-none flex items-center justify-between py-1">
+                          <span>
+                            Faculty Preference{' '}
+                            {preferredFids.length > 0 && (
+                              <span className="text-success font-semibold">
+                                ({preferredFids.length} pref)
+                              </span>
+                            )}
+                            {avoidFids.length > 0 && (
+                              <span className="text-danger font-semibold">
+                                ({avoidFids.length} avoid)
+                              </span>
+                            )}
+                          </span>
+                          <ChevronDown className="w-3 h-3 group-open/details:rotate-180 transition-transform" />
+                        </summary>
 
+                        <div className="pt-1.5 space-y-1">
+                          {Array.from(facultyStats.values()).map(({ faculty: f, count }) => {
+                            const isPref = preferredFids.includes(f.id);
+                            const isAvoid = avoidFids.includes(f.id);
+
+                            return (
+                              <div
+                                key={f.id}
+                                className="flex items-center justify-between p-1.5 rounded-btn bg-subtle border border-app-border"
+                              >
+                                <span className="text-text-primary truncate max-w-[170px]" title={f.name}>
+                                  {f.name} <span className="text-text-muted">({count} sec)</span>
+                                </span>
+
+                                <div className="flex items-center gap-1">
+                                  <button
+                                    onClick={() => toggleFacultyPref(course.code, f.id)}
+                                    className={`px-1.5 py-0.5 rounded text-[10px] font-medium transition-colors ${
+                                      isPref
+                                        ? 'bg-success text-white font-bold'
+                                        : 'bg-surface text-text-secondary hover:text-success border border-app-border'
+                                    }`}
+                                    title="Prefer this faculty"
+                                  >
+                                    Prefer
+                                  </button>
+                                  <button
+                                    onClick={() => toggleFacultyAvoid(course.code, f.id)}
+                                    className={`px-1.5 py-0.5 rounded text-[10px] font-medium transition-colors ${
+                                      isAvoid
+                                        ? 'bg-danger text-white font-bold'
+                                        : 'bg-surface text-text-secondary hover:text-danger border border-app-border'
+                                    }`}
+                                    title="Avoid this faculty"
+                                  >
+                                    Avoid
+                                  </button>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </details>
+                    )}
+
+                    {/* FYDP Clash Information (if course has clashing sections) */}
+                    {(() => {
+                      const clashInfo = fydpClashes.get(course.code);
+                      if (!clashInfo) return null;
+                      if (clashInfo.allSectionsClash) {
                         return (
-                          <div
-                            key={f.id}
-                            className="flex items-center justify-between p-1.5 rounded-btn bg-subtle border border-app-border"
-                          >
-                            <span className="text-text-primary truncate max-w-[170px]" title={f.name}>
-                              {f.name} <span className="text-text-muted">({count} sec)</span>
-                            </span>
-
-                            <div className="flex items-center gap-1">
-                              <button
-                                onClick={() => toggleFacultyPref(course.code, f.id)}
-                                className={`px-1.5 py-0.5 rounded text-[10px] font-medium transition-colors ${
-                                  isPref
-                                    ? 'bg-success text-white font-bold'
-                                    : 'bg-surface text-text-secondary hover:text-success border border-app-border'
-                                }`}
-                                title="Prefer this faculty"
-                              >
-                                Prefer
-                              </button>
-                              <button
-                                onClick={() => toggleFacultyAvoid(course.code, f.id)}
-                                className={`px-1.5 py-0.5 rounded text-[10px] font-medium transition-colors ${
-                                  isAvoid
-                                    ? 'bg-danger text-white font-bold'
-                                    : 'bg-surface text-text-secondary hover:text-danger border border-app-border'
-                                }`}
-                                title="Avoid this faculty"
-                              >
-                                Avoid
-                              </button>
-                            </div>
+                          <div className="p-2 rounded-btn bg-danger-bg border border-danger/30 text-danger text-xs flex items-start gap-1.5 font-medium">
+                            <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
+                            <span>No section of {course.code} fits around FYDP (Sat 11:11 AM-01:40 PM)</span>
                           </div>
                         );
-                      })}
-                    </div>
-                  </details>
+                      }
+                      const isExpanded = expandedClashes.has(course.code);
+                      return (
+                        <div className="pt-1.5 border-t border-app-border text-[11px]">
+                          <div className="flex items-center justify-between text-text-secondary">
+                            <span className="font-medium">
+                              <strong className="text-text-primary">{clashInfo.availableSections} of {clashInfo.totalSections}</strong> sections available
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setExpandedClashes((prev) => {
+                                  const next = new Set(prev);
+                                  if (next.has(course.code)) next.delete(course.code);
+                                  else next.add(course.code);
+                                  return next;
+                                });
+                              }}
+                              className="text-text-muted hover:text-text-primary underline flex items-center gap-0.5 text-[10px]"
+                            >
+                              <span>Hidden by FYDP ({clashInfo.hiddenSections.length})</span>
+                              <ChevronDown className={`w-3 h-3 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                            </button>
+                          </div>
+                          {isExpanded && (
+                            <div className="mt-1.5 p-2 rounded bg-subtle border border-app-border text-[10px] space-y-1">
+                              <div className="font-semibold text-text-muted">Clashes with Saturday 11:11 AM–01:40 PM:</div>
+                              {clashInfo.hiddenSections.map((h) => (
+                                <div key={h.section} className="flex items-center justify-between text-text-secondary">
+                                  <span className="font-bold text-text-primary">Sec {h.section}</span>
+                                  <span>{h.clashTimes}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
+                  </>
                 )}
               </div>
             );

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Day, DAYS_LIST, Meeting, ScheduleResult, Section } from '../types';
 import { getCourseColor } from '../utils/colors';
 import { formatTime24, exportToText, exportToICS, downloadFile } from '../utils/export';
+import { isFixedCourse } from '../lib/fixedCourses';
 import {
   ChevronLeft,
   ChevronRight,
@@ -392,9 +393,18 @@ export function Timetable({
                             {section.courseCode}
                           </span>
                           <span
-                            className={`text-[10px] font-bold px-1.5 py-0.2 rounded border ${color.badgeBg}`}
+                            className={`text-[10px] font-bold px-1.5 py-0.2 rounded border flex items-center gap-0.5 ${
+                              section.fixed || isFixedCourse(section.courseCode)
+                                ? 'bg-amber-100/90 text-amber-900 border-amber-300'
+                                : color.badgeBg
+                            }`}
                           >
-                            Sec {section.section}
+                            {(section.fixed || isFixedCourse(section.courseCode)) && (
+                              <Lock className="w-2.5 h-2.5 text-amber-700 shrink-0" />
+                            )}
+                            <span>
+                              {section.fixed || isFixedCourse(section.courseCode) ? 'Fixed • ' : ''}Sec {section.section}
+                            </span>
                           </span>
                         </div>
 
