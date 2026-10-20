@@ -36,6 +36,7 @@ import {
   groupSectionsByFaculty,
   getFacultyCrossReferences,
   generateCopyCourseSections,
+  getActiveSectionFilterCount,
   CourseDirectoryItem,
   CourseDirectorySection,
   CourseSortOption,
@@ -44,6 +45,43 @@ import {
 import { SiteNav } from '../../components/SiteNav';
 import { getCourseColor } from '../../utils/colors';
 import { formatTime24 } from '../../utils/export';
+
+/**
+ * Highlights matching search query substrings in text with a subtle orange mark
+ */
+function HighlightText({ text, query }: { text: string; query: string }) {
+  if (!query || !query.trim()) return <>{text}</>;
+  const tokens = query
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .split(/\s+/)
+    .filter((t) => t.length > 0);
+  if (tokens.length === 0) return <>{text}</>;
+
+  const escaped = tokens
+    .map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+    .join('|');
+  const regex = new RegExp(`(${escaped})`, 'gi');
+  const parts = text.split(regex);
+
+  return (
+    <>
+      {parts.map((part, i) =>
+        regex.test(part) ? (
+          <mark
+            key={i}
+            className="bg-orange-100 text-orange-950 font-semibold rounded px-0.5"
+          >
+            {part}
+          </mark>
+        ) : (
+          part
+        )
+      )}
+    </>
+  );
+}
 
 const allSections = sectionsJson as unknown as Section[];
 const allCourses = coursesJson as unknown as Course[];
@@ -71,11 +109,39 @@ function CourseDirectoryContent() {
   );
 
   // 2. Global Toolbar filter state
+  const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
   const [programFilter, setProgramFilter] = useState<'ALL' | 'BSCSE' | 'BSDS'>('ALL');
   const [creditFilter, setCreditFilter] = useState<'ALL' | number>('ALL');
   const [typeFilter, setTypeFilter] = useState<'ALL' | 'theory' | 'lab'>('ALL');
-  const [sortBy, setSortBy] = useState<CourseSortOption>('code-az');
+  const [userSortBy, setUserSortBy] = useState<CourseSortOption>('code-az');
+
+  // When search query is active, default sort is relevance
+  const effectiveSortBy: CourseSortOption = searchQuery.trim()
+    ? (userSortBy === 'code-az' ? 'relevance' : userSortBy)
+    : userSortBy;
+
+  const handleSearchChange = (val: string) => {
+    setSearchInput(val);
+    if (!val || !val.trim()) {
+      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+      setSearchQuery('');
+      return;
+    }
+    if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+    debounceTimerRef.current = setTimeout(() => {
+      setSearchQuery(val.trim());
+    }, 120);
+  };
+
+  const handleClearSearch = () => {
+    if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+    setSearchInput('');
+    setSearchQuery('');
+  };
 
   // Selected / Expanded course code
   const [selectedCourseCode, setSelectedCourseCode] = useState<string | null>(null);
@@ -147,6 +213,7 @@ function CourseDirectoryContent() {
   useEffect(() => {
     const qParam = searchParams.get('q');
     if (qParam) {
+      setSearchInput(qParam);
       setSearchQuery(qParam);
     }
 
@@ -160,6 +227,7 @@ function CourseDirectoryContent() {
       for (const s of allSections) {
         const idx = s.facultyIds?.indexOf(facultyParam);
         if (idx !== undefined && idx >= 0 && s.faculty?.[idx]) {
+          setSearchInput(s.faculty[idx]);
           setSearchQuery(s.faculty[idx]);
           break;
         }
@@ -185,6 +253,20 @@ function CourseDirectoryContent() {
       }
     }
   }, [searchParams, courseDirectory, selectedCourseCode]);
+
+  // Sync URL search query (?q=...) without navigation reset
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    if (searchQuery.trim()) {
+      params.set('q', searchQuery.trim());
+    } else {
+      params.delete('q');
+    }
+    const newQueryStr = params.toString();
+    const newUrl = newQueryStr ? `?${newQueryStr}` : window.location.pathname;
+    window.history.replaceState(null, '', newUrl);
+  }, [searchQuery]);
 
   // Handle selecting a course on desktop
   const handleSelectCourse = (code: string) => {
@@ -219,25 +301,26 @@ function CourseDirectoryContent() {
       credit: creditFilter,
       type: typeFilter,
     });
-    return sortCourses(filtered, sortBy);
-  }, [courseDirectory, searchQuery, programFilter, creditFilter, typeFilter, sortBy]);
+    return sortCourses(filtered, effectiveSortBy);
+  }, [courseDirectory, searchQuery, programFilter, creditFilter, typeFilter, effectiveSortBy]);
 
   // Active filter count for main toolbar
   const activeToolbarFiltersCount =
     (searchQuery ? 1 : 0) +
     (programFilter !== 'ALL' ? 1 : 0) +
     (creditFilter !== 'ALL' ? 1 : 0) +
-    (typeFilter !== 'ALL' ? 1 : 0);
+    (typeFilter !== 'ALL' ? 1 : 0) +
+    (userSortBy !== 'code-az' ? 1 : 0);
 
   const clearToolbarFilters = () => {
-    setSearchQuery('');
+    handleClearSearch();
     setProgramFilter('ALL');
     setCreditFilter('ALL');
     setTypeFilter('ALL');
-    setSortBy('code-az');
+    setUserSortBy('code-az');
   };
 
-  // Selected course object
+  // Selected course object: Keep selectedCourse even if filtered out, with a note
   const selectedCourse = useMemo(() => {
     if (!selectedCourseCode) return filteredCourses[0] || null;
     return (
@@ -246,6 +329,12 @@ function CourseDirectoryContent() {
       null
     );
   }, [courseDirectory, selectedCourseCode, filteredCourses]);
+
+  // Check if selected course is in current search results
+  const isSelectedInResults = useMemo(() => {
+    if (!selectedCourse) return true;
+    return filteredCourses.some((c) => c.code === selectedCourse.code);
+  }, [selectedCourse, filteredCourses]);
 
   // Filtered sections for selected course
   const filteredSections = useMemo(() => {
@@ -264,19 +353,18 @@ function CourseDirectoryContent() {
     return groupSectionsByFaculty(filteredSections);
   }, [groupByFaculty, filteredSections]);
 
-  const activeSectionFiltersCount =
-    (facultySearch ? 1 : 0) +
-    dayFilter.length +
-    timeFilter.length +
-    (sectionSortBy !== 'section' ? 1 : 0) +
-    (groupByFaculty ? 1 : 0);
+  // Active section filter count: ONLY counts real filters (facultySearch, days, timeSlots).
+  // Note: groupByFaculty and sectionSortBy are view modes and do NOT count as active filters.
+  const activeSectionFiltersCount = getActiveSectionFilterCount({
+    facultySearch,
+    days: dayFilter,
+    timeSlots: timeFilter,
+  });
 
   const clearSectionFilters = () => {
     setFacultySearch('');
     setDayFilter([]);
     setTimeFilter([]);
-    setSectionSortBy('section');
-    setGroupByFaculty(false);
   };
 
   // Prefer / Avoid toggle handler
@@ -398,7 +486,18 @@ function CourseDirectoryContent() {
     };
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        setPopoverFaculty(null);
+        if (popoverFaculty) {
+          setPopoverFaculty(null);
+        } else if (searchInput) {
+          handleClearSearch();
+          searchInputRef.current?.blur();
+        }
+      } else if (
+        e.key === '/' &&
+        !['INPUT', 'SELECT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName || '')
+      ) {
+        e.preventDefault();
+        searchInputRef.current?.focus();
       } else if (
         !['INPUT', 'SELECT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName || '')
       ) {
@@ -479,15 +578,16 @@ function CourseDirectoryContent() {
             <div className="relative flex-1 min-w-[240px]">
               <Search className="w-4 h-4 text-text-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
+                ref={searchInputRef}
                 type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search course code, title, faculty, or alias (e.g. DSA, OOP)..."
+                value={searchInput}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                placeholder="Search course code, title, faculty, or alias (e.g. DSA, OOP)... (Press '/' to focus)"
                 className="w-full pl-9 pr-8 py-1.5 text-xs rounded-btn border border-app-border bg-page placeholder:text-text-muted text-text-primary focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
               />
-              {searchQuery && (
+              {searchInput && (
                 <button
-                  onClick={() => setSearchQuery('')}
+                  onClick={handleClearSearch}
                   className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary"
                   aria-label="Clear course search"
                 >
@@ -551,10 +651,13 @@ function CourseDirectoryContent() {
             <div className="flex items-center gap-1 ml-auto">
               <span className="text-[11px] text-text-muted">Sort:</span>
               <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as CourseSortOption)}
-                className="py-1 px-2 text-[11px] rounded border border-app-border bg-page text-text-primary focus:outline-none focus:border-orange-500"
+                value={effectiveSortBy}
+                onChange={(e) => setUserSortBy(e.target.value as CourseSortOption)}
+                className="py-1 px-2 text-[11px] rounded border border-app-border bg-page text-text-primary focus:outline-none focus:border-orange-500 font-medium"
               >
+                {searchQuery.trim() && (
+                  <option value="relevance">Relevance</option>
+                )}
                 <option value="code-az">Code A–Z</option>
                 <option value="title-az">Title A–Z</option>
                 <option value="most-sections">Most Sections</option>
@@ -564,9 +667,16 @@ function CourseDirectoryContent() {
 
           {/* Count & Reset Row */}
           <div className="flex items-center justify-between text-[11px] text-text-muted pt-0.5">
-            <span>
-              Showing <strong className="text-text-primary font-bold">{filteredCourses.length}</strong> of{' '}
-              {courseDirectory.length} courses
+            <span className="flex items-center gap-2">
+              <span>
+                Showing <strong className="text-text-primary font-bold">{filteredCourses.length}</strong> of{' '}
+                {courseDirectory.length} courses
+              </span>
+              {searchQuery.trim() && effectiveSortBy === 'relevance' && (
+                <span className="px-1.5 py-0.2 rounded bg-orange-50 text-orange-700 border border-orange-200 text-[10px] font-semibold">
+                  Sorted by relevance
+                </span>
+              )}
             </span>
 
             {activeToolbarFiltersCount > 0 && (
@@ -594,15 +704,48 @@ function CourseDirectoryContent() {
             className="bg-surface border border-app-border rounded-card shadow-warm p-2.5 space-y-1.5 sticky top-36 max-h-[calc(100vh-160px)] overflow-y-auto focus:outline-none"
           >
             {filteredCourses.length === 0 ? (
-              <div className="p-8 text-center rounded-card border border-dashed border-app-border text-xs text-text-muted space-y-2">
-                <p>No courses match your filter criteria.</p>
-                <button
-                  onClick={clearToolbarFilters}
-                  className="px-3 py-1.5 rounded-btn bg-surface hover:bg-subtle text-text-primary font-semibold border border-app-border shadow-2xs inline-flex items-center gap-1.5"
-                >
-                  <RotateCcw className="w-3 h-3 text-orange-500" />
-                  <span>Clear filters</span>
-                </button>
+              <div className="p-6 text-center rounded-card border border-dashed border-app-border text-xs text-text-muted space-y-3">
+                <p className="font-semibold text-text-primary text-sm">
+                  No courses match &ldquo;{searchInput || searchQuery}&rdquo;
+                </p>
+                <div className="text-[11px] text-text-muted space-y-1.5">
+                  <p>Suggestions:</p>
+                  <div className="flex flex-wrap justify-center gap-1.5 pt-0.5">
+                    <button
+                      onClick={() => handleSearchChange('CSE 4509')}
+                      className="px-2 py-0.5 rounded bg-subtle border border-app-border text-text-secondary hover:text-orange-600 hover:border-orange-300 transition-colors"
+                    >
+                      CSE 4509
+                    </button>
+                    <button
+                      onClick={() => handleSearchChange('operating systems')}
+                      className="px-2 py-0.5 rounded bg-subtle border border-app-border text-text-secondary hover:text-orange-600 hover:border-orange-300 transition-colors"
+                    >
+                      operating systems
+                    </button>
+                    <button
+                      onClick={() => handleSearchChange('OS')}
+                      className="px-2 py-0.5 rounded bg-subtle border border-app-border text-text-secondary hover:text-orange-600 hover:border-orange-300 transition-colors"
+                    >
+                      OS
+                    </button>
+                    <button
+                      onClick={() => handleSearchChange('DSA')}
+                      className="px-2 py-0.5 rounded bg-subtle border border-app-border text-text-secondary hover:text-orange-600 hover:border-orange-300 transition-colors"
+                    >
+                      DSA
+                    </button>
+                  </div>
+                </div>
+                <div className="pt-1">
+                  <button
+                    onClick={clearToolbarFilters}
+                    className="px-3.5 py-1.5 rounded-btn bg-surface hover:bg-subtle text-text-primary font-semibold border border-app-border shadow-2xs inline-flex items-center gap-1.5"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5 text-orange-500" />
+                    <span>Clear search</span>
+                  </button>
+                </div>
               </div>
             ) : (
               filteredCourses.map((c) => {
@@ -633,7 +776,7 @@ function CourseDirectoryContent() {
                             isSelected ? 'text-orange-950 font-extrabold' : 'text-text-primary'
                           }`}
                         >
-                          {c.code}
+                          <HighlightText text={c.code} query={searchQuery} />
                         </span>
                         <span className="px-1.5 py-0.2 rounded text-[10px] font-bold bg-subtle text-text-muted border border-app-border">
                           {c.credit} Cr
@@ -659,10 +802,18 @@ function CourseDirectoryContent() {
                       )}
                     </div>
 
-                    {/* Course Title */}
+                    {/* Course Title with Highlighting */}
                     <div className="text-xs text-text-secondary line-clamp-1 font-medium">
-                      {c.title}
+                      <HighlightText text={c.title} query={searchQuery} />
                     </div>
+
+                    {/* Match reason (Matches: OS or Matches faculty: ...) */}
+                    {c.searchMatchDetail && (
+                      <div className="text-[10.5px] text-orange-700 font-semibold flex items-center gap-1 pt-0.5">
+                        <Sparkles className="w-2.5 h-2.5 shrink-0" />
+                        <span>{c.searchMatchDetail}</span>
+                      </div>
+                    )}
 
                     {/* Paired Lab / Theory chip if present */}
                     {c.pairedCourseCode && (
@@ -689,6 +840,26 @@ function CourseDirectoryContent() {
 
           {/* RIGHT PANE: Selected Course Section List */}
           <section aria-label="Course Sections" className="space-y-4">
+            {/* Note banner if selected course is not in current search results */}
+            {selectedCourse && !isSelectedInResults && filteredCourses.length > 0 && (
+              <div className="p-3 rounded-card bg-amber-50 border border-amber-200 text-xs text-amber-900 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 shadow-2xs animate-in fade-in">
+                <div className="flex items-center gap-2">
+                  <span className="font-bold px-1.5 py-0.5 rounded bg-amber-200 text-amber-900 text-[10px] uppercase tracking-wide">
+                    Notice
+                  </span>
+                  <span>
+                    <strong>{selectedCourse.code}</strong> is not in current search results.
+                  </span>
+                </div>
+                <button
+                  onClick={() => handleSelectCourse(filteredCourses[0].code)}
+                  className="px-2.5 py-1 rounded bg-surface hover:bg-amber-100 font-semibold text-amber-900 border border-amber-300 transition-colors shrink-0 text-[11px]"
+                >
+                  View top result: {filteredCourses[0].code} &rarr;
+                </button>
+              </div>
+            )}
+
             {selectedCourse ? (
               <SelectedCourseSectionView
                 course={selectedCourse}
@@ -725,15 +896,48 @@ function CourseDirectoryContent() {
         {/* Mobile Accordion View (<768px, UCAM style inline expansion) */}
         <div className="md:hidden space-y-2">
           {filteredCourses.length === 0 ? (
-            <div className="p-8 text-center rounded-card border border-dashed border-app-border text-xs text-text-muted space-y-2">
-              <p>No courses match your filter criteria.</p>
-              <button
-                onClick={clearToolbarFilters}
-                className="px-3 py-1.5 rounded-btn bg-surface hover:bg-subtle text-text-primary font-semibold border border-app-border shadow-2xs inline-flex items-center gap-1.5"
-              >
-                <RotateCcw className="w-3 h-3 text-orange-500" />
-                <span>Clear filters</span>
-              </button>
+            <div className="p-6 text-center rounded-card border border-dashed border-app-border text-xs text-text-muted space-y-3">
+              <p className="font-semibold text-text-primary text-sm">
+                No courses match &ldquo;{searchInput || searchQuery}&rdquo;
+              </p>
+              <div className="text-[11px] text-text-muted space-y-1.5">
+                <p>Suggestions:</p>
+                <div className="flex flex-wrap justify-center gap-1.5 pt-0.5">
+                  <button
+                    onClick={() => handleSearchChange('CSE 4509')}
+                    className="px-2 py-0.5 rounded bg-subtle border border-app-border text-text-secondary hover:text-orange-600 hover:border-orange-300 transition-colors"
+                  >
+                    CSE 4509
+                  </button>
+                  <button
+                    onClick={() => handleSearchChange('operating systems')}
+                    className="px-2 py-0.5 rounded bg-subtle border border-app-border text-text-secondary hover:text-orange-600 hover:border-orange-300 transition-colors"
+                  >
+                    operating systems
+                  </button>
+                  <button
+                    onClick={() => handleSearchChange('OS')}
+                    className="px-2 py-0.5 rounded bg-subtle border border-app-border text-text-secondary hover:text-orange-600 hover:border-orange-300 transition-colors"
+                  >
+                    OS
+                  </button>
+                  <button
+                    onClick={() => handleSearchChange('DSA')}
+                    className="px-2 py-0.5 rounded bg-subtle border border-app-border text-text-secondary hover:text-orange-600 hover:border-orange-300 transition-colors"
+                  >
+                    DSA
+                  </button>
+                </div>
+              </div>
+              <div className="pt-1">
+                <button
+                  onClick={clearToolbarFilters}
+                  className="px-3.5 py-1.5 rounded-btn bg-surface hover:bg-subtle text-text-primary font-semibold border border-app-border shadow-2xs inline-flex items-center gap-1.5"
+                >
+                  <RotateCcw className="w-3.5 h-3.5 text-orange-500" />
+                  <span>Clear search</span>
+                </button>
+              </div>
             </div>
           ) : (
             filteredCourses.map((c) => {
@@ -761,7 +965,7 @@ function CourseDirectoryContent() {
                     <div className="space-y-1 min-w-0">
                       <div className="flex items-center gap-1.5 flex-wrap">
                         <span className="font-extrabold text-sm text-text-primary">
-                          {c.code}
+                          <HighlightText text={c.code} query={searchQuery} />
                         </span>
                         <span className="px-1.5 py-0.2 rounded text-[10px] font-bold bg-subtle text-text-muted border border-app-border">
                           {c.credit} Cr
@@ -771,8 +975,14 @@ function CourseDirectoryContent() {
                         </span>
                       </div>
                       <div className="text-xs text-text-secondary truncate font-medium">
-                        {c.title}
+                        <HighlightText text={c.title} query={searchQuery} />
                       </div>
+                      {c.searchMatchDetail && (
+                        <div className="text-[10px] text-orange-700 font-semibold flex items-center gap-1 pt-0.5">
+                          <Sparkles className="w-2.5 h-2.5 shrink-0" />
+                          <span>{c.searchMatchDetail}</span>
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex items-center gap-2 shrink-0">
@@ -1037,7 +1247,7 @@ function SelectedCourseSectionView({
               ) : (
                 <>
                   <Plus className="w-3.5 h-3.5" />
-                  <span>+ Add course</span>
+                  <span>Add course</span>
                 </>
               )}
             </button>
@@ -1167,14 +1377,16 @@ function SelectedCourseSectionView({
 
           {/* Group-by-Faculty Toggle */}
           <button
+            type="button"
+            aria-pressed={groupByFaculty}
             onClick={() => onGroupByFacultyChange(!groupByFaculty)}
-            className={`px-2 py-1 rounded text-xs font-semibold flex items-center gap-1 transition-colors ${
+            className={`px-2.5 py-1 rounded text-xs font-semibold flex items-center gap-1.5 transition-all ${
               groupByFaculty
-                ? 'bg-orange-500 text-white shadow-2xs'
-                : 'bg-page text-text-secondary hover:bg-subtle border border-app-border'
+                ? 'bg-orange-500 text-white shadow-2xs border border-orange-600'
+                : 'bg-surface text-text-secondary hover:bg-subtle border border-app-border'
             }`}
           >
-            <Users className="w-3 h-3" />
+            <Users className="w-3.5 h-3.5" />
             <span>Group by Faculty</span>
           </button>
         </div>
