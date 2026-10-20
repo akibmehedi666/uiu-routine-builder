@@ -165,6 +165,38 @@ function FacultyDirectoryContent() {
     );
   }, [facultyIndex, selectedSlug, filteredFaculty]);
 
+  // Global keyboard shortcuts (Arrows to navigate faculty, Esc to close mobile sheet)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (['INPUT', 'SELECT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName || '')) {
+        return;
+      }
+      if (e.key === 'Escape') {
+        if (mobileDetailOpen) {
+          e.preventDefault();
+          setMobileDetailOpen(false);
+        }
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        const currentIdx = filteredFaculty.findIndex((f) => f.id === selectedFaculty?.id);
+        const nextIdx = Math.min(filteredFaculty.length - 1, currentIdx + 1);
+        if (filteredFaculty[nextIdx]) {
+          handleSelectFaculty(filteredFaculty[nextIdx].id);
+        }
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        const currentIdx = filteredFaculty.findIndex((f) => f.id === selectedFaculty?.id);
+        const prevIdx = Math.max(0, currentIdx - 1);
+        if (filteredFaculty[prevIdx]) {
+          handleSelectFaculty(filteredFaculty[prevIdx].id);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [mobileDetailOpen, filteredFaculty, selectedFaculty]);
+
   // List of unique courses for course dropdown filter
   const uniqueCourses = useMemo(() => {
     const set = new Set<string>();
@@ -577,6 +609,7 @@ function FacultyDirectoryContent() {
                     <button
                       role="option"
                       aria-selected={isSelected}
+                      aria-current={isSelected ? 'true' : undefined}
                       onClick={() => handleSelectFaculty(fac.id)}
                       className={`w-full text-left p-2.5 rounded-card transition-all flex flex-col gap-1.5 border ${
                         isSelected

@@ -8,7 +8,8 @@ Welcome to the **UIU Routine Builder** for the United International University (
 
 - **Landing Page (`/`)**: Overview of features, "How It Works", live dataset statistics (791 sections, 107 courses, 207 faculty), sample schedule mock, and FAQ.
 - **Routine Builder (`/builder`)**: The full workspace featuring real-time Web Worker solver, course search, faculty preferences, interactive weekly timetable, and section comparison.
-- **Direct Query Links**: Any links with search parameters (e.g. `/?courses=CSE+1111`) automatically forward to `/builder` preserving all parameters.
+- **Faculty Directory (`/faculty`)**: Searchable index of all 207 faculty members across BSCSE and BSDS. View per-faculty weekly timetables (Sat–Wed, 08:30–16:30), course groupings, section schedules with room numbers, and configure preferences that sync directly with the builder.
+- **Direct Query Links**: Any links with search parameters (e.g. `/?courses=CSE+1111`) automatically forward to `/builder` preserving all parameters. Shareable links for specific teachers are available via `/faculty?f=<slug>`.
 
 ---
 
@@ -39,6 +40,27 @@ Welcome to the **UIU Routine Builder** for the United International University (
    - Use the `◀ Previous` and `Next ▶` buttons (or `←` / `→` arrow keys) to cycle through the top 50 ranked conflict-free routines.
    - The score pill (e.g., `98/100`) reveals the weighted breakdown on hover.
    - Use the **Schedule Comparison & Diff** table to see exactly which sections change between Rank 1, 2, and 3.
+
+---
+
+## Dedicated Faculty Directory (`/faculty`)
+
+The Faculty Directory provides a bird's-eye view of every instructor's workload, weekly hours, and course distribution:
+
+1. **Browsing & Search**:
+   - Live search by faculty name or course code.
+   - Filter by program (`BSCSE`, `BSDS`), course dropdown, day chips (`Sat`–`Wed`), or time brackets (`Morning`, `Midday`, `Afternoon`).
+   - Alphabetical jump bar (A–Z) on desktop for rapid navigation.
+   - Keyboard accessibility: Navigate list items using `↑` and `↓` arrow keys, press `Enter` to select, and `Esc` to dismiss mobile details.
+
+2. **Per-Faculty Timetable**:
+   - Visual 5-day grid (Sat–Wed, 08:30–16:30) color-coded by course.
+   - Automatically detects and flags any overlapping section assignments in published routine data.
+
+3. **Synchronized Preferences**:
+   - Toggle **"Prefer"** or **"Avoid"** directly on any course taught by the faculty. If the course isn't already in your routine builder picks, it is automatically added with an instant toast notification.
+   - Click **"Open in builder"** to open `/builder` with the faculty member preferred for all courses they teach.
+   - Click **"Copy schedule"** to copy a clean plain-text summary of all sections, meeting days, hours, and rooms.
 
 ---
 

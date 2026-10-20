@@ -102,14 +102,39 @@ This document tracks all design decisions, assumptions, and edge case resolution
 
 ## Decision 7: Phase 10 Dedicated Faculty Directory & Cross-Navigation
 - **Shared Site Navigation (`<SiteNav />`)**:
-  - Unified across `/`, `/builder`, and `/faculty` with brand mark, term badge, active item highlight (orange text with 2px underline), and responsive hamburger menu.
-  - Builder retains its compact 56px (`h-14`) height while incorporating links to `/` and `/faculty`.
+  - Unified across `/`, `/builder`, and `/faculty` with brand mark, term badge, active item highlight (orange text with 2px underline), and responsive hamburger drawer.
+  - Landing navbar includes "Faculty" between "Features" and "FAQ", replacing the former anchor jump to the teaser section.
+  - Builder navbar incorporates the "Faculty" link while preserving its compact 56px (`h-14`) bar, shortcuts, guide, and saved favorites.
+  - Header subtitles standardized to `"Dept. of CSE & Data Science"` across all pages.
 - **Dedicated Faculty Directory (`/faculty`)**:
-  - Two-pane layout on desktop (max 1400px): left sticky searchable/filterable faculty list with letter jump bar (A–Z), right pane for selected faculty details.
-  - Faculty details view: live weekly timetable showing this faculty's sections in matching course colors, sections grouped by course with room and time, direct "Prefer" / "Avoid" toggles, and "Copy schedule".
-  - Shareable routing: `/faculty?f=<slug>` using deterministic slugs normalized from faculty name with numerical collision resolution.
-  - Preference state synchronization: Preferences set in `/faculty` immediately persist and sync with `/builder` and the slide-over course explorer.
-- **Cross-Linking**:
-  - In the course Faculty Explorer panel, clicking a faculty name routes to `/faculty?f=<slug>` while maintaining current course selection.
-  - Zero modifications to solver core, worker, or extracted data files.
+  - Two-pane layout on desktop (max 1400px): left sticky searchable/filterable faculty list with letter jump bar (A–Z) for >60 entries; right pane for selected faculty details.
+  - Mobile layout: List-first presentation with animated full-screen sheet for faculty details, complete with back button and Escape key dismissal.
+  - Real fields only: Relies exclusively on fields present in `sections.json`, `courses.json`, and `faculty.json`. No seat counts, ratings, emails, photos, or invented initials are displayed.
+  - Faculty details view:
+    - Weekly timetable (Sat–Wed, 08:30–16:30) with course color coding matching the builder.
+    - Overlapping section detection: Checks for self-overlapping meeting slots for the same instructor on the same day and displays an alert notice with warning indicators.
+    - Sections grouped by course with room numbers, meeting times, credit counts, and tentative badges.
+    - "Add course" button, "Prefer" / "Avoid" toggles, "Copy schedule" plain text export, and "Course explorer" linking to `/builder?course=<code>`.
+    - "Open in builder" button linking to `/builder?courses=...&pref=...` using the existing URL query string format.
+- **Routing & Slug Collision Resolution**:
+  - URLs support shareable deep-linking via `/faculty?f=<slug>`.
+  - Deterministic slugs are generated via `slugifyFacultyName` (lowercase, alphanumeric characters and hyphens).
+  - Collisions are resolved deterministically by tracking occurrences and appending counters (`-2`, `-3`), ensuring persistent, collision-free URLs.
+  - Browser back and forward buttons update selected faculty seamlessly via Next.js router and `useSearchParams`.
+- **Faculty Name Normalization & Quality Review**:
+  - Search queries normalize text by stripping accents, punctuation, and extra whitespace, allowing queries like "sajjad hossain" to match both "Md. Sajjad Hossain" and "Sajjad Hossain".
+  - Data files (`data/faculty.json`, `data/sections.json`) remain strictly untouched.
+  - Anomalies and near-duplicates (e.g. `Md. Sajjad Hossain` vs `Sajjad Hossain`, `Md. Asadujjaman` vs `Md. Asaduzzaman`, acronym `RaAN`, unassigned `TBA`) are documented in [`docs/faculty-name-notes.md`](file:///c:/Users/USER/Desktop/section%20selection/docs/faculty-name-notes.md).
+- **Single Source of Truth Preference Synchronization**:
+  - Prefer/Avoid toggles on `/faculty` update a shared storage cache (`sessionStorage` and `localStorage`).
+  - When returning to `/builder` or opening the slide-over Course Explorer, changes are immediately reflected without desynchronization.
+  - Toggling preference on an unselected course auto-adds the course with an informative toast notification.
+- **Cross-Linking Course Explorer Panel**:
+  - The existing slide-over Faculty Explorer panel remains completely unchanged in layout and behavior, with faculty names now linking to `/faculty?f=<slug>`.
+- **Copy & Section Spacing Fixes**:
+  - Removed internal development label ("NEW IN PHASE 9") from landing page teaser.
+  - Stripped "Caption:" prefix from teaser preview.
+  - Tightened landing teaser section padding to `py-10 md:py-16` (approx. 40–48px mobile, 64px desktop).
+  - Cleaned user-facing copy: zero mentions of development phases in `src/` and `docs/user-guide.md`.
+
 
