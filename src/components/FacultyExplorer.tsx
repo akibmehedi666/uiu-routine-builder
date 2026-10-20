@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
+import Link from 'next/link';
 import { Course, Day, DAYS_LIST, Section } from '../types';
 import {
   FacultySectionGroup,
@@ -443,9 +444,14 @@ export function FacultyExplorer({
                   {/* Faculty Header */}
                   <div className="flex items-center justify-between pb-2 border-b border-app-border">
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-xs text-text-primary">
+                      <Link
+                        href={`/faculty?f=${group.facultyId}`}
+                        onClick={onClose}
+                        className="font-bold text-xs text-text-primary hover:text-orange-600 hover:underline transition-colors"
+                        title={`View ${group.facultyName} in faculty directory`}
+                      >
                         {group.facultyName}
-                      </span>
+                      </Link>
                       <span className="px-1.5 py-0.2 rounded text-[10px] font-semibold bg-subtle text-text-muted border border-app-border">
                         {group.sections.length} section{group.sections.length > 1 ? 's' : ''}
                       </span>
