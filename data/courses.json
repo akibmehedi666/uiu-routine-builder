@@ -1,0 +1,793 @@
+[
+  {
+    "code": "ACT 2111",
+    "title": "Financial and Managerial Accounting",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "BDS 1201",
+    "title": "History of the Emergence of Bangladesh",
+    "program": "BSCSE",
+    "credit": 2,
+    "hasLab": false
+  },
+  {
+    "code": "BIO 3105",
+    "title": "Biology for Engineers",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "CSE 1110",
+    "title": "Introduction to Computer Systems",
+    "program": "BSCSE",
+    "credit": 1,
+    "hasLab": false
+  },
+  {
+    "code": "CSE 1111",
+    "title": "Structured Programming Language",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": true,
+    "labCode": "CSE 1112"
+  },
+  {
+    "code": "CSE 1112",
+    "title": "Structured Programming Language Laboratory",
+    "program": "BSCSE",
+    "credit": 1,
+    "hasLab": false,
+    "theoryCode": "CSE 1111"
+  },
+  {
+    "code": "CSE 1115",
+    "title": "Object Oriented Programming",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": true,
+    "labCode": "CSE 1116"
+  },
+  {
+    "code": "CSE 1116",
+    "title": "Object Oriented Programming Laboratory",
+    "program": "BSCSE",
+    "credit": 1,
+    "hasLab": false,
+    "theoryCode": "CSE 1115"
+  },
+  {
+    "code": "CSE 1325",
+    "title": "Digital Logic Design",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": true,
+    "labCode": "CSE 1326"
+  },
+  {
+    "code": "CSE 1326",
+    "title": "Digital Logic Design Laboratory",
+    "program": "BSCSE",
+    "credit": 1,
+    "hasLab": false,
+    "theoryCode": "CSE 1325"
+  },
+  {
+    "code": "CSE 2118",
+    "title": "Advanced Object Oriented Programming L",
+    "program": "BSCSE",
+    "credit": 1,
+    "hasLab": false
+  },
+  {
+    "code": "CSE 2213",
+    "title": "Discrete Mathematics",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "CSE 2215",
+    "title": "Data Structure and Algorithms I",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": true,
+    "labCode": "CSE 2216"
+  },
+  {
+    "code": "CSE 2216",
+    "title": "Data Structure and Algorithms I Laboratory",
+    "program": "BSCSE",
+    "credit": 1,
+    "hasLab": false,
+    "theoryCode": "CSE 2215"
+  },
+  {
+    "code": "CSE 2217",
+    "title": "Data Structure and Algorithms II",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": true,
+    "labCode": "CSE 2218"
+  },
+  {
+    "code": "CSE 2218",
+    "title": "Data Structure and Algorithms II Laboratory",
+    "program": "BSCSE",
+    "credit": 1,
+    "hasLab": false,
+    "theoryCode": "CSE 2217"
+  },
+  {
+    "code": "CSE 2233",
+    "title": "Theory of Computation",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "CSE 3313",
+    "title": "Computer Architecture",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "CSE 3411",
+    "title": "System Analysis and Design",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": true,
+    "labCode": "CSE 3412"
+  },
+  {
+    "code": "CSE 3412",
+    "title": "System Analysis and Design Laboratory",
+    "program": "BSCSE",
+    "credit": 1,
+    "hasLab": false,
+    "theoryCode": "CSE 3411"
+  },
+  {
+    "code": "CSE 3421",
+    "title": "Software Engineering",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": true,
+    "labCode": "CSE 3422"
+  },
+  {
+    "code": "CSE 3422",
+    "title": "Software Engineering Laboratory",
+    "program": "BSCSE",
+    "credit": 1,
+    "hasLab": false,
+    "theoryCode": "CSE 3421"
+  },
+  {
+    "code": "CSE 3521",
+    "title": "Database Management Systems",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": true,
+    "labCode": "CSE 3522"
+  },
+  {
+    "code": "CSE 3522",
+    "title": "Database Management Systems Laboratory",
+    "program": "BSCSE",
+    "credit": 1,
+    "hasLab": false,
+    "theoryCode": "CSE 3521"
+  },
+  {
+    "code": "CSE 3711",
+    "title": "Computer Networks",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": true,
+    "labCode": "CSE 3712"
+  },
+  {
+    "code": "CSE 3712",
+    "title": "Computer Networks Laboratory",
+    "program": "BSCSE",
+    "credit": 1,
+    "hasLab": false,
+    "theoryCode": "CSE 3711"
+  },
+  {
+    "code": "CSE 3715",
+    "title": "Data Communication",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "CSE 3811",
+    "title": "Artificial Intelligence",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": true,
+    "labCode": "CSE 3812"
+  },
+  {
+    "code": "CSE 3812",
+    "title": "Artificial Intelligence Laboratory",
+    "program": "BSCSE",
+    "credit": 1,
+    "hasLab": false,
+    "theoryCode": "CSE 3811"
+  },
+  {
+    "code": "CSE 4000A",
+    "title": "Final Year Design Project - I",
+    "program": "BSCSE",
+    "credit": 2,
+    "hasLab": false
+  },
+  {
+    "code": "CSE 4125",
+    "title": "Ethical Hacking and Network Defense",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "CSE 4133",
+    "title": "Business Intelligence",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "CSE 4165",
+    "title": "Web Programming",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "CSE 4181",
+    "title": "Mobile Application Development",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "CSE 4325",
+    "title": "Microprocessors and Microcontrollers",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": true,
+    "labCode": "CSE 4326"
+  },
+  {
+    "code": "CSE 4326",
+    "title": "Microprocessors and Microcontrollers Laboratory",
+    "program": "BSCSE",
+    "credit": 1,
+    "hasLab": false,
+    "theoryCode": "CSE 4325"
+  },
+  {
+    "code": "CSE 4327",
+    "title": "VLSI Design",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "CSE 4399",
+    "title": "Special Topics - Embedded Machine Learning",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "CSE 4435",
+    "title": "Software Architecture",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "CSE 4451",
+    "title": "Human Computer Interaction",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "CSE 4495",
+    "title": "Software Testing and Quality Assurance",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "CSE 4509",
+    "title": "Operating Systems",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": true,
+    "labCode": "CSE 4510"
+  },
+  {
+    "code": "CSE 4510",
+    "title": "Operating Systems Laboratory",
+    "program": "BSCSE",
+    "credit": 1,
+    "hasLab": false,
+    "theoryCode": "CSE 4509"
+  },
+  {
+    "code": "CSE 4531",
+    "title": "Computer Security",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "CSE 4587",
+    "title": "Cloud Computing",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "CSE 4611",
+    "title": "Compiler Design",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "CSE 4777",
+    "title": "Networks Security",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "CSE 4811",
+    "title": "Natural Language Processing",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "CSE 4813",
+    "title": "Deep Learning",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "CSE 4817",
+    "title": "Big Data Analytics",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "CSE 4883",
+    "title": "Digital Image Processing",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "CSE 4889",
+    "title": "Machine Learning",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "CSE 4891",
+    "title": "Data Mining",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "CSE 4893",
+    "title": "Introduction to Bioinformatics",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "CSE 4945",
+    "title": "UI: Concepts and Design",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "ECO 4101",
+    "title": "Economics",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "EEE 2113",
+    "title": "Electrical Circuits",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "EEE 2123",
+    "title": "Electronics",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": true,
+    "labCode": "EEE 2124"
+  },
+  {
+    "code": "EEE 2124",
+    "title": "Electronics Laboratory",
+    "program": "BSCSE",
+    "credit": 1,
+    "hasLab": false,
+    "theoryCode": "EEE 2123"
+  },
+  {
+    "code": "EEE 4261",
+    "title": "Green Computing",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "ENG 1011",
+    "title": "English I",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "ENG 1013",
+    "title": "English II",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "GED 1005",
+    "title": "AI Literacy and Prompt Engineering",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "IPE 3401",
+    "title": "Industrial and Operational Management",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "MATH 1151",
+    "title": "Fundamental Calculus",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "MATH 2183",
+    "title": "Calculus and Linear Algebra",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "MATH 2201",
+    "title": "Coordinate Geometry and Vector Analysis",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "MATH 2205",
+    "title": "Probability and Statistics",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "PHY 2105",
+    "title": "Physics",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": true,
+    "labCode": "PHY 2106"
+  },
+  {
+    "code": "PHY 2106",
+    "title": "Physics Laboratory",
+    "program": "BSCSE",
+    "credit": 1,
+    "hasLab": false,
+    "theoryCode": "PHY 2105"
+  },
+  {
+    "code": "PMG 4101",
+    "title": "Project Management",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "SOC 2101",
+    "title": "Society, Environment and Engineering Ethics",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "TEC 2499",
+    "title": "Technology Entrepreneurship",
+    "program": "BSCSE",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "BIO 3107",
+    "title": "Biology",
+    "program": "BSDS",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "CSE 2215",
+    "title": "Data Structure and Algorithms I",
+    "program": "BSDS",
+    "credit": 3,
+    "hasLab": true,
+    "labCode": "CSE 2216"
+  },
+  {
+    "code": "CSE 2216",
+    "title": "Data Structure and Algorithms I Laboratory",
+    "program": "BSDS",
+    "credit": 1,
+    "hasLab": false,
+    "theoryCode": "CSE 2215"
+  },
+  {
+    "code": "CSE 2217",
+    "title": "Data Structure and Algorithms II",
+    "program": "BSDS",
+    "credit": 3,
+    "hasLab": true,
+    "labCode": "CSE 2218"
+  },
+  {
+    "code": "CSE 2218",
+    "title": "Data Structure and Algorithms II Laboratory",
+    "program": "BSDS",
+    "credit": 1,
+    "hasLab": false,
+    "theoryCode": "CSE 2217"
+  },
+  {
+    "code": "CSE 3521",
+    "title": "Database Management Systems",
+    "program": "BSDS",
+    "credit": 3,
+    "hasLab": true,
+    "labCode": "CSE 3522"
+  },
+  {
+    "code": "CSE 3522",
+    "title": "Database Management Systems Laboratory",
+    "program": "BSDS",
+    "credit": 1,
+    "hasLab": false,
+    "theoryCode": "CSE 3521"
+  },
+  {
+    "code": "DS 1101",
+    "title": "Fundamentals of Data Science",
+    "program": "BSDS",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "DS 1115",
+    "title": "Object Oriented Programming for Data Science",
+    "program": "BSDS",
+    "credit": 3,
+    "hasLab": true,
+    "labCode": "DS 1116"
+  },
+  {
+    "code": "DS 1116",
+    "title": "Object Oriented Programming for Data Science Laboratory",
+    "program": "BSDS",
+    "credit": 1,
+    "hasLab": false,
+    "theoryCode": "DS 1115"
+  },
+  {
+    "code": "DS 1501",
+    "title": "Programming for Data Science",
+    "program": "BSDS",
+    "credit": 3,
+    "hasLab": true,
+    "labCode": "DS 1502"
+  },
+  {
+    "code": "DS 1502",
+    "title": "Programming for Data Science Laboratory",
+    "program": "BSDS",
+    "credit": 1,
+    "hasLab": false,
+    "theoryCode": "DS 1501"
+  },
+  {
+    "code": "DS 2251",
+    "title": "Bayesian Statistics",
+    "program": "BSDS",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "DS 3101",
+    "title": "Advanced Probability and Statistics",
+    "program": "BSDS",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "DS 3120",
+    "title": "Technical Report Writing and Presentation",
+    "program": "BSDS",
+    "credit": 2,
+    "hasLab": false
+  },
+  {
+    "code": "DS 3521",
+    "title": "Data Visualization",
+    "program": "BSDS",
+    "credit": 3,
+    "hasLab": true,
+    "labCode": "DS 3522"
+  },
+  {
+    "code": "DS 3522",
+    "title": "Data Visualization Laboratory",
+    "program": "BSDS",
+    "credit": 1,
+    "hasLab": false,
+    "theoryCode": "DS 3521"
+  },
+  {
+    "code": "DS 3881",
+    "title": "Regression and Time Series Analysis",
+    "program": "BSDS",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "DS 3885",
+    "title": "Data Wrangling",
+    "program": "BSDS",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "DS 4000A",
+    "title": "Capstone Project - I",
+    "program": "BSDS",
+    "credit": 2,
+    "hasLab": false
+  },
+  {
+    "code": "DS 4115",
+    "title": "Marketing Analytics",
+    "program": "BSDS",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "DS 4123",
+    "title": "Human Computer Interaction",
+    "program": "BSDS",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "DS 4211",
+    "title": "Deep Learning",
+    "program": "BSDS",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "DS 4213",
+    "title": "Natural Language Processing",
+    "program": "BSDS",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "DS 4217",
+    "title": "Data Privacy and Ethics",
+    "program": "BSDS",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "DS 4229",
+    "title": "Data Warehousing",
+    "program": "BSDS",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "DS 4491",
+    "title": "Machine Learning Systems Design",
+    "program": "BSDS",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "DS 4523",
+    "title": "Simulation and Modeling",
+    "program": "BSDS",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "DS 4817",
+    "title": "Big Data",
+    "program": "BSDS",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "DS 4889",
+    "title": "Machine Learning",
+    "program": "BSDS",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "DS 4891",
+    "title": "Data Analytics",
+    "program": "BSDS",
+    "credit": 3,
+    "hasLab": true,
+    "labCode": "DS 4892"
+  },
+  {
+    "code": "DS 4892",
+    "title": "Data Analytics Laboratory",
+    "program": "BSDS",
+    "credit": 1,
+    "hasLab": false,
+    "theoryCode": "DS 4891"
+  },
+  {
+    "code": "MATH 1153",
+    "title": "Advanced Calculus",
+    "program": "BSDS",
+    "credit": 3,
+    "hasLab": false
+  },
+  {
+    "code": "MATH 2107",
+    "title": "Linear Algebra",
+    "program": "BSDS",
+    "credit": 3,
+    "hasLab": false
+  }
+]

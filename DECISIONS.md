@@ -19,7 +19,22 @@ This document tracks all design decisions, assumptions, and edge case resolution
 - **Theory & Lab Pairing**:
   - Derived programmatically: A course with code $N$ pairs with $N+1$ (e.g., `CSE 3811` and `CSE 3812`, `DS 1115` and `DS 1116`) when lab title === theory title + `" Laboratory"`.
 
-## Decision 2: Solver Architecture (Phase 2)
+## Decision 2: Phase 1 Extraction & Data Schema Results
+- **Row Count**: Exactly 791 sections parsed (Sl 1..791, zero gaps, zero duplicates).
+- **Program Breakdown**: BSCSE: 723 sections, BSDS: 68 sections.
+- **Section Kinds**: Theory: 505 sections, Lab: 206 sections, Single-Day Theory: 80 sections.
+- **TBA & Tentative**: 25 TBA faculty sections, 26 tentative sections.
+- **Theory-Lab Pairs**: 21 programmatic pairs detected.
+- **Room Overflow Resolution**: In 9 sections, `(if required)` spilled across column boundaries, causing mangled room cells (`3)05`, `e3d0)7`, `e7d0)8`, etc.). In theory courses, Room 1 and Room 2 are identical; room was repaired from Room 2 or raw character stream.
+- **Lab Room Truncation**: Table cells truncated `(Computer Lab)` to `(Comp` in wide laboratory titles. Fully recovered by extracting bounding boxes from the unclipped PDF character stream.
+- **Data Files Generated**:
+  - `data/sections.json`: 791 Section records with `id`, `sl`, `program`, `courseCode`, `title`, `section`, `credit`, `kind`, `meetings`, `faculty`, `facultyIds`, `tentative`.
+  - `data/courses.json`: 107 Course catalog entries with `code`, `title`, `program`, `credit`, `hasLab`, `labCode`, `theoryCode`.
+  - `data/faculty.json`: 207 Faculty records with normalized slug ID, clean name, and teaching assignments.
+  - `data/anomalies.md`: Complete audit trail of repaired rows and edge cases.
+  - `docs/spotcheck.md`: Verification of Sl 31, 56, 143, 197, 268, 354, 436, 486, 750, 761.
+
+## Decision 3: Solver Architecture (Phase 2)
 - Pure TypeScript implementation with zero external heavy solver libraries to ensure fast client-side execution in a Web Worker.
 - Bitmask representation: 5 days $\times$ 288 5-minute cells per day for $O(1)$ overlap detection.
 - Minimum Remaining Values (MRV) heuristic with Branch and Bound and top-K heap.
