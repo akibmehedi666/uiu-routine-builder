@@ -1,12 +1,11 @@
 'use client';
 
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import {
   Course,
   Day,
   DAYS_LIST,
   Faculty,
-  ScoreWeights,
   Section,
   SolveRequest,
 } from '../types';
@@ -23,10 +22,7 @@ import {
   Sparkles,
   AlertTriangle,
   Beaker,
-  UserCheck,
-  UserX,
   X,
-  Filter,
   RotateCcw,
 } from 'lucide-react';
 import { formatTime24 } from '../utils/export';
@@ -37,7 +33,8 @@ interface CourseSelectorProps {
   faculty: Faculty[];
   request: SolveRequest;
   onRequestChange: (newRequest: SolveRequest) => void;
-  onApplyPreset: (preset: CoursePreset) => void;
+  onApplyPreset?: (preset: CoursePreset) => void;
+  onOpenExplorer?: (courseCode: string) => void;
 }
 
 export function CourseSelector({
@@ -47,6 +44,7 @@ export function CourseSelector({
   request,
   onRequestChange,
   onApplyPreset,
+  onOpenExplorer,
 }: CourseSelectorProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -250,28 +248,28 @@ export function CourseSelector({
   };
 
   return (
-    <aside className="w-full lg:w-96 flex-shrink-0 flex flex-col space-y-4 bg-slate-900/60 p-4 rounded-2xl border border-slate-800 backdrop-blur-md">
+    <aside className="w-full lg:w-96 flex-shrink-0 flex flex-col space-y-4 bg-surface p-4 rounded-card border border-app-border shadow-warm">
       {/* 1. Header with Credit Limit Badge */}
-      <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+      <div className="flex items-center justify-between pb-3 border-b border-app-border">
         <div>
-          <h2 className="text-sm font-semibold text-white tracking-wide uppercase">
+          <h2 className="text-sm font-semibold text-text-primary tracking-wide uppercase">
             Course Selection
           </h2>
-          <span className="text-xs text-slate-400">
+          <span className="text-xs text-text-muted">
             {request.selectedCourses.length} course(s) selected
           </span>
         </div>
 
         {/* Credit Counter */}
         <div
-          className={`px-3 py-1 rounded-xl text-xs font-bold border flex items-center gap-1.5 transition-colors ${
+          className={`px-3 py-1 rounded-chip text-xs font-bold border flex items-center gap-1.5 transition-colors ${
             totalCredits > 18
-              ? 'bg-rose-500/10 text-rose-400 border-rose-500/30'
+              ? 'bg-danger-bg text-danger border-danger/30'
               : totalCredits < 9 && totalCredits > 0
-              ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+              ? 'bg-warning-bg text-warning border-warning/30'
               : totalCredits === 0
-              ? 'bg-slate-800 text-slate-400 border-slate-700'
-              : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+              ? 'bg-subtle text-text-muted border-app-border'
+              : 'bg-success-bg text-success border-success/30'
           }`}
           title={
             totalCredits > 18
@@ -290,47 +288,49 @@ export function CourseSelector({
 
       {/* Credit warning banner if outside 9-18 */}
       {totalCredits > 18 && (
-        <div className="p-2.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs flex items-center gap-2">
-          <AlertTriangle className="w-4 h-4 flex-shrink-0 text-rose-400" />
+        <div className="p-2.5 rounded-btn bg-danger-bg border border-danger/20 text-danger text-xs flex items-center gap-2">
+          <AlertTriangle className="w-4 h-4 flex-shrink-0" />
           <span>Overload: UIU limits standard enrollment to 18 credits.</span>
         </div>
       )}
       {totalCredits > 0 && totalCredits < 9 && (
-        <div className="p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs flex items-center gap-2">
-          <AlertTriangle className="w-4 h-4 flex-shrink-0 text-amber-400" />
+        <div className="p-2.5 rounded-btn bg-warning-bg border border-warning/20 text-warning text-xs flex items-center gap-2">
+          <AlertTriangle className="w-4 h-4 flex-shrink-0" />
           <span>Underload: Standard regular status requires at least 9 credits.</span>
         </div>
       )}
 
-      {/* 2. Presets Bar */}
-      <div>
-        <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
-          <span className="flex items-center gap-1 font-medium text-slate-300">
-            <Sparkles className="w-3.5 h-3.5 text-orange-400" /> Quick Presets
-          </span>
+      {/* Optional Presets Bar (removed in 9B) */}
+      {onApplyPreset && (
+        <div>
+          <div className="flex items-center justify-between text-xs text-text-muted mb-2">
+            <span className="flex items-center gap-1 font-medium text-text-primary">
+              <Sparkles className="w-3.5 h-3.5 text-orange-500" /> Quick Presets
+            </span>
+          </div>
+          <div className="grid grid-cols-2 gap-1.5">
+            {COURSE_PRESETS.map((preset) => (
+              <button
+                key={preset.id}
+                onClick={() => onApplyPreset(preset)}
+                className="text-left p-2 rounded-btn bg-subtle hover:bg-orange-50 border border-app-border hover:border-orange-400 text-xs transition-all group"
+              >
+                <div className="font-semibold text-text-primary group-hover:text-orange-600 truncate">
+                  {preset.name}
+                </div>
+                <div className="text-[10px] text-text-muted truncate">
+                  {preset.courses.length} courses
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
-        <div className="grid grid-cols-2 gap-1.5">
-          {COURSE_PRESETS.map((preset) => (
-            <button
-              key={preset.id}
-              onClick={() => onApplyPreset(preset)}
-              className="text-left p-2 rounded-lg bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 hover:border-orange-500/40 text-xs transition-all group"
-            >
-              <div className="font-semibold text-slate-200 group-hover:text-orange-400 truncate">
-                {preset.name}
-              </div>
-              <div className="text-[10px] text-slate-400 truncate">
-                {preset.courses.length} courses
-              </div>
-            </button>
-          ))}
-        </div>
-      </div>
+      )}
 
-      {/* 3. Search & Autocomplete Input */}
+      {/* 2. Search & Autocomplete Input */}
       <div className="relative">
         <div className="relative flex items-center">
-          <Search className="w-4 h-4 absolute left-3 text-slate-400 pointer-events-none" />
+          <Search className="w-4 h-4 absolute left-3 text-text-muted pointer-events-none" />
           <input
             ref={searchInputRef}
             type="text"
@@ -341,7 +341,7 @@ export function CourseSelector({
             }}
             onFocus={() => setIsSearchOpen(true)}
             placeholder="Search code or title (e.g. CSE 1111, DSA)..."
-            className="w-full pl-9 pr-8 py-2 rounded-xl bg-slate-950/80 border border-slate-700/80 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 transition-all"
+            className="w-full pl-9 pr-8 py-2 rounded-btn bg-subtle border border-app-border text-xs text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-500 transition-all"
           />
           {searchTerm && (
             <button
@@ -349,7 +349,8 @@ export function CourseSelector({
                 setSearchTerm('');
                 searchInputRef.current?.focus();
               }}
-              className="absolute right-2.5 text-slate-400 hover:text-white"
+              className="absolute right-2.5 text-text-muted hover:text-text-primary"
+              aria-label="Clear search"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -362,10 +363,10 @@ export function CourseSelector({
             <button
               key={prog}
               onClick={() => setProgramFilter(prog)}
-              className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors ${
+              className={`px-2.5 py-1 rounded-btn text-[11px] font-medium transition-colors ${
                 programFilter === prog
-                  ? 'bg-orange-500 text-white'
-                  : 'bg-slate-800/60 text-slate-400 hover:text-white hover:bg-slate-800'
+                  ? 'bg-orange-500 text-white font-semibold'
+                  : 'bg-subtle text-text-secondary hover:text-text-primary hover:bg-orange-50 border border-app-border'
               }`}
             >
               {prog}
@@ -380,38 +381,53 @@ export function CourseSelector({
               className="fixed inset-0 z-20"
               onClick={() => setIsSearchOpen(false)}
             />
-            <div className="absolute top-full left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-slate-950 border border-slate-800 rounded-xl shadow-2xl z-30 divide-y divide-slate-800/50">
+            <div className="absolute top-full left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-surface border border-app-border rounded-card shadow-warm z-30 divide-y divide-app-border">
               {filteredCourses.length === 0 ? (
-                <div className="p-3 text-xs text-slate-400 text-center">
+                <div className="p-3 text-xs text-text-muted text-center">
                   No courses found matching &quot;{searchTerm}&quot;
                 </div>
               ) : (
                 filteredCourses.slice(0, 15).map((course) => (
-                  <button
+                  <div
                     key={course.code}
-                    onClick={() => handleAddCourse(course.code)}
-                    className="w-full p-2.5 text-left hover:bg-slate-900 flex items-center justify-between group transition-colors"
+                    className="w-full p-2.5 hover:bg-subtle flex items-center justify-between group transition-colors cursor-pointer"
+                    onClick={() => {
+                      if (onOpenExplorer) {
+                        onOpenExplorer(course.code);
+                      } else {
+                        handleAddCourse(course.code);
+                      }
+                    }}
                   >
                     <div className="pr-2 min-w-0">
                       <div className="flex items-center gap-1.5">
-                        <span className="font-semibold text-xs text-white group-hover:text-orange-400">
+                        <span className="font-semibold text-xs text-text-primary group-hover:text-orange-600">
                           {course.code}
                         </span>
-                        <span className="text-[10px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-400 border border-slate-700">
+                        <span className="text-[10px] px-1.5 py-0.2 rounded bg-subtle text-text-secondary border border-app-border">
                           {course.credit} cr
                         </span>
-                        <span className="text-[10px] px-1.5 py-0.2 rounded bg-slate-800/60 text-slate-400">
+                        <span className="text-[10px] px-1.5 py-0.2 rounded bg-subtle text-text-muted">
                           {course.program}
                         </span>
                       </div>
-                      <div className="text-[11px] text-slate-400 truncate">
+                      <div className="text-[11px] text-text-muted truncate">
                         {course.title}
                       </div>
                     </div>
-                    <div className="w-6 h-6 rounded-md bg-orange-500/10 group-hover:bg-orange-500 text-orange-400 group-hover:text-white flex items-center justify-center flex-shrink-0 transition-colors">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleAddCourse(course.code);
+                      }}
+                      className="w-6 h-6 rounded-btn bg-orange-50 hover:bg-orange-500 text-orange-600 hover:text-white flex items-center justify-center flex-shrink-0 transition-colors border border-orange-200"
+                      title="Add course"
+                      aria-label={`Add ${course.code}`}
+                    >
                       <Plus className="w-3.5 h-3.5" />
-                    </div>
-                  </button>
+                    </button>
+                  </div>
                 ))
               )}
             </div>
@@ -419,13 +435,13 @@ export function CourseSelector({
         )}
       </div>
 
-      {/* 4. Selected Courses List */}
+      {/* 3. Selected Courses List */}
       <div className="space-y-2.5 max-h-[380px] overflow-y-auto pr-1">
         {selectedCourseObjs.length === 0 ? (
-          <div className="p-6 text-center border border-dashed border-slate-800 rounded-xl text-slate-500 text-xs">
+          <div className="p-6 text-center border border-dashed border-app-border rounded-card text-text-muted text-xs">
             No courses selected yet.
             <br />
-            Select from quick presets or search courses above.
+            Search courses above to build your routine.
           </div>
         ) : (
           selectedCourseObjs.map((course) => {
@@ -457,61 +473,77 @@ export function CourseSelector({
             return (
               <div
                 key={course.code}
-                className="p-3 rounded-xl bg-slate-950/70 border border-slate-800 hover:border-slate-700/80 transition-all space-y-2"
+                className="p-3 rounded-card bg-surface border border-app-border hover:border-orange-300 transition-all space-y-2 shadow-2xs"
               >
                 {/* Course Header */}
                 <div className="flex items-start justify-between">
-                  <div>
+                  <div
+                    className={onOpenExplorer ? 'cursor-pointer' : ''}
+                    onClick={() => onOpenExplorer && onOpenExplorer(course.code)}
+                  >
                     <div className="flex items-center gap-1.5">
-                      <span className="font-bold text-xs text-white">
+                      <span className="font-bold text-xs text-text-primary hover:text-orange-600 transition-colors">
                         {course.code}
                       </span>
-                      <span className="text-[10px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-300 font-medium">
+                      <span className="text-[10px] px-1.5 py-0.2 rounded bg-subtle text-text-secondary border border-app-border font-medium">
                         {course.credit} cr
                       </span>
-                      <span className="text-[10px] text-slate-400">
+                      <span className="text-[10px] text-text-muted">
                         ({courseSections.length} secs)
                       </span>
                     </div>
-                    <div className="text-[11px] text-slate-300 font-medium line-clamp-1">
+                    <div className="text-[11px] text-text-secondary font-medium line-clamp-1">
                       {course.title}
                     </div>
                   </div>
 
-                  <button
-                    onClick={() => handleRemoveCourse(course.code)}
-                    className="p-1 text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 rounded transition-colors"
-                    title="Remove course"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
+                  <div className="flex items-center gap-1">
+                    {onOpenExplorer && (
+                      <button
+                        onClick={() => onOpenExplorer(course.code)}
+                        className="p-1 text-text-muted hover:text-orange-600 hover:bg-subtle rounded-btn transition-colors text-[10px]"
+                        title="Faculty & sections explorer"
+                        aria-label={`Explore faculty for ${course.code}`}
+                      >
+                        Sections
+                      </button>
+                    )}
+                    <button
+                      onClick={() => handleRemoveCourse(course.code)}
+                      className="p-1 text-text-muted hover:text-danger hover:bg-danger-bg rounded-btn transition-colors"
+                      title="Remove course"
+                      aria-label={`Remove ${course.code}`}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
 
                 {/* Co-requisite Lab One-Click Button */}
                 {canAddLab && (
                   <button
                     onClick={() => handleAddLab(course.labCode!)}
-                    className="w-full py-1.5 px-2 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors group animate-pulse"
+                    className="w-full py-1.5 px-2 rounded-btn bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors group"
                   >
-                    <Beaker className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
+                    <Beaker className="w-3.5 h-3.5 text-emerald-600 group-hover:scale-110 transition-transform" />
                     <span>+ Add Co-requisite Lab ({course.labCode})</span>
                   </button>
                 )}
 
                 {/* Section Lock Dropdown */}
                 <div className="flex items-center gap-2 text-xs">
-                  <span className="text-slate-400 flex items-center gap-1 text-[11px]">
+                  <span className="text-text-muted flex items-center gap-1 text-[11px]">
                     {lockedSecId ? (
-                      <Lock className="w-3 h-3 text-orange-400" />
+                      <Lock className="w-3 h-3 text-orange-500" />
                     ) : (
-                      <Unlock className="w-3 h-3 text-slate-500" />
+                      <Unlock className="w-3 h-3 text-text-muted" />
                     )}
                     Lock:
                   </span>
                   <select
                     value={lockedSecId}
                     onChange={(e) => handleLockSection(course.code, e.target.value)}
-                    className="flex-1 bg-slate-900 border border-slate-700/80 rounded-md py-1 px-2 text-[11px] text-white focus:outline-none focus:ring-1 focus:ring-orange-500"
+                    className="flex-1 bg-subtle border border-app-border rounded-btn py-1 px-2 text-[11px] text-text-primary focus:outline-none focus:ring-1 focus:ring-orange-400"
                   >
                     <option value="">Any Section ({courseSections.length} available)</option>
                     {courseSections.map((s) => (
@@ -525,16 +557,16 @@ export function CourseSelector({
                 {/* Faculty Preferences */}
                 {facultyStats.size > 0 && (
                   <details className="text-[11px] group/details">
-                    <summary className="cursor-pointer text-slate-400 hover:text-slate-200 select-none flex items-center justify-between py-1">
+                    <summary className="cursor-pointer text-text-muted hover:text-text-primary select-none flex items-center justify-between py-1">
                       <span>
                         Faculty Preference{' '}
                         {preferredFids.length > 0 && (
-                          <span className="text-emerald-400 font-semibold">
+                          <span className="text-success font-semibold">
                             ({preferredFids.length} pref)
                           </span>
                         )}
                         {avoidFids.length > 0 && (
-                          <span className="text-rose-400 font-semibold">
+                          <span className="text-danger font-semibold">
                             ({avoidFids.length} avoid)
                           </span>
                         )}
@@ -550,10 +582,10 @@ export function CourseSelector({
                         return (
                           <div
                             key={f.id}
-                            className="flex items-center justify-between p-1.5 rounded-md bg-slate-900/60 border border-slate-800"
+                            className="flex items-center justify-between p-1.5 rounded-btn bg-subtle border border-app-border"
                           >
-                            <span className="text-slate-300 truncate max-w-[170px]" title={f.name}>
-                              {f.name} <span className="text-slate-500">({count} sec)</span>
+                            <span className="text-text-primary truncate max-w-[170px]" title={f.name}>
+                              {f.name} <span className="text-text-muted">({count} sec)</span>
                             </span>
 
                             <div className="flex items-center gap-1">
@@ -561,8 +593,8 @@ export function CourseSelector({
                                 onClick={() => toggleFacultyPref(course.code, f.id)}
                                 className={`px-1.5 py-0.5 rounded text-[10px] font-medium transition-colors ${
                                   isPref
-                                    ? 'bg-emerald-500 text-white'
-                                    : 'bg-slate-800 text-slate-400 hover:text-emerald-300'
+                                    ? 'bg-success text-white font-bold'
+                                    : 'bg-surface text-text-secondary hover:text-success border border-app-border'
                                 }`}
                                 title="Prefer this faculty"
                               >
@@ -572,8 +604,8 @@ export function CourseSelector({
                                 onClick={() => toggleFacultyAvoid(course.code, f.id)}
                                 className={`px-1.5 py-0.5 rounded text-[10px] font-medium transition-colors ${
                                   isAvoid
-                                    ? 'bg-rose-500 text-white'
-                                    : 'bg-slate-800 text-slate-400 hover:text-rose-300'
+                                    ? 'bg-danger text-white font-bold'
+                                    : 'bg-surface text-text-secondary hover:text-danger border border-app-border'
                                 }`}
                                 title="Avoid this faculty"
                               >
@@ -592,14 +624,14 @@ export function CourseSelector({
         )}
       </div>
 
-      {/* 5. Collapsible Filter & Weights Controls */}
-      <div className="border-t border-slate-800 pt-2">
+      {/* 4. Collapsible Filter & Weights Controls */}
+      <div className="border-t border-app-border pt-2">
         <button
           onClick={() => setIsFiltersOpen(!isFiltersOpen)}
-          className="w-full flex items-center justify-between py-2 text-xs font-semibold text-slate-300 hover:text-white transition-colors"
+          className="w-full flex items-center justify-between py-2 text-xs font-semibold text-text-secondary hover:text-text-primary transition-colors"
         >
           <span className="flex items-center gap-1.5">
-            <Sliders className="w-3.5 h-3.5 text-orange-400" />
+            <Sliders className="w-3.5 h-3.5 text-orange-500" />
             Filters & Scoring Weights
           </span>
           {isFiltersOpen ? (
@@ -613,7 +645,7 @@ export function CourseSelector({
           <div className="pt-2 space-y-4 text-xs animate-in fade-in duration-200">
             {/* Day Off Filters */}
             <div>
-              <label className="block text-slate-400 font-medium mb-1.5">
+              <label className="block text-text-muted font-medium mb-1.5">
                 Must-Have Day Off (0 classes):
               </label>
               <div className="grid grid-cols-5 gap-1">
@@ -623,10 +655,10 @@ export function CourseSelector({
                     <button
                       key={day}
                       onClick={() => toggleDayOff(day)}
-                      className={`py-1.5 rounded-lg text-xs font-bold transition-all ${
+                      className={`py-1.5 rounded-btn text-xs font-bold transition-all ${
                         isOff
-                          ? 'bg-rose-500/20 text-rose-300 border border-rose-500/50 shadow-sm shadow-rose-500/20'
-                          : 'bg-slate-800/80 text-slate-400 hover:bg-slate-800 border border-slate-700/60'
+                          ? 'bg-danger-bg text-danger border border-danger/40 shadow-xs'
+                          : 'bg-subtle text-text-secondary hover:bg-orange-50 border border-app-border'
                       }`}
                     >
                       {day}
@@ -639,7 +671,7 @@ export function CourseSelector({
             {/* Time Window Filters */}
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="block text-slate-400 font-medium mb-1">
+                <label className="block text-text-muted font-medium mb-1">
                   Earliest Start:
                 </label>
                 <select
@@ -653,7 +685,7 @@ export function CourseSelector({
                       },
                     })
                   }
-                  className="w-full bg-slate-950 border border-slate-700 rounded-lg p-1.5 text-xs text-white"
+                  className="w-full bg-subtle border border-app-border rounded-btn p-1.5 text-xs text-text-primary"
                 >
                   <option value="">Any (from 08:30)</option>
                   <option value="591">09:50 AM or later</option>
@@ -663,7 +695,7 @@ export function CourseSelector({
               </div>
 
               <div>
-                <label className="block text-slate-400 font-medium mb-1">
+                <label className="block text-text-muted font-medium mb-1">
                   Latest End:
                 </label>
                 <select
@@ -677,7 +709,7 @@ export function CourseSelector({
                       },
                     })
                   }
-                  className="w-full bg-slate-950 border border-slate-700 rounded-lg p-1.5 text-xs text-white"
+                  className="w-full bg-subtle border border-app-border rounded-btn p-1.5 text-xs text-text-primary"
                 >
                   <option value="">Any (until 16:30)</option>
                   <option value="830">01:50 PM or earlier</option>
@@ -689,7 +721,7 @@ export function CourseSelector({
 
             {/* Max Gap Per Day */}
             <div>
-              <label className="block text-slate-400 font-medium mb-1">
+              <label className="block text-text-muted font-medium mb-1">
                 Max Gap Between Classes:
               </label>
               <div className="grid grid-cols-4 gap-1">
@@ -707,10 +739,10 @@ export function CourseSelector({
                         maxGapMinutesPerDay: item.value,
                       })
                     }
-                    className={`py-1 rounded-md text-[11px] font-medium transition-colors ${
+                    className={`py-1 rounded-btn text-[11px] font-medium transition-colors ${
                       request.maxGapMinutesPerDay === item.value
-                        ? 'bg-orange-500 text-white'
-                        : 'bg-slate-800 text-slate-400 hover:bg-slate-750'
+                        ? 'bg-orange-500 text-white font-semibold'
+                        : 'bg-subtle text-text-secondary hover:bg-orange-50 border border-app-border'
                     }`}
                   >
                     {item.label}
@@ -720,12 +752,12 @@ export function CourseSelector({
             </div>
 
             {/* Ranking Weights Sliders */}
-            <div className="space-y-2 pt-2 border-t border-slate-800/80">
+            <div className="space-y-2 pt-2 border-t border-app-border">
               <div className="flex items-center justify-between">
-                <span className="font-semibold text-slate-300">Ranking Weights</span>
+                <span className="font-semibold text-text-primary">Ranking Weights</span>
                 <button
                   onClick={resetWeights}
-                  className="text-[10px] text-slate-400 hover:text-orange-400 flex items-center gap-1"
+                  className="text-[10px] text-text-muted hover:text-orange-600 flex items-center gap-1"
                 >
                   <RotateCcw className="w-3 h-3" /> Reset
                 </button>
@@ -739,9 +771,9 @@ export function CourseSelector({
                 { key: 'avoidTentative' as const, label: 'Avoid Tentative Sections' },
               ].map(({ key, label }) => (
                 <div key={key} className="space-y-1">
-                  <div className="flex justify-between text-[11px] text-slate-400">
+                  <div className="flex justify-between text-[11px] text-text-muted">
                     <span>{label}</span>
-                    <span className="font-mono text-slate-200">
+                    <span className="font-mono font-semibold text-text-primary">
                       {request.weights[key]}%
                     </span>
                   </div>
@@ -760,7 +792,7 @@ export function CourseSelector({
                         },
                       })
                     }
-                    className="w-full accent-orange-500 h-1 bg-slate-800 rounded-lg cursor-pointer"
+                    className="w-full accent-orange-500 h-1.5 bg-border rounded-lg cursor-pointer"
                   />
                 </div>
               ))}

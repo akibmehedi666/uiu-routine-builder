@@ -96,48 +96,49 @@ export function Timetable({
     }
   }
 
-  // Score color
-  const scoreColor =
+  const scoreBadgeBg =
     schedule.score >= 90
-      ? 'from-emerald-500 to-teal-500 border-emerald-500/40 text-emerald-300'
+      ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
       : schedule.score >= 75
-      ? 'from-amber-500 to-orange-500 border-amber-500/40 text-amber-300'
-      : 'from-rose-500 to-pink-500 border-rose-500/40 text-rose-300';
+      ? 'bg-amber-50 text-amber-700 border-amber-300'
+      : 'bg-rose-50 text-rose-700 border-rose-300';
 
   return (
-    <div className="flex-1 flex flex-col space-y-4">
-      {/* 1. Timetable Action Bar & Navigation */}
-      <div className="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 backdrop-blur-md flex flex-wrap items-center justify-between gap-3">
+    <div className="flex-1 flex flex-col space-y-3.5">
+      {/* 1. Timetable Toolbar & Navigation */}
+      <div className="bg-surface p-3.5 rounded-card border border-app-border shadow-warm flex flex-wrap items-center justify-between gap-3">
         {/* Left: Schedule Rank Navigation */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-1.5">
           <button
             onClick={() => onSetRank(Math.max(0, currentRank - 1))}
             disabled={currentRank === 0}
-            className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-30 disabled:pointer-events-none text-white transition-colors"
+            className="p-1.5 rounded-btn bg-surface hover:bg-subtle disabled:opacity-30 disabled:pointer-events-none text-text-primary border border-app-border transition-colors"
             title="Previous Routine (Left Arrow)"
+            aria-label="Previous routine"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft className="w-4 h-4" />
           </button>
 
-          <div className="flex items-center space-x-1.5 px-3 py-1 bg-slate-950 rounded-lg border border-slate-800 text-xs font-semibold">
-            <span className="text-slate-400">Rank</span>
-            <span className="text-white font-bold">{currentRank + 1}</span>
-            <span className="text-slate-500">of</span>
-            <span className="text-slate-300">{totalSchedules}</span>
+          <div className="flex items-center space-x-1.5 px-3 py-1 bg-subtle rounded-btn border border-app-border text-xs font-semibold">
+            <span className="text-text-muted">Routine</span>
+            <span className="text-orange-600 font-bold">#{currentRank + 1}</span>
+            <span className="text-text-muted">of</span>
+            <span className="text-text-secondary">{totalSchedules}</span>
           </div>
 
           <button
             onClick={() => onSetRank(Math.min(totalSchedules - 1, currentRank + 1))}
             disabled={currentRank >= totalSchedules - 1}
-            className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-30 disabled:pointer-events-none text-white transition-colors"
+            className="p-1.5 rounded-btn bg-surface hover:bg-subtle disabled:opacity-30 disabled:pointer-events-none text-text-primary border border-app-border transition-colors"
             title="Next Routine (Right Arrow)"
+            aria-label="Next routine"
           >
-            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className="w-4 h-4" />
           </button>
 
           {isTruncated && (
             <span
-              className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30"
+              className="text-[10px] px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-300 font-medium"
               title="Search reached node/timeout limit. Showing top 50 discovered."
             >
               Top 50 Shown
@@ -145,51 +146,51 @@ export function Timetable({
           )}
         </div>
 
-        {/* Center: Overall Score Badge with Breakdown Tooltip */}
+        {/* Center: Overall Score Badge with Breakdown Popover */}
         <div className="relative group/score">
           <div
-            className={`px-3 py-1 rounded-xl bg-gradient-to-r ${scoreColor} border flex items-center gap-1.5 shadow-sm cursor-pointer`}
+            className={`px-3 py-1 rounded-full border ${scoreBadgeBg} flex items-center gap-1.5 shadow-xs cursor-pointer font-semibold text-xs`}
           >
-            <span className="text-xs font-medium text-slate-300">Score</span>
-            <span className="text-sm font-black text-white">{schedule.score}</span>
-            <span className="text-xs text-white/70">/100</span>
-            <Info className="w-3.5 h-3.5 text-white/70 ml-0.5" />
+            <span>Score:</span>
+            <span className="font-extrabold text-sm">{schedule.score}</span>
+            <span className="text-[11px] opacity-75">/100</span>
+            <Info className="w-3.5 h-3.5 opacity-70 ml-0.5" />
           </div>
 
           {/* Hover Tooltip Breakdown */}
-          <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-64 p-3 bg-slate-950 border border-slate-800 rounded-xl shadow-2xl z-50 text-xs hidden group-hover/score:block animate-in fade-in zoom-in-95">
-            <div className="font-semibold text-white mb-2 pb-1 border-b border-slate-800 flex justify-between">
+          <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-64 p-3 bg-surface border border-app-border rounded-card shadow-warm z-50 text-xs hidden group-hover/score:block animate-in fade-in">
+            <div className="font-semibold text-text-primary mb-2 pb-1 border-b border-app-border flex justify-between">
               <span>Score Breakdown</span>
-              <span className="text-orange-400 font-bold">{schedule.score}/100</span>
+              <span className="text-orange-600 font-bold">{schedule.score}/100</span>
             </div>
-            <div className="space-y-1.5 text-slate-300">
+            <div className="space-y-1.5 text-text-secondary">
               <div className="flex justify-between">
                 <span>Faculty Preference:</span>
-                <span className="font-mono text-emerald-400">
+                <span className="font-mono font-semibold text-emerald-600">
                   {schedule.breakdown.facultyScore}%
                 </span>
               </div>
               <div className="flex justify-between">
                 <span>Gap Compactness:</span>
-                <span className="font-mono text-sky-400">
+                <span className="font-mono font-semibold text-sky-600">
                   {schedule.breakdown.gapScore}%
                 </span>
               </div>
               <div className="flex justify-between">
                 <span>Day Compactness:</span>
-                <span className="font-mono text-indigo-400">
+                <span className="font-mono font-semibold text-indigo-600">
                   {schedule.breakdown.dayCompactScore}%
                 </span>
               </div>
               <div className="flex justify-between">
                 <span>Time Preference:</span>
-                <span className="font-mono text-amber-400">
+                <span className="font-mono font-semibold text-amber-600">
                   {schedule.breakdown.timePreferenceScore}%
                 </span>
               </div>
               <div className="flex justify-between">
                 <span>Tentative Penalty:</span>
-                <span className="font-mono text-rose-400">
+                <span className="font-mono font-semibold text-rose-600">
                   {schedule.breakdown.tentativePenalty}%
                 </span>
               </div>
@@ -202,43 +203,45 @@ export function Timetable({
           {/* Favorite */}
           <button
             onClick={() => onToggleFavorite(schedule)}
-            className={`p-2 rounded-lg border text-xs font-medium transition-colors flex items-center gap-1 ${
+            className={`p-2 rounded-btn border text-xs font-medium transition-colors flex items-center gap-1 ${
               isFavorite
-                ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700'
+                ? 'bg-amber-50 text-amber-700 border-amber-300'
+                : 'bg-surface hover:bg-subtle text-text-secondary border-app-border'
             }`}
             title="Save to favorites (Key: F)"
+            aria-label="Save to favorites"
           >
             <Star
-              className={`w-4 h-4 ${isFavorite ? 'fill-amber-400 text-amber-400' : ''}`}
+              className={`w-4 h-4 ${isFavorite ? 'fill-amber-500 text-amber-500' : ''}`}
             />
           </button>
 
           {/* Lock all */}
           <button
             onClick={() => onLockAllSections(schedule)}
-            className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-medium transition-colors hidden sm:flex items-center gap-1"
+            className="px-2.5 py-1.5 rounded-btn bg-surface hover:bg-subtle text-text-secondary hover:text-text-primary border border-app-border text-xs font-medium transition-colors hidden sm:flex items-center gap-1"
             title="Lock this section combination"
           >
-            <Lock className="w-4 h-4 text-orange-400" />
+            <Lock className="w-3.5 h-3.5 text-orange-500" />
             <span className="hidden xl:inline">Lock All</span>
           </button>
 
           {/* Copy for UCAM */}
           <button
             onClick={handleCopyUCAM}
-            className="px-3 py-1.5 rounded-lg bg-orange-500 hover:bg-orange-600 text-white text-xs font-semibold shadow-md shadow-orange-500/20 flex items-center gap-1.5 transition-all"
+            className="px-3 py-1.5 rounded-btn bg-orange-500 hover:bg-orange-600 text-white text-xs font-semibold shadow-xs flex items-center gap-1.5 transition-colors"
             title="Copy formatted text to enter into UIU UCAM"
           >
-            {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+            {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
             <span>{copied ? 'Copied!' : 'Copy UCAM'}</span>
           </button>
 
           {/* Export iCal */}
           <button
             onClick={handleExportICS}
-            className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-medium transition-colors"
+            className="p-2 rounded-btn bg-surface hover:bg-subtle text-text-secondary hover:text-text-primary border border-app-border text-xs font-medium transition-colors"
             title="Download iCal (.ics) Calendar"
+            aria-label="Export iCal"
           >
             <CalendarIcon className="w-4 h-4" />
           </button>
@@ -246,8 +249,9 @@ export function Timetable({
           {/* Print */}
           <button
             onClick={handlePrint}
-            className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-medium transition-colors hidden sm:block"
+            className="p-2 rounded-btn bg-surface hover:bg-subtle text-text-secondary hover:text-text-primary border border-app-border text-xs font-medium transition-colors hidden sm:block"
             title="Print or Save PDF (Key: P)"
+            aria-label="Print timetable"
           >
             <Printer className="w-4 h-4" />
           </button>
@@ -257,32 +261,32 @@ export function Timetable({
       {/* 2. Stats Chips & Conflict-Free Badge */}
       <div className="flex flex-wrap items-center justify-between gap-2 px-1">
         <div className="flex flex-wrap items-center gap-2 text-xs">
-          <div className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
-            <CheckCircle2 className="w-3.5 h-3.5" />
+          <div className="flex items-center gap-1 px-2.5 py-1 rounded-chip bg-emerald-50 text-emerald-800 border border-emerald-300 font-medium">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
             <span>Conflict-Free</span>
           </div>
 
-          <div className="px-2.5 py-1 rounded-lg bg-slate-800/80 text-slate-300 border border-slate-700 font-medium">
+          <div className="px-2.5 py-1 rounded-chip bg-surface text-text-secondary border border-app-border font-medium shadow-2xs">
             {schedule.stats.credits} Credits
           </div>
 
-          <div className="px-2.5 py-1 rounded-lg bg-slate-800/80 text-slate-300 border border-slate-700 font-medium">
+          <div className="px-2.5 py-1 rounded-chip bg-surface text-text-secondary border border-app-border font-medium shadow-2xs">
             {schedule.stats.daysUsed.length} Days/Week ({schedule.stats.daysUsed.join(', ')})
           </div>
 
-          <div className="px-2.5 py-1 rounded-lg bg-slate-800/80 text-slate-300 border border-slate-700 font-medium">
+          <div className="px-2.5 py-1 rounded-chip bg-surface text-text-secondary border border-app-border font-medium shadow-2xs">
             {schedule.stats.totalGapMinutes === 0
               ? 'Zero Gaps (Back-to-Back)'
               : `${schedule.stats.totalGapMinutes}m Gaps`}
           </div>
 
           {schedule.stats.tentativeCount > 0 ? (
-            <div className="px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20 font-medium flex items-center gap-1">
-              <AlertCircle className="w-3.5 h-3.5" />
+            <div className="px-2.5 py-1 rounded-chip bg-amber-50 text-amber-800 border border-amber-300 font-medium flex items-center gap-1">
+              <AlertCircle className="w-3.5 h-3.5 text-amber-600" />
               <span>{schedule.stats.tentativeCount} Tentative Section(s)</span>
             </div>
           ) : (
-            <div className="px-2.5 py-1 rounded-lg bg-slate-800/80 text-slate-400 border border-slate-700 font-medium">
+            <div className="px-2.5 py-1 rounded-chip bg-surface text-text-muted border border-app-border font-medium">
               0 Tentative
             </div>
           )}
@@ -290,25 +294,25 @@ export function Timetable({
       </div>
 
       {/* 3. Interactive Weekly Timetable Grid */}
-      <div className="bg-slate-900/40 rounded-2xl border border-slate-800 p-3 sm:p-5 backdrop-blur-md overflow-x-auto print:bg-white print:border-black print:p-0">
-        <div className="min-w-[700px]">
-          {/* Day Headers */}
-          <div className="grid grid-cols-[64px_repeat(5,1fr)] gap-2 pb-3 border-b border-slate-800 text-center font-bold text-xs uppercase tracking-wider text-slate-400">
-            <div>Time</div>
+      <div className="bg-surface rounded-card border border-app-border p-3 sm:p-4 shadow-warm overflow-x-auto print:border-black print:p-0">
+        <div className="min-w-[720px]">
+          {/* Day Headers (Sticky) */}
+          <div className="grid grid-cols-[64px_repeat(5,1fr)] gap-2 pb-2.5 border-b border-app-border text-center font-bold text-xs uppercase tracking-wider text-text-muted">
+            <div className="py-1">Time</div>
             {DAYS_LIST.map((day) => {
               const hasClasses = meetingsByDay[day].length > 0;
               return (
                 <div
                   key={day}
-                  className={`py-1.5 rounded-lg border transition-colors ${
+                  className={`py-1.5 rounded-btn border transition-colors ${
                     hasClasses
-                      ? 'bg-slate-800/60 text-slate-200 border-slate-700/60'
-                      : 'bg-slate-950/40 text-slate-600 border-transparent'
+                      ? 'bg-subtle text-text-primary border-app-border font-bold'
+                      : 'bg-page text-text-muted border-transparent'
                   }`}
                 >
                   <span>{day}</span>
                   {hasClasses && (
-                    <span className="block text-[10px] font-normal text-slate-400 lowercase">
+                    <span className="block text-[10px] font-normal text-text-secondary lowercase">
                       {meetingsByDay[day].length} class
                       {meetingsByDay[day].length > 1 ? 'es' : ''}
                     </span>
@@ -319,9 +323,9 @@ export function Timetable({
           </div>
 
           {/* Timetable Body (480 minutes total, from 510 to 990 min) */}
-          <div className="relative grid grid-cols-[64px_repeat(5,1fr)] gap-2 h-[600px] mt-2">
+          <div className="relative grid grid-cols-[64px_repeat(5,1fr)] gap-2 h-[600px] mt-2 bg-white">
             {/* Left Time Axis */}
-            <div className="relative h-full select-none text-[10px] font-mono text-slate-500">
+            <div className="relative h-full select-none text-[10px] font-mono text-text-muted">
               {TIME_SLOTS.map((slot) => {
                 const topPct = ((slot.min - 510) / 480) * 100;
                 return (
@@ -344,19 +348,21 @@ export function Timetable({
                   <div
                     key={slot.min}
                     style={{ top: `${topPct}%` }}
-                    className="absolute left-0 right-0 border-t border-slate-800/60"
+                    className="absolute left-0 right-0 border-t border-app-border/80"
                   />
                 );
               })}
             </div>
 
-            {/* 5 Day Columns */}
-            {DAYS_LIST.map((day) => {
+            {/* 5 Day Columns with light row banding (#FFFCF9) */}
+            {DAYS_LIST.map((day, dIdx) => {
               const dayMeetings = meetingsByDay[day];
               return (
                 <div
                   key={day}
-                  className="relative h-full rounded-xl bg-slate-950/30 border border-slate-800/40"
+                  className={`relative h-full rounded-btn border border-app-border ${
+                    dIdx % 2 === 0 ? 'bg-[#FFFFFF]' : 'bg-[#FFFCF9]'
+                  }`}
                 >
                   {dayMeetings.map(({ section, meeting }) => {
                     const topPct = ((meeting.start - 510) / 480) * 100;
@@ -372,15 +378,15 @@ export function Timetable({
                         }}
                         onMouseEnter={() => setHoveredSection({ section, meeting })}
                         onMouseLeave={() => setHoveredSection(null)}
-                        className={`absolute left-1 right-1 p-2 rounded-xl border backdrop-blur-md transition-all duration-150 cursor-pointer overflow-hidden z-10 flex flex-col justify-between ${
+                        className={`absolute left-1 right-1 p-2 rounded-btn border-l-4 border shadow-xs transition-all duration-150 cursor-pointer overflow-hidden z-10 flex flex-col justify-between ${
                           color.bg
                         } ${color.border} ${
                           section.tentative ? 'border-dashed' : ''
-                        } hover:scale-[1.02] hover:z-20 hover:shadow-xl`}
+                        } hover:scale-[1.01] hover:z-20 hover:shadow-warm`}
                       >
                         {/* Top: Course Code + Section */}
                         <div className="flex items-center justify-between gap-1">
-                          <span className="font-extrabold text-xs text-white tracking-tight truncate">
+                          <span className={`font-extrabold text-xs tracking-tight truncate ${color.text}`}>
                             {section.courseCode}
                           </span>
                           <span
@@ -392,19 +398,19 @@ export function Timetable({
 
                         {/* Middle: Title */}
                         <div
-                          className="text-[11px] font-medium text-slate-200 line-clamp-2 leading-tight"
+                          className={`text-[11px] font-medium line-clamp-2 leading-tight ${color.text} opacity-90`}
                           title={section.title}
                         >
                           {section.title}
                         </div>
 
                         {/* Bottom: Room + Faculty */}
-                        <div className="flex items-center justify-between text-[10px] text-slate-300 pt-1 border-t border-white/10">
-                          <span className="flex items-center gap-0.5 truncate">
-                            <MapPin className="w-3 h-3 text-slate-400 flex-shrink-0" />
+                        <div className="flex items-center justify-between text-[10px] pt-1 border-t border-black/10 text-text-secondary">
+                          <span className="flex items-center gap-0.5 truncate font-medium">
+                            <MapPin className="w-3 h-3 text-text-muted flex-shrink-0" />
                             {meeting.room || 'TBA'}
                           </span>
-                          <span className="truncate max-w-[80px]" title={section.faculty.join(', ')}>
+                          <span className="truncate max-w-[85px] font-medium" title={section.faculty.join(', ')}>
                             {section.faculty[0] || 'TBA'}
                           </span>
                         </div>
@@ -420,48 +426,48 @@ export function Timetable({
 
       {/* 4. Hover Detail Card / Popover */}
       {hoveredSection && (
-        <div className="fixed bottom-6 right-6 max-w-sm p-4 bg-slate-950 border border-slate-700/80 rounded-2xl shadow-2xl z-50 text-xs animate-in fade-in slide-in-from-bottom-2">
-          <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-800">
+        <div className="fixed bottom-6 right-6 max-w-sm p-4 bg-surface border border-border-strong rounded-card shadow-warm z-50 text-xs animate-in fade-in">
+          <div className="flex items-center justify-between pb-2 mb-2 border-b border-app-border">
             <div>
-              <span className="font-bold text-sm text-white">
+              <span className="font-bold text-sm text-text-primary">
                 {hoveredSection.section.courseCode}
               </span>
-              <span className="ml-2 px-2 py-0.5 rounded bg-orange-500/20 text-orange-400 border border-orange-500/30 font-bold">
+              <span className="ml-2 px-2 py-0.5 rounded bg-orange-50 text-orange-600 border border-orange-200 font-bold">
                 Sec {hoveredSection.section.section}
               </span>
             </div>
-            <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-semibold">
+            <span className="px-2 py-0.5 rounded bg-subtle text-text-secondary border border-app-border font-semibold">
               {hoveredSection.section.credit} Credit(s)
             </span>
           </div>
 
-          <div className="space-y-1.5 text-slate-300">
-            <div className="font-medium text-white">
+          <div className="space-y-1.5 text-text-secondary">
+            <div className="font-medium text-text-primary">
               {hoveredSection.section.title}
             </div>
 
-            <div className="flex items-center gap-1.5 text-slate-400">
-              <Clock className="w-3.5 h-3.5 text-orange-400" />
-              <span>
+            <div className="flex items-center gap-1.5 text-text-muted">
+              <Clock className="w-3.5 h-3.5 text-orange-500" />
+              <span className="text-text-secondary">
                 {hoveredSection.meeting.day}{' '}
                 {formatTime24(hoveredSection.meeting.start)} –{' '}
                 {formatTime24(hoveredSection.meeting.end)}
               </span>
             </div>
 
-            <div className="flex items-center gap-1.5 text-slate-400">
-              <MapPin className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Room: {hoveredSection.meeting.room || 'TBA'}</span>
+            <div className="flex items-center gap-1.5 text-text-muted">
+              <MapPin className="w-3.5 h-3.5 text-emerald-600" />
+              <span className="text-text-secondary">Room: {hoveredSection.meeting.room || 'TBA'}</span>
             </div>
 
-            <div className="flex items-start gap-1.5 text-slate-400">
-              <User className="w-3.5 h-3.5 text-sky-400 mt-0.5 flex-shrink-0" />
-              <span>Faculty: {hoveredSection.section.faculty.join(', ')}</span>
+            <div className="flex items-start gap-1.5 text-text-muted">
+              <User className="w-3.5 h-3.5 text-sky-600 mt-0.5 flex-shrink-0" />
+              <span className="text-text-secondary">Faculty: {hoveredSection.section.faculty.join(', ')}</span>
             </div>
 
             {hoveredSection.section.tentative && (
-              <div className="text-[11px] p-1.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-300 flex items-center gap-1">
-                <AlertCircle className="w-3.5 h-3.5" />
+              <div className="text-[11px] p-1.5 rounded bg-amber-50 border border-amber-300 text-amber-800 flex items-center gap-1">
+                <AlertCircle className="w-3.5 h-3.5 text-amber-600" />
                 <span>Note: Tentative section / subject to enrollment.</span>
               </div>
             )}

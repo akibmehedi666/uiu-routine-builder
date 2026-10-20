@@ -3,32 +3,60 @@
 @tailwind utilities;
 
 :root {
-  --background: #060913;
-  --foreground: #f8fafc;
+  --bg-page: #FFFBF7;
+  --bg-surface: #FFFFFF;
+  --bg-subtle: #FFF4EA;
+  --bg-accent-soft: #FFE8D1;
+
+  --orange-500: #F26B21;
+  --orange-600: #D9560F;
+  --orange-400: #FF8A4C;
+  --orange-100: #FFEBDB;
+  --orange-50: #FFF6EE;
+
+  --text-primary: #1F2937;
+  --text-secondary: #4B5563;
+  --text-muted: #6B7280;
+  --text-on-orange: #FFFFFF;
+
+  --border: #F1E4D6;
+  --border-strong: #E8D2BC;
 }
 
 body {
-  color: var(--foreground);
-  background: radial-gradient(circle at top right, #111827 0%, #060913 60%);
+  background-color: var(--bg-page);
+  color: var(--text-primary);
   min-height: 100vh;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   overflow-x: hidden;
 }
 
-/* Custom scrollbars */
+/* Accessible focus ring on all interactive elements */
+:focus-visible {
+  outline: 2px solid var(--orange-400);
+  outline-offset: 2px;
+}
+
+/* Headings weight and tracking */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+}
+
+/* Custom scrollbars with warm light theme */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.6);
+  background: var(--bg-subtle);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(51, 65, 85, 0.8);
+  background: var(--border-strong);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(242, 101, 34, 0.6);
+  background: var(--orange-400);
 }
 
 /* Print Stylesheet */

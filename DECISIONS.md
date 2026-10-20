@@ -71,3 +71,32 @@ This document tracks all design decisions, assumptions, and edge case resolution
 - **State Synchronization**: Complete solve request (courses, preferences, filters, section locks) encoded in URL query parameters for shareability.
 - **Celebration Micro-interactions**: Confetti burst on achieving a 100/100 rated routine.
 - **Documentation**: Comprehensive `docs/solver-design.md`, `docs/user-guide.md`, and automated browser subagent test recorded in `uiu_routine_builder_test_*.webp`.
+
+## Decision 6: Phase 9 UI Redesign
+- **Light Theme Migration**:
+  - Full removal of dark theme (`slate-900`, `slate-950`, dark gradients, neon glows).
+  - Strict UIU-inspired warm palette:
+    - Backgrounds: `--bg-page: #FFFBF7`, `--bg-surface: #FFFFFF`, `--bg-subtle: #FFF4EA`, `--bg-accent-soft: #FFE8D1`
+    - Brand orange: `--orange-500: #F26B21`, `--orange-600: #D9560F`, `--orange-400: #FF8A4C`, `--orange-100: #FFEBDB`, `--orange-50: #FFF6EE`
+    - Text: `--text-primary: #1F2937`, `--text-secondary: #4B5563`, `--text-muted: #6B7280`, `--text-on-orange: #FFFFFF`
+    - Borders: `--border: #F1E4D6`, `--border-strong: #E8D2BC`
+    - Soft warm box-shadow: `0 1px 2px rgba(242,107,33,0.06), 0 4px 16px rgba(31,41,55,0.05)`
+  - Contrast adherence: WCAG AA contrast (≥ 4.5:1 body text), using `orange-600` for small text and `orange-500` for primary button fills and large highlights.
+  - Saturated pastel course palette in `src/utils/colors.ts`: 12 distinguishable light tints with 4px darker left border and high-contrast text within the same hue family on a white background.
+- **Preset Removal**:
+  - Presets removed completely (`src/utils/presets.ts` deleted, quick preset bar removed, empty state preset cards removed, preset logic purged from `urlSync.ts` and documentation).
+- **Route Restructuring & Landing Page**:
+  - Landing page placed at `/` with high-impact hero, static timetable mock using real sections, live metric chips (791 sections, 107 courses, 207 faculty), "How it works", 3×3 features grid, interactive faculty teaser, FAQ accordion, and footer.
+  - Routine Builder moved to `/builder`.
+  - Seamless redirection from `/?...` query strings to `/builder?...` preserving all selection parameters.
+- **Course-Wise Faculty Explorer**:
+  - Read-only data presentation built on top of `data/sections.json` and `data/faculty.json`.
+  - Desktop view: Slide-over drawer on the right side (~520px) overlaying the content without shifting the timetable layout.
+  - Mobile view (<768px): Bottom sheet with drag handle.
+  - Features: Faculty-grouped sections with section code, days, time, room, tentative flag, 5-day mini schedule strip, clash warning with current active routine, prefer/avoid quick toggles synced with solver preference state, copy plain-text faculty list, and filters (faculty search, day chips, time of day).
+  - Strict data integrity: Only true schema fields are shown (`id`, `sl`, `program`, `courseCode`, `title`, `section`, `credit`, `kind`, `meetings`, `faculty`, `facultyIds`, `tentative`). No seat counts or unverified metrics.
+- **Builder Layout Refactoring**:
+  - App shell expanded to max-width 1600px with 2-column grid (`minmax(340px, 400px) 1fr`).
+  - Left sidebar sized to content (`position: sticky`, `max-height: calc(100vh - 88px)`, thin custom scrollbar).
+  - Ghost timetable empty state replacing large marketing hero when 0 courses are selected.
+  - Timetable elevated as the primary visual hero in the right pane with compact routine toolbar and collapsible analysis drawer.

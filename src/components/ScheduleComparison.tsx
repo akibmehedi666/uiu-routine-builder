@@ -3,7 +3,7 @@
 import React from 'react';
 import { ScheduleResult, Section } from '../types';
 import { formatTime24 } from '../utils/export';
-import { Check, ArrowRight, GitCompare, Sparkles, AlertCircle } from 'lucide-react';
+import { Check, ArrowRight, GitCompare, AlertCircle } from 'lucide-react';
 import { getCourseColor } from '../utils/colors';
 
 interface ScheduleComparisonProps {
@@ -26,15 +26,15 @@ export function ScheduleComparison({
   const baseSchedule = topSchedules[0];
 
   return (
-    <div className="bg-slate-900/60 rounded-2xl border border-slate-800 p-4 sm:p-6 backdrop-blur-md space-y-4">
+    <div className="bg-surface rounded-card border border-app-border p-4 sm:p-5 shadow-warm space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <GitCompare className="w-5 h-5 text-orange-400" />
-          <h3 className="text-sm font-bold text-white tracking-wide uppercase">
+          <GitCompare className="w-5 h-5 text-orange-500" />
+          <h3 className="text-sm font-bold text-text-primary tracking-wide uppercase">
             Top Schedule Comparison & Diff
           </h3>
         </div>
-        <span className="text-xs text-slate-400">
+        <span className="text-xs text-text-muted">
           Comparing Top {topSchedules.length} Variations
         </span>
       </div>
@@ -57,15 +57,15 @@ export function ScheduleComparison({
             <div
               key={idx}
               onClick={() => onSelectRank(idx)}
-              className={`p-4 rounded-xl border cursor-pointer transition-all ${
+              className={`p-4 rounded-card border cursor-pointer transition-all ${
                 isActive
-                  ? 'bg-slate-800/90 border-orange-500 shadow-lg shadow-orange-500/10 ring-1 ring-orange-500'
-                  : 'bg-slate-950/60 border-slate-800 hover:border-slate-700 hover:bg-slate-900/60'
+                  ? 'bg-orange-50/70 border-orange-500 shadow-warm ring-1 ring-orange-500'
+                  : 'bg-subtle border-app-border hover:border-orange-300 hover:bg-orange-50/40'
               }`}
             >
-              <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-800">
+              <div className="flex items-center justify-between pb-2 mb-2 border-b border-app-border">
                 <div className="flex items-center gap-1.5">
-                  <span className="font-extrabold text-sm text-white">
+                  <span className="font-extrabold text-sm text-text-primary">
                     Rank #{idx + 1}
                   </span>
                   {idx === 0 && (
@@ -74,146 +74,159 @@ export function ScheduleComparison({
                     </span>
                   )}
                   {isActive && (
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-success-bg text-success border border-success/30">
                       Active
                     </span>
                   )}
                 </div>
                 <div className="text-right">
-                  <span className="text-sm font-black text-orange-400">
+                  <span className="text-sm font-black text-orange-600">
                     {sched.score}
                   </span>
-                  <span className="text-[10px] text-slate-400">/100</span>
+                  <span className="text-[10px] text-text-muted">/100</span>
                 </div>
               </div>
 
               {/* Quick Metrics */}
-              <div className="space-y-1.5 text-xs text-slate-300">
+              <div className="space-y-1.5 text-xs text-text-secondary">
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Days with Classes:</span>
-                  <span className="font-semibold">{sched.stats.daysUsed.join(', ')}</span>
+                  <span className="text-text-muted">Days with Classes:</span>
+                  <span className="font-semibold text-text-primary">
+                    {sched.stats.daysUsed.join(', ')}
+                  </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Total Gaps:</span>
-                  <span className="font-semibold">
+                  <span className="text-text-muted">Total Gaps:</span>
+                  <span className="font-semibold text-text-primary">
                     {sched.stats.totalGapMinutes === 0
                       ? '0m (Back-to-Back)'
-                      : `${sched.stats.totalGapMinutes} mins`}
+                      : `${sched.stats.totalGapMinutes}m`}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Class Hours:</span>
+                  <span className="text-text-muted">Sections Diff vs #1:</span>
                   <span className="font-semibold">
-                    {formatTime24(sched.stats.earliestStart)} –{' '}
-                    {formatTime24(sched.stats.latestEnd)}
+                    {idx === 0 ? (
+                      <span className="text-orange-600 font-bold">Baseline</span>
+                    ) : diffCount === 0 ? (
+                      <span className="text-text-muted">Identical Sections</span>
+                    ) : (
+                      <span className="text-orange-600 font-bold">
+                        {diffCount} sections changed
+                      </span>
+                    )}
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Tentative Sections:</span>
-                  <span
-                    className={
-                      sched.stats.tentativeCount > 0 ? 'text-amber-400 font-semibold' : ''
-                    }
-                  >
-                    {sched.stats.tentativeCount}
-                  </span>
-                </div>
+              </div>
 
-                {idx > 0 && (
-                  <div className="pt-2 mt-2 border-t border-slate-800/80 text-[11px] text-orange-300 flex items-center gap-1">
-                    <Sparkles className="w-3.5 h-3.5" />
-                    <span>
-                      {diffCount} section{diffCount !== 1 ? 's' : ''} differ from Rank #1
-                    </span>
-                  </div>
-                )}
+              <div className="mt-3 pt-2 border-t border-app-border flex items-center justify-between text-[11px]">
+                <span className="text-text-muted">
+                  {sched.sections.length} courses • {sched.stats.credits} credits
+                </span>
+                <span
+                  className={`font-semibold flex items-center gap-1 ${
+                    isActive ? 'text-orange-600' : 'text-text-muted hover:text-orange-600'
+                  }`}
+                >
+                  {isActive ? 'Selected' : 'Switch →'}
+                </span>
               </div>
             </div>
           );
         })}
       </div>
 
-      {/* Diff Table: Showing Section Changes across Courses */}
-      <div className="pt-2">
-        <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-          Section-by-Section Variation Diff
-        </h4>
-        <div className="overflow-x-auto rounded-xl border border-slate-800">
+      {/* Course-by-Course Section Matrix */}
+      <div className="mt-4 border border-app-border rounded-card overflow-hidden">
+        <div className="overflow-x-auto">
           <table className="w-full text-xs text-left">
-            <thead className="bg-slate-950 text-slate-400 border-b border-slate-800 font-bold uppercase text-[10px]">
-              <tr>
-                <th className="p-3">Course</th>
-                <th className="p-3">Rank #1 (Best)</th>
-                {topSchedules.slice(1).map((_, i) => (
-                  <th key={i} className="p-3">
-                    Rank #{i + 2}
+            <thead>
+              <tr className="bg-subtle border-b border-app-border text-text-muted font-bold">
+                <th className="py-2.5 px-3">Course</th>
+                {topSchedules.map((_, i) => (
+                  <th
+                    key={i}
+                    className={`py-2.5 px-3 ${
+                      activeRank === i
+                        ? 'text-orange-600 font-extrabold bg-orange-50/50'
+                        : ''
+                    }`}
+                  >
+                    Rank #{i + 1} {i === 0 ? '(Best)' : ''}
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60 bg-slate-900/30">
-              {baseSchedule.sections.map((baseSec) => {
-                const color = getCourseColor(baseSec.courseCode);
+            <tbody className="divide-y divide-app-border bg-surface">
+              {baseSchedule.sections.map((sec) => {
+                const color = getCourseColor(sec.courseCode);
                 return (
-                  <tr key={baseSec.courseCode} className="hover:bg-slate-800/20">
-                    <td className="p-3">
-                      <span className="font-bold text-white block">
-                        {baseSec.courseCode}
-                      </span>
-                      <span className="text-[11px] text-slate-400 line-clamp-1">
-                        {baseSec.title}
-                      </span>
-                    </td>
-
-                    {/* Rank 1 Cell */}
-                    <td className="p-3">
-                      <div className="flex items-center gap-1.5">
-                        <span className="px-2 py-0.5 rounded font-bold bg-slate-800 text-white">
-                          Sec {baseSec.section}
-                        </span>
-                        <span className="text-slate-400 truncate max-w-[120px]">
-                          {baseSec.faculty[0] || 'TBA'}
-                        </span>
-                      </div>
-                      <div className="text-[10px] text-slate-500 mt-0.5">
-                        {baseSec.meetings.map((m) => `${m.day} ${formatTime24(m.start)}`).join(', ')}
+                  <tr key={sec.courseCode} className="hover:bg-subtle/60 transition-colors">
+                    <td className="py-2 px-3 font-semibold text-text-primary whitespace-nowrap">
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="w-2.5 h-2.5 rounded-full"
+                          style={{ backgroundColor: color.accent }}
+                        />
+                        <div>
+                          <span className="font-bold">{sec.courseCode}</span>
+                          <span className="text-[10px] text-text-muted ml-1 hidden sm:inline">
+                            ({sec.kind})
+                          </span>
+                        </div>
                       </div>
                     </td>
 
-                    {/* Other Ranks Cells with Diff Highlights */}
-                    {topSchedules.slice(1).map((sched, sIdx) => {
-                      const otherSec = sched.sections.find(
-                        (s) => s.courseCode === baseSec.courseCode
+                    {topSchedules.map((sched, rIdx) => {
+                      const matchSec = sched.sections.find(
+                        (s) => s.courseCode === sec.courseCode
                       );
-                      const isDifferent = otherSec && otherSec.id !== baseSec.id;
+                      const isDiffFromBase = rIdx > 0 && matchSec?.id !== sec.id;
+
+                      if (!matchSec) {
+                        return (
+                          <td key={rIdx} className="py-2 px-3 text-text-muted italic">
+                            —
+                          </td>
+                        );
+                      }
 
                       return (
-                        <td key={sIdx} className="p-3">
-                          {otherSec ? (
-                            <div>
-                              <div className="flex items-center gap-1.5">
-                                <span
-                                  className={`px-2 py-0.5 rounded font-bold transition-colors ${
-                                    isDifferent
-                                      ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
-                                      : 'bg-slate-800 text-slate-300'
-                                  }`}
-                                >
-                                  Sec {otherSec.section}
+                        <td
+                          key={rIdx}
+                          className={`py-2 px-3 ${
+                            activeRank === rIdx ? 'bg-orange-50/30' : ''
+                          }`}
+                        >
+                          <div
+                            className={`inline-flex flex-col p-1.5 rounded-btn border ${
+                              isDiffFromBase
+                                ? 'bg-orange-50 border-orange-400 text-orange-950 font-semibold'
+                                : 'bg-surface border-app-border text-text-primary'
+                            }`}
+                          >
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-extrabold text-xs">
+                                Sec {matchSec.section}
+                              </span>
+                              {isDiffFromBase && (
+                                <span className="px-1 py-0.2 rounded text-[9px] bg-orange-500 text-white font-bold">
+                                  DIFF
                                 </span>
-                                <span className="text-slate-400 truncate max-w-[120px]">
-                                  {otherSec.faculty[0] || 'TBA'}
-                                </span>
-                              </div>
-                              <div className="text-[10px] text-slate-500 mt-0.5">
-                                {otherSec.meetings
-                                  .map((m) => `${m.day} ${formatTime24(m.start)}`)
-                                  .join(', ')}
-                              </div>
+                              )}
                             </div>
-                          ) : (
-                            <span className="text-slate-600">—</span>
-                          )}
+                            <div className="text-[10px] text-text-muted line-clamp-1">
+                              {matchSec.faculty.join(', ')}
+                            </div>
+                            <div className="text-[10px] text-text-secondary mt-0.5">
+                              {matchSec.meetings
+                                .map(
+                                  (m) =>
+                                    `${m.day} ${formatTime24(m.start)}-${formatTime24(m.end)}`
+                                )
+                                .join(' | ')}
+                            </div>
+                          </div>
                         </td>
                       );
                     })}

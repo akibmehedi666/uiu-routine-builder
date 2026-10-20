@@ -273,7 +273,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#060913] text-slate-100">
+    <div className="min-h-screen flex flex-col bg-page text-text-primary">
       {/* 1. Header */}
       <Header
         onOpenHelp={() => setIsHelpOpen(true)}
@@ -283,7 +283,7 @@ export default function Home() {
       />
 
       {/* 2. Main Workspace Layout */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col lg:flex-row gap-6">
+      <main className="flex-1 max-w-[1600px] w-full mx-auto p-4 sm:p-6 flex flex-col lg:flex-row gap-6">
         {/* Left Sidebar: Course & Faculty Selector */}
         <CourseSelector
           courses={allCourses}
@@ -306,16 +306,16 @@ export default function Home() {
             />
           ) : isSolving ? (
             /* Live Progress / Solving State */
-            <div className="flex-1 flex flex-col items-center justify-center py-20 px-4 text-center bg-slate-900/40 rounded-2xl border border-slate-800">
+            <div className="flex-1 flex flex-col items-center justify-center py-20 px-4 text-center bg-surface rounded-card border border-app-border shadow-warm">
               <Loader2 className="w-10 h-10 text-orange-500 animate-spin mb-4" />
-              <h3 className="text-lg font-bold text-white">
+              <h3 className="text-lg font-bold text-text-primary">
                 Exploring Conflict-Free Combinations...
               </h3>
-              <p className="text-xs text-slate-400 mt-1 max-w-xs">
+              <p className="text-xs text-text-muted mt-1 max-w-xs">
                 Bitmask solver analyzing sections on a background worker thread.
               </p>
               {progress.checkedCount > 0 && (
-                <div className="mt-4 px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-xs font-mono text-orange-400">
+                <div className="mt-4 px-3 py-1.5 rounded-btn bg-subtle border border-app-border text-xs font-mono text-orange-600 font-semibold">
                   {progress.checkedCount.toLocaleString()} nodes checked •{' '}
                   {progress.validCount.toLocaleString()} valid combinations
                 </div>

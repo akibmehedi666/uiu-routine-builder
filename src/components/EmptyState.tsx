@@ -18,7 +18,7 @@ interface EmptyStateProps {
   type: 'welcome' | 'conflict';
   request: SolveRequest;
   errorMessage?: string | null;
-  onApplyPreset: (preset: CoursePreset) => void;
+  onApplyPreset?: (preset: CoursePreset) => void;
   onResetFilters: () => void;
 }
 
@@ -32,67 +32,69 @@ export function EmptyState({
   if (type === 'welcome') {
     return (
       <div className="flex-1 flex flex-col items-center justify-center py-12 px-4 text-center">
-        <div className="w-16 h-16 rounded-3xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center shadow-xl shadow-orange-500/20 text-white font-black text-2xl mb-6 animate-bounce">
+        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-warm text-white font-black text-xl mb-4">
           UIU
         </div>
 
-        <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight max-w-xl">
-          Build Your Conflict-Free Class Routine in Seconds
+        <h2 className="text-xl sm:text-2xl font-black text-text-primary tracking-tight max-w-xl">
+          Build Your Conflict-Free Class Routine
         </h2>
-        <p className="mt-3 text-sm text-slate-400 max-w-lg">
-          Select courses for the <span className="text-orange-400 font-semibold">Fall 2026 Trimester</span>. Our solver client-side analyzes all 791 sections, optimizes for preferred faculty, minimizes gap times, and generates a visual timetable ready for UCAM.
+        <p className="mt-2 text-xs sm:text-sm text-text-muted max-w-lg">
+          Select courses for the <span className="text-orange-600 font-semibold">Fall 2026 Trimester</span>. Our solver analyzes all 791 sections client-side, optimizes for preferred faculty, minimizes gaps, and generates a visual timetable ready for UCAM.
         </p>
 
         {/* Feature Badges */}
-        <div className="flex flex-wrap items-center justify-center gap-2 mt-6">
-          <span className="px-3 py-1 rounded-full bg-slate-800/80 border border-slate-700/80 text-xs font-medium text-slate-300 flex items-center gap-1.5">
-            <Zap className="w-3.5 h-3.5 text-orange-400" />
+        <div className="flex flex-wrap items-center justify-center gap-2 mt-5">
+          <span className="px-3 py-1 rounded-chip bg-surface border border-app-border text-xs font-medium text-text-secondary flex items-center gap-1.5 shadow-2xs">
+            <Zap className="w-3.5 h-3.5 text-orange-500" />
             Instant Web Worker Solver
           </span>
-          <span className="px-3 py-1 rounded-full bg-slate-800/80 border border-slate-700/80 text-xs font-medium text-slate-300 flex items-center gap-1.5">
-            <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
+          <span className="px-3 py-1 rounded-chip bg-surface border border-app-border text-xs font-medium text-text-secondary flex items-center gap-1.5 shadow-2xs">
+            <CheckCircle className="w-3.5 h-3.5 text-success" />
             100% Conflict-Free
           </span>
-          <span className="px-3 py-1 rounded-full bg-slate-800/80 border border-slate-700/80 text-xs font-medium text-slate-300 flex items-center gap-1.5">
-            <Calendar className="w-3.5 h-3.5 text-sky-400" />
+          <span className="px-3 py-1 rounded-chip bg-surface border border-app-border text-xs font-medium text-text-secondary flex items-center gap-1.5 shadow-2xs">
+            <Calendar className="w-3.5 h-3.5 text-sky-600" />
             iCal (.ics) & PDF Export
           </span>
         </div>
 
-        {/* 1-Click Presets Header */}
-        <div className="mt-10 w-full max-w-2xl">
-          <div className="flex items-center justify-between text-xs text-slate-400 mb-3 px-1">
-            <span className="font-semibold text-slate-200 flex items-center gap-1.5">
-              <Sparkles className="w-4 h-4 text-orange-400" />
-              Try a Popular Routine Preset:
-            </span>
-          </div>
+        {/* Quick Presets if provided */}
+        {onApplyPreset && (
+          <div className="mt-8 w-full max-w-2xl">
+            <div className="flex items-center justify-between text-xs text-text-muted mb-2 px-1">
+              <span className="font-semibold text-text-primary flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-orange-500" />
+                Popular Routine Presets:
+              </span>
+            </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
-            {COURSE_PRESETS.map((preset) => (
-              <button
-                key={preset.id}
-                onClick={() => onApplyPreset(preset)}
-                className="p-4 rounded-2xl bg-slate-900/80 hover:bg-slate-850 border border-slate-800 hover:border-orange-500/50 transition-all group shadow-md"
-              >
-                <div className="flex items-center justify-between mb-1">
-                  <span className="font-bold text-sm text-white group-hover:text-orange-400 transition-colors">
-                    {preset.name}
-                  </span>
-                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-300 border border-slate-700">
-                    {preset.program}
-                  </span>
-                </div>
-                <p className="text-xs text-slate-400 line-clamp-2">
-                  {preset.description}
-                </p>
-                <div className="mt-3 flex items-center gap-1 text-[11px] font-semibold text-orange-400 group-hover:translate-x-1 transition-transform">
-                  <span>Load Preset ({preset.courses.length} courses) →</span>
-                </div>
-              </button>
-            ))}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
+              {COURSE_PRESETS.map((preset) => (
+                <button
+                  key={preset.id}
+                  onClick={() => onApplyPreset(preset)}
+                  className="p-4 rounded-card bg-surface hover:bg-subtle border border-app-border hover:border-orange-400 transition-all group shadow-warm text-left"
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="font-bold text-sm text-text-primary group-hover:text-orange-600 transition-colors">
+                      {preset.name}
+                    </span>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-subtle text-text-secondary border border-app-border">
+                      {preset.program}
+                    </span>
+                  </div>
+                  <p className="text-xs text-text-muted line-clamp-2">
+                    {preset.description}
+                  </p>
+                  <div className="mt-2.5 flex items-center gap-1 text-[11px] font-semibold text-orange-600 group-hover:translate-x-1 transition-transform">
+                    <span>Load Preset ({preset.courses.length} courses) →</span>
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     );
   }
@@ -106,32 +108,32 @@ export function EmptyState({
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center py-12 px-4 text-center">
-      <div className="w-16 h-16 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 mb-4 shadow-lg shadow-rose-500/10">
-        <AlertTriangle className="w-8 h-8" />
+      <div className="w-14 h-14 rounded-2xl bg-danger-bg border border-danger/30 flex items-center justify-center text-danger mb-4 shadow-sm">
+        <AlertTriangle className="w-7 h-7" />
       </div>
 
-      <h3 className="text-xl font-bold text-white tracking-tight">
+      <h3 className="text-xl font-bold text-text-primary tracking-tight">
         No Conflict-Free Combinations Found
       </h3>
 
-      <p className="mt-2 text-xs sm:text-sm text-slate-400 max-w-md">
+      <p className="mt-2 text-xs sm:text-sm text-text-muted max-w-md">
         {errorMessage ||
           'All section combinations for the selected courses clash with each other or violate your active filters.'}
       </p>
 
       {/* Suggested Fixes */}
-      <div className="mt-6 p-4 rounded-2xl bg-slate-900/60 border border-slate-800 max-w-md w-full text-left text-xs space-y-2">
-        <div className="font-semibold text-slate-200 mb-2 flex items-center gap-1.5">
-          <HelpCircle className="w-4 h-4 text-orange-400" />
+      <div className="mt-6 p-4 rounded-card bg-surface border border-app-border max-w-md w-full text-left text-xs space-y-2 shadow-warm">
+        <div className="font-semibold text-text-primary mb-2 flex items-center gap-1.5">
+          <HelpCircle className="w-4 h-4 text-orange-500" />
           Recommended Fixes:
         </div>
 
         {hasDayOffFilter && (
-          <div className="flex items-start gap-2 text-slate-300">
-            <span className="text-orange-400">•</span>
+          <div className="flex items-start gap-2 text-text-secondary">
+            <span className="text-orange-500">•</span>
             <span>
               Relax day-off filters: currently excluding{' '}
-              <span className="font-mono text-white">
+              <span className="font-mono font-semibold text-text-primary">
                 {request.filterDayOff.join(', ')}
               </span>
             </span>
@@ -139,8 +141,8 @@ export function EmptyState({
         )}
 
         {hasLocked && (
-          <div className="flex items-start gap-2 text-slate-300">
-            <span className="text-orange-400">•</span>
+          <div className="flex items-start gap-2 text-text-secondary">
+            <span className="text-orange-500">•</span>
             <span>
               Unlock section locks: some locked sections may clash directly with other courses.
             </span>
@@ -148,16 +150,16 @@ export function EmptyState({
         )}
 
         {hasTimeFilter && (
-          <div className="flex items-start gap-2 text-slate-300">
-            <span className="text-orange-400">•</span>
+          <div className="flex items-start gap-2 text-text-secondary">
+            <span className="text-orange-500">•</span>
             <span>
               Widen time window (some required courses might only be offered in early morning or late afternoon).
             </span>
           </div>
         )}
 
-        <div className="flex items-start gap-2 text-slate-300">
-          <span className="text-orange-400">•</span>
+        <div className="flex items-start gap-2 text-text-secondary">
+          <span className="text-orange-500">•</span>
           <span>
             Remove one of the selected courses or choose an alternative elective.
           </span>
@@ -166,9 +168,9 @@ export function EmptyState({
 
       <button
         onClick={onResetFilters}
-        className="mt-6 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-750 text-white text-xs font-semibold border border-slate-700 flex items-center gap-2 transition-all"
+        className="mt-6 px-4 py-2 rounded-btn bg-surface hover:bg-subtle text-text-primary text-xs font-semibold border border-app-border flex items-center gap-2 shadow-xs transition-all hover:border-orange-400"
       >
-        <RotateCcw className="w-4 h-4 text-orange-400" />
+        <RotateCcw className="w-4 h-4 text-orange-500" />
         <span>Reset Filters & Locks</span>
       </button>
     </div>
