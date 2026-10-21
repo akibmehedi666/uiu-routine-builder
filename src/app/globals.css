@@ -59,6 +59,23 @@ h1, h2, h3, h4, h5, h6 {
   background: var(--orange-400);
 }
 
+/* Responsive taller selected-courses box */
+.selected-courses-box {
+  max-height: none;
+}
+@media (min-width: 1024px) {
+  .selected-courses-box {
+    max-height: clamp(380px, 52vh, 560px);
+    flex-shrink: 0;
+  }
+}
+@media (min-width: 1280px) {
+  .selected-courses-box {
+    max-height: clamp(420px, 58vh, 640px);
+    flex-shrink: 0;
+  }
+}
+
 /* Print Stylesheet */
 @media print {
   body {

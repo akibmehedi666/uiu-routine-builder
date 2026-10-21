@@ -60,6 +60,21 @@ export function CourseSelector({
   const [programFilter, setProgramFilter] = useState<'ALL' | 'BSCSE' | 'BSDS'>('ALL');
   const [isFiltersOpen, setIsFiltersOpen] = useState(request.selectedCourses.length > 0);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const courseListRef = useRef<HTMLDivElement>(null);
+  const prevCourseCountRef = useRef(request.selectedCourses.length);
+
+  // When a course is added, scroll so the new card's Faculty Pref block is inside the visible area
+  useEffect(() => {
+    if (request.selectedCourses.length > prevCourseCountRef.current) {
+      if (courseListRef.current && request.selectedCourses.length > 1) {
+        courseListRef.current.scrollTo({
+          top: courseListRef.current.scrollHeight,
+          behavior: 'smooth',
+        });
+      }
+    }
+    prevCourseCountRef.current = request.selectedCourses.length;
+  }, [request.selectedCourses.length]);
 
   // Undo and remove state
   interface UndoState {
@@ -685,7 +700,7 @@ export function CourseSelector({
       </div>
 
       {/* 3. Selected Courses List */}
-      <div className="space-y-2.5 max-h-[380px] overflow-y-auto pr-1">
+      <div ref={courseListRef} className="selected-courses-box space-y-2.5 overflow-y-auto pr-1">
         {selectedFYDPCourses.length > 1 && (
           <div className="p-2.5 rounded-btn bg-amber-50 border border-amber-300 text-amber-800 text-xs flex items-center gap-2">
             <AlertTriangle className="w-4 h-4 flex-shrink-0 text-amber-600" />
@@ -904,7 +919,7 @@ export function CourseSelector({
 
                     {/* Faculty Preferences */}
                     {facultyStats.size > 0 && (
-                      <details className="text-[11px] group/details">
+                      <details open className="text-[11px] group/details">
                         <summary className="cursor-pointer text-text-muted hover:text-text-primary select-none flex items-center justify-between py-1">
                           <span>
                             Faculty Preference{' '}
