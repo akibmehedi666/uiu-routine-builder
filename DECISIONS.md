@@ -282,11 +282,22 @@ Following a session interruption audit:
   - **Course Directory (`/faculty`)**:
     - Displays `"Schedule set manually"` with builder CTA when data has 0 sections for a manual course.
     - Displays real sections with a manual schedule callout banner when data has departmental sections.
+## Decision 12: Course Removal Discoverability & Undo System (Phase 15)
+- **Problem**: Users found it difficult to discover and trigger the course removal action due to low visual affordance and small tap targets on course rows.
+- **What Changed**:
+  - **High-Affordance Remove Button**: Each selected course row features a visible, high-contrast button with a `Trash2` icon and "Remove" text on desktop (>= 768px), styled with `text-danger`, subtle hover red background (`bg-danger-bg`), and visible focus rings.
+  - **"Clear All" with Confirmation Popover**: When 2 or more courses are selected, a "Clear all" ghost button appears in the course selection header. Clicking opens a non-modal confirmation popover with an optional checkbox to also reset day-off/time filters and preferences.
+  - **Search Dropdown Toggle**: Courses already selected remain in the search autocomplete results instead of being hidden. They show an `"Added"` badge with a `Check` icon that transitions to `"Added · click to remove"` with a `Trash2` icon on hover and focus. Clicking removes the course directly from the search dropdown.
+  - **Undo Toast**: A floating notification appears at bottom-center (desktop) or above the bottom bar (mobile) upon single course removal or clear-all, auto-dismissing after 6 seconds. It completely restores previous state, including locked sections, preferred/avoided faculty, and paired co-requisites.
+  - **Theory-Lab Co-requisite Removal Prompt**: Removing a theory course with an active lab triggers an inline prompt asking whether to remove both or keep the lab only.
+  - **First-Time Tip**: A small muted, dismissible tip is shown under the selected course list on first use ("Tip: click Remove or press Delete to drop a course."), persisted in `localStorage` (`uiu_routine_dismiss_remove_hint`) with `try/catch`.
+- **Keyboard Shortcuts & Navigation**:
+  - Selected course cards are focusable (`tabIndex={0}`, `role="listitem"`).
+  - Pressing `Delete` or `Backspace` on a focused course card removes it immediately.
+  - Tab order flows logically: `row card > sections explorer > locked section select > faculty preferences > lab toggle > remove button`.
+  - Pressing `u`, `U`, or `Ctrl+Z` / `Cmd+Z` triggers the undo action when the toast is active.
+- **Mobile Hit Area Considerations**:
+  - The remove button enforces a minimum `44x44px` hit target on touch viewports (`min-w-[44px] min-h-[44px]` on mobile) per WCAG 2.5.5, while maintaining a compact visual size without overflowing on 320px screens. On desktop, it transitions to a compact `32x32px` minimum button with clear label text.
 - **Verification**:
-  - 48 tests passing across all 5 test suites.
-  - Next.js production build (`npm run build`) compiles cleanly with 0 type errors.
-
-
-
-
-
+  - All 48 Vitest test suites pass (`npm test`).
+  - Next.js production build (`npm run build`) compiles cleanly without lint or type errors.
