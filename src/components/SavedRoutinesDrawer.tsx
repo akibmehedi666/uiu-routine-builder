@@ -387,10 +387,10 @@ export function SavedRoutinesDrawer({
       <div className="absolute inset-y-0 right-0 max-w-full flex">
         <div
           ref={drawerRef}
-          className="w-screen max-w-[480px] bg-surface border-l border-app-border shadow-warm-lg flex flex-col h-full text-xs text-text-primary animate-in slide-in-from-right duration-200"
+          className="w-screen sm:max-w-[480px] bg-surface border-l border-app-border shadow-warm-lg flex flex-col h-full text-xs text-text-primary animate-in slide-in-from-right duration-200 safe-pb"
         >
           {/* 1. Header */}
-          <div className="p-4 border-b border-app-border flex items-center justify-between shrink-0 bg-surface">
+          <div className="p-4 border-b border-app-border flex items-center justify-between shrink-0 bg-surface safe-pt">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-btn bg-orange-100 border border-orange-200 text-orange-600 flex items-center justify-center shrink-0">
                 <Bookmark className="w-4 h-4 fill-orange-500 text-orange-500" />
@@ -410,9 +410,9 @@ export function SavedRoutinesDrawer({
               {savedRoutines.length > 0 && (
                 <button
                   onClick={handleExportAll}
-                  className="p-1.5 rounded-btn text-text-secondary hover:text-text-primary hover:bg-subtle border border-transparent hover:border-app-border transition-colors"
-                  title="Export all saved routines (.json)"
-                  aria-label="Export all"
+                  className="p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-btn text-text-muted hover:text-text-primary hover:bg-subtle transition-colors"
+                  title="Export all to JSON backup"
+                  aria-label="Export backup"
                 >
                   <Download className="w-4 h-4" />
                 </button>
@@ -421,8 +421,8 @@ export function SavedRoutinesDrawer({
               {/* Import backup button */}
               <button
                 onClick={() => setIsImportModalOpen(true)}
-                className="p-1.5 rounded-btn text-text-secondary hover:text-text-primary hover:bg-subtle border border-transparent hover:border-app-border transition-colors"
-                title="Import routines from .json"
+                className="p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-btn text-text-muted hover:text-text-primary hover:bg-subtle transition-colors"
+                title="Import routines from JSON"
                 aria-label="Import routines"
               >
                 <Upload className="w-4 h-4" />
@@ -431,7 +431,7 @@ export function SavedRoutinesDrawer({
               {/* Close */}
               <button
                 onClick={onClose}
-                className="p-1.5 rounded-btn text-text-muted hover:text-text-primary hover:bg-subtle transition-colors ml-1"
+                className="p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-btn text-text-muted hover:text-text-primary hover:bg-subtle transition-colors ml-1"
                 aria-label="Close drawer"
               >
                 <X className="w-4 h-4" />
@@ -922,8 +922,20 @@ export function SavedRoutinesDrawer({
 
       {/* Import Modal */}
       {isImportModalOpen && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-surface border border-app-border rounded-card max-w-md w-full p-5 shadow-warm-lg space-y-4">
+        <div
+          onClick={() => {
+            setIsImportModalOpen(false);
+            setImportFileContent(null);
+            setImportParsedRoutines(null);
+            setImportError(null);
+          }}
+          className="fixed inset-0 z-60 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-surface border border-app-border rounded-t-2xl sm:rounded-card max-w-md w-full p-5 shadow-warm-lg space-y-4 max-h-[90dvh] overflow-y-auto safe-pb animate-in slide-in-from-bottom-4 sm:slide-in-from-bottom-0"
+          >
+            <div className="w-12 h-1.5 bg-slate-300 rounded-full mx-auto mb-2 sm:hidden" />
             <div className="flex items-center justify-between pb-2 border-b border-app-border">
               <div className="flex items-center gap-1.5 font-bold text-sm text-text-primary">
                 <Upload className="w-4 h-4 text-orange-500" />
@@ -936,7 +948,8 @@ export function SavedRoutinesDrawer({
                   setImportParsedRoutines(null);
                   setImportError(null);
                 }}
-                className="p-1 text-text-muted hover:text-text-primary"
+                className="p-1.5 min-w-[36px] min-h-[36px] flex items-center justify-center text-text-muted hover:text-text-primary rounded-btn"
+                aria-label="Close import modal"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -952,7 +965,7 @@ export function SavedRoutinesDrawer({
                 type="file"
                 accept=".json,application/json"
                 onChange={handleFileChange}
-                className="w-full text-xs file:mr-3 file:py-1.5 file:px-3 file:rounded-btn file:border file:border-app-border file:text-xs file:font-semibold file:bg-subtle file:text-text-primary hover:file:bg-orange-50 cursor-pointer"
+                className="w-full text-xs file:mr-3 file:py-2 file:px-3 file:rounded-btn file:border file:border-app-border file:text-xs file:font-semibold file:bg-subtle file:text-text-primary hover:file:bg-orange-50 cursor-pointer"
               />
 
               {importError && (
@@ -974,13 +987,13 @@ export function SavedRoutinesDrawer({
                   <div className="flex items-center gap-2 pt-2">
                     <button
                       onClick={() => handleConfirmImport('merge')}
-                      className="px-3 py-1.5 rounded-btn bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-xs transition-colors"
+                      className="flex-1 py-2 rounded-btn bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-xs transition-colors"
                     >
                       Merge (skip duplicates)
                     </button>
                     <button
                       onClick={() => handleConfirmImport('replace')}
-                      className="px-3 py-1.5 rounded-btn bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs shadow-xs transition-colors"
+                      className="flex-1 py-2 rounded-btn bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs shadow-xs transition-colors"
                     >
                       Replace all current
                     </button>
@@ -994,8 +1007,15 @@ export function SavedRoutinesDrawer({
 
       {/* Confirm Delete All Modal */}
       {isConfirmDeleteAllOpen && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-surface border border-app-border rounded-card max-w-sm w-full p-5 shadow-warm-lg space-y-3">
+        <div
+          onClick={() => setIsConfirmDeleteAllOpen(false)}
+          className="fixed inset-0 z-60 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-surface border border-app-border rounded-t-2xl sm:rounded-card max-w-sm w-full p-5 shadow-warm-lg space-y-3 safe-pb animate-in slide-in-from-bottom-4 sm:slide-in-from-bottom-0"
+          >
+            <div className="w-12 h-1.5 bg-slate-300 rounded-full mx-auto mb-2 sm:hidden" />
             <h3 className="font-bold text-sm text-text-primary">
               Delete all saved routines?
             </h3>
@@ -1006,7 +1026,7 @@ export function SavedRoutinesDrawer({
             <div className="flex items-center justify-end gap-2 pt-2">
               <button
                 onClick={() => setIsConfirmDeleteAllOpen(false)}
-                className="px-3 py-1.5 rounded-btn bg-subtle text-text-secondary text-xs font-medium"
+                className="px-3.5 py-2 min-h-[38px] rounded-btn bg-subtle text-text-secondary text-xs font-medium"
               >
                 Cancel
               </button>
@@ -1015,7 +1035,7 @@ export function SavedRoutinesDrawer({
                   onDeleteAll();
                   setIsConfirmDeleteAllOpen(false);
                 }}
-                className="px-3 py-1.5 rounded-btn bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold shadow-xs"
+                className="px-3.5 py-2 min-h-[38px] rounded-btn bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold shadow-xs"
               >
                 Yes, delete all
               </button>

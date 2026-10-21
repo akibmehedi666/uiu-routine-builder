@@ -25,8 +25,15 @@ export function ShortcutsModal({ isOpen, onClose }: ShortcutsModalProps) {
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in">
-      <div className="bg-surface border border-app-border rounded-card max-w-md w-full p-5 shadow-warm space-y-4">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-surface border border-app-border rounded-t-2xl sm:rounded-card max-w-md w-full p-5 shadow-warm space-y-4 max-h-[90dvh] overflow-y-auto safe-pb animate-in slide-in-from-bottom-4 sm:slide-in-from-bottom-0"
+      >
+        <div className="w-12 h-1.5 bg-slate-300 rounded-full mx-auto mb-2 sm:hidden" />
         <div className="flex items-center justify-between pb-3 border-b border-app-border">
           <div className="flex items-center gap-2">
             <Keyboard className="w-5 h-5 text-orange-500" />
@@ -36,7 +43,7 @@ export function ShortcutsModal({ isOpen, onClose }: ShortcutsModalProps) {
           </div>
           <button
             onClick={onClose}
-            className="text-text-muted hover:text-text-primary p-1.5 rounded-btn hover:bg-subtle transition-colors"
+            className="text-text-muted hover:text-text-primary p-2 min-w-[36px] min-h-[36px] rounded-btn hover:bg-subtle transition-colors flex items-center justify-center"
             aria-label="Close shortcuts"
           >
             <X className="w-4 h-4" />
@@ -60,7 +67,7 @@ export function ShortcutsModal({ isOpen, onClose }: ShortcutsModalProps) {
         <div className="pt-2 text-right">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-btn bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs shadow-sm transition-colors"
+            className="w-full sm:w-auto px-4 py-2.5 rounded-btn bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs shadow-sm transition-colors"
           >
             Got it
           </button>
@@ -80,8 +87,15 @@ export function HelpGuideModal({ isOpen, onClose }: HelpGuideModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in">
-      <div className="bg-surface border border-app-border rounded-card max-w-lg w-full p-6 shadow-warm space-y-4 max-h-[85vh] overflow-y-auto">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-surface border border-app-border rounded-t-2xl sm:rounded-card max-w-lg w-full p-5 sm:p-6 shadow-warm space-y-4 max-h-[90dvh] overflow-y-auto safe-pb animate-in slide-in-from-bottom-4 sm:slide-in-from-bottom-0"
+      >
+        <div className="w-12 h-1.5 bg-slate-300 rounded-full mx-auto mb-2 sm:hidden" />
         <div className="flex items-center justify-between pb-3 border-b border-app-border">
           <div className="flex items-center gap-2">
             <HelpCircle className="w-5 h-5 text-orange-500" />
@@ -91,7 +105,7 @@ export function HelpGuideModal({ isOpen, onClose }: HelpGuideModalProps) {
           </div>
           <button
             onClick={onClose}
-            className="text-text-muted hover:text-text-primary p-1.5 rounded-btn hover:bg-subtle transition-colors"
+            className="text-text-muted hover:text-text-primary p-2 min-w-[36px] min-h-[36px] rounded-btn hover:bg-subtle transition-colors flex items-center justify-center"
             aria-label="Close guide"
           >
             <X className="w-4 h-4" />
@@ -99,46 +113,56 @@ export function HelpGuideModal({ isOpen, onClose }: HelpGuideModalProps) {
         </div>
 
         <div className="space-y-4 text-xs text-text-secondary leading-relaxed">
-          <div>
-            <h4 className="font-bold text-text-primary text-sm mb-1">1. Select Your Courses</h4>
-            <p className="text-text-muted">
-              Type any course code (e.g. <code>CSE 1111</code>) or title in the search box.
-              If a course has a co-requisite lab (like CSE 1112 for CSE 1111), a single-click button appears to immediately add the lab.
+          <section className="space-y-1.5">
+            <h4 className="font-bold text-text-primary text-xs uppercase tracking-wider">
+              1. Add Courses
+            </h4>
+            <p>
+              Use the course search box or filter buttons (BSCSE / BSDS) to find and select
+              courses you plan to enroll in. If a theory course has an associated lab, an
+              option to add the co-requisite lab will appear automatically.
             </p>
-          </div>
+          </section>
 
-          <div>
-            <h4 className="font-bold text-text-primary text-sm mb-1">2. Faculty Explorer & Preferences</h4>
-            <p className="text-text-muted">
-              Click any course to open the Faculty Explorer. View all offering faculty, sections, times, and day distribution.
-              Mark professors as &quot;Prefer&quot; or &quot;Avoid&quot; to guide solver scoring.
+          <section className="space-y-1.5">
+            <h4 className="font-bold text-text-primary text-xs uppercase tracking-wider">
+              2. Lock Sections & Set Faculty Preferences
+            </h4>
+            <p>
+              Expand any course in your selected list to lock in a mandatory section or
+              express preference for specific faculty. Use the <strong>Sections Explorer</strong>{' '}
+              to inspect all available timings and teachers before locking.
             </p>
-          </div>
+          </section>
 
-          <div>
-            <h4 className="font-bold text-text-primary text-sm mb-1">3. Instant Client-Side Ranking</h4>
-            <p className="text-text-muted">
-              A high-performance bitmask constraint solver runs directly in your browser inside a Web Worker.
-              It prunes billions of theoretical clashes in milliseconds and scores valid combinations (0 to 100) based on your priorities.
+          <section className="space-y-1.5">
+            <h4 className="font-bold text-text-primary text-xs uppercase tracking-wider">
+              3. Filter Days & Optimize Weights
+            </h4>
+            <p>
+              Under <em>Filters & Scoring Weights</em>, you can designate required days off
+              (such as avoiding all classes on Saturday or Tuesday) or restrict the daily time
+              window. The builder ranks conflict-free combinations according to your customized
+              weights.
             </p>
-          </div>
+          </section>
 
-          <div>
-            <h4 className="font-bold text-text-primary text-sm mb-1">4. Enter into UCAM</h4>
-            <p className="text-text-muted">
-              Click &quot;Copy UCAM&quot; to copy course codes, section letters, and time slots directly to your clipboard.
-              You can also export to Google Calendar / Apple Calendar via the <code>.ics</code> download button or print a clean schedule.
+          <section className="space-y-1.5">
+            <h4 className="font-bold text-text-primary text-xs uppercase tracking-wider">
+              4. Export & Share Your Routine
+            </h4>
+            <p>
+              Once you find the ideal combination, click <strong>Save</strong> to keep it in My
+              Saved Routines, <strong>Export</strong> to download high-res PNG, CSV, or calendar
+              ICS files, or click <strong>Share</strong> to send a direct link to your friends.
             </p>
-          </div>
+          </section>
         </div>
 
-        <div className="pt-3 border-t border-app-border flex justify-between items-center">
-          <span className="text-[11px] text-text-muted">
-            Fall 2026 Offering • Dept. of CSE, UIU
-          </span>
+        <div className="pt-2 text-right">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-btn bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs shadow-sm transition-colors"
+            className="w-full sm:w-auto px-4 py-2.5 rounded-btn bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs shadow-sm transition-colors"
           >
             Close Guide
           </button>
@@ -153,7 +177,7 @@ interface FavoritesModalProps {
   isOpen: boolean;
   onClose: () => void;
   favorites: { id: string; name: string; schedule: ScheduleResult }[];
-  onSelectFavorite: (schedule: ScheduleResult) => void;
+  onSelectFavorite: (sched: ScheduleResult) => void;
   onRemoveFavorite: (id: string) => void;
 }
 
@@ -167,8 +191,15 @@ export function FavoritesModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in">
-      <div className="bg-surface border border-app-border rounded-card max-w-lg w-full p-5 shadow-warm space-y-4 max-h-[85vh] overflow-y-auto">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-surface border border-app-border rounded-t-2xl sm:rounded-card max-w-lg w-full p-5 shadow-warm space-y-4 max-h-[90dvh] overflow-y-auto safe-pb animate-in slide-in-from-bottom-4 sm:slide-in-from-bottom-0"
+      >
+        <div className="w-12 h-1.5 bg-slate-300 rounded-full mx-auto mb-2 sm:hidden" />
         <div className="flex items-center justify-between pb-3 border-b border-app-border">
           <div className="flex items-center gap-2">
             <Star className="w-5 h-5 text-amber-500 fill-amber-500" />
@@ -178,7 +209,7 @@ export function FavoritesModal({
           </div>
           <button
             onClick={onClose}
-            className="text-text-muted hover:text-text-primary p-1.5 rounded-btn hover:bg-subtle transition-colors"
+            className="text-text-muted hover:text-text-primary p-2 min-w-[36px] min-h-[36px] rounded-btn hover:bg-subtle transition-colors flex items-center justify-center"
             aria-label="Close saved routines"
           >
             <X className="w-4 h-4" />
@@ -227,13 +258,13 @@ export function FavoritesModal({
                       onSelectFavorite(fav.schedule);
                       onClose();
                     }}
-                    className="px-2.5 py-1 rounded-btn bg-surface hover:bg-subtle text-text-primary text-xs font-semibold border border-app-border transition-colors"
+                    className="px-2.5 py-1.5 rounded-btn bg-surface hover:bg-subtle text-text-primary text-xs font-semibold border border-app-border transition-colors"
                   >
                     View
                   </button>
                   <button
                     onClick={() => onRemoveFavorite(fav.id)}
-                    className="p-1.5 text-text-muted hover:text-danger hover:bg-danger-bg rounded-btn transition-colors"
+                    className="p-2 min-w-[36px] min-h-[36px] flex items-center justify-center text-text-muted hover:text-danger hover:bg-danger-bg rounded-btn transition-colors"
                     title="Delete"
                     aria-label="Delete saved routine"
                   >

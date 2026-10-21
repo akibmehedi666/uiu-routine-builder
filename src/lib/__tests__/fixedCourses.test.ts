@@ -150,12 +150,7 @@ describe('Manual Schedule FYDP Pure Helpers & Integration', () => {
       lockedSections: {},
       preferredFaculty: {},
       avoidFaculty: {},
-      dayOffFilters: [],
-      timeRestrictions: {
-        earliestStart: null,
-        latestEnd: null,
-        maxGapMinutes: null,
-      },
+      filterDayOff: [],
       weights: defaultWeights,
     };
 

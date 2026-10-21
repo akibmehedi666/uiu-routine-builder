@@ -139,26 +139,34 @@ export function SaveRoutinePopover({
   };
 
   return (
-    <div
-      ref={popoverRef}
-      className="absolute right-0 top-full mt-2 w-80 sm:w-96 bg-surface border border-app-border rounded-card shadow-warm-lg p-4 z-50 text-xs text-text-primary animate-in fade-in zoom-in-95"
-      role="dialog"
-      aria-label="Save routine popover"
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between pb-2.5 mb-3 border-b border-app-border">
-        <div className="flex items-center gap-1.5 font-bold text-sm text-text-primary">
-          <Bookmark className="w-4 h-4 text-orange-500 fill-orange-500" />
-          <span>{isEditing ? 'Saved Routine Settings' : 'Save Routine'}</span>
+    <>
+      {/* Mobile backdrop */}
+      <div
+        className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 sm:hidden"
+        onClick={onClose}
+        aria-hidden="true"
+      />
+      <div
+        ref={popoverRef}
+        className="fixed inset-x-0 bottom-0 sm:absolute sm:inset-x-auto sm:bottom-auto sm:right-0 sm:top-full sm:mt-2 w-full sm:w-96 bg-surface border-t sm:border border-app-border rounded-t-2xl sm:rounded-card shadow-warm-lg p-4 z-50 text-xs text-text-primary safe-pb animate-in slide-in-from-bottom-4 sm:zoom-in-95 max-h-[90dvh] overflow-y-auto"
+        role="dialog"
+        aria-label="Save routine popover"
+      >
+        <div className="w-12 h-1.5 bg-slate-300 rounded-full mx-auto mb-2 sm:hidden" />
+        {/* Header */}
+        <div className="flex items-center justify-between pb-2.5 mb-3 border-b border-app-border">
+          <div className="flex items-center gap-1.5 font-bold text-sm text-text-primary">
+            <Bookmark className="w-4 h-4 text-orange-500 fill-orange-500" />
+            <span>{isEditing ? 'Saved Routine Settings' : 'Save Routine'}</span>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-1.5 min-w-[36px] min-h-[36px] flex items-center justify-center text-text-muted hover:text-text-primary rounded-btn hover:bg-subtle transition-colors"
+            aria-label="Close"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
-        <button
-          onClick={onClose}
-          className="p-1 text-text-muted hover:text-text-primary rounded-btn hover:bg-subtle transition-colors"
-          aria-label="Close"
-        >
-          <X className="w-4 h-4" />
-        </button>
-      </div>
 
       {/* Duplicate warning (if not already editing and not forcing new copy) */}
       {duplicate && !forceNewCopy && !isEditing ? (
@@ -356,6 +364,7 @@ export function SaveRoutinePopover({
           </div>
         </form>
       )}
-    </div>
+      </div>
+    </>
   );
 }

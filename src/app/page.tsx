@@ -96,62 +96,66 @@ export default function LandingPage() {
             <span>Updated for Fall 2026 Trimester</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-text-primary tracking-tight max-w-4xl mx-auto leading-tight">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-text-primary tracking-tight max-w-4xl mx-auto leading-tight">
             Build your conflict-free class routine in seconds.
           </h1>
 
-          <p className="mt-5 text-base sm:text-lg text-text-secondary max-w-2xl mx-auto leading-relaxed">
+          <p className="mt-4 sm:mt-5 text-base sm:text-lg text-text-secondary max-w-2xl mx-auto leading-relaxed">
             Pick your courses, set your faculty and time preferences, and get the best possible Fall 2026 routine, ready to copy into UCAM.
           </p>
 
-          {/* Action CTAs */}
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          {/* Action CTAs: Full-width on phone (min-h 48px), neatly arranged on desktop */}
+          <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 max-w-md sm:max-w-none mx-auto">
             <Link
               href="/builder"
-              className="px-6 py-3 rounded-btn bg-orange-500 hover:bg-orange-600 text-white font-semibold shadow-warm flex items-center gap-2 text-base transition-transform hover:-translate-y-0.5"
+              className="w-full sm:w-auto min-h-[48px] px-6 py-3 rounded-btn bg-orange-500 hover:bg-orange-600 text-white font-semibold shadow-warm flex items-center justify-center gap-2 text-base transition-transform active:scale-[0.98] hover:-translate-y-0.5"
             >
               <span>Start building</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
             <a
               href="#how-it-works"
-              className="px-6 py-3 rounded-btn bg-surface hover:bg-subtle text-text-primary font-semibold border border-app-border shadow-xs text-base transition-colors hover:border-orange-300"
+              className="w-full sm:w-auto min-h-[48px] px-6 py-3 rounded-btn bg-surface hover:bg-subtle text-text-primary font-semibold border border-app-border shadow-xs flex items-center justify-center text-base transition-colors hover:border-orange-300"
             >
               See how it works
             </a>
           </div>
 
-          {/* Live numbers trust strip */}
-          <div className="mt-10 inline-flex flex-wrap items-center justify-center gap-2 sm:gap-3 py-2 px-4 rounded-chip bg-surface border border-app-border shadow-2xs text-xs sm:text-sm text-text-secondary font-medium">
-            <span className="text-text-primary font-bold">{STATS.sections} sections</span>
-            <span className="text-border-strong">•</span>
-            <span className="text-text-primary font-bold">{STATS.courses} courses</span>
-            <span className="text-border-strong">•</span>
-            <span className="text-text-primary font-bold">{STATS.faculty} faculty</span>
-            <span className="text-border-strong">•</span>
-            <span className="text-orange-600 font-semibold">{STATS.programs}</span>
+          {/* Live numbers trust strip: Clean 2x2 grid on mobile, flex strip on tablet/desktop */}
+          <div className="mt-8 sm:mt-10 max-w-md sm:max-w-none mx-auto">
+            <div className="grid grid-cols-2 sm:inline-flex sm:flex-wrap items-center justify-center gap-2 sm:gap-3 py-2 px-3 sm:px-4 rounded-card sm:rounded-chip bg-surface border border-app-border shadow-2xs text-xs sm:text-sm text-text-secondary font-medium">
+              <span className="text-text-primary font-bold text-center sm:text-left py-1 sm:py-0">{STATS.sections} sections</span>
+              <span className="hidden sm:inline text-border-strong">•</span>
+              <span className="text-text-primary font-bold text-center sm:text-left py-1 sm:py-0">{STATS.courses} courses</span>
+              <span className="hidden sm:inline text-border-strong">•</span>
+              <span className="text-text-primary font-bold text-center sm:text-left py-1 sm:py-0">{STATS.faculty} faculty</span>
+              <span className="hidden sm:inline text-border-strong">•</span>
+              <span className="text-orange-600 font-semibold text-center sm:text-left py-1 sm:py-0 col-span-2 sm:col-span-1">{STATS.programs}</span>
+            </div>
           </div>
 
-          {/* Static polished mock of timetable grid using real data */}
-          <div className="mt-12 max-w-4xl mx-auto p-3 sm:p-5 rounded-card bg-surface border border-app-border shadow-warm text-left">
-            <div className="flex items-center justify-between pb-3 mb-3 border-b border-app-border text-xs">
+          {/* Static polished mock of timetable grid using real data: Contained and horizontally scrollable on mobile */}
+          <div className="mt-10 sm:mt-12 max-w-4xl mx-auto p-3 sm:p-5 rounded-card bg-surface border border-app-border shadow-warm text-left">
+            <div className="flex items-center justify-between pb-3 mb-3 border-b border-app-border text-xs gap-2">
               <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-orange-500 inline-block" />
-                <span className="font-bold text-text-primary">Sample Optimal Schedule Preview</span>
+                <span className="w-3 h-3 rounded-full bg-orange-500 inline-block shrink-0" />
+                <span className="font-bold text-text-primary line-clamp-1">Sample Optimal Schedule Preview</span>
               </div>
-              <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold text-[11px]">
-                Score 98/100 • Conflict-Free
+              <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold text-[11px] shrink-0">
+                Score 98/100
               </span>
             </div>
 
-            {/* Timetable Header */}
-            <div className="grid grid-cols-5 gap-2 pb-2 border-b border-app-border text-center font-bold text-xs uppercase text-text-muted">
-              <div>Sat</div>
-              <div>Sun</div>
-              <div>Mon</div>
-              <div>Tue</div>
-              <div>Wed</div>
-            </div>
+            <div className="overflow-x-auto -mx-1 px-1 pb-1">
+              <div className="min-w-[580px] sm:min-w-0">
+                {/* Timetable Header */}
+                <div className="grid grid-cols-5 gap-2 pb-2 border-b border-app-border text-center font-bold text-xs uppercase text-text-muted">
+                  <div>Sat</div>
+                  <div>Sun</div>
+                  <div>Mon</div>
+                  <div>Tue</div>
+                  <div>Wed</div>
+                </div>
 
             {/* Course blocks layout */}
             <div className="grid grid-cols-5 gap-2 mt-3 text-xs">
@@ -222,7 +226,12 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
-      </section>
+        <p className="sm:hidden text-center text-[11px] text-text-muted pt-2 border-t border-app-border/60">
+          Swipe horizontally to view full 5-day week &rarr;
+        </p>
+      </div>
+    </div>
+  </section>
 
       {/* 3. How It Works */}
       <section id="how-it-works" className="py-16 md:py-24 bg-surface border-y border-app-border">
@@ -483,11 +492,11 @@ export default function LandingPage() {
                 >
                   <button
                     onClick={() => setExpandedFaq(isOpen ? null : idx)}
-                    className="w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 font-bold text-sm text-text-primary hover:text-orange-600 transition-colors"
+                    className="w-full min-h-[48px] p-4 sm:p-5 text-left flex items-center justify-between gap-4 font-bold text-sm text-text-primary hover:text-orange-600 transition-colors"
                   >
                     <span>{faq.q}</span>
                     <ChevronDown
-                      className={`w-4 h-4 text-text-muted transition-transform duration-200 ${
+                      className={`w-4 h-4 text-text-muted transition-transform duration-200 shrink-0 ${
                         isOpen ? 'rotate-180 text-orange-600' : ''
                       }`}
                     />
@@ -513,10 +522,10 @@ export default function LandingPage() {
           <p className="text-sm text-text-secondary max-w-md mx-auto">
             Build your Fall 2026 routine in seconds without manual paper clashing.
           </p>
-          <div>
+          <div className="max-w-md sm:max-w-none mx-auto">
             <Link
               href="/builder"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-btn bg-orange-500 hover:bg-orange-600 text-white font-bold text-base shadow-warm transition-transform hover:-translate-y-0.5"
+              className="w-full sm:w-auto min-h-[48px] inline-flex items-center justify-center gap-2 px-6 py-3 rounded-btn bg-orange-500 hover:bg-orange-600 text-white font-bold text-base shadow-warm transition-transform active:scale-[0.98] hover:-translate-y-0.5"
             >
               <span>Build my routine now</span>
               <ArrowRight className="w-4 h-4" />

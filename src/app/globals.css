@@ -27,7 +27,39 @@ body {
   background-color: var(--bg-page);
   color: var(--text-primary);
   min-height: 100vh;
+  min-height: 100dvh;
   overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Eliminate 300ms mobile tap delay and prevent double-tap zoom on buttons/links */
+button,
+[role="button"],
+a,
+input[type="submit"],
+input[type="button"],
+select {
+  touch-action: manipulation;
+}
+
+/* Prevent iOS Safari auto-zoom on input focus by guaranteeing 16px minimum on mobile */
+@media (max-width: 767px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Safe area padding utilities for notched phones and home indicator bars */
+.safe-pb {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.safe-pt {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.safe-bottom-bar {
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.5rem);
 }
 
 /* Accessible focus ring on all interactive elements */

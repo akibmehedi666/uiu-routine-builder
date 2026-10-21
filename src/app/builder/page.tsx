@@ -35,7 +35,7 @@ import {
 } from '../../lib/fixedCourses';
 import { formatTime24 } from '../../utils/export';
 import confetti from 'canvas-confetti';
-import { Loader2 } from 'lucide-react';
+import { Loader2, BookOpen, Sliders, Calendar, ArrowRight, Sparkles } from 'lucide-react';
 import {
   SavedRoutine,
   SavedRoutineColor,
@@ -114,6 +114,37 @@ export default function BuilderPage() {
   // Faculty Explorer state
   const [explorerCourseCode, setExplorerCourseCode] = useState<string | null>(null);
   const [previewSection, setPreviewSection] = useState<Section | null>(null);
+
+  // Mobile Workspace Navigation Tab (< 1024px)
+  const [mobileTab, setMobileTab] = useState<'courses' | 'preferences' | 'results'>('courses');
+
+  // Compute active filters count for Preferences mobile badge
+  const activeFiltersCount = useMemo(() => {
+    let count = 0;
+    if (request.filterDayOff && request.filterDayOff.length > 0) {
+      count += request.filterDayOff.length;
+    }
+    if (request.filterTimeWindow?.earliestStart || request.filterTimeWindow?.latestEnd) {
+      count += 1;
+    }
+    if (request.maxGapMinutesPerDay !== undefined) {
+      count += 1;
+    }
+    if (request.lockedSections) {
+      count += Object.keys(request.lockedSections).length;
+    }
+    if (request.preferredFaculty) {
+      for (const prefs of Object.values(request.preferredFaculty)) {
+        count += prefs.length;
+      }
+    }
+    if (request.avoidFaculty) {
+      for (const avoids of Object.values(request.avoidFaculty)) {
+        count += avoids.length;
+      }
+    }
+    return count;
+  }, [request]);
 
   // Hook for solving
   const {
@@ -1021,21 +1052,24 @@ export default function BuilderPage() {
       )}
 
       {/* 2. Main Workspace Layout */}
-      <main className="flex-1 max-w-[1600px] w-full mx-auto px-4 sm:px-6 py-4 grid grid-cols-1 lg:grid-cols-[minmax(340px,400px)_1fr] gap-5 items-start">
+      <main className="flex-1 max-w-[1600px] w-full mx-auto px-4 sm:px-6 py-4 pb-24 lg:pb-4 grid grid-cols-1 lg:grid-cols-[minmax(340px,400px)_1fr] gap-5 items-start">
         {/* Left Sidebar: Course & Faculty Selector */}
-        <CourseSelector
-          courses={effectiveCourses}
-          sections={effectiveSections}
-          faculty={allFaculty}
-          request={request}
-          onRequestChange={setRequest}
-          onOpenExplorer={(code) => setExplorerCourseCode(code)}
-          manualSchedules={manualSchedules}
-          onOpenManualScheduleModal={openManualModal}
-        />
+        <div className={mobileTab === 'results' ? 'hidden lg:block' : 'block'}>
+          <CourseSelector
+            courses={effectiveCourses}
+            sections={effectiveSections}
+            faculty={allFaculty}
+            request={request}
+            onRequestChange={setRequest}
+            onOpenExplorer={(code) => setExplorerCourseCode(code)}
+            manualSchedules={manualSchedules}
+            onOpenManualScheduleModal={openManualModal}
+            mobileTab={mobileTab === 'preferences' ? 'preferences' : 'courses'}
+          />
+        </div>
 
         {/* Right Content Area */}
-        <div className="flex-1 flex flex-col min-w-0 space-y-6">
+        <div className={`flex-1 flex flex-col min-w-0 space-y-6 ${mobileTab !== 'results' ? 'hidden lg:flex' : 'flex'}`}>
           {/* If viewing a saved/shared routine, show the banner */}
           {viewingSavedRoutine && (
             <SavedRoutineBanner
@@ -1245,6 +1279,120 @@ export default function BuilderPage() {
         </div>
       </main>
 
+      {/* Floating action button on mobile when on Courses / Preferences tabs */}
+      {mobileTab !== 'results' && request.selectedCourses.length > 0 && (
+        <div className="fixed bottom-16 inset-x-4 z-30 lg:hidden">
+          <button
+            type="button"
+            onClick={() => {
+              setMobileTab('results');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            className="w-full py-3 px-4 rounded-card bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs sm:text-sm shadow-warm flex items-center justify-between transition-transform active:scale-[0.99]"
+          >
+            <div className="flex items-center gap-2">
+              {isSolving ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Sparkles className="w-4 h-4 text-orange-200" />
+              )}
+              <span>
+                {isSolving
+                  ? 'Solving schedules...'
+                  : results && results.schedules.length > 0
+                  ? `View ${results.schedules.length} Generated Routine${results.schedules.length > 1 ? 's' : ''}`
+                  : 'Check Routine Results'}
+              </span>
+            </div>
+            <div className="flex items-center gap-1 text-[11px] font-semibold bg-white/20 py-1 px-2 rounded-btn">
+              <span>Results</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </div>
+          </button>
+        </div>
+      )}
+
+      {/* Sticky Bottom Tab Bar (Phones & Small Tablets < 1024px) */}
+      <nav
+        aria-label="Mobile workspace navigation"
+        className="fixed bottom-0 inset-x-0 z-40 lg:hidden bg-surface/95 backdrop-blur-md border-t border-app-border shadow-warm"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+      >
+        <div className="h-14 grid grid-cols-3 max-w-md mx-auto">
+          {/* Tab 1: Courses */}
+          <button
+            type="button"
+            onClick={() => setMobileTab('courses')}
+            className={`relative flex flex-col items-center justify-center gap-0.5 transition-colors ${
+              mobileTab === 'courses'
+                ? 'text-orange-500 font-bold'
+                : 'text-text-muted hover:text-text-primary'
+            }`}
+          >
+            <div className="relative">
+              <BookOpen className="w-5 h-5" />
+              {request.selectedCourses.length > 0 && (
+                <span className="absolute -top-1.5 -right-2.5 min-w-[16px] h-4 px-1 rounded-full bg-orange-500 text-white text-[10px] font-bold flex items-center justify-center shadow-xs">
+                  {request.selectedCourses.length}
+                </span>
+              )}
+            </div>
+            <span className="text-[11px]">Courses</span>
+            {mobileTab === 'courses' && (
+              <span className="absolute bottom-0 inset-x-6 h-0.5 bg-orange-500 rounded-full" />
+            )}
+          </button>
+
+          {/* Tab 2: Preferences */}
+          <button
+            type="button"
+            onClick={() => setMobileTab('preferences')}
+            className={`relative flex flex-col items-center justify-center gap-0.5 transition-colors ${
+              mobileTab === 'preferences'
+                ? 'text-orange-500 font-bold'
+                : 'text-text-muted hover:text-text-primary'
+            }`}
+          >
+            <div className="relative">
+              <Sliders className="w-5 h-5" />
+              {activeFiltersCount > 0 && (
+                <span className="absolute -top-1.5 -right-2.5 min-w-[16px] h-4 px-1 rounded-full bg-orange-500 text-white text-[10px] font-bold flex items-center justify-center shadow-xs">
+                  {activeFiltersCount}
+                </span>
+              )}
+            </div>
+            <span className="text-[11px]">Preferences</span>
+            {mobileTab === 'preferences' && (
+              <span className="absolute bottom-0 inset-x-6 h-0.5 bg-orange-500 rounded-full" />
+            )}
+          </button>
+
+          {/* Tab 3: Results */}
+          <button
+            type="button"
+            onClick={() => setMobileTab('results')}
+            className={`relative flex flex-col items-center justify-center gap-0.5 transition-colors ${
+              mobileTab === 'results'
+                ? 'text-orange-500 font-bold'
+                : 'text-text-muted hover:text-text-primary'
+            }`}
+          >
+            <div className="relative">
+              <Calendar className="w-5 h-5" />
+              {results && results.schedules.length > 0 && (
+                <span className="absolute -top-1.5 -right-2.5 min-w-[16px] h-4 px-1 rounded-full bg-orange-500 text-white text-[10px] font-bold flex items-center justify-center shadow-xs">
+                  {results.schedules.length}
+                </span>
+              )}
+            </div>
+            <span className="text-[11px]">Results</span>
+            {mobileTab === 'results' && (
+              <span className="absolute bottom-0 inset-x-6 h-0.5 bg-orange-500 rounded-full" />
+            )}
+          </button>
+        </div>
+      </nav>
+
       {/* Footer */}
       <SiteFooter onOpenSavedRoutines={() => setIsSavedDrawerOpen(true)} />
 
@@ -1309,10 +1457,12 @@ export default function BuilderPage() {
           setViewingSavedRoutine(routine);
           setIsSharedViewing(false);
           setComparingSavedRoutines(null);
+          setMobileTab('results');
         }}
         onLoadSettings={handleLoadSettings}
         onCompareRoutines={(routines) => {
           setComparingSavedRoutines(routines);
+          setMobileTab('results');
         }}
         onDeleteRoutine={handleDeleteRoutine}
         onDeleteAll={handleDeleteAll}

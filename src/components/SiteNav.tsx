@@ -184,7 +184,7 @@ export function SiteNav({
           {/* Mobile hamburger button */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="md:hidden p-1.5 text-text-secondary hover:text-text-primary hover:bg-subtle rounded-btn"
+            className="md:hidden min-w-[44px] min-h-[44px] flex items-center justify-center p-2 text-text-secondary hover:text-text-primary hover:bg-subtle rounded-btn transition-colors"
             aria-label="Toggle navigation menu"
           >
             {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -194,25 +194,31 @@ export function SiteNav({
 
       {/* Mobile Drawer */}
       {mobileOpen && (
-        <div className="md:hidden bg-surface border-b border-app-border px-4 py-3 space-y-2 text-xs">
+        <div className="md:hidden bg-surface border-b border-app-border px-4 py-2 space-y-1 text-sm">
           <Link
             href="/"
             onClick={() => setMobileOpen(false)}
-            className={`block py-1.5 font-medium ${isHome ? 'text-orange-600 font-bold' : 'text-text-secondary'}`}
+            className={`min-h-[44px] flex items-center px-2 rounded-lg font-medium transition-colors ${
+              isHome ? 'text-orange-600 font-bold bg-orange-50' : 'text-text-secondary hover:bg-subtle'
+            }`}
           >
             Home
           </Link>
           <Link
             href="/builder"
             onClick={() => setMobileOpen(false)}
-            className={`block py-1.5 font-medium ${isBuilder ? 'text-orange-600 font-bold' : 'text-text-secondary'}`}
+            className={`min-h-[44px] flex items-center px-2 rounded-lg font-medium transition-colors ${
+              isBuilder ? 'text-orange-600 font-bold bg-orange-50' : 'text-text-secondary hover:bg-subtle'
+            }`}
           >
             Routine Builder
           </Link>
           <Link
             href="/faculty"
             onClick={() => setMobileOpen(false)}
-            className={`block py-1.5 font-medium ${isFaculty ? 'text-orange-600 font-bold' : 'text-text-secondary'}`}
+            className={`min-h-[44px] flex items-center px-2 rounded-lg font-medium transition-colors ${
+              isFaculty ? 'text-orange-600 font-bold bg-orange-50' : 'text-text-secondary hover:bg-subtle'
+            }`}
           >
             Course Directory
           </Link>
@@ -222,21 +228,21 @@ export function SiteNav({
               <a
                 href="#how-it-works"
                 onClick={() => setMobileOpen(false)}
-                className="block py-1.5 text-text-secondary font-medium"
+                className="min-h-[44px] flex items-center px-2 rounded-lg text-text-secondary font-medium hover:bg-subtle transition-colors"
               >
                 How it works
               </a>
               <a
                 href="#features"
                 onClick={() => setMobileOpen(false)}
-                className="block py-1.5 text-text-secondary font-medium"
+                className="min-h-[44px] flex items-center px-2 rounded-lg text-text-secondary font-medium hover:bg-subtle transition-colors"
               >
                 Features
               </a>
               <a
                 href="#faq"
                 onClick={() => setMobileOpen(false)}
-                className="block py-1.5 text-text-secondary font-medium"
+                className="min-h-[44px] flex items-center px-2 rounded-lg text-text-secondary font-medium hover:bg-subtle transition-colors"
               >
                 FAQ
               </a>
@@ -249,9 +255,9 @@ export function SiteNav({
                 setMobileOpen(false);
                 onOpenSavedRoutines();
               }}
-              className="w-full text-left py-1.5 text-orange-800 font-semibold flex items-center gap-1.5"
+              className="w-full text-left min-h-[44px] px-2 rounded-lg text-orange-800 font-semibold flex items-center gap-2 hover:bg-orange-50 transition-colors"
             >
-              <Bookmark className="w-3.5 h-3.5 fill-orange-500 text-orange-500" />
+              <Bookmark className="w-4 h-4 fill-orange-500 text-orange-500" />
               <span>My Saved Routines {totalSaved > 0 ? `(${totalSaved})` : ''}</span>
             </button>
           )}
@@ -262,9 +268,9 @@ export function SiteNav({
                 setMobileOpen(false);
                 onOpenShortcuts();
               }}
-              className="w-full text-left py-1.5 text-text-secondary flex items-center gap-1.5"
+              className="w-full text-left min-h-[44px] px-2 rounded-lg text-text-secondary flex items-center gap-2 hover:bg-subtle transition-colors"
             >
-              <Keyboard className="w-3.5 h-3.5 text-text-muted" />
+              <Keyboard className="w-4 h-4 text-text-muted" />
               <span>Keyboard Shortcuts</span>
             </button>
           )}
@@ -275,9 +281,9 @@ export function SiteNav({
                 setMobileOpen(false);
                 onOpenHelp();
               }}
-              className="w-full text-left py-1.5 text-text-secondary flex items-center gap-1.5"
+              className="w-full text-left min-h-[44px] px-2 rounded-lg text-text-secondary flex items-center gap-2 hover:bg-subtle transition-colors"
             >
-              <HelpCircle className="w-3.5 h-3.5 text-text-muted" />
+              <HelpCircle className="w-4 h-4 text-text-muted" />
               <span>User Guide</span>
             </button>
           )}

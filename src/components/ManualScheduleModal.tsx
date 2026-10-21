@@ -124,12 +124,13 @@ export function ManualScheduleModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="manual-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-150"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-150"
     >
       <div
         ref={modalRef}
-        className="w-full max-w-md bg-surface border border-app-border rounded-card shadow-warm p-5 space-y-4 text-text-primary"
+        className="w-full max-w-md bg-surface border border-app-border rounded-t-2xl sm:rounded-card shadow-warm p-5 space-y-4 text-text-primary max-h-[90dvh] overflow-y-auto safe-pb animate-in slide-in-from-bottom-4 sm:slide-in-from-bottom-0"
       >
+        <div className="w-12 h-1.5 bg-slate-300 rounded-full mx-auto mb-2 sm:hidden" />
         {/* Header */}
         <div className="flex items-start justify-between gap-3 border-b border-app-border pb-3">
           <div>
@@ -142,7 +143,7 @@ export function ManualScheduleModal({
             type="button"
             onClick={onCancel}
             aria-label="Cancel"
-            className="p-1 rounded-btn hover:bg-subtle text-text-muted hover:text-text-primary transition-colors"
+            className="p-1.5 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-btn hover:bg-subtle text-text-muted hover:text-text-primary transition-colors"
           >
             <X className="w-4 h-4" />
           </button>

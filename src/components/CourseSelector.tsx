@@ -43,6 +43,8 @@ interface CourseSelectorProps {
   onOpenExplorer?: (courseCode: string) => void;
   manualSchedules?: Record<string, ManualScheduleInput>;
   onOpenManualScheduleModal?: (courseCode: string) => void;
+  activeSection?: 'all' | 'courses' | 'preferences';
+  mobileTab?: 'courses' | 'preferences';
 }
 
 export function CourseSelector({
@@ -54,6 +56,8 @@ export function CourseSelector({
   onOpenExplorer,
   manualSchedules = {},
   onOpenManualScheduleModal,
+  activeSection = 'all',
+  mobileTab = 'courses',
 }: CourseSelectorProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -402,58 +406,69 @@ export function CourseSelector({
 
   // Avoid faculty toggle
   const toggleFacultyAvoid = (courseCode: string, facultyId: string) => {
-    const current = request.avoidFaculty?.[courseCode] || [];
-    const isSelected = current.includes(facultyId);
+    const currentAvoid = request.avoidFaculty?.[courseCode] || [];
+    const currentPrefs = request.preferredFaculty?.[courseCode] || [];
 
-    const updatedAvoid = isSelected
-      ? current.filter((id) => id !== facultyId)
-      : [...current, facultyId];
+    const isCurrentlyAvoided = currentAvoid.includes(facultyId);
+    let newAvoid: string[];
+    let newPrefs = currentPrefs.filter((id) => id !== facultyId);
 
-    // Remove from preferred if added to avoid
-    const prefCurrent = request.preferredFaculty?.[courseCode] || [];
-    const updatedPref = prefCurrent.filter((id) => id !== facultyId);
+    if (isCurrentlyAvoided) {
+      newAvoid = currentAvoid.filter((id) => id !== facultyId);
+    } else {
+      newAvoid = [...currentAvoid, facultyId];
+    }
 
     onRequestChange({
       ...request,
       preferredFaculty: {
         ...request.preferredFaculty,
-        [courseCode]: updatedPref,
+        [courseCode]: newPrefs,
       },
       avoidFaculty: {
         ...request.avoidFaculty,
-        [courseCode]: updatedAvoid,
+        [courseCode]: newAvoid,
       },
     });
   };
 
-  // Reset weights
   const resetWeights = () => {
     onRequestChange({
       ...request,
       weights: {
-        facultyPreference: 30,
+        facultyPreference: 35,
         minimizeGaps: 25,
         compactDays: 20,
-        avoidEarlyLate: 15,
+        avoidEarlyLate: 10,
         avoidTentative: 10,
       },
     });
   };
 
   return (
-    <aside className="w-full flex-shrink-0 flex flex-col space-y-3.5 bg-surface p-4 rounded-card border border-app-border shadow-warm lg:sticky lg:top-[72px] lg:max-h-[calc(100vh-88px)] overflow-y-auto">
+    <aside className="w-full flex-shrink-0 flex flex-col space-y-3.5 bg-surface p-3.5 sm:p-4 rounded-card border border-app-border shadow-warm lg:sticky lg:top-[72px] lg:max-h-[calc(100dvh-88px)] lg:overflow-y-auto">
       {/* 1. Header with Credit Limit Badge & Clear All */}
       <div className="flex items-center justify-between pb-3 border-b border-app-border">
         <div>
           <h2 className="text-sm font-semibold text-text-primary tracking-wide uppercase">
-            Course Selection
+            <span className={mobileTab === 'preferences' ? 'hidden lg:inline' : 'inline'}>
+              Course Selection
+            </span>
+            {mobileTab === 'preferences' && (
+              <span className="lg:hidden">Preferences & Filters</span>
+            )}
           </h2>
           <span className="text-xs text-text-muted">
-            {request.selectedCourses.length} course(s) selected
+            <span className={mobileTab === 'preferences' ? 'hidden lg:inline' : 'inline'}>
+              {request.selectedCourses.length} course(s) selected
+            </span>
+            {mobileTab === 'preferences' && (
+              <span className="lg:hidden">{request.selectedCourses.length} course(s) configured</span>
+            )}
           </span>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className={`items-center gap-2 ${mobileTab === 'preferences' ? 'hidden lg:flex' : 'flex'}`}>
           {request.selectedCourses.length >= 2 && (
             <button
               type="button"
@@ -529,22 +544,24 @@ export function CourseSelector({
         </div>
       )}
 
-      {/* Credit warning banner if outside 9-18 */}
-      {totalCredits > 18 && (
-        <div className="p-2.5 rounded-btn bg-danger-bg border border-danger/20 text-danger text-xs flex items-center gap-2">
-          <AlertTriangle className="w-4 h-4 flex-shrink-0" />
-          <span>Overload: UIU limits standard enrollment to 18 credits.</span>
-        </div>
-      )}
-      {totalCredits > 0 && totalCredits < 9 && (
-        <div className="p-2.5 rounded-btn bg-warning-bg border border-warning/20 text-warning text-xs flex items-center gap-2">
-          <AlertTriangle className="w-4 h-4 flex-shrink-0" />
-          <span>Underload: Standard regular status requires at least 9 credits.</span>
-        </div>
-      )}
+      {/* Credit warning banner if outside 9-18 (Hidden on mobile preferences tab) */}
+      <div className={mobileTab === 'preferences' ? 'hidden lg:block' : 'block'}>
+        {totalCredits > 18 && (
+          <div className="p-2.5 rounded-btn bg-danger-bg border border-danger/20 text-danger text-xs flex items-center gap-2 mb-2">
+            <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+            <span>Overload: UIU limits standard enrollment to 18 credits.</span>
+          </div>
+        )}
+        {totalCredits > 0 && totalCredits < 9 && (
+          <div className="p-2.5 rounded-btn bg-warning-bg border border-warning/20 text-warning text-xs flex items-center gap-2 mb-2">
+            <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+            <span>Underload: Standard regular status requires at least 9 credits.</span>
+          </div>
+        )}
+      </div>
 
-      {/* Search & Autocomplete Input */}
-      <div className="relative">
+      {/* Search & Autocomplete Input (Hidden on mobile preferences tab) */}
+      <div className={`relative ${mobileTab === 'preferences' ? 'hidden lg:block' : 'block'}`}>
         <div className="relative flex items-center">
           <Search className="w-4 h-4 absolute left-3 text-text-muted pointer-events-none" />
           <input
@@ -810,14 +827,15 @@ export function CourseSelector({
                           Sections
                         </button>
                       )
-                    )}
-                    <button
+                    )}                    <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleInitiateRemove(course.code);
                       }}
-                      className="relative flex items-center justify-center gap-1.5 h-8 min-w-[44px] min-h-[44px] md:min-w-[32px] md:min-h-[32px] px-2 md:px-2.5 rounded-btn text-danger bg-transparent hover:bg-danger-bg border border-transparent hover:border-danger/30 transition-colors focus:outline-none focus:ring-2 focus:ring-danger/50 focus:border-danger flex-shrink-0 text-xs md:text-[13px] font-medium"
+                      className={`relative items-center justify-center gap-1.5 h-8 min-w-[44px] min-h-[44px] md:min-w-[32px] md:min-h-[32px] px-2 md:px-2.5 rounded-btn text-danger bg-transparent hover:bg-danger-bg border border-transparent hover:border-danger/30 transition-colors focus:outline-none focus:ring-2 focus:ring-danger/50 focus:border-danger flex-shrink-0 text-xs md:text-[13px] font-medium ${
+                        mobileTab === 'preferences' ? 'hidden lg:flex' : 'flex'
+                      }`}
                       title="Remove course"
                       aria-label={`Remove ${course.code} ${course.title}`}
                     >
@@ -864,7 +882,9 @@ export function CourseSelector({
                 {canAddLab && (
                   <button
                     onClick={() => handleAddLab(course.labCode!)}
-                    className="w-full py-1.5 px-2 rounded-btn bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors group"
+                    className={`w-full py-1.5 px-2 rounded-btn bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-semibold items-center justify-center gap-1.5 transition-colors group ${
+                      mobileTab === 'preferences' ? 'hidden lg:flex' : 'flex'
+                    }`}
                   >
                     <Beaker className="w-3.5 h-3.5 text-emerald-600 group-hover:scale-110 transition-transform" />
                     <span>+ Add Co-requisite Lab ({course.labCode})</span>
@@ -892,7 +912,7 @@ export function CourseSelector({
                     </button>
                   </div>
                 ) : (
-                  <>
+                  <div className={`space-y-2 pt-1 ${mobileTab === 'courses' ? 'hidden lg:block' : 'block'}`}>
                     {/* Section Lock Dropdown */}
                     <div className="flex items-center gap-2 text-xs">
                       <span className="text-text-muted flex items-center gap-1 text-[11px]">
@@ -981,6 +1001,8 @@ export function CourseSelector({
                         </div>
                       </details>
                     )}
+                  </div>
+                )}
 
                     {/* FYDP Clash Information (if course has clashing sections) */}
                     {(() => {
@@ -1035,8 +1057,6 @@ export function CourseSelector({
                         </div>
                       );
                     })()}
-                  </>
-                )}
               </div>
             );
           })
@@ -1058,8 +1078,16 @@ export function CourseSelector({
         </div>
       )}
 
-      {/* 4. Collapsible Filter & Weights Controls */}
-      <div className="border-t border-app-border pt-2">
+      {/* Empty Notice for Preferences Tab when no courses selected */}
+      {selectedCourseObjs.length === 0 && (
+        <div className={`p-4 rounded-card bg-subtle border border-app-border text-center text-xs text-text-muted space-y-1 ${mobileTab === 'preferences' ? 'block lg:hidden' : 'hidden'}`}>
+          <div className="font-semibold text-text-primary">No courses selected yet</div>
+          <div>Switch to the Courses tab to add courses, then customize section locks and faculty preferences here.</div>
+        </div>
+      )}
+
+      {/* 4. Filter & Weights Controls */}
+      <div className={`border-t border-app-border pt-2 ${mobileTab === 'courses' ? 'hidden lg:block' : 'block'}`}>
         <button
           onClick={() => setIsFiltersOpen(!isFiltersOpen)}
           className="w-full flex items-center justify-between py-2 text-xs font-semibold text-text-secondary hover:text-text-primary transition-colors"
@@ -1075,165 +1103,165 @@ export function CourseSelector({
           )}
         </button>
 
-        {isFiltersOpen && (
+        {(isFiltersOpen || mobileTab === 'preferences') && (
           <div className="pt-2 space-y-4 text-xs animate-in fade-in duration-200">
-            {/* Day Off Filters */}
-            <div>
-              <label className="block text-text-muted font-medium mb-1.5">
-                Must-Have Day Off (0 classes):
-              </label>
-              <div className="grid grid-cols-5 gap-1">
-                {DAYS_LIST.map((day) => {
-                  const isOff = (request.filterDayOff || []).includes(day);
-                  return (
-                    <button
-                      key={day}
-                      onClick={() => toggleDayOff(day)}
-                      className={`py-1.5 rounded-btn text-xs font-bold transition-all ${
-                        isOff
-                          ? 'bg-danger-bg text-danger border border-danger/40 shadow-xs'
-                          : 'bg-subtle text-text-secondary hover:bg-orange-50 border border-app-border'
-                      }`}
-                    >
-                      {day}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Time Window Filters */}
-            <div className="grid grid-cols-2 gap-2">
+              {/* Day Off Filters */}
               <div>
-                <label className="block text-text-muted font-medium mb-1">
-                  Earliest Start:
+                <label className="block text-text-muted font-medium mb-1.5">
+                  Must-Have Day Off (0 classes):
                 </label>
-                <select
-                  value={request.filterTimeWindow?.earliestStart || ''}
-                  onChange={(e) =>
-                    onRequestChange({
-                      ...request,
-                      filterTimeWindow: {
-                        ...request.filterTimeWindow,
-                        earliestStart: e.target.value ? parseInt(e.target.value, 10) : undefined,
-                      },
-                    })
-                  }
-                  className="w-full bg-subtle border border-app-border rounded-btn p-1.5 text-xs text-text-primary"
-                >
-                  <option value="">Any (from 08:30)</option>
-                  <option value="591">09:50 AM or later</option>
-                  <option value="671">11:10 AM or later</option>
-                  <option value="751">12:30 PM or later</option>
-                </select>
+                <div className="grid grid-cols-5 gap-1">
+                  {DAYS_LIST.map((day) => {
+                    const isOff = (request.filterDayOff || []).includes(day);
+                    return (
+                      <button
+                        key={day}
+                        onClick={() => toggleDayOff(day)}
+                        className={`py-1.5 rounded-btn text-xs font-bold transition-all ${
+                          isOff
+                            ? 'bg-danger-bg text-danger border border-danger/40 shadow-xs'
+                            : 'bg-subtle text-text-secondary hover:bg-orange-50 border border-app-border'
+                        }`}
+                      >
+                        {day}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
-              <div>
-                <label className="block text-text-muted font-medium mb-1">
-                  Latest End:
-                </label>
-                <select
-                  value={request.filterTimeWindow?.latestEnd || ''}
-                  onChange={(e) =>
-                    onRequestChange({
-                      ...request,
-                      filterTimeWindow: {
-                        ...request.filterTimeWindow,
-                        latestEnd: e.target.value ? parseInt(e.target.value, 10) : undefined,
-                      },
-                    })
-                  }
-                  className="w-full bg-subtle border border-app-border rounded-btn p-1.5 text-xs text-text-primary"
-                >
-                  <option value="">Any (until 16:30)</option>
-                  <option value="830">01:50 PM or earlier</option>
-                  <option value="910">03:10 PM or earlier</option>
-                  <option value="990">04:30 PM</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Max Gap Per Day */}
-            <div>
-              <label className="block text-text-muted font-medium mb-1">
-                Max Gap Between Classes:
-              </label>
-              <div className="grid grid-cols-4 gap-1">
-                {[
-                  { label: 'Any', value: undefined },
-                  { label: '60m', value: 60 },
-                  { label: '120m', value: 120 },
-                  { label: '180m', value: 180 },
-                ].map((item) => (
-                  <button
-                    key={item.label}
-                    onClick={() =>
-                      onRequestChange({
-                        ...request,
-                        maxGapMinutesPerDay: item.value,
-                      })
-                    }
-                    className={`py-1 rounded-btn text-[11px] font-medium transition-colors ${
-                      request.maxGapMinutesPerDay === item.value
-                        ? 'bg-orange-500 text-white font-semibold'
-                        : 'bg-subtle text-text-secondary hover:bg-orange-50 border border-app-border'
-                    }`}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Ranking Weights Sliders */}
-            <div className="space-y-2 pt-2 border-t border-app-border">
-              <div className="flex items-center justify-between">
-                <span className="font-semibold text-text-primary">Ranking Weights</span>
-                <button
-                  onClick={resetWeights}
-                  className="text-[10px] text-text-muted hover:text-orange-600 flex items-center gap-1"
-                >
-                  <RotateCcw className="w-3 h-3" /> Reset
-                </button>
-              </div>
-
-              {[
-                { key: 'facultyPreference' as const, label: 'Faculty Preference' },
-                { key: 'minimizeGaps' as const, label: 'Minimize Gaps' },
-                { key: 'compactDays' as const, label: 'Compact Days (Fewer days)' },
-                { key: 'avoidEarlyLate' as const, label: 'Avoid Early/Late Hours' },
-                { key: 'avoidTentative' as const, label: 'Avoid Tentative Sections' },
-              ].map(({ key, label }) => (
-                <div key={key} className="space-y-1">
-                  <div className="flex justify-between text-[11px] text-text-muted">
-                    <span>{label}</span>
-                    <span className="font-mono font-semibold text-text-primary">
-                      {request.weights[key]}%
-                    </span>
-                  </div>
-                  <input
-                    type="range"
-                    min="0"
-                    max="50"
-                    step="5"
-                    value={request.weights[key]}
+              {/* Time Window Filters */}
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-text-muted font-medium mb-1">
+                    Earliest Start:
+                  </label>
+                  <select
+                    value={request.filterTimeWindow?.earliestStart || ''}
                     onChange={(e) =>
                       onRequestChange({
                         ...request,
-                        weights: {
-                          ...request.weights,
-                          [key]: parseInt(e.target.value, 10),
+                        filterTimeWindow: {
+                          ...request.filterTimeWindow,
+                          earliestStart: e.target.value ? parseInt(e.target.value, 10) : undefined,
                         },
                       })
                     }
-                    className="w-full accent-orange-500 h-1.5 bg-border rounded-lg cursor-pointer"
-                  />
+                    className="w-full bg-subtle border border-app-border rounded-btn p-1.5 text-xs text-text-primary"
+                  >
+                    <option value="">Any (from 08:30)</option>
+                    <option value="591">09:50 AM or later</option>
+                    <option value="671">11:10 AM or later</option>
+                    <option value="751">12:30 PM or later</option>
+                  </select>
                 </div>
-              ))}
+
+                <div>
+                  <label className="block text-text-muted font-medium mb-1">
+                    Latest End:
+                  </label>
+                  <select
+                    value={request.filterTimeWindow?.latestEnd || ''}
+                    onChange={(e) =>
+                      onRequestChange({
+                        ...request,
+                        filterTimeWindow: {
+                          ...request.filterTimeWindow,
+                          latestEnd: e.target.value ? parseInt(e.target.value, 10) : undefined,
+                        },
+                      })
+                    }
+                    className="w-full bg-subtle border border-app-border rounded-btn p-1.5 text-xs text-text-primary"
+                  >
+                    <option value="">Any (until 16:30)</option>
+                    <option value="830">01:50 PM or earlier</option>
+                    <option value="910">03:10 PM or earlier</option>
+                    <option value="990">04:30 PM</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Max Gap Per Day */}
+              <div>
+                <label className="block text-text-muted font-medium mb-1">
+                  Max Gap Between Classes:
+                </label>
+                <div className="grid grid-cols-4 gap-1">
+                  {[
+                    { label: 'Any', value: undefined },
+                    { label: '60m', value: 60 },
+                    { label: '120m', value: 120 },
+                    { label: '180m', value: 180 },
+                  ].map((item) => (
+                    <button
+                      key={item.label}
+                      onClick={() =>
+                        onRequestChange({
+                          ...request,
+                          maxGapMinutesPerDay: item.value,
+                        })
+                      }
+                      className={`py-1 rounded-btn text-[11px] font-medium transition-colors ${
+                        request.maxGapMinutesPerDay === item.value
+                          ? 'bg-orange-500 text-white font-semibold'
+                          : 'bg-subtle text-text-secondary hover:bg-orange-50 border border-app-border'
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Ranking Weights Sliders */}
+              <div className="space-y-2 pt-2 border-t border-app-border">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-text-primary">Ranking Weights</span>
+                  <button
+                    onClick={resetWeights}
+                    className="text-[10px] text-text-muted hover:text-orange-600 flex items-center gap-1"
+                  >
+                    <RotateCcw className="w-3 h-3" /> Reset
+                  </button>
+                </div>
+
+                {[
+                  { key: 'facultyPreference' as const, label: 'Faculty Preference' },
+                  { key: 'minimizeGaps' as const, label: 'Minimize Gaps' },
+                  { key: 'compactDays' as const, label: 'Compact Days (Fewer days)' },
+                  { key: 'avoidEarlyLate' as const, label: 'Avoid Early/Late Hours' },
+                  { key: 'avoidTentative' as const, label: 'Avoid Tentative Sections' },
+                ].map(({ key, label }) => (
+                  <div key={key} className="space-y-1">
+                    <div className="flex justify-between text-[11px] text-text-muted">
+                      <span>{label}</span>
+                      <span className="font-mono font-semibold text-text-primary">
+                        {request.weights[key]}%
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="50"
+                      step="5"
+                      value={request.weights[key]}
+                      onChange={(e) =>
+                        onRequestChange({
+                          ...request,
+                          weights: {
+                            ...request.weights,
+                            [key]: parseInt(e.target.value, 10),
+                          },
+                        })
+                      }
+                      className="w-full accent-orange-500 h-1.5 bg-border rounded-lg cursor-pointer"
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
 
       {/* Undo Toast */}
       {undoToast && (

@@ -205,12 +205,12 @@ export function FacultyExplorer({
         aria-hidden="true"
       />
 
-      {/* Slide-over Drawer (Desktop: Right ~520px; Mobile: Bottom sheet) */}
+      {/* Slide-over Drawer (Desktop: Right ~520px; Mobile: Full-screen takeover) */}
       <aside
         role="dialog"
         aria-modal="true"
         aria-labelledby="explorer-title"
-        className="fixed inset-y-0 right-0 z-50 w-full sm:w-[520px] bg-surface border-l border-app-border shadow-2xl flex flex-col max-h-screen overflow-hidden animate-in slide-in-from-right duration-200"
+        className="fixed inset-0 sm:inset-y-0 sm:right-0 sm:left-auto z-50 w-full sm:w-[520px] bg-surface border-l border-app-border shadow-2xl flex flex-col h-full max-h-[100dvh] overflow-hidden animate-in slide-in-from-bottom sm:slide-in-from-right duration-200"
       >
         {/* Toast Alert */}
         {toastMessage && (
@@ -220,7 +220,7 @@ export function FacultyExplorer({
         )}
 
         {/* 1. Header */}
-        <div className="p-4 sm:p-5 border-b border-app-border bg-subtle/50 flex flex-col space-y-3">
+        <div className="p-4 sm:p-5 border-b border-app-border bg-subtle/50 flex flex-col space-y-3 safe-pt">
           <div className="flex items-start justify-between">
             <div className="pr-3">
               <div className="flex items-center gap-2 flex-wrap">
@@ -252,7 +252,7 @@ export function FacultyExplorer({
                     onAddCourse(course.code);
                   }
                 }}
-                className={`px-3 py-1.5 rounded-btn text-xs font-semibold transition-colors flex items-center gap-1.5 shadow-2xs ${
+                className={`px-3 py-2 min-h-[40px] rounded-btn text-xs font-semibold transition-colors flex items-center gap-1.5 shadow-2xs ${
                   isSelected
                     ? 'bg-success-bg text-success border border-success/30 hover:bg-rose-50 hover:text-danger hover:border-danger/30'
                     : 'bg-orange-500 hover:bg-orange-600 text-white'
@@ -270,7 +270,7 @@ export function FacultyExplorer({
 
               <button
                 onClick={onClose}
-                className="p-1.5 text-text-muted hover:text-text-primary hover:bg-subtle rounded-btn transition-colors"
+                className="p-2 min-w-[40px] min-h-[40px] flex items-center justify-center text-text-muted hover:text-text-primary hover:bg-subtle rounded-btn transition-colors"
                 aria-label="Close explorer"
               >
                 <X className="w-5 h-5" />

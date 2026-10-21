@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Day, DAYS_LIST, Meeting, ScheduleResult, Section } from '../types';
 import { getCourseColor } from '../utils/colors';
 import { formatTime24, exportToText, exportToICS, downloadFile } from '../utils/export';
 import { isFixedCourse } from '../lib/fixedCourses';
+import { DayListTimetable } from './DayListTimetable';
 import {
   ChevronLeft,
   ChevronRight,
@@ -22,6 +23,9 @@ import {
   User,
   Info,
   Check,
+  X,
+  CalendarDays,
+  ListFilter,
 } from 'lucide-react';
 
 interface TimetableProps {
@@ -70,6 +74,44 @@ export function Timetable({
     meeting: Meeting;
   } | null>(null);
 
+  // Mobile segmented control: Day list vs Week view (defaults to Day list on mobile)
+  const [mobileViewMode, setMobileViewMode] = useState<'daylist' | 'week'>('daylist');
+
+  // Mobile bottom sheets for section details and score breakdown
+  const [activeSheetSection, setActiveSheetSection] = useState<{
+    section: Section;
+    meeting: Meeting;
+  } | null>(null);
+  const [isScoreSheetOpen, setIsScoreSheetOpen] = useState(false);
+
+  // Touch swipe gesture refs for switching routines
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      touchStartRef.current = {
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY,
+      };
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStartRef.current || e.changedTouches.length === 0) return;
+    const dx = e.changedTouches[0].clientX - touchStartRef.current.x;
+    const dy = e.changedTouches[0].clientY - touchStartRef.current.y;
+    touchStartRef.current = null;
+
+    // Detect horizontal swipe with minimum 50px delta and 1.5:1 horizontal ratio to not block vertical scroll
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      if (dx < 0 && currentRank < totalSchedules - 1) {
+        onSetRank(currentRank + 1);
+      } else if (dx > 0 && currentRank > 0) {
+        onSetRank(currentRank - 1);
+      }
+    }
+  };
+
   const handleCopyUCAM = async () => {
     const text = exportToText(schedule);
     try {
@@ -115,22 +157,54 @@ export function Timetable({
       : 'bg-rose-50 text-rose-700 border-rose-300';
 
   return (
-    <div className="flex-1 flex flex-col space-y-3.5">
+    <div
+      className="flex-1 flex flex-col space-y-3.5 select-none sm:select-auto"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
+      {/* 0. Mobile Segmented View Toggle: Day list vs Week grid (< 768px only) */}
+      <div className="md:hidden flex items-center justify-between bg-surface p-1 rounded-card border border-app-border shadow-2xs">
+        <button
+          type="button"
+          onClick={() => setMobileViewMode('daylist')}
+          className={`flex-1 min-h-[40px] flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-btn text-xs font-bold transition-all ${
+            mobileViewMode === 'daylist'
+              ? 'bg-orange-500 text-white shadow-xs'
+              : 'text-text-secondary hover:text-text-primary'
+          }`}
+        >
+          <ListFilter className="w-4 h-4" />
+          <span>Day list</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setMobileViewMode('week')}
+          className={`flex-1 min-h-[40px] flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-btn text-xs font-bold transition-all ${
+            mobileViewMode === 'week'
+              ? 'bg-orange-500 text-white shadow-xs'
+              : 'text-text-secondary hover:text-text-primary'
+          }`}
+        >
+          <CalendarDays className="w-4 h-4" />
+          <span>Week grid</span>
+        </button>
+      </div>
+
       {/* 1. Timetable Toolbar & Navigation */}
-      <div className="bg-surface p-3.5 rounded-card border border-app-border shadow-warm flex flex-wrap items-center justify-between gap-3">
+      <div className="bg-surface p-3 sm:p-3.5 rounded-card border border-app-border shadow-warm flex flex-wrap items-center justify-between gap-2.5 sm:gap-3">
         {/* Left: Schedule Rank Navigation */}
         <div className="flex items-center space-x-1.5">
           <button
             onClick={() => onSetRank(Math.max(0, currentRank - 1))}
             disabled={currentRank === 0}
-            className="p-1.5 rounded-btn bg-surface hover:bg-subtle disabled:opacity-30 disabled:pointer-events-none text-text-primary border border-app-border transition-colors"
-            title="Previous Routine (Left Arrow)"
+            className="min-w-[40px] min-h-[40px] p-2 rounded-btn bg-surface hover:bg-subtle disabled:opacity-30 disabled:pointer-events-none text-text-primary border border-app-border transition-colors flex items-center justify-center"
+            title="Previous Routine (Left Arrow / Swipe Right)"
             aria-label="Previous routine"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
 
-          <div className="flex items-center space-x-1.5 px-3 py-1 bg-subtle rounded-btn border border-app-border text-xs font-semibold">
+          <div className="flex items-center space-x-1.5 px-2.5 sm:px-3 py-1.5 sm:py-1 bg-subtle rounded-btn border border-app-border text-xs font-semibold">
             <span className="text-text-muted">Routine</span>
             <span className="text-orange-600 font-bold">#{currentRank + 1}</span>
             <span className="text-text-muted">of</span>
@@ -140,8 +214,8 @@ export function Timetable({
           <button
             onClick={() => onSetRank(Math.min(totalSchedules - 1, currentRank + 1))}
             disabled={currentRank >= totalSchedules - 1}
-            className="p-1.5 rounded-btn bg-surface hover:bg-subtle disabled:opacity-30 disabled:pointer-events-none text-text-primary border border-app-border transition-colors"
-            title="Next Routine (Right Arrow)"
+            className="min-w-[40px] min-h-[40px] p-2 rounded-btn bg-surface hover:bg-subtle disabled:opacity-30 disabled:pointer-events-none text-text-primary border border-app-border transition-colors flex items-center justify-center"
+            title="Next Routine (Right Arrow / Swipe Left)"
             aria-label="Next routine"
           >
             <ChevronRight className="w-4 h-4" />
@@ -149,27 +223,30 @@ export function Timetable({
 
           {isTruncated && (
             <span
-              className="text-[10px] px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-300 font-medium"
+              className="text-[10px] px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-300 font-medium hidden sm:inline"
               title="Search reached node/timeout limit. Showing top 50 discovered."
             >
-              Top 50 Shown
+              Top 50
             </span>
           )}
         </div>
 
-        {/* Center: Overall Score Badge with Breakdown Popover */}
+        {/* Center: Overall Score Badge with Breakdown Popover / Bottom sheet */}
         <div className="relative group/score">
-          <div
-            className={`px-3 py-1 rounded-full border ${scoreBadgeBg} flex items-center gap-1.5 shadow-xs cursor-pointer font-semibold text-xs`}
+          <button
+            type="button"
+            onClick={() => setIsScoreSheetOpen(true)}
+            className={`px-3 py-1.5 rounded-full border ${scoreBadgeBg} flex items-center gap-1.5 shadow-xs cursor-pointer font-semibold text-xs active:scale-[0.98] transition-transform`}
+            title="Tap to see score breakdown"
           >
             <span>Score:</span>
             <span className="font-extrabold text-sm">{schedule.score}</span>
             <span className="text-[11px] opacity-75">/100</span>
             <Info className="w-3.5 h-3.5 opacity-70 ml-0.5" />
-          </div>
+          </button>
 
-          {/* Hover Tooltip Breakdown */}
-          <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-64 p-3 bg-surface border border-app-border rounded-card shadow-warm z-50 text-xs hidden group-hover/score:block animate-in fade-in">
+          {/* Desktop Hover Tooltip Breakdown */}
+          <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-64 p-3 bg-surface border border-app-border rounded-card shadow-warm z-50 text-xs hidden md:group-hover/score:block animate-in fade-in pointer-events-none">
             <div className="font-semibold text-text-primary mb-2 pb-1 border-b border-app-border flex justify-between">
               <span>Score Breakdown</span>
               <span className="text-orange-600 font-bold">{schedule.score}/100</span>
@@ -214,7 +291,7 @@ export function Timetable({
           {/* Favorite */}
           <button
             onClick={() => onToggleFavorite(schedule)}
-            className={`p-2 rounded-btn border text-xs font-medium transition-colors flex items-center gap-1 ${
+            className={`p-2 min-h-[38px] min-w-[38px] rounded-btn border text-xs font-medium transition-colors flex items-center justify-center gap-1 ${
               isFavorite
                 ? 'bg-amber-50 text-amber-700 border-amber-300'
                 : 'bg-surface hover:bg-subtle text-text-secondary border-app-border'
@@ -231,7 +308,7 @@ export function Timetable({
           {onOpenSavePopover && (
             <button
               onClick={onOpenSavePopover}
-              className={`px-3 py-1.5 rounded-btn border text-xs font-semibold transition-all flex items-center gap-1.5 shadow-2xs ${
+              className={`px-3 py-1.5 min-h-[38px] rounded-btn border text-xs font-semibold transition-all flex items-center gap-1.5 shadow-2xs ${
                 isSaved
                   ? 'bg-orange-50 text-orange-700 border-orange-500 hover:bg-orange-100 ring-1 ring-orange-500/20'
                   : 'bg-surface hover:bg-orange-50/80 text-orange-600 hover:text-orange-700 border-orange-400 hover:border-orange-500'
@@ -251,7 +328,7 @@ export function Timetable({
           {/* Lock all */}
           <button
             onClick={() => onLockAllSections(schedule)}
-            className="px-2.5 py-1.5 rounded-btn bg-surface hover:bg-subtle text-text-secondary hover:text-text-primary border border-app-border text-xs font-medium transition-colors hidden sm:flex items-center gap-1"
+            className="px-2.5 py-1.5 min-h-[38px] rounded-btn bg-surface hover:bg-subtle text-text-secondary hover:text-text-primary border border-app-border text-xs font-medium transition-colors hidden sm:flex items-center gap-1"
             title="Lock this section combination"
           >
             <Lock className="w-3.5 h-3.5 text-orange-500" />
@@ -328,8 +405,21 @@ export function Timetable({
         </div>
       </div>
 
-      {/* 3. Interactive Weekly Timetable Grid */}
-      <div className="bg-surface rounded-card border border-app-border p-3 sm:p-4 shadow-warm overflow-x-auto print:border-black print:p-0">
+      {/* 3. Mobile Day List View (when selected on < 768px) */}
+      <div className={mobileViewMode === 'daylist' ? 'block md:hidden' : 'hidden'}>
+        <DayListTimetable
+          schedule={schedule}
+          onSelectSection={(sec, m) => setActiveSheetSection({ section: sec, meeting: m })}
+          previewSection={previewSection}
+        />
+      </div>
+
+      {/* 4. Interactive Weekly Timetable Grid (shown when 'week' on mobile or always on desktop >= 768px) */}
+      <div
+        className={`bg-surface rounded-card border border-app-border p-3 sm:p-4 shadow-warm overflow-x-auto print:border-black print:p-0 ${
+          mobileViewMode === 'week' ? 'block' : 'hidden md:block'
+        }`}
+      >
         <div className="min-w-[720px]">
           {/* Day Headers (Sticky) */}
           <div className="grid grid-cols-[64px_repeat(5,1fr)] gap-2 pb-2.5 border-b border-app-border text-center font-bold text-xs uppercase tracking-wider text-text-muted">
@@ -411,6 +501,7 @@ export function Timetable({
                           top: `${topPct}%`,
                           height: `${heightPct}%`,
                         }}
+                        onClick={() => setActiveSheetSection({ section, meeting })}
                         onMouseEnter={() => setHoveredSection({ section, meeting })}
                         onMouseLeave={() => setHoveredSection(null)}
                         className={`absolute left-1 right-1 p-2 rounded-btn border-l-4 border shadow-xs transition-all duration-150 cursor-pointer overflow-hidden z-10 flex flex-col justify-between ${
@@ -496,9 +587,9 @@ export function Timetable({
         </div>
       </div>
 
-      {/* 4. Hover Detail Card / Popover */}
-      {hoveredSection && (
-        <div className="fixed bottom-6 right-6 max-w-sm p-4 bg-surface border border-border-strong rounded-card shadow-warm z-50 text-xs animate-in fade-in">
+      {/* 5. Desktop Hover Detail Card / Popover */}
+      {hoveredSection && !activeSheetSection && (
+        <div className="fixed bottom-6 right-6 max-w-sm p-4 bg-surface border border-border-strong rounded-card shadow-warm z-50 text-xs animate-in fade-in hidden sm:block pointer-events-none">
           <div className="flex items-center justify-between pb-2 mb-2 border-b border-app-border">
             <div>
               <span className="font-bold text-sm text-text-primary">
@@ -543,6 +634,170 @@ export function Timetable({
                 <span>Note: Tentative section / subject to enrollment.</span>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* 6. Mobile Bottom Sheet: Section Details */}
+      {activeSheetSection && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50 backdrop-blur-xs animate-in fade-in"
+          onClick={() => setActiveSheetSection(null)}
+        >
+          <div
+            className="w-full max-w-lg bg-surface border-t sm:border border-app-border rounded-t-2xl sm:rounded-card p-4 sm:p-5 shadow-2xl space-y-4 max-h-[85dvh] overflow-y-auto safe-pb"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between pb-3 border-b border-app-border">
+              <div className="min-w-0 pr-2">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="font-black text-lg text-text-primary">
+                    {activeSheetSection.section.courseCode}
+                  </span>
+                  <span className="px-2 py-0.5 rounded bg-orange-100 text-orange-800 font-bold text-xs border border-orange-200">
+                    Sec {activeSheetSection.section.section}
+                  </span>
+                  <span className="text-xs text-text-muted font-medium">
+                    ({activeSheetSection.section.credit} cr • {activeSheetSection.section.kind})
+                  </span>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveSheetSection(null)}
+                className="min-h-[44px] min-w-[44px] p-2 rounded-full hover:bg-subtle text-text-muted hover:text-text-primary flex items-center justify-center transition-colors shrink-0"
+                aria-label="Close details"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-sm">
+              <div>
+                <span className="text-xs text-text-muted block font-medium">Course Title</span>
+                <span className="font-semibold text-text-primary text-base">
+                  {activeSheetSection.section.title}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 py-2 px-3 rounded-btn bg-subtle/70 border border-app-border">
+                <div>
+                  <span className="text-[11px] text-text-muted block">Class Time</span>
+                  <span className="font-bold text-text-primary text-xs flex items-center gap-1 mt-0.5">
+                    <Clock className="w-3.5 h-3.5 text-orange-500 shrink-0" />
+                    <span>
+                      {activeSheetSection.meeting.day}{' '}
+                      {formatTime24(activeSheetSection.meeting.start)} –{' '}
+                      {formatTime24(activeSheetSection.meeting.end)}
+                    </span>
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[11px] text-text-muted block">Room</span>
+                  <span className="font-bold text-text-primary text-xs flex items-center gap-1 mt-0.5">
+                    <MapPin className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                    <span>{activeSheetSection.meeting.room || 'Room TBA'}</span>
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <span className="text-xs text-text-muted block font-medium">Assigned Faculty</span>
+                <span className="font-semibold text-text-primary text-sm flex items-center gap-1.5 mt-0.5">
+                  <User className="w-4 h-4 text-sky-600 shrink-0" />
+                  <span>{activeSheetSection.section.faculty.join(', ') || 'Faculty TBA'}</span>
+                </span>
+              </div>
+
+              {activeSheetSection.section.tentative && (
+                <div className="p-3 rounded-btn bg-amber-50 border border-amber-300 text-amber-800 text-xs flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                  <span>Note: This is a tentative section that may be adjusted depending on student enrollment.</span>
+                </div>
+              )}
+            </div>
+
+            <div className="pt-2 flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  onLockAllSections(schedule);
+                  setActiveSheetSection(null);
+                }}
+                className="flex-1 min-h-[44px] py-2.5 px-4 rounded-btn bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xs transition-colors active:scale-[0.98]"
+              >
+                <Lock className="w-4 h-4" />
+                <span>Lock Routine Combination</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveSheetSection(null)}
+                className="min-h-[44px] py-2.5 px-4 rounded-btn bg-subtle hover:bg-page text-text-secondary border border-app-border font-semibold text-xs sm:text-sm transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 7. Mobile Bottom Sheet: Score Breakdown */}
+      {isScoreSheetOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50 backdrop-blur-xs animate-in fade-in"
+          onClick={() => setIsScoreSheetOpen(false)}
+        >
+          <div
+            className="w-full max-w-sm bg-surface border-t sm:border border-app-border rounded-t-2xl sm:rounded-card p-4 sm:p-5 shadow-2xl space-y-4 safe-pb"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between pb-2 border-b border-app-border">
+              <div className="flex items-center gap-2">
+                <span className="font-extrabold text-base text-text-primary">Routine Score</span>
+                <span className="font-black text-base text-orange-600">
+                  {schedule.score}/100
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsScoreSheetOpen(false)}
+                className="min-h-[44px] min-w-[44px] p-2 rounded-full hover:bg-subtle text-text-muted hover:text-text-primary flex items-center justify-center"
+                aria-label="Close score breakdown"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-2.5 text-xs text-text-secondary">
+              <div className="flex justify-between items-center py-1 border-b border-app-border/40">
+                <span>Faculty Preference:</span>
+                <span className="font-mono font-bold text-emerald-600">{schedule.breakdown.facultyScore}%</span>
+              </div>
+              <div className="flex justify-between items-center py-1 border-b border-app-border/40">
+                <span>Gap Compactness:</span>
+                <span className="font-mono font-bold text-sky-600">{schedule.breakdown.gapScore}%</span>
+              </div>
+              <div className="flex justify-between items-center py-1 border-b border-app-border/40">
+                <span>Day Compactness:</span>
+                <span className="font-mono font-bold text-indigo-600">{schedule.breakdown.dayCompactScore}%</span>
+              </div>
+              <div className="flex justify-between items-center py-1 border-b border-app-border/40">
+                <span>Time Preference:</span>
+                <span className="font-mono font-bold text-amber-600">{schedule.breakdown.timePreferenceScore}%</span>
+              </div>
+              <div className="flex justify-between items-center py-1">
+                <span>Tentative Penalty:</span>
+                <span className="font-mono font-bold text-rose-600">{schedule.breakdown.tentativePenalty}%</span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsScoreSheetOpen(false)}
+              className="w-full min-h-[44px] py-2.5 rounded-btn bg-subtle hover:bg-page text-text-secondary border border-app-border font-bold text-xs"
+            >
+              Done
+            </button>
           </div>
         </div>
       )}
