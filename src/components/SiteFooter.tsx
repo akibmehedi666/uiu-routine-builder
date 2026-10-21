@@ -1,5 +1,3 @@
-import React from 'react';
-import Link from 'next/link';
 import {
   Github,
   Linkedin,
@@ -8,14 +6,17 @@ import {
   ExternalLink,
   BookOpen,
   Calendar,
+  Bookmark,
 } from 'lucide-react';
+import Link from 'next/link';
 import { siteConfig } from '../config/site';
 
 interface SiteFooterProps {
   className?: string;
+  onOpenSavedRoutines?: () => void;
 }
 
-export function SiteFooter({ className = '' }: SiteFooterProps) {
+export function SiteFooter({ className = '', onOpenSavedRoutines }: SiteFooterProps) {
   return (
     <footer
       className={`border-t border-app-border bg-surface text-text-muted py-3 md:py-3.5 ${className}`}
@@ -101,6 +102,25 @@ export function SiteFooter({ className = '' }: SiteFooterProps) {
 
           {/* Navigation Links on right */}
           <div className="flex items-center gap-3 text-text-secondary flex-wrap justify-center shrink-0">
+            {onOpenSavedRoutines ? (
+              <button
+                type="button"
+                onClick={onOpenSavedRoutines}
+                className="hover:text-orange-600 transition-colors inline-flex items-center gap-1 cursor-pointer"
+              >
+                <Bookmark className="w-3 h-3 text-orange-500" />
+                <span>Saved Routines</span>
+              </button>
+            ) : (
+              <Link
+                href="/builder?saved=true"
+                className="hover:text-orange-600 transition-colors inline-flex items-center gap-1"
+              >
+                <Bookmark className="w-3 h-3 text-orange-500" />
+                <span>Saved Routines</span>
+              </Link>
+            )}
+            <span className="text-text-muted/60" aria-hidden="true">•</span>
             <Link
               href={siteConfig.links.routineBuilder}
               className="hover:text-orange-600 transition-colors inline-flex items-center gap-1"

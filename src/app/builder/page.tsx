@@ -6,6 +6,7 @@ import coursesJson from '../../../data/courses.json';
 import facultyJson from '../../../data/faculty.json';
 import {
   Course,
+  Day,
   Faculty,
   ScheduleResult,
   Section,
@@ -35,6 +36,23 @@ import {
 import { formatTime24 } from '../../utils/export';
 import confetti from 'canvas-confetti';
 import { Loader2 } from 'lucide-react';
+import {
+  SavedRoutine,
+  SavedRoutineColor,
+} from '../../types/savedRoutine';
+import {
+  loadSavedRoutines,
+  saveRoutinesToStorage,
+  buildSavedRoutineObject,
+  findDuplicateSavedRoutine,
+  validateSavedRoutine,
+  decodeSharedRoutineUrl,
+  mergeImportedRoutines,
+  updateRoutineToLatestData,
+} from '../../utils/savedRoutinesStorage';
+import { SavedRoutinesDrawer } from '../../components/SavedRoutinesDrawer';
+import { SaveRoutinePopover } from '../../components/SaveRoutinePopover';
+import { SavedRoutineBanner } from '../../components/SavedRoutineBanner';
 
 const allSections = sectionsJson as unknown as Section[];
 const allCourses = coursesJson as unknown as Course[];
@@ -80,6 +98,18 @@ export default function BuilderPage() {
   const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
   const [isFavoritesOpen, setIsFavoritesOpen] = useState(false);
   const [favorites, setFavorites] = useState<SavedFavorite[]>([]);
+
+  // Saved Routines State
+  const [savedRoutines, setSavedRoutines] = useState<SavedRoutine[]>([]);
+  const [isSavedDrawerOpen, setIsSavedDrawerOpen] = useState(false);
+  const [isSavePopoverOpen, setIsSavePopoverOpen] = useState(false);
+  const [scheduleToSave, setScheduleToSave] = useState<ScheduleResult | null>(null);
+  const [viewingSavedRoutine, setViewingSavedRoutine] = useState<SavedRoutine | null>(null);
+  const [isSharedViewing, setIsSharedViewing] = useState(false);
+  const [comparingSavedRoutines, setComparingSavedRoutines] = useState<SavedRoutine[] | null>(null);
+  const [storageBlockedNotice, setStorageBlockedNotice] = useState<string | null>(null);
+  const [savedToast, setSavedToast] = useState<{ message: string; showView: boolean } | null>(null);
+  const savedButtonRef = useRef<HTMLButtonElement>(null);
 
   // Faculty Explorer state
   const [explorerCourseCode, setExplorerCourseCode] = useState<string | null>(null);
@@ -138,7 +168,238 @@ export default function BuilderPage() {
         }));
       }
 
-      // 2. Read favorites
+      // 2. Read saved routines
+      const { routines: loadedSaved, isBlocked } = loadSavedRoutines();
+      setSavedRoutines(loadedSaved);
+      if (isBlocked) {
+        setStorageBlockedNotice(
+          "Saving isn't available in this browser mode (private/blocked storage). Use Export instead."
+        );
+      }
+
+      // 3. Check URL parameters for saved drawer or shared routine
+      if (window.location.search) {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('seed_demo') === 'true') {
+          const sample1 = allSections.find((s) => s.courseCode === 'CSE 4509');
+          const sample2 = allSections.find((s) => s.courseCode === 'CSE 2215');
+          const sample3 = allSections.find((s) => s.courseCode === 'CSE 1115');
+
+          const demoList: SavedRoutine[] = [
+            {
+              id: 'demo-1',
+              name: 'Routine 1 - 3 days - Fall 2026',
+              createdAt: Date.now() - 3600000 * 24 * 3,
+              updatedAt: Date.now() - 3600000 * 24 * 3,
+              trimester: 'Fall 2026',
+              dataVersion: '1.0.0',
+              sections: sample1
+                ? [
+                    {
+                      sectionId: sample1.id,
+                      courseCode: sample1.courseCode,
+                      title: sample1.title,
+                      section: sample1.section,
+                      faculty: sample1.faculty,
+                      credit: sample1.credit,
+                      kind: sample1.kind,
+                      meetings: sample1.meetings,
+                    },
+                  ]
+                : [],
+              totals: { credits: 3, daysOnCampus: 2, score: 95 },
+              inputs: {
+                selectedCourses: ['CSE 4509'],
+                preferredFaculty: {},
+                avoidFaculty: {},
+                lockedSections: {},
+                filterDayOff: [],
+                weights: {
+                  facultyPreference: 30,
+                  minimizeGaps: 25,
+                  compactDays: 20,
+                  avoidEarlyLate: 15,
+                  avoidTentative: 10,
+                },
+              },
+              note: 'Preferred morning classes with Dr. MHR',
+              colorTag: 'rose',
+              isFavorite: true,
+            },
+            {
+              id: 'demo-2',
+              name: 'Routine 2 - 4 days - Fall 2026',
+              createdAt: Date.now() - 3600000 * 24 * 2,
+              updatedAt: Date.now() - 3600000 * 24 * 2,
+              trimester: 'Fall 2026',
+              dataVersion: '1.0.0',
+              sections: sample2
+                ? [
+                    {
+                      sectionId: sample2.id,
+                      courseCode: sample2.courseCode,
+                      title: sample2.title,
+                      section: sample2.section,
+                      faculty: sample2.faculty,
+                      credit: sample2.credit,
+                      kind: sample2.kind,
+                      meetings: sample2.meetings,
+                    },
+                  ]
+                : [],
+              totals: { credits: 3, daysOnCampus: 2, score: 88 },
+              inputs: {
+                selectedCourses: ['CSE 2215'],
+                preferredFaculty: {},
+                avoidFaculty: {},
+                lockedSections: {},
+                filterDayOff: [],
+                weights: {
+                  facultyPreference: 30,
+                  minimizeGaps: 25,
+                  compactDays: 20,
+                  avoidEarlyLate: 15,
+                  avoidTentative: 10,
+                },
+              },
+              note: 'Balanced schedule',
+              colorTag: 'emerald',
+              isFavorite: false,
+            },
+            {
+              id: 'demo-3',
+              name: 'Outdated Draft (Fall 2025)',
+              createdAt: Date.now() - 3600000 * 24 * 5,
+              updatedAt: Date.now() - 3600000 * 24 * 5,
+              trimester: 'Fall 2025',
+              dataVersion: '0.9.0',
+              sections: [
+                {
+                  sectionId: 'CSE 4509_OLD_DISCONTINUED',
+                  courseCode: 'CSE 4509',
+                  title: 'Operating Systems',
+                  section: 'Z',
+                  faculty: ['TBA'],
+                  credit: 3,
+                  kind: 'theory',
+                  meetings: [
+                    {
+                      day: 'Mon',
+                      start: 510,
+                      end: 600,
+                      room: 'UB 0999 (Old Room)',
+                    },
+                  ],
+                },
+              ],
+              totals: { credits: 3, daysOnCampus: 1, score: 72 },
+              inputs: {
+                selectedCourses: ['CSE 4509'],
+                preferredFaculty: {},
+                avoidFaculty: {},
+                lockedSections: {},
+                filterDayOff: [],
+                weights: {
+                  facultyPreference: 30,
+                  minimizeGaps: 25,
+                  compactDays: 20,
+                  avoidEarlyLate: 15,
+                  avoidTentative: 10,
+                },
+              },
+              note: 'Room and time changed since last trimester',
+              colorTag: 'amber',
+              isFavorite: false,
+            },
+            {
+              id: 'demo-4',
+              name: 'Weekend Free Dream Schedule',
+              createdAt: Date.now() - 3600000 * 12,
+              updatedAt: Date.now() - 3600000 * 12,
+              trimester: 'Fall 2026',
+              dataVersion: '1.0.0',
+              sections: sample3
+                ? [
+                    {
+                      sectionId: sample3.id,
+                      courseCode: sample3.courseCode,
+                      title: sample3.title,
+                      section: sample3.section,
+                      faculty: sample3.faculty,
+                      credit: sample3.credit,
+                      kind: sample3.kind,
+                      meetings: sample3.meetings,
+                    },
+                  ]
+                : [],
+              totals: { credits: 3, daysOnCampus: 2, score: 94 },
+              inputs: {
+                selectedCourses: ['CSE 1115'],
+                preferredFaculty: {},
+                avoidFaculty: {},
+                lockedSections: {},
+                filterDayOff: [],
+                weights: {
+                  facultyPreference: 30,
+                  minimizeGaps: 25,
+                  compactDays: 20,
+                  avoidEarlyLate: 15,
+                  avoidTentative: 10,
+                },
+              },
+              note: 'Light load with OOP theory',
+              colorTag: 'sky',
+              isFavorite: true,
+            },
+          ];
+
+          saveRoutinesToStorage(demoList);
+          setSavedRoutines(demoList);
+          setIsSavedDrawerOpen(true);
+        } else if (urlParams.get('saved') === 'true') {
+          setIsSavedDrawerOpen(true);
+        }
+        const srToken = urlParams.get('sr') || urlParams.get('saved_routine');
+        if (srToken) {
+          const decoded = decodeSharedRoutineUrl(srToken, allSections);
+          if (decoded && decoded.sections && decoded.sections.length > 0) {
+            const sharedRoutineObj: SavedRoutine = {
+              id: `shared_${Date.now()}`,
+              name: decoded.name || 'Shared Routine',
+              createdAt: Date.now(),
+              updatedAt: Date.now(),
+              trimester: 'Fall 2026',
+              dataVersion: '1.0.0',
+              sections: decoded.sections,
+              totals: decoded.totals || {
+                credits: decoded.sections.reduce((a, s) => a + s.credit, 0),
+                daysOnCampus: 3,
+                score: 100,
+              },
+              inputs: {
+                selectedCourses: decoded.sections.map((s) => s.courseCode),
+                preferredFaculty: {},
+                avoidFaculty: {},
+                lockedSections: {},
+                filterDayOff: [],
+                weights: {
+                  facultyPreference: 30,
+                  minimizeGaps: 25,
+                  compactDays: 20,
+                  avoidEarlyLate: 15,
+                  avoidTentative: 10,
+                },
+              },
+              note: decoded.note,
+              colorTag: decoded.colorTag,
+            };
+            setViewingSavedRoutine(sharedRoutineObj);
+            setIsSharedViewing(true);
+          }
+        }
+      }
+
+      // 4. Read favorites
       try {
         const saved = localStorage.getItem('uiu_routine_favorites');
         if (saved) {
@@ -296,6 +557,226 @@ export default function BuilderPage() {
     }
   }, [currentSchedule]);
 
+  // Sync across tabs using the "storage" event
+  useEffect(() => {
+    const handleStorageEvent = (e: StorageEvent) => {
+      if (e.key === 'uiu-rb:saved:v1') {
+        const { routines } = loadSavedRoutines();
+        setSavedRoutines(routines);
+      }
+    };
+    window.addEventListener('storage', handleStorageEvent);
+    return () => window.removeEventListener('storage', handleStorageEvent);
+  }, []);
+
+  // Compute active displayed schedule (falls back to saved routine if in viewing mode)
+  const activeDisplaySchedule: ScheduleResult | null = useMemo(() => {
+    if (viewingSavedRoutine) {
+      return {
+        sections: viewingSavedRoutine.sections as unknown as Section[],
+        score: viewingSavedRoutine.totals.score,
+        breakdown: {
+          facultyScore: 0,
+          gapScore: 0,
+          dayCompactScore: 0,
+          timePreferenceScore: 0,
+          tentativePenalty: 0,
+        },
+        stats: {
+          daysUsed: Array.from(
+            new Set(viewingSavedRoutine.sections.flatMap((s) => s.meetings.map((m) => m.day)))
+          ) as Day[],
+          totalGapMinutes: 0,
+          earliestStart: 510,
+          latestEnd: 990,
+          tentativeCount: viewingSavedRoutine.sections.filter((s) => s.tentative).length,
+          credits: viewingSavedRoutine.totals.credits,
+        },
+      };
+    }
+    return currentSchedule;
+  }, [viewingSavedRoutine, currentSchedule]);
+
+  // Check if active schedule is currently saved
+  const existingSavedForActive = useMemo(() => {
+    if (!activeDisplaySchedule) return null;
+    return findDuplicateSavedRoutine(activeDisplaySchedule.sections, savedRoutines);
+  }, [activeDisplaySchedule, savedRoutines]);
+
+  // Validation of viewing saved routine against live catalog
+  const viewingSavedValidation = useMemo(() => {
+    if (!viewingSavedRoutine) return undefined;
+    return validateSavedRoutine(viewingSavedRoutine, effectiveSections, {
+      filterDayOff: request.filterDayOff,
+      filterTimeWindow: request.filterTimeWindow,
+    });
+  }, [viewingSavedRoutine, effectiveSections, request.filterDayOff, request.filterTimeWindow]);
+
+  // Comparison schedules list (switches if comparing saved routines)
+  const activeComparisonSchedules = useMemo(() => {
+    if (comparingSavedRoutines && comparingSavedRoutines.length > 0) {
+      return comparingSavedRoutines.map((r) => ({
+        sections: r.sections as unknown as Section[],
+        score: r.totals.score,
+        breakdown: {
+          facultyScore: 0,
+          gapScore: 0,
+          dayCompactScore: 0,
+          timePreferenceScore: 0,
+          tentativePenalty: 0,
+        },
+        stats: {
+          daysUsed: Array.from(
+            new Set(r.sections.flatMap((s) => s.meetings.map((m) => m.day)))
+          ) as Day[],
+          totalGapMinutes: 0,
+          earliestStart: 510,
+          latestEnd: 990,
+          tentativeCount: r.sections.filter((s) => s.tentative).length,
+          credits: r.totals.credits,
+        },
+      }));
+    }
+    return results ? results.schedules : [];
+  }, [comparingSavedRoutines, results]);
+
+  const showToast = (message: string, showView = true) => {
+    setSavedToast({ message, showView });
+    setTimeout(() => {
+      setSavedToast(null);
+    }, 4000);
+  };
+
+  const handleOpenSavePopover = (sched?: ScheduleResult) => {
+    setScheduleToSave(sched || activeDisplaySchedule);
+    setIsSavePopoverOpen(true);
+  };
+
+  const handleSaveRoutine = (
+    data: {
+      name: string;
+      note?: string;
+      colorTag?: SavedRoutineColor;
+      isFavorite?: boolean;
+    },
+    existingIdToUpdate?: string
+  ) => {
+    if (existingIdToUpdate) {
+      const updated = savedRoutines.map((r) =>
+        r.id === existingIdToUpdate
+          ? {
+              ...r,
+              name: data.name,
+              note: data.note,
+              colorTag: data.colorTag,
+              isFavorite: data.isFavorite,
+              updatedAt: Date.now(),
+            }
+          : r
+      );
+      setSavedRoutines(updated);
+      saveRoutinesToStorage(updated);
+      if (viewingSavedRoutine && viewingSavedRoutine.id === existingIdToUpdate) {
+        setViewingSavedRoutine({
+          ...viewingSavedRoutine,
+          name: data.name,
+          note: data.note,
+          colorTag: data.colorTag,
+          isFavorite: data.isFavorite,
+        });
+      }
+      showToast('Routine updated', true);
+      return;
+    }
+
+    const targetSched = scheduleToSave || activeDisplaySchedule;
+    if (!targetSched) return;
+
+    const newRoutine = buildSavedRoutineObject({
+      name: data.name,
+      schedule: targetSched,
+      request,
+      note: data.note,
+      colorTag: data.colorTag,
+      isFavorite: data.isFavorite,
+    });
+
+    const updated = [newRoutine, ...savedRoutines];
+    setSavedRoutines(updated);
+    saveRoutinesToStorage(updated);
+    showToast('Saved to My Routines • View', true);
+  };
+
+  const handleDeleteRoutine = (id: string) => {
+    const updated = savedRoutines.filter((r) => r.id !== id);
+    setSavedRoutines(updated);
+    saveRoutinesToStorage(updated);
+    if (viewingSavedRoutine && viewingSavedRoutine.id === id) {
+      setViewingSavedRoutine(null);
+    }
+  };
+
+  const handleDeleteAll = () => {
+    setSavedRoutines([]);
+    saveRoutinesToStorage([]);
+    setViewingSavedRoutine(null);
+    showToast('All saved routines deleted', false);
+  };
+
+  const handleUpdateRoutine = (
+    id: string,
+    updates: Partial<Pick<SavedRoutine, 'name' | 'note' | 'colorTag' | 'isFavorite'>>
+  ) => {
+    const updated = savedRoutines.map((r) =>
+      r.id === id ? { ...r, ...updates, updatedAt: Date.now() } : r
+    );
+    setSavedRoutines(updated);
+    saveRoutinesToStorage(updated);
+    if (viewingSavedRoutine && viewingSavedRoutine.id === id) {
+      setViewingSavedRoutine({ ...viewingSavedRoutine, ...updates });
+    }
+  };
+
+  const handleDuplicateRoutine = (id: string) => {
+    const target = savedRoutines.find((r) => r.id === id);
+    if (!target) return;
+    const now = Date.now();
+    const copy: SavedRoutine = {
+      ...target,
+      id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `sr_${now}_${Math.random().toString(36).slice(2, 9)}`,
+      name: `${target.name} (Copy)`,
+      createdAt: now,
+      updatedAt: now,
+    };
+    const updated = [copy, ...savedRoutines];
+    setSavedRoutines(updated);
+    saveRoutinesToStorage(updated);
+    showToast(`Created copy of ${target.name}`, true);
+  };
+
+  const handleImportRoutines = (incoming: SavedRoutine[], mode: 'merge' | 'replace') => {
+    const { result, addedCount } = mergeImportedRoutines(savedRoutines, incoming, mode);
+    setSavedRoutines(result);
+    saveRoutinesToStorage(result);
+    showToast(`Imported ${addedCount} routine(s)`, true);
+  };
+
+  const handleLoadSettings = (inputs: SavedRoutine['inputs']) => {
+    setRequest({
+      selectedCourses: [...inputs.selectedCourses],
+      preferredFaculty: { ...inputs.preferredFaculty },
+      avoidFaculty: { ...inputs.avoidFaculty },
+      lockedSections: { ...inputs.lockedSections },
+      filterDayOff: [...inputs.filterDayOff],
+      filterTimeWindow: inputs.filterTimeWindow ? { ...inputs.filterTimeWindow } : undefined,
+      maxGapMinutesPerDay: inputs.maxGapMinutesPerDay,
+      weights: { ...inputs.weights },
+      limit: 50,
+    });
+    setViewingSavedRoutine(null);
+    showToast('Settings restored to solver', false);
+  };
+
   // Course addition / removal helpers (synced with explorer)
   const handleAddCourse = useCallback((courseCode: string) => {
     setRequest((prev) => {
@@ -410,6 +891,11 @@ export default function BuilderPage() {
           e.preventDefault();
           setExplorerCourseCode(request.selectedCourses[0]);
         }
+      } else if (e.key === 's' || e.key === 'S') {
+        if (!e.ctrlKey && !e.metaKey && !e.altKey) {
+          e.preventDefault();
+          setIsSavedDrawerOpen((prev) => !prev);
+        }
       } else if (e.key === 'f' || e.key === 'F') {
         e.preventDefault();
         if (currentSchedule) {
@@ -423,6 +909,8 @@ export default function BuilderPage() {
         setIsHelpOpen(false);
         setIsShortcutsOpen(false);
         setIsFavoritesOpen(false);
+        setIsSavedDrawerOpen(false);
+        setIsSavePopoverOpen(false);
       }
     };
 
@@ -514,9 +1002,23 @@ export default function BuilderPage() {
       <SiteNav
         onOpenHelp={() => setIsHelpOpen(true)}
         onOpenShortcuts={() => setIsShortcutsOpen(true)}
-        totalSaved={favorites.length}
-        onOpenFavorites={() => setIsFavoritesOpen(true)}
+        totalSaved={savedRoutines.length}
+        onOpenSavedRoutines={() => setIsSavedDrawerOpen(true)}
+        savedButtonRef={savedButtonRef}
       />
+
+      {/* Storage Blocked Banner (if private browser mode) */}
+      {storageBlockedNotice && (
+        <div className="bg-amber-50 border-b border-amber-300 px-4 py-2 text-xs text-amber-900 flex items-center justify-between">
+          <span>{storageBlockedNotice}</span>
+          <button
+            onClick={() => setStorageBlockedNotice(null)}
+            className="text-amber-700 hover:text-amber-950 font-bold px-1"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {/* 2. Main Workspace Layout */}
       <main className="flex-1 max-w-[1600px] w-full mx-auto px-4 sm:px-6 py-4 grid grid-cols-1 lg:grid-cols-[minmax(340px,400px)_1fr] gap-5 items-start">
@@ -534,8 +1036,139 @@ export default function BuilderPage() {
 
         {/* Right Content Area */}
         <div className="flex-1 flex flex-col min-w-0 space-y-6">
-          {/* Welcome Empty State */}
-          {request.selectedCourses.length === 0 ? (
+          {/* If viewing a saved/shared routine, show the banner */}
+          {viewingSavedRoutine && (
+            <SavedRoutineBanner
+              routine={viewingSavedRoutine}
+              isSharedLink={isSharedViewing}
+              validation={viewingSavedValidation}
+              onExit={() => {
+                setViewingSavedRoutine(null);
+                setIsSharedViewing(false);
+              }}
+              onSaveShared={() => {
+                const updated = [viewingSavedRoutine, ...savedRoutines];
+                setSavedRoutines(updated);
+                saveRoutinesToStorage(updated);
+                setIsSharedViewing(false);
+                showToast('Saved to My Routines • View', true);
+              }}
+              onUpdateToLatestData={() => {
+                const { updatedRoutine } = updateRoutineToLatestData(
+                  viewingSavedRoutine,
+                  effectiveSections
+                );
+                const updated = [updatedRoutine, ...savedRoutines];
+                setSavedRoutines(updated);
+                saveRoutinesToStorage(updated);
+                setViewingSavedRoutine(updatedRoutine);
+                showToast('Saved updated copy', true);
+              }}
+              onLoadSettings={() => handleLoadSettings(viewingSavedRoutine.inputs)}
+            />
+          )}
+
+          {/* If comparing saved routines */}
+          {comparingSavedRoutines && comparingSavedRoutines.length > 0 && (
+            <div className="bg-orange-50/90 border border-orange-200 rounded-card p-3 flex items-center justify-between gap-2 shadow-2xs">
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-xs text-orange-950">
+                  Comparing {comparingSavedRoutines.length} Saved Routines
+                </span>
+                <span className="text-[11px] text-orange-800 truncate">
+                  ({comparingSavedRoutines.map((r) => r.name).join(' vs ')})
+                </span>
+              </div>
+              <button
+                onClick={() => setComparingSavedRoutines(null)}
+                className="px-2.5 py-1 rounded-btn bg-surface hover:bg-orange-100 text-orange-800 text-xs font-semibold border border-orange-300 transition-colors"
+              >
+                Exit Comparison
+              </button>
+            </div>
+          )}
+
+          {/* Welcome / Solving / Conflict / Timetable View */}
+          {viewingSavedRoutine ? (
+            /* Always display saved timetable when viewing saved routine */
+            <>
+              {activeDisplaySchedule && (
+                <Timetable
+                  schedule={activeDisplaySchedule}
+                  currentRank={0}
+                  totalSchedules={1}
+                  onSetRank={() => {}}
+                  onLockAllSections={handleLockAllSections}
+                  isFavorite={Boolean(viewingSavedRoutine.isFavorite)}
+                  onToggleFavorite={() =>
+                    handleUpdateRoutine(viewingSavedRoutine.id, {
+                      isFavorite: !viewingSavedRoutine.isFavorite,
+                    })
+                  }
+                  isSaved={true}
+                  onOpenSavePopover={() => handleOpenSavePopover(activeDisplaySchedule)}
+                  savePopoverContent={
+                    isSavePopoverOpen && activeDisplaySchedule ? (
+                      <SaveRoutinePopover
+                        isOpen={isSavePopoverOpen}
+                        onClose={() => setIsSavePopoverOpen(false)}
+                        schedule={activeDisplaySchedule}
+                        request={request}
+                        savedRoutines={savedRoutines}
+                        existingSavedRoutine={existingSavedForActive}
+                        onSave={handleSaveRoutine}
+                        onRemove={handleDeleteRoutine}
+                        onOpenSavedDrawer={() => setIsSavedDrawerOpen(true)}
+                      />
+                    ) : null
+                  }
+                  isTruncated={false}
+                  previewSection={previewSection}
+                />
+              )}
+            </>
+          ) : comparingSavedRoutines && comparingSavedRoutines.length > 0 ? (
+            /* Comparing saved routines view */
+            <>
+              {activeDisplaySchedule && (
+                <Timetable
+                  schedule={activeDisplaySchedule}
+                  currentRank={currentRank}
+                  totalSchedules={activeComparisonSchedules.length}
+                  onSetRank={setRank}
+                  onLockAllSections={handleLockAllSections}
+                  isFavorite={isCurrentFavorite}
+                  onToggleFavorite={toggleFavorite}
+                  isSaved={Boolean(existingSavedForActive)}
+                  onOpenSavePopover={() => handleOpenSavePopover()}
+                  savePopoverContent={
+                    isSavePopoverOpen && activeDisplaySchedule ? (
+                      <SaveRoutinePopover
+                        isOpen={isSavePopoverOpen}
+                        onClose={() => setIsSavePopoverOpen(false)}
+                        schedule={activeDisplaySchedule}
+                        request={request}
+                        savedRoutines={savedRoutines}
+                        existingSavedRoutine={existingSavedForActive}
+                        onSave={handleSaveRoutine}
+                        onRemove={handleDeleteRoutine}
+                        onOpenSavedDrawer={() => setIsSavedDrawerOpen(true)}
+                      />
+                    ) : null
+                  }
+                  previewSection={previewSection}
+                />
+              )}
+              <ScheduleComparison
+                schedules={activeComparisonSchedules}
+                activeRank={currentRank}
+                onSelectRank={setRank}
+                onSaveSchedule={(sched) => handleOpenSavePopover(sched)}
+                titleText={`Saved Routines Comparison (${activeComparisonSchedules.length})`}
+                isSavedComparison={true}
+              />
+            </>
+          ) : request.selectedCourses.length === 0 ? (
             <EmptyState
               type="welcome"
               request={request}
@@ -578,6 +1211,23 @@ export default function BuilderPage() {
                   onLockAllSections={handleLockAllSections}
                   isFavorite={isCurrentFavorite}
                   onToggleFavorite={toggleFavorite}
+                  isSaved={Boolean(existingSavedForActive)}
+                  onOpenSavePopover={() => handleOpenSavePopover()}
+                  savePopoverContent={
+                    isSavePopoverOpen && activeDisplaySchedule ? (
+                      <SaveRoutinePopover
+                        isOpen={isSavePopoverOpen}
+                        onClose={() => setIsSavePopoverOpen(false)}
+                        schedule={activeDisplaySchedule}
+                        request={request}
+                        savedRoutines={savedRoutines}
+                        existingSavedRoutine={existingSavedForActive}
+                        onSave={handleSaveRoutine}
+                        onRemove={handleDeleteRoutine}
+                        onOpenSavedDrawer={() => setIsSavedDrawerOpen(true)}
+                      />
+                    ) : null
+                  }
                   isTruncated={results.truncated}
                   previewSection={previewSection}
                 />
@@ -588,6 +1238,7 @@ export default function BuilderPage() {
                 schedules={results.schedules}
                 activeRank={currentRank}
                 onSelectRank={setRank}
+                onSaveSchedule={(sched) => handleOpenSavePopover(sched)}
               />
             </>
           )}
@@ -595,7 +1246,7 @@ export default function BuilderPage() {
       </main>
 
       {/* Footer */}
-      <SiteFooter />
+      <SiteFooter onOpenSavedRoutines={() => setIsSavedDrawerOpen(true)} />
 
       {/* 3. Course-Wise Faculty Explorer Slide-Over Panel */}
       {explorerCourseCode && (
@@ -647,6 +1298,52 @@ export default function BuilderPage() {
         onSave={handleSaveManualSchedule}
         onCancel={handleCancelManualSchedule}
       />
+
+      {/* 5. Saved Routines Drawer */}
+      <SavedRoutinesDrawer
+        isOpen={isSavedDrawerOpen}
+        onClose={() => setIsSavedDrawerOpen(false)}
+        savedRoutines={savedRoutines}
+        liveSections={effectiveSections}
+        onOpenRoutine={(routine) => {
+          setViewingSavedRoutine(routine);
+          setIsSharedViewing(false);
+          setComparingSavedRoutines(null);
+        }}
+        onLoadSettings={handleLoadSettings}
+        onCompareRoutines={(routines) => {
+          setComparingSavedRoutines(routines);
+        }}
+        onDeleteRoutine={handleDeleteRoutine}
+        onDeleteAll={handleDeleteAll}
+        onUpdateRoutine={handleUpdateRoutine}
+        onDuplicateRoutine={handleDuplicateRoutine}
+        onImportRoutines={handleImportRoutines}
+        onAddUpdatedCopy={(newRoutine) => {
+          const updated = [newRoutine, ...savedRoutines];
+          setSavedRoutines(updated);
+          saveRoutinesToStorage(updated);
+        }}
+        triggerButtonRef={savedButtonRef}
+      />
+
+      {/* 6. Saved Routine Toast Notification */}
+      {savedToast && (
+        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-2.5 rounded-card shadow-warm-lg flex items-center gap-3 text-xs animate-in fade-in slide-in-from-bottom-2">
+          <span>{savedToast.message}</span>
+          {savedToast.showView && (
+            <button
+              onClick={() => {
+                setSavedToast(null);
+                setIsSavedDrawerOpen(true);
+              }}
+              className="px-2.5 py-1 rounded bg-orange-500 hover:bg-orange-600 text-white font-bold text-[11px] transition-colors"
+            >
+              View
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }

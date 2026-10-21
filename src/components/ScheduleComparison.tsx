@@ -3,19 +3,27 @@
 import React from 'react';
 import { ScheduleResult, Section } from '../types';
 import { formatTime24 } from '../utils/export';
-import { Check, ArrowRight, GitCompare, AlertCircle } from 'lucide-react';
+import { Check, ArrowRight, GitCompare, AlertCircle, Bookmark } from 'lucide-react';
 import { getCourseColor } from '../utils/colors';
 
 interface ScheduleComparisonProps {
   schedules: ScheduleResult[];
   activeRank: number;
   onSelectRank: (rank: number) => void;
+  onSaveSchedule?: (schedule: ScheduleResult) => void;
+  savedSignatures?: Set<string>;
+  titleText?: string;
+  isSavedComparison?: boolean;
 }
 
 export function ScheduleComparison({
   schedules,
   activeRank,
   onSelectRank,
+  onSaveSchedule,
+  savedSignatures,
+  titleText,
+  isSavedComparison,
 }: ScheduleComparisonProps) {
   const topSchedules = schedules.slice(0, 3);
 
@@ -31,11 +39,11 @@ export function ScheduleComparison({
         <div className="flex items-center space-x-2">
           <GitCompare className="w-5 h-5 text-orange-500" />
           <h3 className="text-sm font-bold text-text-primary tracking-wide uppercase">
-            Top Schedule Comparison & Diff
+            {titleText || 'Top Schedule Comparison & Diff'}
           </h3>
         </div>
         <span className="text-xs text-text-muted">
-          Comparing Top {topSchedules.length} Variations
+          Comparing {topSchedules.length} Variations
         </span>
       </div>
 
@@ -79,11 +87,27 @@ export function ScheduleComparison({
                     </span>
                   )}
                 </div>
-                <div className="text-right">
-                  <span className="text-sm font-black text-orange-600">
-                    {sched.score}
-                  </span>
-                  <span className="text-[10px] text-text-muted">/100</span>
+                <div className="flex items-center gap-1.5">
+                  <div className="text-right">
+                    <span className="text-sm font-black text-orange-600">
+                      {sched.score}
+                    </span>
+                    <span className="text-[10px] text-text-muted">/100</span>
+                  </div>
+                  {onSaveSchedule && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onSaveSchedule(sched);
+                      }}
+                      className="p-1 rounded hover:bg-orange-100/60 text-text-muted hover:text-orange-600 transition-colors"
+                      title="Save this routine"
+                      aria-label="Save this routine"
+                    >
+                      <Bookmark className="w-3.5 h-3.5 text-orange-500" />
+                    </button>
+                  )}
                 </div>
               </div>
 

@@ -55,8 +55,8 @@ export default function LandingPage() {
       a: 'No. UIU Routine Builder is an independent, open student project designed to assist peers during trimester planning. Always confirm your final course selections and section letters inside the official UIU UCAM portal.',
     },
     {
-      q: 'Is my schedule or personal data stored on a server?',
-      a: 'No. Everything runs 100% locally in your web browser. No databases, accounts, or analytics track your course picks. When you share a schedule, all details are encoded directly into the shareable URL parameters.',
+      q: 'Is my data stored on a server?',
+      a: 'No, routines are saved in your own browser. Everything runs 100% locally with no login, no accounts, and no backend database. When you share a schedule, all details are encoded directly into the shareable URL parameters.',
     },
     {
       q: 'Does this register me for classes in UCAM automatically?',

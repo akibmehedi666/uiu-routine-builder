@@ -9,22 +9,27 @@ import {
   HelpCircle,
   Keyboard,
   Star,
+  Bookmark,
   ArrowRight,
   GraduationCap,
 } from 'lucide-react';
 
 interface SiteNavProps {
   totalSaved?: number;
+  onOpenSavedRoutines?: () => void;
   onOpenFavorites?: () => void;
   onOpenShortcuts?: () => void;
   onOpenHelp?: () => void;
+  savedButtonRef?: React.RefObject<HTMLButtonElement>;
 }
 
 export function SiteNav({
   totalSaved = 0,
+  onOpenSavedRoutines,
   onOpenFavorites,
   onOpenShortcuts,
   onOpenHelp,
+  savedButtonRef,
 }: SiteNavProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -123,14 +128,21 @@ export function SiteNav({
           {/* Builder specific triggers */}
           {isBuilder && (
             <>
-              {totalSaved > 0 && onOpenFavorites && (
+              {onOpenSavedRoutines && (
                 <button
-                  onClick={onOpenFavorites}
-                  className="px-2.5 py-1.5 text-xs font-semibold rounded-btn bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 flex items-center gap-1.5 transition-colors"
-                  title="Saved Routine Variations"
+                  ref={savedButtonRef}
+                  onClick={onOpenSavedRoutines}
+                  className="px-2.5 py-1.5 text-xs font-semibold rounded-btn bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-200 flex items-center gap-1.5 transition-colors shadow-2xs"
+                  title="My Saved Routines (Key: S)"
+                  aria-label="My Saved Routines"
                 >
-                  <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
-                  <span>Saved ({totalSaved})</span>
+                  <Bookmark className="w-3.5 h-3.5 fill-orange-500 text-orange-500" />
+                  <span>Saved</span>
+                  {totalSaved > 0 && (
+                    <span className="px-1.5 py-0.2 rounded-full bg-orange-500 text-white text-[10px] font-bold leading-tight">
+                      {totalSaved}
+                    </span>
+                  )}
                 </button>
               )}
 
@@ -229,6 +241,19 @@ export function SiteNav({
                 FAQ
               </a>
             </>
+          )}
+
+          {onOpenSavedRoutines && (
+            <button
+              onClick={() => {
+                setMobileOpen(false);
+                onOpenSavedRoutines();
+              }}
+              className="w-full text-left py-1.5 text-orange-800 font-semibold flex items-center gap-1.5"
+            >
+              <Bookmark className="w-3.5 h-3.5 fill-orange-500 text-orange-500" />
+              <span>My Saved Routines {totalSaved > 0 ? `(${totalSaved})` : ''}</span>
+            </button>
           )}
 
           {isBuilder && onOpenShortcuts && (

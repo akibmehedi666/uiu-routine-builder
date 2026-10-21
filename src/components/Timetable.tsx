@@ -9,6 +9,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Star,
+  Bookmark,
   CheckCircle2,
   Copy,
   Calendar as CalendarIcon,
@@ -31,6 +32,9 @@ interface TimetableProps {
   onLockAllSections: (schedule: ScheduleResult) => void;
   isFavorite: boolean;
   onToggleFavorite: (schedule: ScheduleResult) => void;
+  isSaved?: boolean;
+  onOpenSavePopover?: () => void;
+  savePopoverContent?: React.ReactNode;
   isTruncated?: boolean;
   previewSection?: Section | null;
 }
@@ -54,6 +58,9 @@ export function Timetable({
   onLockAllSections,
   isFavorite,
   onToggleFavorite,
+  isSaved,
+  onOpenSavePopover,
+  savePopoverContent,
   isTruncated,
   previewSection,
 }: TimetableProps) {
@@ -203,7 +210,7 @@ export function Timetable({
         </div>
 
         {/* Right: Quick Actions */}
-        <div className="flex items-center space-x-1.5">
+        <div className="relative flex items-center space-x-1.5">
           {/* Favorite */}
           <button
             onClick={() => onToggleFavorite(schedule)}
@@ -219,6 +226,27 @@ export function Timetable({
               className={`w-4 h-4 ${isFavorite ? 'fill-amber-500 text-amber-500' : ''}`}
             />
           </button>
+
+          {/* Save Routine */}
+          {onOpenSavePopover && (
+            <button
+              onClick={onOpenSavePopover}
+              className={`px-3 py-1.5 rounded-btn border text-xs font-semibold transition-all flex items-center gap-1.5 shadow-2xs ${
+                isSaved
+                  ? 'bg-orange-50 text-orange-700 border-orange-500 hover:bg-orange-100 ring-1 ring-orange-500/20'
+                  : 'bg-surface hover:bg-orange-50/80 text-orange-600 hover:text-orange-700 border-orange-400 hover:border-orange-500'
+              }`}
+              title={isSaved ? 'Routine saved in My Routines (Click to edit)' : 'Save routine to My Routines'}
+              aria-label={isSaved ? 'Routine saved in My Routines' : 'Save routine to My Routines'}
+            >
+              <Bookmark
+                className={`w-3.5 h-3.5 ${
+                  isSaved ? 'fill-orange-500 text-orange-500' : 'text-orange-500'
+                }`}
+              />
+              <span className="hidden sm:inline">{isSaved ? 'Saved' : 'Save routine'}</span>
+            </button>
+          )}
 
           {/* Lock all */}
           <button
@@ -259,6 +287,9 @@ export function Timetable({
           >
             <Printer className="w-4 h-4" />
           </button>
+
+          {/* Save Routine Popover */}
+          {savePopoverContent}
         </div>
       </div>
 
