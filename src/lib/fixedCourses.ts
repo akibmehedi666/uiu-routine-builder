@@ -1,6 +1,18 @@
 import { Course, Day, Meeting, Section } from '../types';
 import { computeIntervalMask, computeSectionMask, hasOverlap, ScheduleBitmask } from '../solver/bitmask';
 import { formatTime24 } from '../utils/export';
+import {
+  FIXED_COURSE_CODES,
+  isFixedCourse as isConfigFixedCourse,
+  getFixedCourseCodes,
+} from '../config/fixedCourses';
+
+export { FIXED_COURSE_CODES, getFixedCourseCodes };
+
+/**
+ * Checks whether a course is in the central fixed courses list.
+ */
+export const isFixedCourse = isConfigFixedCourse;
 
 /**
  * Manual-schedule course codes (e.g. FYDP courses).
@@ -76,11 +88,6 @@ export function isManualScheduleCourse(
 ): boolean {
   return configuredCourses.includes(courseCode);
 }
-
-/**
- * Backwards compatibility alias
- */
-export const isFixedCourse = isManualScheduleCourse;
 
 /**
  * Validates manual schedule input form values.
@@ -420,21 +427,51 @@ export function computeManualClashes(
 }
 
 /**
+ * Computes clashes against locked fixed FYDP sections.
+ */
+export function computeFixedFYDPClashes(
+  selectedCourses: string[],
+  allSections: Section[],
+  lockedSections: Record<string, string>
+): Map<string, CourseFYDPClashInfo> {
+  const fixedSections: Section[] = [];
+  for (const code of selectedCourses) {
+    if (isFixedCourse(code) && lockedSections?.[code]) {
+      const sec = allSections.find((s) => s.id === lockedSections[code]);
+      if (sec) fixedSections.push(sec);
+    }
+  }
+  return computeManualClashes(selectedCourses, allSections, fixedSections);
+}
+
+/**
  * Backwards compatibility alias
  */
 export const computeFYDPClashes = (
   selectedCourses: string[],
   allSections: Section[],
-  manualSectionsOrConfig?: any
+  manualSectionsOrConfig?: any,
+  lockedSections?: Record<string, string>
 ) => {
   if (Array.isArray(manualSectionsOrConfig)) {
     return computeManualClashes(selectedCourses, allSections, manualSectionsOrConfig);
   }
-  // If called without manual sections, find manual/fixed sections in allSections
-  const fixedSections = allSections.filter(
-    (s) => s.fixed && selectedCourses.includes(s.courseCode)
-  );
-  return computeManualClashes(selectedCourses, allSections, fixedSections);
+  const activeSections: Section[] = [];
+  if (lockedSections) {
+    for (const code of selectedCourses) {
+      if (isFixedCourse(code) && lockedSections[code]) {
+        const sec = allSections.find((s) => s.id === lockedSections[code]);
+        if (sec) activeSections.push(sec);
+      }
+    }
+  }
+  if (activeSections.length === 0) {
+    const fixedSections = allSections.filter(
+      (s) => s.fixed && selectedCourses.includes(s.courseCode)
+    );
+    activeSections.push(...fixedSections);
+  }
+  return computeManualClashes(selectedCourses, allSections, activeSections);
 };
 
 /**
@@ -449,6 +486,10 @@ export function applyManualCourseOverlay(
   const manualSections: Section[] = [];
 
   for (const [code, sched] of Object.entries(manualSchedules)) {
+    // If course is in FIXED_COURSE_CODES and has real sections in catalog, use real sections
+    if (FIXED_COURSE_CODES.includes(code) && sections.some((s) => s.courseCode === code)) {
+      continue;
+    }
     const courseObj = courses.find((c) => c.code === code);
     const title = courseObj?.title || 'Final Year Design Project';
     const credit = courseObj?.credit ?? 2;

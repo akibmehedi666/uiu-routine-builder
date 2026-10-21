@@ -1,4 +1,5 @@
 import { Day, ScheduleResult, Section } from '../types';
+import { isFixedCourse } from '../config/fixedCourses';
 
 export function formatTime24(minutes: number): string {
   const h = Math.floor(minutes / 60);
@@ -20,7 +21,7 @@ export function exportToText(schedule: ScheduleResult): string {
   schedule.sections.forEach((sec, idx) => {
     const fixedLabel = sec.manual
       ? ' [Manual Schedule]'
-      : sec.fixed
+      : sec.fixed || isFixedCourse(sec.courseCode)
       ? ' [Fixed Schedule]'
       : '';
     lines.push(`[${idx + 1}] ${sec.courseCode} (Section: ${sec.section}) — ${sec.credit} Credit(s)${fixedLabel}`);

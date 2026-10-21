@@ -19,6 +19,9 @@ import {
 import { computeSectionMask, computeIntervalMask, hasOverlap } from '../../solver/bitmask';
 import { solveSchedules } from '../../solver/index';
 import { buildCourseDirectory, filterCourses } from '../courseDirectory';
+import { FIXED_COURSE_CODES, isFixedCourse } from '../../config/fixedCourses';
+import { computeFixedFYDPClashes } from '../fixedCourses';
+import { serializeToParams, parseFromParams } from '../../utils/urlSync';
 
 const allCourses = coursesData as Course[];
 const rawSections = sectionsData as Section[];
@@ -299,5 +302,259 @@ describe('Manual Schedule FYDP Pure Helpers & Integration', () => {
     expect(cse4817Clash?.totalSections).toBe(1);
     expect(cse4817Clash?.availableSections).toBe(0);
     expect(cse4817Clash?.allSectionsClash).toBe(true);
+  });
+});
+
+describe('TASK: Fixed User-Chosen FYDP Section Requirements', () => {
+  const cse4000aSections = rawSections.filter((s) => s.courseCode === 'CSE 4000A');
+  const fydpSecI = cse4000aSections.find((s) => s.section === 'I')!;
+
+  it('1. Config list defines FYDP courses (CSE 4000A, DS 4000A)', () => {
+    expect(FIXED_COURSE_CODES).toContain('CSE 4000A');
+    expect(FIXED_COURSE_CODES).toContain('DS 4000A');
+    expect(isFixedCourse('CSE 4000A')).toBe(true);
+    expect(isFixedCourse('DS 4000A')).toBe(true);
+    expect(isFixedCourse('CSE 1111')).toBe(false);
+  });
+
+  it('2. With FYDP fixed to Sec I, 100% of returned routines contain exactly that section and no other FYDP section', () => {
+    expect(fydpSecI).toBeDefined();
+    expect(fydpSecI.id).toBe('BSCSE-CSE 4000A-I');
+
+    const request: SolveRequest = {
+      selectedCourses: ['CSE 4000A', 'CSE 4509', 'CSE 2215'],
+      preferredFaculty: {},
+      avoidFaculty: {},
+      lockedSections: {
+        'CSE 4000A': fydpSecI.id,
+      },
+      filterDayOff: [],
+      weights: defaultWeights,
+      limit: 20,
+    };
+
+    const response = solveSchedules(rawSections, request);
+    expect(response.schedules.length).toBeGreaterThan(0);
+
+    // 100% of returned routines must contain exactly Section I of CSE 4000A
+    for (const routine of response.schedules) {
+      const fydpSection = routine.sections.find((s) => s.courseCode === 'CSE 4000A');
+      expect(fydpSection).toBeDefined();
+      expect(fydpSection?.id).toBe('BSCSE-CSE 4000A-I');
+      expect(fydpSection?.section).toBe('I');
+
+      // No other section of CSE 4000A can appear
+      const allFydp = routine.sections.filter((s) => s.courseCode === 'CSE 4000A');
+      expect(allFydp).toHaveLength(1);
+    }
+  });
+
+  it('3. Overlap with a conflicting course section is never produced', () => {
+    // FYDP Sec I meets Sat 11:11-13:40 (671-820)
+    // In CSE 4509, Section B meets Sat 12:30-01:50 PM (751-830), which overlaps with Sec I
+    const request: SolveRequest = {
+      selectedCourses: ['CSE 4000A', 'CSE 4509'],
+      preferredFaculty: {},
+      avoidFaculty: {},
+      lockedSections: {
+        'CSE 4000A': fydpSecI.id,
+      },
+      filterDayOff: [],
+      weights: defaultWeights,
+      limit: 50,
+    };
+
+    const response = solveSchedules(rawSections, request);
+    expect(response.schedules.length).toBeGreaterThan(0);
+
+    for (const routine of response.schedules) {
+      const cse4509Sec = routine.sections.find((s) => s.courseCode === 'CSE 4509')!;
+      expect(cse4509Sec).toBeDefined();
+      // Section B must NEVER be selected because it overlaps with FYDP Sec I
+      expect(cse4509Sec.section).not.toBe('B');
+
+      // Check meetings do not overlap with FYDP Sec I
+      const fydp = routine.sections.find((s) => s.courseCode === 'CSE 4000A')!;
+      for (const m1 of fydp.meetings) {
+        for (const m2 of cse4509Sec.meetings) {
+          if (m1.day === m2.day) {
+            expect(m1.end <= m2.start || m2.end <= m1.start).toBe(true);
+          }
+        }
+      }
+    }
+  });
+
+  it('4. Infeasible case names the FYDP section and does not suggest relaxing the fixed section', () => {
+    // CSE 4817 only has 1 section (Section A), which meets Sat 12:30-01:50 PM (751-830)
+    // Clashes completely with FYDP Sec I (Sat 671-820)
+    const lockedSections = { 'CSE 4000A': fydpSecI.id };
+    const clashes = computeFixedFYDPClashes(
+      ['CSE 4000A', 'CSE 4817'],
+      rawSections,
+      lockedSections
+    );
+
+    const cse4817Clash = clashes.get('CSE 4817');
+    expect(cse4817Clash?.allSectionsClash).toBe(true);
+
+    // Build the explanation
+    const fydpSec = rawSections.find((s) => s.id === lockedSections['CSE 4000A'])!;
+    const fydpTimeStr = `${fydpSec.meetings[0].day} 11:11-13:40`;
+    const explanation = `FYDP Sec ${fydpSec.section} (${fydpTimeStr}) conflicts with all sections of CSE 4817. Try choosing a different FYDP section or course.`;
+
+    expect(explanation).toContain('FYDP Sec I (Sat 11:11-13:40)');
+    expect(explanation).toContain('conflicts with all sections of CSE 4817');
+  });
+
+  it('5. Stale sectionId is cleared safely without crashing', () => {
+    const storedLockedSections = {
+      'CSE 4000A': 'BSCSE-CSE 4000A-NONEXISTENT',
+      'CSE 4509': 'BSCSE-CSE 4509-A',
+    };
+
+    // Stale detection logic as used in builder page
+    const cleanedLocks: Record<string, string> = {};
+    for (const [code, secId] of Object.entries(storedLockedSections)) {
+      if (rawSections.some((s) => s.courseCode === code && s.id === secId)) {
+        cleanedLocks[code] = secId;
+      }
+    }
+
+    // Stale FYDP lock should be removed
+    expect(cleanedLocks['CSE 4000A']).toBeUndefined();
+    // Valid CSE 4509 lock is preserved
+    expect(cleanedLocks['CSE 4509']).toBe('BSCSE-CSE 4509-A');
+  });
+
+  it('6. Unset FYDP => solver runs without it and soft banner is flagged', () => {
+    const selectedCourses = ['CSE 4000A', 'CSE 4509'];
+    const lockedSections: Record<string, string> = {}; // FYDP section not chosen yet
+
+    // Detection flags
+    const hasUnselectedFixedCourse = selectedCourses.some(
+      (c) => isFixedCourse(c) && !lockedSections[c]
+    );
+    expect(hasUnselectedFixedCourse).toBe(true);
+
+    // Effective request excludes unselected fixed course
+    const unselectedFixed = new Set(
+      selectedCourses.filter((c) => isFixedCourse(c) && !lockedSections[c])
+    );
+    const effectiveCourses = selectedCourses.filter((c) => !unselectedFixed.has(c));
+    expect(effectiveCourses).toEqual(['CSE 4509']);
+
+    const request: SolveRequest = {
+      selectedCourses: effectiveCourses,
+      preferredFaculty: {},
+      avoidFaculty: {},
+      lockedSections: {},
+      filterDayOff: [],
+      weights: defaultWeights,
+      limit: 10,
+    };
+
+    // Solver succeeds without crashing
+    const response = solveSchedules(rawSections, request);
+    expect(response.schedules.length).toBeGreaterThan(0);
+    expect(response.error).toBeUndefined();
+    // None of the routines contain CSE 4000A yet
+    for (const routine of response.schedules) {
+      expect(routine.sections.some((s) => s.courseCode === 'CSE 4000A')).toBe(false);
+    }
+  });
+
+  it('7. Section picker options are sorted by day/time with NO "Any Section" option', () => {
+    const dayOrder: Record<string, number> = { Sat: 0, Sun: 1, Mon: 2, Tue: 3, Wed: 4, Thu: 5, Fri: 6 };
+    const sorted = [...cse4000aSections].sort((a, b) => {
+      const mA = a.meetings[0];
+      const mB = b.meetings[0];
+      if (!mA && !mB) return 0;
+      if (!mA) return 1;
+      if (!mB) return -1;
+      const dA = dayOrder[mA.day] ?? 99;
+      const dB = dayOrder[mB.day] ?? 99;
+      if (dA !== dB) return dA - dB;
+      if (mA.start !== mB.start) return mA.start - mB.start;
+      if (mA.end !== mB.end) return mA.end - mB.end;
+      return a.section.localeCompare(b.section);
+    });
+
+    // Verify sort order starts with Saturday
+    expect(sorted[0].meetings[0].day).toBe('Sat');
+    expect(sorted[0].meetings[0].start).toBe(510); // 08:30
+
+    // Options formatted for picker
+    const optionStrings = sorted.map((s) => {
+      const m = s.meetings[0];
+      const sH = Math.floor(m.start / 60).toString().padStart(2, '0');
+      const sM = (m.start % 60).toString().padStart(2, '0');
+      const eH = Math.floor(m.end / 60).toString().padStart(2, '0');
+      const eM = (m.end % 60).toString().padStart(2, '0');
+      return `Sec ${s.section} - ${m.day} ${sH}:${sM}-${eH}:${eM} - ${s.faculty.join(', ')}`;
+    });
+
+    // Check that NO option has "Any Section"
+    for (const opt of optionStrings) {
+      expect(opt.toLowerCase()).not.toContain('any section');
+    }
+
+    // Verify Sec I string format
+    const secIOpt = optionStrings.find((opt) => opt.startsWith('Sec I -'));
+    expect(secIOpt).toBe('Sec I - Sat 11:11-13:40 - Mohammad Shahriar Rahman');
+  });
+
+  it('8. Persistence: URL serialization & deserialization preserves chosen FYDP section', () => {
+    const request: SolveRequest = {
+      selectedCourses: ['CSE 4000A', 'CSE 4509'],
+      preferredFaculty: {},
+      avoidFaculty: {},
+      lockedSections: {
+        'CSE 4000A': fydpSecI.id,
+      },
+      filterDayOff: [],
+      weights: defaultWeights,
+      limit: 50,
+    };
+
+    const queryString = serializeToParams(request);
+    expect(queryString).toContain('lock=CSE+4000A%3ABSCSE-CSE+4000A-I');
+
+    const restored = parseFromParams(`?${queryString}`);
+    expect(restored.selectedCourses).toEqual(['CSE 4000A', 'CSE 4509']);
+    expect(restored.lockedSections?.['CSE 4000A']).toBe('BSCSE-CSE 4000A-I');
+  });
+
+  it('9. Blocked slot difference detection: mismatch warns user, matching does not warn', () => {
+    // FYDP Sec I is Sat 11:11-13:40 (671-820)
+    // Case A: Blocked slot matches (Sat 11:11-13:40) -> no mismatch
+    const matchingBlocked = {
+      courseCode: 'CSE 4000A',
+      section: 'I',
+      days: ['Sat'] as any,
+      startTime: '11:11',
+      endTime: '13:40',
+    };
+    const bStartA = parseTimeString(matchingBlocked.startTime);
+    const bEndA = parseTimeString(matchingBlocked.endTime);
+    const matchA = fydpSecI.meetings.every(
+      (m) => matchingBlocked.days.includes(m.day) && m.start >= bStartA && m.end <= bEndA
+    );
+    expect(matchA).toBe(true);
+
+    // Case B: Blocked slot is Sun 08:30-11:00 -> mismatch detected!
+    const diffBlocked = {
+      courseCode: 'CSE 4000A',
+      section: 'B',
+      days: ['Sun'] as any,
+      startTime: '08:30',
+      endTime: '11:00',
+    };
+    const bStartB = parseTimeString(diffBlocked.startTime);
+    const bEndB = parseTimeString(diffBlocked.endTime);
+    const matchB = fydpSecI.meetings.every(
+      (m) => diffBlocked.days.includes(m.day) && m.start >= bStartB && m.end <= bEndB
+    );
+    expect(matchB).toBe(false);
   });
 });

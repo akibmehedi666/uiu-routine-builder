@@ -3,6 +3,7 @@
 import React from 'react';
 import { DAYS_LIST, Day, SolveRequest } from '../types';
 import { AlertTriangle, RotateCcw, HelpCircle, Lightbulb } from 'lucide-react';
+import { isFixedCourse } from '../config/fixedCourses';
 
 interface EmptyStateProps {
   type: 'welcome' | 'conflict';
@@ -97,7 +98,12 @@ export function EmptyState({
   const hasTimeFilter =
     request.filterTimeWindow?.earliestStart !== undefined ||
     request.filterTimeWindow?.latestEnd !== undefined;
-  const hasLocked = Object.keys(request.lockedSections || {}).length > 0;
+  const hasNonFixedLocked = Object.keys(request.lockedSections || {}).some(
+    (code) => !isFixedCourse(code)
+  );
+  const hasFixedFYDPLocked = Object.keys(request.lockedSections || {}).some(
+    (code) => isFixedCourse(code)
+  );
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center py-12 px-4 text-center">
@@ -133,11 +139,20 @@ export function EmptyState({
           </div>
         )}
 
-        {hasLocked && (
+        {hasNonFixedLocked && (
           <div className="flex items-start gap-2 text-text-secondary">
             <span className="text-orange-500">•</span>
             <span>
               Unlock section locks: some locked sections may clash directly with other courses.
+            </span>
+          </div>
+        )}
+
+        {hasFixedFYDPLocked && (
+          <div className="flex items-start gap-2 text-text-secondary">
+            <span className="text-orange-500">•</span>
+            <span>
+              Choose a different FYDP section: the chosen fixed section conflicts with available class times of other courses.
             </span>
           </div>
         )}

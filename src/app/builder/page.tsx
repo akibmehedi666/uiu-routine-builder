@@ -23,6 +23,7 @@ import { FacultyExplorer } from '../../components/FacultyExplorer';
 import { HelpGuideModal, ShortcutsModal, FavoritesModal } from '../../components/Modals';
 import { ManualScheduleModal } from '../../components/ManualScheduleModal';
 import { parseFromParams, serializeToParams } from '../../utils/urlSync';
+import { isFixedCourse } from '../../config/fixedCourses';
 import {
   isManualScheduleCourse,
   ManualScheduleInput,
@@ -35,7 +36,7 @@ import {
 } from '../../lib/fixedCourses';
 import { formatTime24 } from '../../utils/export';
 import confetti from 'canvas-confetti';
-import { Loader2, BookOpen, Sliders, Calendar, ArrowRight, Sparkles } from 'lucide-react';
+import { Loader2, BookOpen, Sliders, Calendar, ArrowRight, Sparkles, AlertTriangle } from 'lucide-react';
 import {
   SavedRoutine,
   SavedRoutineColor,
@@ -185,16 +186,32 @@ export default function BuilderPage() {
         }
 
         fromUrl = parseFromParams(window.location.search);
+        const combinedLocks = { ...(storedReq.lockedSections || {}), ...(fromUrl.lockedSections || {}) };
+        const validLocks: Record<string, string> = {};
+        for (const [code, secId] of Object.entries(combinedLocks)) {
+          if (allSections.some((s) => s.courseCode === code && s.id === secId)) {
+            validLocks[code] = secId;
+          }
+        }
         setRequest((prev) => ({
           ...prev,
           ...storedReq,
           ...fromUrl,
+          lockedSections: validLocks,
           weights: prev.weights,
         }));
       } else if (Object.keys(storedReq).length > 0) {
+        const combinedLocks = storedReq.lockedSections || {};
+        const validLocks: Record<string, string> = {};
+        for (const [code, secId] of Object.entries(combinedLocks)) {
+          if (allSections.some((s) => s.courseCode === code && s.id === secId)) {
+            validLocks[code] = secId;
+          }
+        }
         setRequest((prev) => ({
           ...prev,
           ...storedReq,
+          lockedSections: validLocks,
           weights: prev.weights,
         }));
       }
@@ -456,7 +473,7 @@ export default function BuilderPage() {
       // If a selected course is a manual-schedule course without schedule, prompt modal
       const initialCourses = fromUrl.selectedCourses || storedReq.selectedCourses || [];
       for (const c of initialCourses) {
-        if (isManualScheduleCourse(c) && !mergedManual[c]) {
+        if (!isFixedCourse(c) && isManualScheduleCourse(c) && !mergedManual[c]) {
           setModalCourseCode(c);
           setIsManualModalOpen(true);
           break;
@@ -499,46 +516,81 @@ export default function BuilderPage() {
     window.history.replaceState(null, '', newRelativePath);
   }, [request, explorerCourseCode, manualSchedules]);
 
+  // Check if any fixed course in selectedCourses is unselected (no section chosen yet)
+  const hasUnselectedFixedCourse = useMemo(() => {
+    return (request.selectedCourses || []).some(
+      (c) => isFixedCourse(c) && !request.lockedSections?.[c]
+    );
+  }, [request.selectedCourses, request.lockedSections]);
+
+  // Exclude unselected fixed courses from solver input
+  const effectiveSolveRequest = useMemo(() => {
+    const unselectedFixed = new Set(
+      (request.selectedCourses || []).filter(
+        (c) => isFixedCourse(c) && !request.lockedSections?.[c]
+      )
+    );
+    if (unselectedFixed.size === 0) return request;
+    return {
+      ...request,
+      selectedCourses: (request.selectedCourses || []).filter((c) => !unselectedFixed.has(c)),
+    };
+  }, [request]);
+
   // Trigger solve on debounced request changes
   useEffect(() => {
-    if (request.selectedCourses.length === 0) {
+    if (effectiveSolveRequest.selectedCourses.length === 0) {
       cancel();
       return;
     }
 
     const timer = setTimeout(() => {
-      solve(request, effectiveSections);
+      solve(effectiveSolveRequest, effectiveSections);
     }, 120);
 
     return () => clearTimeout(timer);
-  }, [request, solve, cancel, effectiveSections]);
+  }, [effectiveSolveRequest, solve, cancel, effectiveSections]);
 
-  // Compute active manual sections for clash detection
-  const activeManualSections = useMemo(() => {
-    return effectiveSections.filter(
+  // Compute active fixed or manual sections for clash detection
+  const activeFixedOrManualSections = useMemo(() => {
+    const list: Section[] = [];
+    for (const code of request.selectedCourses || []) {
+      if (isFixedCourse(code) && request.lockedSections?.[code]) {
+        const sec = effectiveSections.find((s) => s.id === request.lockedSections[code]);
+        if (sec) list.push(sec);
+      }
+    }
+    const manualList = effectiveSections.filter(
       (s) => s.manual && (request.selectedCourses || []).includes(s.courseCode)
     );
-  }, [effectiveSections, request.selectedCourses]);
+    return [...list, ...manualList];
+  }, [effectiveSections, request.selectedCourses, request.lockedSections]);
 
   // Compute clash info with FYDP/manual courses to show clear message if a course cannot fit around FYDP
   const fydpClashes = useMemo(() => {
-    return computeManualClashes(request.selectedCourses || [], allSections, activeManualSections);
-  }, [request.selectedCourses, activeManualSections]);
+    return computeManualClashes(request.selectedCourses || [], allSections, activeFixedOrManualSections);
+  }, [request.selectedCourses, activeFixedOrManualSections]);
 
   const effectiveErrorMessage = useMemo(() => {
     for (const [code, info] of fydpClashes.entries()) {
       if (info.allSectionsClash) {
-        const firstManual = activeManualSections[0];
-        const schedDesc = firstManual
-          ? firstManual.meetings
-              .map((m) => `${m.day} ${formatTime24(m.start)}–${formatTime24(m.end)}`)
-              .join(', ')
-          : 'Sat 11:11 AM-01:40 PM';
-        return `No section of ${code} fits around FYDP (${schedDesc}). Try removing or swapping courses.`;
+        const firstSection = activeFixedOrManualSections[0];
+        const schedDesc = firstSection
+          ? `Sec ${firstSection.section} (${firstSection.meetings
+              .map((m) => {
+                const sH = Math.floor(m.start / 60).toString().padStart(2, '0');
+                const sM = (m.start % 60).toString().padStart(2, '0');
+                const eH = Math.floor(m.end / 60).toString().padStart(2, '0');
+                const eM = (m.end % 60).toString().padStart(2, '0');
+                return `${m.day} ${sH}:${sM}-${eH}:${eM}`;
+              })
+              .join(', ')})`
+          : 'Sat 11:11-13:40';
+        return `FYDP ${schedDesc} conflicts with all sections of ${code}. Try choosing a different FYDP section or course.`;
       }
     }
     return error;
-  }, [fydpClashes, error, activeManualSections]);
+  }, [fydpClashes, error, activeFixedOrManualSections]);
 
   const openManualModal = (code: string) => {
     setModalCourseCode(code);
@@ -565,6 +617,15 @@ export default function BuilderPage() {
       }));
     }
     setModalCourseCode(null);
+  };
+
+  const handleRemoveBlockedSlot = (courseCode: string) => {
+    setManualSchedules((prev) => {
+      const next = { ...prev };
+      delete next[courseCode];
+      saveManualSchedulesToStorage(next);
+      return next;
+    });
   };
 
   // Helper to uniquely identify a schedule by its section IDs
@@ -1065,6 +1126,7 @@ export default function BuilderPage() {
             manualSchedules={manualSchedules}
             onOpenManualScheduleModal={openManualModal}
             mobileTab={mobileTab === 'preferences' ? 'preferences' : 'courses'}
+            onRemoveBlockedSlot={handleRemoveBlockedSlot}
           />
         </div>
 
@@ -1119,6 +1181,20 @@ export default function BuilderPage() {
               >
                 Exit Comparison
               </button>
+            </div>
+          )}
+
+          {/* Soft Banner: FYDP section not selected yet */}
+          {hasUnselectedFixedCourse && (
+            <div
+              role="status"
+              data-testid="fydp-banner-notice"
+              className="bg-amber-50/90 border border-amber-300 rounded-card p-3 flex items-center gap-2.5 text-amber-950 text-xs shadow-2xs animate-in fade-in"
+            >
+              <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0" />
+              <span className="font-semibold">
+                FYDP section not selected yet. Routines are shown without it.
+              </span>
             </div>
           )}
 
@@ -1202,7 +1278,7 @@ export default function BuilderPage() {
                 isSavedComparison={true}
               />
             </>
-          ) : request.selectedCourses.length === 0 ? (
+          ) : request.selectedCourses.length === 0 || effectiveSolveRequest.selectedCourses.length === 0 ? (
             <EmptyState
               type="welcome"
               request={request}

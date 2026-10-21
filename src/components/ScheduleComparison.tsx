@@ -5,6 +5,7 @@ import { ScheduleResult, Section } from '../types';
 import { formatTime24 } from '../utils/export';
 import { Check, ArrowRight, GitCompare, AlertCircle, Bookmark } from 'lucide-react';
 import { getCourseColor } from '../utils/colors';
+import { isFixedCourse } from '../config/fixedCourses';
 
 interface ScheduleComparisonProps {
   schedules: ScheduleResult[];
@@ -233,6 +234,11 @@ export function ScheduleComparison({
                               <span className="font-extrabold text-xs">
                                 Sec {matchSec.section}
                               </span>
+                              {isFixedCourse(matchSec.courseCode) && (
+                                <span className="px-1 py-0.2 rounded text-[9px] bg-amber-100 text-amber-900 border border-amber-300 font-bold">
+                                  Fixed
+                                </span>
+                              )}
                               {isDiffFromBase && (
                                 <span className="px-1 py-0.2 rounded text-[9px] bg-orange-500 text-white font-bold">
                                   DIFF

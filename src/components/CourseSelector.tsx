@@ -6,6 +6,7 @@ import {
   Day,
   DAYS_LIST,
   Faculty,
+  Meeting,
   Section,
   SolveRequest,
 } from '../types';
@@ -24,14 +25,18 @@ import {
   RotateCcw,
   Pencil,
   Check,
+  Clock,
+  MapPin,
+  User,
 } from 'lucide-react';
 import { formatTime24 } from '../utils/export';
+import { isFixedCourse } from '../config/fixedCourses';
 import {
-  isFixedCourse,
   isManualScheduleCourse,
   ManualScheduleInput,
   formatManualScheduleDescription,
   computeFYDPClashes,
+  parseTimeString,
 } from '../lib/fixedCourses';
 
 interface CourseSelectorProps {
@@ -45,6 +50,7 @@ interface CourseSelectorProps {
   onOpenManualScheduleModal?: (courseCode: string) => void;
   activeSection?: 'all' | 'courses' | 'preferences';
   mobileTab?: 'courses' | 'preferences';
+  onRemoveBlockedSlot?: (courseCode: string) => void;
 }
 
 export function CourseSelector({
@@ -58,6 +64,7 @@ export function CourseSelector({
   onOpenManualScheduleModal,
   activeSection = 'all',
   mobileTab = 'courses',
+  onRemoveBlockedSlot,
 }: CourseSelectorProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -154,8 +161,13 @@ export function CourseSelector({
 
   // Clashes between non-FYDP courses and active FYDP courses
   const fydpClashes = useMemo(() => {
-    return computeFYDPClashes(request.selectedCourses || [], sections);
-  }, [request.selectedCourses, sections]);
+    return computeFYDPClashes(
+      request.selectedCourses || [],
+      sections,
+      undefined,
+      request.lockedSections
+    );
+  }, [request.selectedCourses, sections, request.lockedSections]);
 
   // Check if multiple FYDP courses selected
   const selectedFYDPCourses = useMemo(() => {
@@ -244,7 +256,7 @@ export function CourseSelector({
     setSearchTerm('');
     setIsSearchOpen(false);
 
-    if (isManualScheduleCourse(courseCode) && !manualSchedules[courseCode]) {
+    if (!isFixedCourse(courseCode) && isManualScheduleCourse(courseCode) && !manualSchedules[courseCode]) {
       onOpenManualScheduleModal?.(courseCode);
     }
   };
@@ -753,6 +765,50 @@ export function CourseSelector({
               }
             }
 
+            // Sorted sections by day/time for fixed courses
+            const dayOrder: Record<string, number> = { Sat: 0, Sun: 1, Mon: 2, Tue: 3, Wed: 4, Thu: 5, Fri: 6 };
+            const sortedFixedSections = isFixed
+              ? [...courseSections].sort((a, b) => {
+                  const mA = a.meetings[0];
+                  const mB = b.meetings[0];
+                  if (!mA && !mB) return 0;
+                  if (!mA) return 1;
+                  if (!mB) return -1;
+                  const dA = dayOrder[mA.day] ?? 99;
+                  const dB = dayOrder[mB.day] ?? 99;
+                  if (dA !== dB) return dA - dB;
+                  if (mA.start !== mB.start) return mA.start - mB.start;
+                  if (mA.end !== mB.end) return mA.end - mB.end;
+                  return a.section.localeCompare(b.section);
+                })
+              : courseSections;
+
+            const chosenFixedSection = isFixed ? courseSections.find((s) => s.id === lockedSecId) : null;
+
+            // Check if user has a blocked FYDP slot differing from the chosen section
+            const blockedSlot = manualSchedules?.[course.code];
+            let isDifferentFromBlocked = false;
+            let blockedDesc = '';
+            if (isFixed && blockedSlot && chosenFixedSection) {
+              const bStart = parseTimeString(blockedSlot.startTime);
+              const bEnd = parseTimeString(blockedSlot.endTime);
+              blockedDesc = `${blockedSlot.days.join(', ')} ${blockedSlot.startTime}-${blockedSlot.endTime}`;
+              const matches = chosenFixedSection.meetings.every(
+                (m) => blockedSlot.days.includes(m.day) && m.start >= bStart && m.end <= bEnd
+              );
+              if (!matches) {
+                isDifferentFromBlocked = true;
+              }
+            }
+
+            const formatMeeting24 = (m: Meeting): string => {
+              const sH = Math.floor(m.start / 60).toString().padStart(2, '0');
+              const sM = (m.start % 60).toString().padStart(2, '0');
+              const eH = Math.floor(m.end / 60).toString().padStart(2, '0');
+              const eM = (m.end % 60).toString().padStart(2, '0');
+              return `${m.day} ${sH}:${sM}-${eH}:${eM}`;
+            };
+
             // Has paired lab not yet selected?
             const canAddLab =
               !isFixed &&
@@ -776,8 +832,8 @@ export function CourseSelector({
                 {/* Course Header */}
                 <div className="flex items-center justify-between gap-2 min-w-0">
                   <div
-                    className={`min-w-0 flex-1 ${onOpenExplorer ? 'cursor-pointer' : ''}`}
-                    onClick={() => onOpenExplorer && onOpenExplorer(course.code)}
+                    className={`min-w-0 flex-1 ${!isFixed && onOpenExplorer ? 'cursor-pointer' : ''}`}
+                    onClick={() => !isFixed && onOpenExplorer && onOpenExplorer(course.code)}
                   >
                     <div className="flex items-center gap-1.5 flex-wrap">
                       <span className="font-bold text-xs text-text-primary hover:text-orange-600 transition-colors">
@@ -786,7 +842,11 @@ export function CourseSelector({
                       <span className="text-[10px] px-1.5 py-0.2 rounded bg-subtle text-text-secondary border border-app-border font-medium">
                         {course.credit} cr
                       </span>
-                      {isManualScheduleCourse(course.code) ? (
+                      {isFixed ? (
+                        <span className="text-[10px] text-text-muted">
+                          ({courseSections.length} available)
+                        </span>
+                      ) : isManualScheduleCourse(course.code) ? (
                         <span className="text-[10px] text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 font-semibold flex items-center gap-1">
                           <Pencil className="w-2.5 h-2.5 text-amber-600" />
                           {manualSchedules[course.code]
@@ -805,7 +865,7 @@ export function CourseSelector({
                   </div>
 
                   <div className="flex items-center gap-1.5 flex-shrink-0">
-                    {isManualScheduleCourse(course.code) ? (
+                    {isFixed ? null : isManualScheduleCourse(course.code) ? (
                       <button
                         type="button"
                         onClick={() => onOpenManualScheduleModal?.(course.code)}
@@ -891,8 +951,117 @@ export function CourseSelector({
                   </button>
                 )}
 
-                {/* Manual Course Info Row vs Configurable Lock/Faculty */}
-                {isManualScheduleCourse(course.code) ? (
+                {/* Required Fixed FYDP Section Picker vs Manual vs Normal Lock/Faculty */}
+                {isFixed ? (
+                  <div className="space-y-2 pt-1">
+                    {/* Section Picker Label */}
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-orange-600 font-bold flex items-center gap-1 text-[11px]">
+                        <Lock className="w-3 h-3 text-orange-500" />
+                        Choose Section (Required):
+                      </span>
+                      {lockedSecId && (
+                        <span className="text-[10px] text-success font-semibold flex items-center gap-0.5">
+                          <Check className="w-3 h-3 text-success" />
+                          Locked
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Section Select Dropdown with NO "Any Section" option */}
+                    <select
+                      id={`fydp-section-picker-${course.code}`}
+                      data-testid="fydp-section-picker"
+                      aria-label={`Choose section for ${course.code}`}
+                      value={lockedSecId}
+                      onChange={(e) => handleLockSection(course.code, e.target.value)}
+                      className={`w-full bg-subtle border rounded-btn py-1.5 px-2 text-[11px] text-text-primary focus:outline-none focus:ring-1 focus:ring-orange-400 font-medium ${
+                        lockedSecId ? 'border-orange-400 bg-orange-50/20' : 'border-amber-400 bg-amber-50/20'
+                      }`}
+                    >
+                      {!lockedSecId && (
+                        <option value="" disabled>
+                          -- Choose your FYDP section (Required) --
+                        </option>
+                      )}
+                      {sortedFixedSections.map((s) => {
+                        const meetingStr = s.meetings.map(formatMeeting24).join(', ');
+                        const facStr = s.faculty.join(', ') || 'Faculty TBA';
+                        return (
+                          <option key={s.id} value={s.id}>
+                            Sec {s.section} - {meetingStr} - {facStr}
+                          </option>
+                        );
+                      })}
+                    </select>
+
+                    {/* Until a section is chosen: small inline notice (orange/warning token) */}
+                    {!lockedSecId && (
+                      <div
+                        data-testid="fydp-unselected-notice"
+                        className="p-2 rounded-btn bg-amber-50 border border-amber-300 text-amber-800 text-[11px] font-medium flex items-center gap-1.5"
+                      >
+                        <AlertTriangle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                        <span>Choose your FYDP section to continue</span>
+                      </div>
+                    )}
+
+                    {/* Once chosen: Highlight the chosen one with day, time, room, faculty */}
+                    {lockedSecId && chosenFixedSection && (
+                      <div
+                        data-testid="chosen-fydp-highlight"
+                        className="p-2.5 rounded-btn bg-orange-50 border border-orange-300 text-text-primary text-xs space-y-1 shadow-2xs"
+                      >
+                        <div className="flex items-center justify-between font-bold text-orange-950">
+                          <span className="flex items-center gap-1">
+                            <Check className="w-3.5 h-3.5 text-orange-600" />
+                            <span>Sec {chosenFixedSection.section}</span>
+                          </span>
+                          <span className="text-[10px] px-1.5 py-0.2 rounded bg-orange-200 text-orange-900 font-extrabold uppercase tracking-wider">
+                            Fixed Section
+                          </span>
+                        </div>
+                        <div className="text-[11px] text-text-secondary flex items-center gap-1 font-medium">
+                          <Clock className="w-3 h-3 text-orange-600 shrink-0" />
+                          <span>
+                            {chosenFixedSection.meetings
+                              .map((m) => `${m.day} ${formatTime24(m.start)}–${formatTime24(m.end)}`)
+                              .join(', ')}
+                          </span>
+                        </div>
+                        <div className="text-[11px] text-text-secondary flex items-center gap-1 font-medium">
+                          <MapPin className="w-3 h-3 text-orange-600 shrink-0" />
+                          <span>{chosenFixedSection.meetings[0]?.room || 'Room TBA'}</span>
+                        </div>
+                        <div className="text-[11px] text-text-secondary flex items-center gap-1 font-medium truncate">
+                          <User className="w-3 h-3 text-orange-600 shrink-0" />
+                          <span title={chosenFixedSection.faculty.join(', ')}>
+                            {chosenFixedSection.faculty.join(', ') || 'Faculty TBA'}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Blocked slot conflict hint */}
+                    {isDifferentFromBlocked && blockedDesc && (
+                      <div
+                        data-testid="fydp-blocked-diff-hint"
+                        className="p-2 rounded-btn bg-amber-50/90 border border-amber-300 text-amber-900 text-[11px] flex items-center justify-between gap-2"
+                      >
+                        <span className="flex-1">
+                          Your blocked FYDP slot ({blockedDesc}) differs from the chosen section. Remove the block?
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => onRemoveBlockedSlot?.(course.code)}
+                          className="px-2 py-0.5 rounded-btn bg-amber-200 hover:bg-amber-300 text-amber-950 text-[10px] font-bold border border-amber-400 whitespace-nowrap transition-colors"
+                        >
+                          Remove block
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ) : isManualScheduleCourse(course.code) ? (
                   <div className="text-[11px] text-text-muted bg-amber-50/50 p-2 rounded border border-amber-200/60 flex items-center justify-between">
                     <span className="flex items-center gap-1.5 font-medium text-text-secondary">
                       <Pencil className="w-3 h-3 text-amber-600" />
@@ -1006,17 +1175,23 @@ export function CourseSelector({
 
                     {/* FYDP Clash Information (if course has clashing sections) */}
                     {(() => {
+                      if (isFixed) return null;
                       const clashInfo = fydpClashes.get(course.code);
                       if (!clashInfo) return null;
+                      const lockedFYDPCode = (request.selectedCourses || []).find((c) => isFixedCourse(c));
+                      const lockedFYDPSecId = lockedFYDPCode ? request.lockedSections?.[lockedFYDPCode] : null;
+                      const lockedFYDPSec = lockedFYDPSecId ? sections.find((s) => s.id === lockedFYDPSecId) : null;
                       const activeManual = Object.values(manualSchedules)[0];
-                      const clashLabel = activeManual
+                      const clashLabel = lockedFYDPSec
+                        ? `Sec ${lockedFYDPSec.section} (${lockedFYDPSec.meetings.map(formatMeeting24).join(', ')})`
+                        : activeManual
                         ? `${activeManual.days.join(', ')} ${activeManual.startTime}–${activeManual.endTime}`
-                        : 'Sat 11:11 AM-01:40 PM';
+                        : 'Sat 11:11-13:40';
                       if (clashInfo.allSectionsClash) {
                         return (
                           <div className="p-2 rounded-btn bg-danger-bg border border-danger/30 text-danger text-xs flex items-start gap-1.5 font-medium">
                             <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
-                            <span>No section of {course.code} fits around FYDP ({clashLabel})</span>
+                            <span>FYDP {clashLabel} conflicts with all sections of {course.code}</span>
                           </div>
                         );
                       }
