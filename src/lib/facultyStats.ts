@@ -499,8 +499,8 @@ export function getAllFacultyStats(): FacultyStats[] {
     });
   }
 
-  // Sort faculty alphabetically ignoring honorific titles
-  result.sort((a, b) => a.sortName.localeCompare(b.sortName, undefined, { sensitivity: 'base' }));
+  // Sort faculty alphabetically by name matching natural A-Z order
+  result.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
 
   cachedFacultyStats = result;
   return result;
@@ -638,37 +638,37 @@ export function sortFaculty(
     case 'most-sections':
       return list.sort((a, b) => {
         if (b.totalSections !== a.totalSections) return b.totalSections - a.totalSections;
-        return a.sortName.localeCompare(b.sortName);
+        return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
       });
     case 'most-courses':
       return list.sort((a, b) => {
         if (b.distinctCourseCount !== a.distinctCourseCount) {
           return b.distinctCourseCount - a.distinctCourseCount;
         }
-        return a.sortName.localeCompare(b.sortName);
+        return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
       });
     case 'most-credits':
       return list.sort((a, b) => {
         if (b.totalCredits !== a.totalCredits) return b.totalCredits - a.totalCredits;
-        return a.sortName.localeCompare(b.sortName);
+        return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
       });
     case 'most-hours':
       return list.sort((a, b) => {
         if (b.totalWeeklyMinutes !== a.totalWeeklyMinutes) {
           return b.totalWeeklyMinutes - a.totalWeeklyMinutes;
         }
-        return a.sortName.localeCompare(b.sortName);
+        return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
       });
     case 'az':
     default:
       return list.sort((a, b) =>
-        a.sortName.localeCompare(b.sortName, undefined, { sensitivity: 'base' })
+        a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
       );
   }
 }
 
 /**
- * Computes the 4 top-5 leaderboards.
+ * Computes the top-5 leaderboards.
  */
 export interface LeaderboardEntry {
   facultyId: string;
@@ -681,6 +681,8 @@ export interface LeaderboardEntry {
 }
 
 export interface Leaderboards {
+  mostTheoryCourses: LeaderboardEntry[];
+  mostLabCourses: LeaderboardEntry[];
   mostSections: LeaderboardEntry[];
   mostCourses: LeaderboardEntry[];
   mostHours: LeaderboardEntry[];
@@ -688,8 +690,36 @@ export interface Leaderboards {
 }
 
 export function getFacultyLeaderboards(allFaculty: FacultyStats[]): Leaderboards {
+  const byTheoryCourses = [...allFaculty]
+    .sort(
+      (a, b) => b.theoryCourseCount - a.theoryCourseCount || a.name.localeCompare(b.name)
+    )
+    .slice(0, 5)
+    .map((f) => ({
+      facultyId: f.id,
+      name: f.name,
+      initials: f.initials,
+      avatarColor: f.avatarColor,
+      programs: f.programs,
+      metricValue: `${f.theoryCourseCount} courses`,
+      metricLabel: 'Theory Courses',
+    }));
+
+  const byLabCourses = [...allFaculty]
+    .sort((a, b) => b.labCourseCount - a.labCourseCount || a.name.localeCompare(b.name))
+    .slice(0, 5)
+    .map((f) => ({
+      facultyId: f.id,
+      name: f.name,
+      initials: f.initials,
+      avatarColor: f.avatarColor,
+      programs: f.programs,
+      metricValue: `${f.labCourseCount} courses`,
+      metricLabel: 'Lab Courses',
+    }));
+
   const bySections = [...allFaculty]
-    .sort((a, b) => b.totalSections - a.totalSections || a.sortName.localeCompare(b.sortName))
+    .sort((a, b) => b.totalSections - a.totalSections || a.name.localeCompare(b.name))
     .slice(0, 5)
     .map((f) => ({
       facultyId: f.id,
@@ -703,7 +733,7 @@ export function getFacultyLeaderboards(allFaculty: FacultyStats[]): Leaderboards
 
   const byCourses = [...allFaculty]
     .sort(
-      (a, b) => b.distinctCourseCount - a.distinctCourseCount || a.sortName.localeCompare(b.sortName)
+      (a, b) => b.distinctCourseCount - a.distinctCourseCount || a.name.localeCompare(b.name)
     )
     .slice(0, 5)
     .map((f) => ({
@@ -718,7 +748,7 @@ export function getFacultyLeaderboards(allFaculty: FacultyStats[]): Leaderboards
 
   const byHours = [...allFaculty]
     .sort(
-      (a, b) => b.totalWeeklyMinutes - a.totalWeeklyMinutes || a.sortName.localeCompare(b.sortName)
+      (a, b) => b.totalWeeklyMinutes - a.totalWeeklyMinutes || a.name.localeCompare(b.name)
     )
     .slice(0, 5)
     .map((f) => ({
@@ -744,7 +774,7 @@ export function getFacultyLeaderboards(allFaculty: FacultyStats[]): Leaderboards
       }
       return { f, fbCount };
     })
-    .sort((a, b) => b.fbCount - a.fbCount || a.f.sortName.localeCompare(b.f.sortName))
+    .sort((a, b) => b.fbCount - a.fbCount || a.f.name.localeCompare(b.f.name))
     .slice(0, 5)
     .map(({ f, fbCount }) => ({
       facultyId: f.id,
@@ -757,6 +787,8 @@ export function getFacultyLeaderboards(allFaculty: FacultyStats[]): Leaderboards
     }));
 
   return {
+    mostTheoryCourses: byTheoryCourses,
+    mostLabCourses: byLabCourses,
     mostSections: bySections,
     mostCourses: byCourses,
     mostHours: byHours,

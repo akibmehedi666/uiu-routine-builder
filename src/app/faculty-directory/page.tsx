@@ -24,6 +24,7 @@ import {
   RotateCcw,
   Copy,
   Check,
+  Award,
 } from 'lucide-react';
 
 import { PAGE_MAX_W } from '../../config/layout';
@@ -138,8 +139,8 @@ function FacultyDirectoryContent() {
   // Copy link feedback
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
 
-  // Collapsible panels
-  const [isLeaderboardsOpen, setIsLeaderboardsOpen] = useState<boolean>(false);
+  // Prominently featured Leaderboards section (open by default, collapsible)
+  const [isLeaderboardsOpen, setIsLeaderboardsOpen] = useState<boolean>(true);
   const [isTBAOpen, setIsTBAOpen] = useState<boolean>(false);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -262,7 +263,368 @@ function FacultyDirectoryContent() {
           </p>
         </div>
 
-        {/* Toolbar & Filters (Course Directory Style) */}
+        {/* 1. Spotlight Banner (Daily Highlight) */}
+        {spotlightFaculty && (
+          <div className="bg-gradient-to-r from-orange-50 via-surface to-amber-50/70 rounded-card border border-orange-200/90 p-4 sm:p-5 shadow-warm relative overflow-hidden">
+            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+              <div className="flex items-start sm:items-center gap-3.5 min-w-0">
+                <div
+                  className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-sm shrink-0 border shadow-2xs ring-2 ring-orange-200"
+                  style={{
+                    backgroundColor: spotlightFaculty.avatarColor.bg,
+                    color: spotlightFaculty.avatarColor.text,
+                    borderColor: spotlightFaculty.avatarColor.border,
+                  }}
+                >
+                  {spotlightFaculty.initials}
+                </div>
+                <div className="min-w-0 space-y-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-orange-700 bg-orange-100 px-2 py-0.5 rounded-full border border-orange-200">
+                      <Sparkles className="w-3 h-3 text-orange-600" />
+                      Faculty Spotlight · Daily Highlight
+                    </span>
+                    {spotlightFaculty.programs.map((p) => (
+                      <span
+                        key={p}
+                        className="text-[11px] font-semibold text-text-muted bg-surface px-1.5 py-0.5 rounded border border-app-border"
+                      >
+                        {p}
+                      </span>
+                    ))}
+                    {spotlightFaculty.badges.slice(0, 2).map((b) => (
+                      <span
+                        key={b.id}
+                        className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full border ${b.badgeStyle}`}
+                      >
+                        <BadgeIcon name={b.iconName} className="w-3 h-3" />
+                        <span>{b.name}</span>
+                      </span>
+                    ))}
+                  </div>
+                  <h3 className="text-base font-bold text-text-primary truncate">
+                    {spotlightFaculty.name}
+                  </h3>
+                  <div className="flex items-center gap-3 text-xs text-text-secondary flex-wrap">
+                    <span>
+                      <strong className="text-text-primary">{spotlightFaculty.totalSections}</strong> sections ({spotlightFaculty.theoryCourseCount} theory, {spotlightFaculty.labCourseCount} lab)
+                    </span>
+                    <span>•</span>
+                    <span>
+                      <strong className="text-text-primary">{spotlightFaculty.distinctCourseCount}</strong> courses
+                    </span>
+                    <span>•</span>
+                    <span>
+                      <strong className="text-text-primary">{spotlightFaculty.totalWeeklyHours}h</strong> / week
+                    </span>
+                    {spotlightFaculty.busiestDay && (
+                      <>
+                        <span>•</span>
+                        <span>
+                          Busiest: <strong className="text-orange-700">{spotlightFaculty.busiestDay}</strong>
+                        </span>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 self-stretch sm:self-auto shrink-0">
+                <button
+                  type="button"
+                  onClick={() => handleSelectFaculty(spotlightFaculty.id)}
+                  className="w-full sm:w-auto h-9 px-4 rounded-btn bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs inline-flex items-center justify-center gap-1.5 transition-colors shadow-2xs cursor-pointer"
+                >
+                  <span>View Schedule</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 2. Highlighted Teaching Load Leaderboards Showcase */}
+        <div className="bg-surface rounded-card border-2 border-orange-200/80 shadow-warm overflow-hidden">
+          {/* Header Bar */}
+          <div className="px-4 py-3 bg-gradient-to-r from-orange-100/70 via-amber-50/50 to-surface border-b border-orange-200/70 flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-orange-500 text-white flex items-center justify-center font-bold shadow-2xs">
+                <Trophy className="w-4 h-4 text-white" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-sm font-bold text-text-primary">
+                    Teaching Load Leaderboard
+                  </h2>
+                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-900 border border-orange-200">
+                    Top 5 in 5 Categories
+                  </span>
+                </div>
+                <p className="text-[11px] text-text-muted">
+                  Click any instructor to view their complete teaching schedule & sections
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setIsLeaderboardsOpen(!isLeaderboardsOpen)}
+                className="text-xs font-semibold text-text-secondary hover:text-orange-600 inline-flex items-center gap-1 cursor-pointer px-2.5 py-1 rounded hover:bg-orange-50/80 border border-transparent hover:border-orange-200 transition-colors"
+                aria-expanded={isLeaderboardsOpen}
+              >
+                <span>{isLeaderboardsOpen ? 'Collapse' : 'Expand'}</span>
+                {isLeaderboardsOpen ? (
+                  <ChevronUp className="w-4 h-4" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Organized Multi-Category Leaderboard Grid */}
+          {isLeaderboardsOpen && (
+            <div className="p-3.5 sm:p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3.5 bg-bg-page/40">
+              {/* Category 1: Most Theory Courses */}
+              <div className="bg-surface rounded-xl p-3 border border-blue-200 shadow-2xs space-y-2 flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between pb-2 border-b border-blue-100">
+                    <span className="text-xs font-bold text-blue-950 flex items-center gap-1.5">
+                      <BookOpen className="w-4 h-4 text-blue-600" /> Most Theory Courses
+                    </span>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200">
+                      Distinct
+                    </span>
+                  </div>
+                  <ol className="space-y-1.5 text-xs pt-2">
+                    {leaderboards.mostTheoryCourses.map((item, idx) => (
+                      <li key={item.facultyId}>
+                        <button
+                          type="button"
+                          onClick={() => handleSelectFaculty(item.facultyId)}
+                          className="w-full flex items-center justify-between gap-1.5 p-1 rounded hover:bg-blue-50/70 transition-colors group cursor-pointer text-left"
+                        >
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            <span
+                              className={`w-4 h-4 rounded-full text-[11px] font-bold flex items-center justify-center shrink-0 ${
+                                idx === 0
+                                  ? 'bg-amber-400 text-amber-950 shadow-2xs'
+                                  : idx === 1
+                                  ? 'bg-slate-300 text-slate-800'
+                                  : idx === 2
+                                  ? 'bg-amber-200 text-amber-900'
+                                  : 'text-text-muted bg-subtle'
+                              }`}
+                            >
+                              {idx + 1}
+                            </span>
+                            <span className="truncate font-medium text-text-primary group-hover:text-blue-700">
+                              {item.name}
+                            </span>
+                          </div>
+                          <span className="font-semibold text-text-primary text-[11px] bg-blue-50 text-blue-900 border border-blue-200 px-1.5 py-0.2 rounded font-mono shrink-0">
+                            {item.metricValue}
+                          </span>
+                        </button>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              </div>
+
+              {/* Category 2: Most Lab Courses */}
+              <div className="bg-surface rounded-xl p-3 border border-emerald-200 shadow-2xs space-y-2 flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between pb-2 border-b border-emerald-100">
+                    <span className="text-xs font-bold text-emerald-950 flex items-center gap-1.5">
+                      <FlaskConical className="w-4 h-4 text-emerald-600" /> Most Lab Courses
+                    </span>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                      Distinct
+                    </span>
+                  </div>
+                  <ol className="space-y-1.5 text-xs pt-2">
+                    {leaderboards.mostLabCourses.map((item, idx) => (
+                      <li key={item.facultyId}>
+                        <button
+                          type="button"
+                          onClick={() => handleSelectFaculty(item.facultyId)}
+                          className="w-full flex items-center justify-between gap-1.5 p-1 rounded hover:bg-emerald-50/70 transition-colors group cursor-pointer text-left"
+                        >
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            <span
+                              className={`w-4 h-4 rounded-full text-[11px] font-bold flex items-center justify-center shrink-0 ${
+                                idx === 0
+                                  ? 'bg-amber-400 text-amber-950 shadow-2xs'
+                                  : idx === 1
+                                  ? 'bg-slate-300 text-slate-800'
+                                  : idx === 2
+                                  ? 'bg-amber-200 text-amber-900'
+                                  : 'text-text-muted bg-subtle'
+                              }`}
+                            >
+                              {idx + 1}
+                            </span>
+                            <span className="truncate font-medium text-text-primary group-hover:text-emerald-700">
+                              {item.name}
+                            </span>
+                          </div>
+                          <span className="font-semibold text-text-primary text-[11px] bg-emerald-50 text-emerald-900 border border-emerald-200 px-1.5 py-0.2 rounded font-mono shrink-0">
+                            {item.metricValue}
+                          </span>
+                        </button>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              </div>
+
+              {/* Category 3: Most Sections Overall */}
+              <div className="bg-surface rounded-xl p-3 border border-orange-200 shadow-2xs space-y-2 flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between pb-2 border-b border-orange-100">
+                    <span className="text-xs font-bold text-orange-950 flex items-center gap-1.5">
+                      <Flame className="w-4 h-4 text-orange-600" /> Most Sections
+                    </span>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-orange-700 bg-orange-50 px-1.5 py-0.5 rounded border border-orange-200">
+                      Overall
+                    </span>
+                  </div>
+                  <ol className="space-y-1.5 text-xs pt-2">
+                    {leaderboards.mostSections.map((item, idx) => (
+                      <li key={item.facultyId}>
+                        <button
+                          type="button"
+                          onClick={() => handleSelectFaculty(item.facultyId)}
+                          className="w-full flex items-center justify-between gap-1.5 p-1 rounded hover:bg-orange-50/70 transition-colors group cursor-pointer text-left"
+                        >
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            <span
+                              className={`w-4 h-4 rounded-full text-[11px] font-bold flex items-center justify-center shrink-0 ${
+                                idx === 0
+                                  ? 'bg-amber-400 text-amber-950 shadow-2xs'
+                                  : idx === 1
+                                  ? 'bg-slate-300 text-slate-800'
+                                  : idx === 2
+                                  ? 'bg-amber-200 text-amber-900'
+                                  : 'text-text-muted bg-subtle'
+                              }`}
+                            >
+                              {idx + 1}
+                            </span>
+                            <span className="truncate font-medium text-text-primary group-hover:text-orange-700">
+                              {item.name}
+                            </span>
+                          </div>
+                          <span className="font-semibold text-text-primary text-[11px] bg-orange-50 text-orange-900 border border-orange-200 px-1.5 py-0.2 rounded font-mono shrink-0">
+                            {item.metricValue}
+                          </span>
+                        </button>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              </div>
+
+              {/* Category 4: Most Weekly Hours */}
+              <div className="bg-surface rounded-xl p-3 border border-sky-200 shadow-2xs space-y-2 flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between pb-2 border-b border-sky-100">
+                    <span className="text-xs font-bold text-sky-950 flex items-center gap-1.5">
+                      <Clock className="w-4 h-4 text-sky-600" /> Weekly Hours
+                    </span>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-sky-700 bg-sky-50 px-1.5 py-0.5 rounded border border-sky-200">
+                      Contact
+                    </span>
+                  </div>
+                  <ol className="space-y-1.5 text-xs pt-2">
+                    {leaderboards.mostHours.map((item, idx) => (
+                      <li key={item.facultyId}>
+                        <button
+                          type="button"
+                          onClick={() => handleSelectFaculty(item.facultyId)}
+                          className="w-full flex items-center justify-between gap-1.5 p-1 rounded hover:bg-sky-50/70 transition-colors group cursor-pointer text-left"
+                        >
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            <span
+                              className={`w-4 h-4 rounded-full text-[11px] font-bold flex items-center justify-center shrink-0 ${
+                                idx === 0
+                                  ? 'bg-amber-400 text-amber-950 shadow-2xs'
+                                  : idx === 1
+                                  ? 'bg-slate-300 text-slate-800'
+                                  : idx === 2
+                                  ? 'bg-amber-200 text-amber-900'
+                                  : 'text-text-muted bg-subtle'
+                              }`}
+                            >
+                              {idx + 1}
+                            </span>
+                            <span className="truncate font-medium text-text-primary group-hover:text-sky-700">
+                              {item.name}
+                            </span>
+                          </div>
+                          <span className="font-semibold text-text-primary text-[11px] bg-sky-50 text-sky-900 border border-sky-200 px-1.5 py-0.2 rounded font-mono shrink-0">
+                            {item.metricValue}
+                          </span>
+                        </button>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              </div>
+
+              {/* Category 5: First Bell (08:30 AM Starts) */}
+              <div className="bg-surface rounded-xl p-3 border border-amber-200 shadow-2xs space-y-2 flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between pb-2 border-b border-amber-100">
+                    <span className="text-xs font-bold text-amber-950 flex items-center gap-1.5">
+                      <Bell className="w-4 h-4 text-amber-600" /> 08:30 AM Starts
+                    </span>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">
+                      Early
+                    </span>
+                  </div>
+                  <ol className="space-y-1.5 text-xs pt-2">
+                    {leaderboards.mostFirstBell.map((item, idx) => (
+                      <li key={item.facultyId}>
+                        <button
+                          type="button"
+                          onClick={() => handleSelectFaculty(item.facultyId)}
+                          className="w-full flex items-center justify-between gap-1.5 p-1 rounded hover:bg-amber-50/70 transition-colors group cursor-pointer text-left"
+                        >
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            <span
+                              className={`w-4 h-4 rounded-full text-[11px] font-bold flex items-center justify-center shrink-0 ${
+                                idx === 0
+                                  ? 'bg-amber-400 text-amber-950 shadow-2xs'
+                                  : idx === 1
+                                  ? 'bg-slate-300 text-slate-800'
+                                  : idx === 2
+                                  ? 'bg-amber-200 text-amber-900'
+                                  : 'text-text-muted bg-subtle'
+                              }`}
+                            >
+                              {idx + 1}
+                            </span>
+                            <span className="truncate font-medium text-text-primary group-hover:text-amber-700">
+                              {item.name}
+                            </span>
+                          </div>
+                          <span className="font-semibold text-text-primary text-[11px] bg-amber-50 text-amber-900 border border-amber-200 px-1.5 py-0.2 rounded font-mono shrink-0">
+                            {item.metricValue}
+                          </span>
+                        </button>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* 3. Toolbar & Filters (Course Directory Style) */}
         <div className="bg-surface rounded-card border border-app-border p-3.5 sm:p-4 shadow-warm space-y-3">
           {/* Row 1: Search + Sort dropdown */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
@@ -280,7 +642,7 @@ function FacultyDirectoryContent() {
                 <button
                   type="button"
                   onClick={() => setSearch('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-text-muted hover:text-text-primary rounded"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-text-muted hover:text-text-primary rounded cursor-pointer"
                   aria-label="Clear search"
                 >
                   <X className="w-4 h-4" />
@@ -316,7 +678,7 @@ function FacultyDirectoryContent() {
                   key={p}
                   type="button"
                   onClick={() => setProgram(p)}
-                  className={`min-h-[28px] px-2.5 rounded-full text-xs font-semibold transition-colors ${
+                  className={`min-h-[28px] px-2.5 rounded-full text-xs font-semibold transition-colors cursor-pointer ${
                     program === p
                       ? 'bg-orange-500 text-white shadow-2xs'
                       : 'bg-bg-page text-text-secondary hover:bg-orange-50 border border-app-border'
@@ -335,7 +697,7 @@ function FacultyDirectoryContent() {
               <button
                 type="button"
                 onClick={() => setDay('ALL')}
-                className={`min-h-[28px] px-2.5 rounded-full text-xs font-semibold transition-colors ${
+                className={`min-h-[28px] px-2.5 rounded-full text-xs font-semibold transition-colors cursor-pointer ${
                   day === 'ALL'
                     ? 'bg-orange-500 text-white shadow-2xs'
                     : 'bg-bg-page text-text-secondary hover:bg-orange-50 border border-app-border'
@@ -348,7 +710,7 @@ function FacultyDirectoryContent() {
                   key={d}
                   type="button"
                   onClick={() => setDay(d)}
-                  className={`min-h-[28px] px-2.5 rounded-full text-xs font-semibold transition-colors ${
+                  className={`min-h-[28px] px-2.5 rounded-full text-xs font-semibold transition-colors cursor-pointer ${
                     day === d
                       ? 'bg-orange-500 text-white shadow-2xs'
                       : 'bg-bg-page text-text-secondary hover:bg-orange-50 border border-app-border'
@@ -369,7 +731,7 @@ function FacultyDirectoryContent() {
                   key={t}
                   type="button"
                   onClick={() => setTimeSlot(t)}
-                  className={`min-h-[28px] px-2.5 rounded-full text-xs font-semibold transition-colors ${
+                  className={`min-h-[28px] px-2.5 rounded-full text-xs font-semibold transition-colors cursor-pointer ${
                     timeSlot === t
                       ? 'bg-orange-500 text-white shadow-2xs'
                       : 'bg-bg-page text-text-secondary hover:bg-orange-50 border border-app-border'
@@ -390,7 +752,7 @@ function FacultyDirectoryContent() {
                   key={k}
                   type="button"
                   onClick={() => setKind(k)}
-                  className={`min-h-[28px] px-2.5 rounded-full text-xs font-semibold transition-colors ${
+                  className={`min-h-[28px] px-2.5 rounded-full text-xs font-semibold transition-colors cursor-pointer ${
                     kind === k
                       ? 'bg-orange-500 text-white shadow-2xs'
                       : 'bg-bg-page text-text-secondary hover:bg-orange-50 border border-app-border'
@@ -402,11 +764,11 @@ function FacultyDirectoryContent() {
             </div>
           </div>
 
-          {/* Row 3: Status Summary + Quick Links */}
+          {/* Row 3: Status Summary + TBA link */}
           <div className="flex items-center justify-between text-xs text-text-muted pt-2 border-t border-app-border/70">
             <span>
               Showing <strong className="text-text-primary">{filteredFaculty.length}</strong> of{' '}
-              {allFaculty.length} faculty
+              {allFaculty.length} faculty (sorted A–Z)
             </span>
 
             <div className="flex items-center gap-3">
@@ -423,138 +785,17 @@ function FacultyDirectoryContent() {
 
               <button
                 type="button"
-                onClick={() => setIsLeaderboardsOpen(!isLeaderboardsOpen)}
-                className="text-text-secondary hover:text-orange-600 font-medium inline-flex items-center gap-1 cursor-pointer"
-              >
-                <Trophy className="w-3.5 h-3.5 text-orange-500" />
-                <span>Leaderboards</span>
-              </button>
-
-              <button
-                type="button"
                 onClick={() => setIsTBAOpen(!isTBAOpen)}
                 className="text-text-secondary hover:text-orange-600 font-medium inline-flex items-center gap-1 cursor-pointer"
               >
                 <Clock className="w-3.5 h-3.5 text-amber-600" />
-                <span>TBA ({totalTBACount})</span>
+                <span>TBA Sections ({totalTBACount})</span>
               </button>
             </div>
           </div>
         </div>
 
-        {/* Collapsible Panels: Leaderboards & TBA */}
-        {isLeaderboardsOpen && (
-          <div className="bg-surface rounded-card border border-app-border p-4 shadow-warm space-y-3">
-            <div className="flex items-center justify-between border-b border-app-border pb-2">
-              <h2 className="text-sm font-bold text-text-primary flex items-center gap-1.5">
-                <Trophy className="w-4 h-4 text-orange-500" />
-                Teaching Load Leaderboards (Top 5)
-              </h2>
-              <button
-                type="button"
-                onClick={() => setIsLeaderboardsOpen(false)}
-                className="p-1 text-text-muted hover:text-text-primary rounded"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              <div className="bg-bg-page rounded-lg p-3 border border-app-border space-y-2">
-                <h3 className="text-xs font-bold text-text-primary flex items-center gap-1">
-                  <Flame className="w-3.5 h-3.5 text-orange-500" /> Most Sections
-                </h3>
-                <ol className="space-y-1.5 text-xs">
-                  {leaderboards.mostSections.map((item, idx) => (
-                    <li key={item.facultyId} className="flex items-center justify-between gap-1">
-                      <button
-                        type="button"
-                        onClick={() => handleSelectFaculty(item.facultyId)}
-                        className="truncate hover:text-orange-600 font-medium text-left"
-                      >
-                        <span className="text-text-muted font-bold mr-1">{idx + 1}.</span>
-                        {item.name}
-                      </button>
-                      <span className="font-semibold text-text-primary text-[11px] bg-orange-100/80 px-1.5 py-0.2 rounded font-mono">
-                        {item.metricValue}
-                      </span>
-                    </li>
-                  ))}
-                </ol>
-              </div>
-
-              <div className="bg-bg-page rounded-lg p-3 border border-app-border space-y-2">
-                <h3 className="text-xs font-bold text-text-primary flex items-center gap-1">
-                  <BookOpen className="w-3.5 h-3.5 text-purple-600" /> Most Courses
-                </h3>
-                <ol className="space-y-1.5 text-xs">
-                  {leaderboards.mostCourses.map((item, idx) => (
-                    <li key={item.facultyId} className="flex items-center justify-between gap-1">
-                      <button
-                        type="button"
-                        onClick={() => handleSelectFaculty(item.facultyId)}
-                        className="truncate hover:text-orange-600 font-medium text-left"
-                      >
-                        <span className="text-text-muted font-bold mr-1">{idx + 1}.</span>
-                        {item.name}
-                      </button>
-                      <span className="font-semibold text-text-primary text-[11px] bg-purple-100/80 px-1.5 py-0.2 rounded font-mono">
-                        {item.metricValue}
-                      </span>
-                    </li>
-                  ))}
-                </ol>
-              </div>
-
-              <div className="bg-bg-page rounded-lg p-3 border border-app-border space-y-2">
-                <h3 className="text-xs font-bold text-text-primary flex items-center gap-1">
-                  <Clock className="w-3.5 h-3.5 text-sky-600" /> Most Weekly Hours
-                </h3>
-                <ol className="space-y-1.5 text-xs">
-                  {leaderboards.mostHours.map((item, idx) => (
-                    <li key={item.facultyId} className="flex items-center justify-between gap-1">
-                      <button
-                        type="button"
-                        onClick={() => handleSelectFaculty(item.facultyId)}
-                        className="truncate hover:text-orange-600 font-medium text-left"
-                      >
-                        <span className="text-text-muted font-bold mr-1">{idx + 1}.</span>
-                        {item.name}
-                      </button>
-                      <span className="font-semibold text-text-primary text-[11px] bg-sky-100/80 px-1.5 py-0.2 rounded font-mono">
-                        {item.metricValue}
-                      </span>
-                    </li>
-                  ))}
-                </ol>
-              </div>
-
-              <div className="bg-bg-page rounded-lg p-3 border border-app-border space-y-2">
-                <h3 className="text-xs font-bold text-text-primary flex items-center gap-1">
-                  <Bell className="w-3.5 h-3.5 text-amber-600" /> 08:30 AM Starts
-                </h3>
-                <ol className="space-y-1.5 text-xs">
-                  {leaderboards.mostFirstBell.map((item, idx) => (
-                    <li key={item.facultyId} className="flex items-center justify-between gap-1">
-                      <button
-                        type="button"
-                        onClick={() => handleSelectFaculty(item.facultyId)}
-                        className="truncate hover:text-orange-600 font-medium text-left"
-                      >
-                        <span className="text-text-muted font-bold mr-1">{idx + 1}.</span>
-                        {item.name}
-                      </button>
-                      <span className="font-semibold text-text-primary text-[11px] bg-amber-100/80 px-1.5 py-0.2 rounded font-mono">
-                        {item.metricValue}
-                      </span>
-                    </li>
-                  ))}
-                </ol>
-              </div>
-            </div>
-          </div>
-        )}
-
+        {/* TBA Unassigned Sections Modal / Collapsible */}
         {isTBAOpen && (
           <div className="bg-amber-50/60 rounded-card border border-amber-200 p-4 shadow-warm space-y-3">
             <div className="flex items-center justify-between border-b border-amber-200 pb-2">
@@ -565,7 +806,7 @@ function FacultyDirectoryContent() {
               <button
                 type="button"
                 onClick={() => setIsTBAOpen(false)}
-                className="p-1 text-amber-900 hover:text-amber-950 rounded"
+                className="p-1 text-amber-900 hover:text-amber-950 rounded cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -606,7 +847,7 @@ function FacultyDirectoryContent() {
           </div>
         )}
 
-        {/* 2-PANE LAYOUT (Exact Course Directory Style: Left List, Right Details) */}
+        {/* 4. TWO-PANE LAYOUT (Left Alphabetical List, Right Selected Faculty Details) */}
         {filteredFaculty.length === 0 ? (
           <div className="bg-surface rounded-card border border-app-border p-8 text-center space-y-3 shadow-warm">
             <div className="w-12 h-12 rounded-full bg-orange-50 border border-orange-200 text-orange-600 flex items-center justify-center mx-auto">
@@ -619,29 +860,46 @@ function FacultyDirectoryContent() {
             <button
               type="button"
               onClick={handleClearFilters}
-              className="h-9 px-4 rounded-btn bg-orange-500 hover:bg-orange-600 text-white text-xs font-semibold inline-flex items-center gap-1.5 transition-colors shadow-2xs"
+              className="h-9 px-4 rounded-btn bg-orange-500 hover:bg-orange-600 text-white text-xs font-semibold inline-flex items-center gap-1.5 transition-colors shadow-2xs cursor-pointer"
             >
               <span>Clear all filters</span>
             </button>
           </div>
         ) : (
           <div className="hidden md:grid md:grid-cols-[300px_1fr] lg:grid-cols-[minmax(340px,380px)_1fr] gap-6 items-start">
-            {/* LEFT PANE: Sticky Scrollable Faculty List */}
+            {/* LEFT PANE: Sticky Scrollable Alphabetical Faculty List */}
             <section
               aria-label="Faculty List"
               role="listbox"
               tabIndex={0}
               className="bg-surface border border-app-border rounded-card shadow-warm p-2.5 space-y-1.5 sticky top-20 max-h-[calc(100vh-100px)] overflow-y-auto focus:outline-none"
             >
-              {filteredFaculty.map((f) => {
+              {filteredFaculty.map((f, idx) => {
                 const isSelected = selectedFaculty?.id === f.id;
+                const currentLetter = f.name.charAt(0).toUpperCase();
+                const prevLetter =
+                  idx > 0 ? filteredFaculty[idx - 1].name.charAt(0).toUpperCase() : null;
+                const isNewLetter = sortBy === 'az' && currentLetter !== prevLetter;
 
                 return (
-                  <button
-                    key={f.id}
-                    role="option"
-                    aria-selected={isSelected}
-                    onClick={() => handleSelectFaculty(f.id)}
+                  <React.Fragment key={f.id}>
+                    {isNewLetter && (
+                      <div className="sticky top-0 z-10 px-2.5 py-1 my-1 bg-surface/95 backdrop-blur-xs border-y border-orange-200/80 bg-orange-50/70 rounded flex items-center justify-between text-xs font-bold text-orange-900 shadow-2xs">
+                        <span className="font-mono text-xs">{currentLetter}</span>
+                        <span className="text-[11px] font-semibold text-text-muted">
+                          {
+                            filteredFaculty.filter(
+                              (fac) => fac.name.charAt(0).toUpperCase() === currentLetter
+                            ).length
+                          }{' '}
+                          faculty
+                        </span>
+                      </div>
+                    )}
+                    <button
+                      role="option"
+                      aria-selected={isSelected}
+                      onClick={() => handleSelectFaculty(f.id)}
                     className={`w-full text-left p-3 rounded-card transition-all flex flex-col gap-1.5 border cursor-pointer ${
                       isSelected
                         ? 'bg-orange-50/80 border-orange-300 border-l-[3px] border-l-orange-500 shadow-2xs ring-1 ring-orange-400/20'
@@ -725,6 +983,7 @@ function FacultyDirectoryContent() {
                       </div>
                     )}
                   </button>
+                  </React.Fragment>
                 );
               })}
             </section>
@@ -732,7 +991,7 @@ function FacultyDirectoryContent() {
             {/* RIGHT PANE: Selected Faculty Teaching Details */}
             {selectedFaculty && (
               <section aria-label="Faculty Teaching Details" className="space-y-4">
-                {/* 1. Profile Header Card */}
+                {/* Profile Header Card */}
                 <div className="bg-surface rounded-card border border-app-border p-5 shadow-warm space-y-4">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="flex items-center gap-3.5">
@@ -870,7 +1129,7 @@ function FacultyDirectoryContent() {
                   </div>
                 </div>
 
-                {/* 2. Weekly Teaching Timetable */}
+                {/* Weekly Teaching Timetable */}
                 <div className="bg-surface rounded-card border border-app-border p-4 shadow-warm space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -1023,7 +1282,7 @@ function FacultyDirectoryContent() {
                   </div>
                 </div>
 
-                {/* 3. Courses & Assigned Sections (Course Directory row design, NO prefer/avoid buttons) */}
+                {/* Courses & Assigned Sections (Course Directory row design, strictly NO prefer/avoid buttons) */}
                 <div className="bg-surface rounded-card border border-app-border p-4 shadow-warm space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -1123,7 +1382,7 @@ function FacultyDirectoryContent() {
                   </div>
                 </div>
 
-                {/* 4. Teaches With (Co-instructors) */}
+                {/* Teaches With (Co-instructors) */}
                 {selectedFaculty.teachesWith.length > 0 && (
                   <div className="bg-surface rounded-card border border-app-border p-4 shadow-warm space-y-2.5">
                     <div className="flex items-center justify-between">
@@ -1163,13 +1422,30 @@ function FacultyDirectoryContent() {
         {/* MOBILE (< 768px): Accordion Style (Exact Course Directory Experience) */}
         {filteredFaculty.length > 0 && (
           <div className="md:hidden space-y-2.5">
-            {filteredFaculty.map((f) => {
+            {filteredFaculty.map((f, idx) => {
               const isExpanded = expandedMobileFacultyId === f.id;
+              const currentLetter = f.name.charAt(0).toUpperCase();
+              const prevLetter =
+                idx > 0 ? filteredFaculty[idx - 1].name.charAt(0).toUpperCase() : null;
+              const isNewLetter = sortBy === 'az' && currentLetter !== prevLetter;
 
               return (
-                <div
-                  key={f.id}
-                  className={`bg-surface rounded-card border transition-all duration-150 overflow-hidden ${
+                <React.Fragment key={f.id}>
+                  {isNewLetter && (
+                    <div className="sticky top-14 z-10 px-3 py-1.5 my-1 bg-surface/95 backdrop-blur-xs border-y border-orange-200/80 bg-orange-50/70 rounded-md flex items-center justify-between text-xs font-bold text-orange-900 shadow-2xs">
+                      <span className="font-mono text-xs">{currentLetter}</span>
+                      <span className="text-[11px] font-semibold text-text-muted">
+                        {
+                          filteredFaculty.filter(
+                            (fac) => fac.name.charAt(0).toUpperCase() === currentLetter
+                          ).length
+                        }{' '}
+                        faculty
+                      </span>
+                    </div>
+                  )}
+                  <div
+                    className={`bg-surface rounded-card border transition-all duration-150 overflow-hidden ${
                     isExpanded
                       ? 'border-orange-400 ring-2 ring-orange-500/20 shadow-warm'
                       : 'border-app-border'
@@ -1179,7 +1455,7 @@ function FacultyDirectoryContent() {
                   <button
                     type="button"
                     onClick={() => handleSelectFaculty(f.id)}
-                    className="w-full text-left p-3.5 flex items-center justify-between gap-3"
+                    className="w-full text-left p-3.5 flex items-center justify-between gap-3 cursor-pointer"
                   >
                     <div className="flex items-center gap-3 min-w-0 flex-1">
                       <div
@@ -1324,8 +1600,9 @@ function FacultyDirectoryContent() {
                     </div>
                   )}
                 </div>
-              );
-            })}
+              </React.Fragment>
+            );
+          })}
           </div>
         )}
 

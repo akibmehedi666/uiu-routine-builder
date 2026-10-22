@@ -99,11 +99,10 @@ describe('Faculty Stats Data Layer & Integrity Tests', () => {
       expect(stripFacultyTitle('Ms. Shakila Aziz')).toBe('Shakila Aziz');
     });
 
-    it('sorts faculty list alphabetically ignoring titles', () => {
+    it('sorts faculty list alphabetically by name', () => {
       const sorted = sortFaculty(allFaculty, 'az');
-      // Verify sortName is strictly in ascending alphabetical order
       for (let i = 0; i < sorted.length - 1; i++) {
-        const cmp = sorted[i].sortName.localeCompare(sorted[i + 1].sortName, undefined, {
+        const cmp = sorted[i].name.localeCompare(sorted[i + 1].name, undefined, {
           sensitivity: 'base',
         });
         expect(cmp).toBeLessThanOrEqual(0);
@@ -206,14 +205,18 @@ describe('Faculty Stats Data Layer & Integrity Tests', () => {
     });
   });
 
-  describe('6. Leaderboards and Daily Spotlight', () => {
-    it('produces 4 top-5 leaderboards with valid entries', () => {
+  describe('6. Leaderboards and Spotlight', () => {
+    it('produces 6 top-5 leaderboards including theory and lab courses', () => {
       const boards = getFacultyLeaderboards(allFaculty);
+      expect(boards.mostTheoryCourses.length).toBe(5);
+      expect(boards.mostLabCourses.length).toBe(5);
       expect(boards.mostSections.length).toBe(5);
       expect(boards.mostCourses.length).toBe(5);
       expect(boards.mostHours.length).toBe(5);
       expect(boards.mostFirstBell.length).toBe(5);
 
+      expect(boards.mostTheoryCourses[0].metricValue).toMatch(/\d+ courses/);
+      expect(boards.mostLabCourses[0].metricValue).toMatch(/\d+ courses/);
       expect(boards.mostSections[0].metricValue).toMatch(/\d+ sections/);
       expect(boards.mostCourses[0].metricValue).toMatch(/\d+ courses/);
       expect(boards.mostHours[0].metricValue).toMatch(/\d+(\.\d+)? hrs/);
