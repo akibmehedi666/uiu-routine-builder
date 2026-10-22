@@ -70,9 +70,57 @@ export function CourseSelector({
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [programFilter, setProgramFilter] = useState<'ALL' | 'BSCSE' | 'BSDS'>('ALL');
   const [isFiltersOpen, setIsFiltersOpen] = useState(request.selectedCourses.length > 0);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const [creditWarningExpanded, setCreditWarningExpanded] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const courseListRef = useRef<HTMLDivElement>(null);
   const prevCourseCountRef = useRef(request.selectedCourses.length);
+
+  const openMobileSearch = useCallback(() => {
+    setMobileSearchOpen(true);
+    try {
+      window.history.pushState({ mobileSearch: true }, '');
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  const closeMobileSearch = useCallback(() => {
+    if (typeof window !== 'undefined' && window.history.state?.mobileSearch) {
+      window.history.back();
+    } else {
+      setMobileSearchOpen(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setMobileSearchOpen(false);
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  useEffect(() => {
+    if (mobileSearchOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [mobileSearchOpen]);
+
+  useEffect(() => {
+    if (!mobileSearchOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        closeMobileSearch();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [mobileSearchOpen, closeMobileSearch]);
 
   // When a course is added, scroll so the new card's Faculty Pref block is inside the visible area
   useEffect(() => {
@@ -246,15 +294,17 @@ export function CourseSelector({
   }, [courses, searchTerm, programFilter]);
 
   // Toggle course selection
-  const handleAddCourse = (courseCode: string) => {
+  const handleAddCourse = (courseCode: string, keepOpen = false) => {
     if ((request.selectedCourses || []).includes(courseCode)) return;
     const newCourses = [...(request.selectedCourses || []), courseCode];
     onRequestChange({
       ...request,
       selectedCourses: newCourses,
     });
-    setSearchTerm('');
-    setIsSearchOpen(false);
+    if (!keepOpen) {
+      setSearchTerm('');
+      setIsSearchOpen(false);
+    }
 
     if (!isFixedCourse(courseCode) && isManualScheduleCourse(courseCode) && !manualSchedules[courseCode]) {
       onOpenManualScheduleModal?.(courseCode);
@@ -559,177 +609,382 @@ export function CourseSelector({
       {/* Credit warning banner if outside 9-18 (Hidden on mobile preferences tab) */}
       <div className={mobileTab === 'preferences' ? 'hidden lg:block' : 'block'}>
         {totalCredits > 18 && (
-          <div className="p-2.5 rounded-btn bg-danger-bg border border-danger/20 text-danger text-xs flex items-center gap-2 mb-2">
-            <AlertTriangle className="w-4 h-4 flex-shrink-0" />
-            <span>Overload: UIU limits standard enrollment to 18 credits.</span>
+          <div
+            onClick={() => setCreditWarningExpanded((prev) => !prev)}
+            role="button"
+            tabIndex={0}
+            className="p-2 sm:p-2.5 rounded-btn bg-danger-bg border border-danger/20 text-danger text-xs flex items-center justify-between gap-2 mb-2 cursor-pointer select-none"
+          >
+            <div className="flex items-center gap-2 min-w-0">
+              <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+              <span className="font-semibold truncate sm:hidden">
+                Overload: max 18 credits
+              </span>
+              <span className="hidden sm:inline">
+                Overload: UIU limits standard enrollment to 18 credits.
+              </span>
+              {creditWarningExpanded && (
+                <span className="sm:hidden text-[11px] block text-danger/90">
+                  UIU limits standard enrollment to 18 credits.
+                </span>
+              )}
+            </div>
+            <span className="text-[10px] text-danger/70 underline shrink-0 sm:hidden">
+              {creditWarningExpanded ? 'Less' : 'Info'}
+            </span>
           </div>
         )}
         {totalCredits > 0 && totalCredits < 9 && (
-          <div className="p-2.5 rounded-btn bg-warning-bg border border-warning/20 text-warning text-xs flex items-center gap-2 mb-2">
-            <AlertTriangle className="w-4 h-4 flex-shrink-0" />
-            <span>Underload: Standard regular status requires at least 9 credits.</span>
+          <div
+            onClick={() => setCreditWarningExpanded((prev) => !prev)}
+            role="button"
+            tabIndex={0}
+            className="p-2 sm:p-2.5 rounded-btn bg-warning-bg border border-warning/20 text-warning text-xs flex items-center justify-between gap-2 mb-2 cursor-pointer select-none"
+          >
+            <div className="flex items-center gap-2 min-w-0">
+              <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+              <span className="font-semibold truncate sm:hidden">
+                Underload: min 9 credits
+              </span>
+              <span className="hidden sm:inline">
+                Underload: Standard regular status requires at least 9 credits.
+              </span>
+              {creditWarningExpanded && (
+                <span className="sm:hidden text-[11px] block text-warning/90">
+                  Standard regular status requires at least 9 credits.
+                </span>
+              )}
+            </div>
+            <span className="text-[10px] text-warning/70 underline shrink-0 sm:hidden">
+              {creditWarningExpanded ? 'Less' : 'Info'}
+            </span>
           </div>
         )}
       </div>
 
-      {/* Search & Autocomplete Input (Hidden on mobile preferences tab) */}
+      {/* Search Trigger for Mobile & Desktop Input (Hidden on mobile preferences tab) */}
       <div className={`relative ${mobileTab === 'preferences' ? 'hidden lg:block' : 'block'}`}>
-        <div className="relative flex items-center">
-          <Search className="w-4 h-4 absolute left-3 text-text-muted pointer-events-none" />
-          <input
-            ref={searchInputRef}
-            type="text"
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setIsSearchOpen(true);
+        {/* Mobile Search Trigger Button */}
+        <div className="lg:hidden">
+          <div
+            onClick={openMobileSearch}
+            className="relative flex items-center cursor-pointer"
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                openMobileSearch();
+              }
             }}
-            onFocus={() => setIsSearchOpen(true)}
-            placeholder="Search code or title (e.g. CSE 1111, DSA)..."
-            className="w-full pl-9 pr-8 py-2 rounded-btn bg-subtle border border-app-border text-xs text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-500 transition-all"
-          />
-          {searchTerm && (
-            <button
-              onClick={() => {
-                setSearchTerm('');
-                searchInputRef.current?.focus();
-              }}
-              className="absolute right-2.5 text-text-muted hover:text-text-primary"
-              aria-label="Clear search"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          )}
-        </div>
-
-        {/* Program Filter Pills */}
-        <div className="flex items-center gap-1 mt-2">
-          {(['ALL', 'BSCSE', 'BSDS'] as const).map((prog) => (
-            <button
-              key={prog}
-              onClick={() => setProgramFilter(prog)}
-              className={`px-2.5 py-1 rounded-btn text-[11px] font-medium transition-colors ${
-                programFilter === prog
-                  ? 'bg-orange-500 text-white font-semibold'
-                  : 'bg-subtle text-text-secondary hover:text-text-primary hover:bg-orange-50 border border-app-border'
-              }`}
-            >
-              {prog}
-            </button>
-          ))}
-        </div>
-
-        {/* Autocomplete Dropdown */}
-        {isSearchOpen && (
-          <>
-            <div
-              className="fixed inset-0 z-20"
-              onClick={() => setIsSearchOpen(false)}
+          >
+            <Search className="w-4 h-4 absolute left-3 text-text-muted pointer-events-none" />
+            <input
+              type="text"
+              readOnly
+              placeholder="Search course, e.g. CSE 1111"
+              className="w-full pl-9 pr-4 py-2.5 rounded-btn bg-subtle border border-app-border text-sm text-text-primary placeholder-text-muted cursor-pointer"
             />
-            <div className="absolute top-full left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-surface border border-app-border rounded-card shadow-warm z-30 divide-y divide-app-border">
-              {filteredCourses.length === 0 ? (
-                <div className="p-3 text-xs text-text-muted text-center">
-                  No courses found matching &quot;{searchTerm}&quot;
-                </div>
-              ) : (
-                filteredCourses.slice(0, 15).map((course) => {
-                  const isSelected = (request.selectedCourses || []).includes(course.code);
+          </div>
+        </div>
 
-                  return (
-                    <div
-                      key={course.code}
-                      tabIndex={0}
-                      role="button"
-                      aria-label={isSelected ? `${course.code} is added. Click to remove` : `Add ${course.code}`}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
+        {/* Desktop Search & Autocomplete Input */}
+        <div className="hidden lg:block">
+          <div className="relative flex items-center">
+            <Search className="w-4 h-4 absolute left-3 text-text-muted pointer-events-none" />
+            <input
+              ref={searchInputRef}
+              type="text"
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setIsSearchOpen(true);
+              }}
+              onFocus={() => setIsSearchOpen(true)}
+              placeholder="Search code or title (e.g. CSE 1111, DSA)..."
+              className="w-full pl-9 pr-8 py-2 rounded-btn bg-subtle border border-app-border text-xs text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-500 transition-all"
+            />
+            {searchTerm && (
+              <button
+                onClick={() => {
+                  setSearchTerm('');
+                  searchInputRef.current?.focus();
+                }}
+                className="absolute right-2.5 text-text-muted hover:text-text-primary"
+                aria-label="Clear search"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+
+          {/* Program Filter Pills */}
+          <div className="flex items-center gap-1 mt-2">
+            {(['ALL', 'BSCSE', 'BSDS'] as const).map((prog) => (
+              <button
+                key={prog}
+                onClick={() => setProgramFilter(prog)}
+                className={`px-2.5 py-1 rounded-btn text-[11px] font-medium transition-colors ${
+                  programFilter === prog
+                    ? 'bg-orange-500 text-white font-semibold'
+                    : 'bg-subtle text-text-secondary hover:text-text-primary hover:bg-orange-50 border border-app-border'
+                }`}
+              >
+                {prog}
+              </button>
+            ))}
+          </div>
+
+          {/* Desktop Autocomplete Dropdown */}
+          {isSearchOpen && (
+            <>
+              <div
+                className="fixed inset-0 z-20"
+                onClick={() => setIsSearchOpen(false)}
+              />
+              <div className="absolute top-full left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-surface border border-app-border rounded-card shadow-warm z-30 divide-y divide-app-border">
+                {filteredCourses.length === 0 ? (
+                  <div className="p-3 text-xs text-text-muted text-center">
+                    No courses found matching &quot;{searchTerm}&quot;
+                  </div>
+                ) : (
+                  filteredCourses.slice(0, 15).map((course) => {
+                    const isSelected = (request.selectedCourses || []).includes(course.code);
+
+                    return (
+                      <div
+                        key={course.code}
+                        tabIndex={0}
+                        role="button"
+                        aria-label={isSelected ? `${course.code} is added. Click to remove` : `Add ${course.code}`}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            if (isSelected) {
+                              handleInitiateRemove(course.code);
+                            } else {
+                              handleAddCourse(course.code);
+                            }
+                          }
+                        }}
+                        className="w-full p-2.5 hover:bg-subtle focus:bg-subtle flex items-center justify-between group transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-orange-400"
+                        onClick={() => {
                           if (isSelected) {
                             handleInitiateRemove(course.code);
                           } else {
-                            handleAddCourse(course.code);
+                            if (onOpenExplorer) {
+                              onOpenExplorer(course.code);
+                            } else {
+                              handleAddCourse(course.code);
+                            }
                           }
-                        }
-                      }}
-                      className="w-full p-2.5 hover:bg-subtle focus:bg-subtle flex items-center justify-between group transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-orange-400"
-                      onClick={() => {
-                        if (isSelected) {
-                          handleInitiateRemove(course.code);
-                        } else {
-                          if (onOpenExplorer) {
-                            onOpenExplorer(course.code);
-                          } else {
-                            handleAddCourse(course.code);
-                          }
-                        }
-                      }}
-                    >
-                      <div className="pr-2 min-w-0">
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                          <span className="font-semibold text-xs text-text-primary group-hover:text-orange-600">
-                            {course.code}
-                          </span>
-                          <span className="text-[10px] px-1.5 py-0.2 rounded bg-subtle text-text-secondary border border-app-border">
-                            {course.credit} cr
-                          </span>
-                          <span className="text-[10px] px-1.5 py-0.2 rounded bg-subtle text-text-muted">
-                            {course.program}
-                          </span>
-                          {isManualScheduleCourse(course.code) && (
-                            <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-50 text-amber-800 border border-amber-300 font-semibold flex items-center gap-0.5">
-                              <Pencil className="w-2.5 h-2.5 text-amber-600" />
-                              Manual
+                        }}
+                      >
+                        <div className="pr-2 min-w-0">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className="font-semibold text-xs text-text-primary group-hover:text-orange-600">
+                              {course.code}
                             </span>
-                          )}
+                            <span className="text-[10px] px-1.5 py-0.2 rounded bg-subtle text-text-secondary border border-app-border">
+                              {course.credit} cr
+                            </span>
+                            <span className="text-[10px] px-1.5 py-0.2 rounded bg-subtle text-text-muted">
+                              {course.program}
+                            </span>
+                            {isManualScheduleCourse(course.code) && (
+                              <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-50 text-amber-800 border border-amber-300 font-semibold flex items-center gap-0.5">
+                                <Pencil className="w-2.5 h-2.5 text-amber-600" />
+                                Manual
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-[11px] text-text-muted truncate">
+                            {course.title}
+                          </div>
                         </div>
-                        <div className="text-[11px] text-text-muted truncate">
-                          {course.title}
-                        </div>
-                      </div>
 
-                      {isSelected ? (
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleInitiateRemove(course.code);
-                          }}
-                          className="px-2 py-1 rounded-btn text-xs font-semibold bg-success-bg text-success border border-success/30 group-hover:bg-danger-bg group-hover:text-danger group-hover:border-danger/30 group-focus:bg-danger-bg group-focus:text-danger group-focus:border-danger/30 transition-colors flex items-center gap-1 flex-shrink-0"
-                          title="Remove course"
-                          aria-label={`Remove ${course.code}`}
-                        >
-                          <Check className="w-3.5 h-3.5 group-hover:hidden group-focus:hidden flex-shrink-0" />
-                          <Trash2 className="w-3.5 h-3.5 hidden group-hover:inline group-focus:inline flex-shrink-0" />
-                          <span className="group-hover:hidden group-focus:hidden text-[11px]">Added</span>
-                          <span className="hidden group-hover:inline group-focus:inline text-[11px]">
-                            Added · click to remove
-                          </span>
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleAddCourse(course.code);
-                          }}
-                          className="w-6 h-6 rounded-btn bg-orange-50 hover:bg-orange-500 text-orange-600 hover:text-white flex items-center justify-center flex-shrink-0 transition-colors border border-orange-200"
-                          title="Add course"
-                          aria-label={`Add ${course.code}`}
-                        >
-                          <Plus className="w-3.5 h-3.5" />
-                        </button>
-                      )}
-                    </div>
-                  );
-                })
-              )}
-            </div>
-          </>
-        )}
+                        {isSelected ? (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleInitiateRemove(course.code);
+                            }}
+                            className="px-2 py-1 rounded-btn text-xs font-semibold bg-success-bg text-success border border-success/30 group-hover:bg-danger-bg group-hover:text-danger group-hover:border-danger/30 group-focus:bg-danger-bg group-focus:text-danger group-focus:border-danger/30 transition-colors flex items-center gap-1 flex-shrink-0"
+                            title="Remove course"
+                            aria-label={`Remove ${course.code}`}
+                          >
+                            <Check className="w-3.5 h-3.5 group-hover:hidden group-focus:hidden flex-shrink-0" />
+                            <Trash2 className="w-3.5 h-3.5 hidden group-hover:inline group-focus:inline flex-shrink-0" />
+                            <span className="group-hover:hidden group-focus:hidden text-[11px]">Added</span>
+                            <span className="hidden group-hover:inline group-focus:inline text-[11px]">
+                              Added · click to remove
+                            </span>
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleAddCourse(course.code);
+                            }}
+                            className="w-6 h-6 rounded-btn bg-orange-50 hover:bg-orange-500 text-orange-600 hover:text-white flex items-center justify-center flex-shrink-0 transition-colors border border-orange-200"
+                            title="Add course"
+                            aria-label={`Add ${course.code}`}
+                          >
+                            <Plus className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
+      {/* Mobile Full-Screen Search Sheet */}
+      {mobileSearchOpen && (
+        <div className="fixed inset-0 z-50 bg-white flex flex-col pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)] h-[100dvh] lg:hidden">
+          {/* Sticky Header */}
+          <div className="px-4 py-3 border-b border-app-border bg-white space-y-2.5 shrink-0">
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1 flex items-center">
+                <Search className="w-4 h-4 absolute left-3 text-text-muted pointer-events-none" />
+                <input
+                  autoFocus
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Search course, e.g. CSE 1111"
+                  className="w-full pl-9 pr-8 py-2 rounded-btn bg-subtle border border-app-border text-base text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-500"
+                />
+                {searchTerm && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchTerm('')}
+                    className="absolute right-2.5 text-text-muted hover:text-text-primary p-1"
+                    aria-label="Clear search"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={closeMobileSearch}
+                className="min-w-[44px] min-h-[44px] px-3 py-2 text-sm font-semibold text-orange-600 hover:text-orange-700 active:bg-orange-50 rounded-btn transition-colors shrink-0"
+              >
+                Done
+              </button>
+            </div>
+
+            {/* Program Filter Pills + Added Count Badge */}
+            <div className="flex items-center justify-between gap-2 pt-0.5">
+              <div className="flex items-center gap-1.5">
+                {(['ALL', 'BSCSE', 'BSDS'] as const).map((prog) => (
+                  <button
+                    key={prog}
+                    type="button"
+                    onClick={() => setProgramFilter(prog)}
+                    className={`min-h-[32px] px-3 py-1 rounded-btn text-xs font-medium transition-colors ${
+                      programFilter === prog
+                        ? 'bg-orange-500 text-white font-semibold'
+                        : 'bg-subtle text-text-secondary border border-app-border'
+                    }`}
+                  >
+                    {prog}
+                  </button>
+                ))}
+              </div>
+              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-orange-100 text-orange-800 shrink-0">
+                {request.selectedCourses.length} added
+              </span>
+            </div>
+          </div>
+
+          {/* Results List */}
+          <div className="flex-1 overflow-y-auto overscroll-contain divide-y divide-app-border px-2 pb-6">
+            {filteredCourses.length === 0 ? (
+              <div className="p-8 text-center text-sm text-text-muted">
+                No courses found matching &quot;{searchTerm}&quot;
+              </div>
+            ) : (
+              filteredCourses.map((course) => {
+                const isSelected = (request.selectedCourses || []).includes(course.code);
+                return (
+                  <div
+                    key={course.code}
+                    onClick={() => {
+                      if (isSelected) {
+                        executeRemoveCourse(course.code, false);
+                      } else {
+                        handleAddCourse(course.code, true);
+                      }
+                    }}
+                    className="min-h-[48px] p-3 flex items-center justify-between gap-3 active:bg-subtle cursor-pointer transition-colors"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="font-semibold text-sm text-text-primary">
+                          {course.code}
+                        </span>
+                        <span className="text-[11px] px-1.5 py-0.2 rounded bg-subtle text-text-secondary border border-app-border">
+                          {course.credit} cr
+                        </span>
+                        <span className="text-[11px] px-1.5 py-0.2 rounded bg-subtle text-text-muted">
+                          {course.program}
+                        </span>
+                        {isManualScheduleCourse(course.code) && (
+                          <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-50 text-amber-800 border border-amber-300 font-semibold flex items-center gap-0.5">
+                            <Pencil className="w-2.5 h-2.5 text-amber-600" />
+                            Manual
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-xs text-text-muted truncate mt-0.5">
+                        {course.title}
+                      </div>
+                    </div>
+
+                    {isSelected ? (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          executeRemoveCourse(course.code, false);
+                        }}
+                        className="min-h-[36px] px-2.5 py-1 rounded-btn text-xs font-semibold bg-success-bg text-success border border-success/30 flex items-center gap-1 shrink-0"
+                      >
+                        <Check className="w-3.5 h-3.5 text-success" />
+                        <span>Added</span>
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAddCourse(course.code, true);
+                        }}
+                        className="min-h-[36px] min-w-[36px] rounded-btn bg-orange-50 active:bg-orange-500 text-orange-600 active:text-white flex items-center justify-center shrink-0 border border-orange-200"
+                        title="Add course"
+                        aria-label={`Add ${course.code}`}
+                      >
+                        <Plus className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+      )}
+
       {/* 3. Selected Courses List */}
-      <div ref={courseListRef} className="selected-courses-box space-y-2.5 overflow-y-auto pr-1">
+      <div ref={courseListRef} className="selected-courses-box space-y-2.5 overflow-visible lg:overflow-y-auto pr-0 lg:pr-1">
         {selectedFYDPCourses.length > 1 && (
           <div className="p-2.5 rounded-btn bg-amber-50 border border-amber-300 text-amber-800 text-xs flex items-center gap-2">
             <AlertTriangle className="w-4 h-4 flex-shrink-0 text-amber-600" />
@@ -738,10 +993,13 @@ export function CourseSelector({
         )}
 
         {selectedCourseObjs.length === 0 ? (
-          <div className="p-6 text-center border border-dashed border-app-border rounded-card text-text-muted text-xs">
-            No courses selected yet.
-            <br />
-            Search courses above to build your routine.
+          <div className="p-5 sm:p-6 text-center border border-dashed border-app-border rounded-card bg-subtle/50 space-y-1.5">
+            <div className="text-xs font-semibold text-text-primary">
+              Get started with your routine
+            </div>
+            <p className="text-xs text-text-muted">
+              Add your courses to see possible routines. Search above to begin.
+            </p>
           </div>
         ) : (
           selectedCourseObjs.map((course) => {
@@ -1443,7 +1701,7 @@ export function CourseSelector({
         <div
           role="status"
           aria-live="polite"
-          className="fixed bottom-16 md:bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-4 py-2.5 rounded-card bg-text-primary text-surface shadow-warm border border-app-border text-xs md:text-sm animate-in fade-in slide-in-from-bottom-2 duration-200 motion-reduce:transition-none motion-reduce:animate-none"
+          className="fixed bottom-[calc(56px+env(safe-area-inset-bottom,0px)+16px)] md:bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-4 py-2.5 rounded-card bg-text-primary text-surface shadow-warm border border-app-border text-xs md:text-sm animate-in fade-in slide-in-from-bottom-2 duration-200 motion-reduce:transition-none motion-reduce:animate-none"
         >
           <span className="font-medium">{undoToast.message}</span>
           <span className="text-text-muted">·</span>

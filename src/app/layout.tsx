@@ -42,7 +42,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={inter.variable}>
-      <body className={`${inter.className} min-h-screen bg-page text-text-primary antialiased selection:bg-orange-500 selection:text-white`}>
+      <body className={`${inter.className} min-h-[100dvh] bg-page text-text-primary antialiased selection:bg-orange-500 selection:text-white`}>
         {children}
         <Analytics />
       </body>

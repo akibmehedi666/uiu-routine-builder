@@ -40,22 +40,22 @@ export function SiteNav({
 
   return (
     <header className="sticky top-0 z-40 bg-surface/90 backdrop-blur-md border-b border-app-border">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+      <div className="max-w-[1600px] mx-auto px-3 sm:px-6 h-[52px] md:h-14 flex items-center justify-between gap-1 sm:gap-2">
         {/* Left: Brand & Term Badge */}
-        <Link href="/" className="flex items-center space-x-3 group">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-warm text-white font-black text-lg tracking-tight group-hover:scale-105 transition-transform">
+        <Link href="/" className="flex items-center space-x-2 sm:space-x-3 group min-w-0 flex-1 sm:flex-initial">
+          <div className="w-8 h-8 md:w-9 md:h-9 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-warm text-white font-black text-sm md:text-base tracking-tight group-hover:scale-105 transition-transform shrink-0">
             UIU
           </div>
-          <div>
+          <div className="min-w-0 flex-1">
             <div className="flex items-center space-x-2">
-              <span className="text-base font-bold text-text-primary tracking-tight">
+              <span className="text-base font-bold text-text-primary tracking-tight truncate">
                 Routine Builder
               </span>
-              <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-orange-50 text-orange-600 border border-orange-200">
+              <span className="hidden sm:inline-block px-2 py-0.5 text-xs font-semibold rounded-full bg-orange-50 text-orange-600 border border-orange-200 shrink-0">
                 Fall 2026
               </span>
             </div>
-            <p className="text-[11px] text-text-muted hidden sm:block">
+            <p className="text-[11px] text-text-muted hidden sm:block truncate">
               Dept. of CSE &amp; Data Science
             </p>
           </div>
@@ -124,7 +124,7 @@ export function SiteNav({
         </nav>
 
         {/* Right Actions */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-1 sm:space-x-2 shrink-0">
           {/* Builder specific triggers */}
           {isBuilder && (
             <>
@@ -132,12 +132,12 @@ export function SiteNav({
                 <button
                   ref={savedButtonRef}
                   onClick={onOpenSavedRoutines}
-                  className="px-2.5 py-1.5 text-xs font-semibold rounded-btn bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-200 flex items-center gap-1.5 transition-colors shadow-2xs"
+                  className="min-w-[44px] min-h-[44px] px-2 sm:px-2.5 py-1.5 text-xs font-semibold rounded-btn bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-200 flex items-center justify-center gap-1.5 transition-colors shadow-2xs relative"
                   title="My Saved Routines (Key: S)"
                   aria-label="My Saved Routines"
                 >
-                  <Bookmark className="w-3.5 h-3.5 fill-orange-500 text-orange-500" />
-                  <span>Saved</span>
+                  <Bookmark className="w-4 h-4 sm:w-3.5 sm:h-3.5 fill-orange-500 text-orange-500" />
+                  <span className="hidden sm:inline">Saved</span>
                   {totalSaved > 0 && (
                     <span className="px-1.5 py-0.2 rounded-full bg-orange-500 text-white text-[10px] font-bold leading-tight">
                       {totalSaved}
@@ -160,10 +160,11 @@ export function SiteNav({
               {onOpenHelp && (
                 <button
                   onClick={onOpenHelp}
-                  className="px-2.5 py-1.5 text-text-secondary hover:text-text-primary hover:bg-subtle rounded-btn transition-colors flex items-center gap-1 text-xs border border-transparent hover:border-app-border"
+                  className="min-w-[44px] min-h-[44px] px-2 sm:px-2.5 py-1.5 text-text-secondary hover:text-text-primary hover:bg-subtle rounded-btn transition-colors flex items-center justify-center gap-1 text-xs border border-transparent hover:border-app-border"
                   title="Help & How to Use"
+                  aria-label="Help & Guide"
                 >
-                  <HelpCircle className="w-4 h-4 text-text-muted" />
+                  <HelpCircle className="w-4.5 h-4.5 sm:w-4 sm:h-4 text-text-muted" />
                   <span className="hidden sm:inline">Guide</span>
                 </button>
               )}
@@ -174,7 +175,7 @@ export function SiteNav({
           {!isBuilder && (
             <Link
               href="/builder"
-              className="px-3.5 py-1.5 rounded-btn bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs shadow-xs flex items-center gap-1.5 transition-colors"
+              className="min-h-[44px] px-3 sm:px-3.5 py-1.5 rounded-btn bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs shadow-xs flex items-center gap-1.5 transition-colors"
             >
               <span>Build routine</span>
               <ArrowRight className="w-3.5 h-3.5" />

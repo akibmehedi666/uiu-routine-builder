@@ -1089,7 +1089,7 @@ export default function BuilderPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-page text-text-primary">
+    <div className="min-h-[100dvh] flex flex-col bg-page text-text-primary">
       {/* 1. Header */}
       <SiteNav
         onOpenHelp={() => setIsHelpOpen(true)}
@@ -1113,7 +1113,7 @@ export default function BuilderPage() {
       )}
 
       {/* 2. Main Workspace Layout */}
-      <main className="flex-1 max-w-[1600px] w-full mx-auto px-4 sm:px-6 py-4 pb-24 lg:pb-4 grid grid-cols-1 lg:grid-cols-[minmax(340px,400px)_1fr] gap-5 items-start">
+      <main className="flex-1 max-w-[1600px] w-full mx-auto px-3 sm:px-6 py-4 pb-[calc(56px+env(safe-area-inset-bottom,0px)+16px)] lg:pb-4 grid grid-cols-1 lg:grid-cols-[minmax(340px,400px)_1fr] gap-5 items-start">
         {/* Left Sidebar: Course & Faculty Selector */}
         <div className={mobileTab === 'results' ? 'hidden lg:block' : 'block'}>
           <CourseSelector
@@ -1355,43 +1355,10 @@ export default function BuilderPage() {
         </div>
       </main>
 
-      {/* Floating action button on mobile when on Courses / Preferences tabs */}
-      {mobileTab !== 'results' && request.selectedCourses.length > 0 && (
-        <div className="fixed bottom-16 inset-x-4 z-30 lg:hidden">
-          <button
-            type="button"
-            onClick={() => {
-              setMobileTab('results');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            className="w-full py-3 px-4 rounded-card bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs sm:text-sm shadow-warm flex items-center justify-between transition-transform active:scale-[0.99]"
-          >
-            <div className="flex items-center gap-2">
-              {isSolving ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Sparkles className="w-4 h-4 text-orange-200" />
-              )}
-              <span>
-                {isSolving
-                  ? 'Solving schedules...'
-                  : results && results.schedules.length > 0
-                  ? `View ${results.schedules.length} Generated Routine${results.schedules.length > 1 ? 's' : ''}`
-                  : 'Check Routine Results'}
-              </span>
-            </div>
-            <div className="flex items-center gap-1 text-[11px] font-semibold bg-white/20 py-1 px-2 rounded-btn">
-              <span>Results</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </div>
-          </button>
-        </div>
-      )}
-
       {/* Sticky Bottom Tab Bar (Phones & Small Tablets < 1024px) */}
       <nav
         aria-label="Mobile workspace navigation"
-        className="fixed bottom-0 inset-x-0 z-40 lg:hidden bg-surface/95 backdrop-blur-md border-t border-app-border shadow-warm"
+        className="fixed bottom-0 inset-x-0 z-40 lg:hidden bg-white border-t border-app-border shadow-warm"
         style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
       >
         <div className="h-14 grid grid-cols-3 max-w-md mx-auto">
@@ -1446,7 +1413,10 @@ export default function BuilderPage() {
           {/* Tab 3: Results */}
           <button
             type="button"
-            onClick={() => setMobileTab('results')}
+            onClick={() => {
+              setMobileTab('results');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
             className={`relative flex flex-col items-center justify-center gap-0.5 transition-colors ${
               mobileTab === 'results'
                 ? 'text-orange-500 font-bold'
@@ -1456,7 +1426,7 @@ export default function BuilderPage() {
             <div className="relative">
               <Calendar className="w-5 h-5" />
               {results && results.schedules.length > 0 && (
-                <span className="absolute -top-1.5 -right-2.5 min-w-[16px] h-4 px-1 rounded-full bg-orange-500 text-white text-[10px] font-bold flex items-center justify-center shadow-xs">
+                <span className="absolute -top-1.5 -right-2.5 min-w-[18px] h-[18px] px-1 rounded-full bg-orange-500 text-white text-[10px] font-bold flex items-center justify-center shadow-xs">
                   {results.schedules.length}
                 </span>
               )}
@@ -1555,7 +1525,7 @@ export default function BuilderPage() {
 
       {/* 6. Saved Routine Toast Notification */}
       {savedToast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-2.5 rounded-card shadow-warm-lg flex items-center gap-3 text-xs animate-in fade-in slide-in-from-bottom-2">
+        <div className="fixed bottom-[calc(56px+env(safe-area-inset-bottom,0px)+16px)] md:bottom-6 right-4 md:right-6 z-50 bg-slate-900 text-white px-4 py-2.5 rounded-card shadow-warm-lg flex items-center gap-3 text-xs animate-in fade-in slide-in-from-bottom-2">
           <span>{savedToast.message}</span>
           {savedToast.showView && (
             <button
