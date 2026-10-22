@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { PAGE_MAX_W } from '../config/layout';
+import { PAGE_MAX_W, BUILDER_MAX_W } from '../config/layout';
 import {
   Menu,
   X,
@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 
 interface SiteNavProps {
+  wide?: boolean;
   totalSaved?: number;
   onOpenSavedRoutines?: () => void;
   onOpenFavorites?: () => void;
@@ -25,6 +26,7 @@ interface SiteNavProps {
 }
 
 export function SiteNav({
+  wide,
   totalSaved = 0,
   onOpenSavedRoutines,
   onOpenFavorites,
@@ -38,10 +40,12 @@ export function SiteNav({
   const isHome = pathname === '/';
   const isBuilder = pathname === '/builder';
   const isFaculty = pathname.startsWith('/faculty');
+  const isWide = wide ?? isBuilder;
+  const containerMaxWidth = isWide ? BUILDER_MAX_W : PAGE_MAX_W;
 
   return (
     <header className="sticky top-0 z-40 bg-surface/90 backdrop-blur-md border-b border-app-border">
-      <div className={`${PAGE_MAX_W} mx-auto px-3 sm:px-6 h-[52px] md:h-14 flex items-center justify-between gap-1 sm:gap-2`}>
+      <div className={`${containerMaxWidth} mx-auto px-3 sm:px-6 h-[52px] md:h-14 flex items-center justify-between gap-1 sm:gap-2`}>
         {/* Left: Brand & Term Badge */}
         <Link href="/" className="flex items-center space-x-2 sm:space-x-3 group min-w-0 flex-1 sm:flex-initial">
           <div className="w-8 h-8 md:w-9 md:h-9 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-warm text-white font-black text-sm md:text-base tracking-tight group-hover:scale-105 transition-transform shrink-0">

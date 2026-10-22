@@ -10,19 +10,21 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { siteConfig } from '../config/site';
-import { PAGE_MAX_W } from '../config/layout';
+import { PAGE_MAX_W, BUILDER_MAX_W } from '../config/layout';
 
 interface SiteFooterProps {
+  wide?: boolean;
   className?: string;
   onOpenSavedRoutines?: () => void;
 }
 
-export function SiteFooter({ className = '', onOpenSavedRoutines }: SiteFooterProps) {
+export function SiteFooter({ wide = false, className = '', onOpenSavedRoutines }: SiteFooterProps) {
+  const containerMaxWidth = wide ? BUILDER_MAX_W : PAGE_MAX_W;
   return (
     <footer
       className={`border-t border-app-border bg-surface text-text-muted py-3 md:py-3.5 ${className}`}
     >
-      <div className={`${PAGE_MAX_W} mx-auto px-4 sm:px-6 space-y-2.5`}>
+      <div className={`${containerMaxWidth} mx-auto px-4 sm:px-6 space-y-2.5`}>
         {/* Row 1: Creator Credit & Social / Feedback Actions */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-2.5 text-center md:text-left">
           {/* Creator Credit: 13px font-medium, name semibold in primary text */}

@@ -24,7 +24,7 @@ import { HelpGuideModal, ShortcutsModal, FavoritesModal } from '../../components
 import { ManualScheduleModal } from '../../components/ManualScheduleModal';
 import { parseFromParams, serializeToParams } from '../../utils/urlSync';
 import { isFixedCourse } from '../../config/fixedCourses';
-import { PAGE_MAX_W } from '../../config/layout';
+import { PAGE_MAX_W, BUILDER_MAX_W } from '../../config/layout';
 import {
   isManualScheduleCourse,
   ManualScheduleInput,
@@ -1175,6 +1175,7 @@ export default function BuilderPage() {
     <div className="min-h-[100dvh] flex flex-col bg-page text-text-primary">
       {/* 1. Header */}
       <SiteNav
+        wide
         onOpenHelp={() => setIsHelpOpen(true)}
         onOpenShortcuts={() => setIsShortcutsOpen(true)}
         totalSaved={savedRoutines.length}
@@ -1196,7 +1197,7 @@ export default function BuilderPage() {
       )}
 
       {/* 2. Main Workspace Layout */}
-      <main className={`flex-1 ${PAGE_MAX_W} w-full mx-auto px-3 sm:px-6 py-4 pb-[calc(56px+env(safe-area-inset-bottom,0px)+16px)] lg:pb-4 grid grid-cols-1 lg:grid-cols-[minmax(340px,400px)_1fr] gap-5 items-start`}>
+      <main className={`flex-1 ${BUILDER_MAX_W} w-full mx-auto px-3 sm:px-6 py-4 pb-[calc(56px+env(safe-area-inset-bottom,0px)+16px)] lg:pb-4 grid grid-cols-1 lg:grid-cols-[minmax(340px,400px)_1fr] gap-5 items-start`}>
         {/* Left Sidebar: Course & Faculty Selector */}
         <div className={mobileTab === 'results' ? 'hidden lg:block' : 'block'}>
           <CourseSelector
@@ -1537,7 +1538,7 @@ export default function BuilderPage() {
       </nav>
 
       {/* Footer */}
-      <SiteFooter onOpenSavedRoutines={() => setIsSavedDrawerOpen(true)} />
+      <SiteFooter wide onOpenSavedRoutines={() => setIsSavedDrawerOpen(true)} />
 
       {/* 3. Course-Wise Faculty Explorer Slide-Over Panel */}
       {explorerCourseCode && (
