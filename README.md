@@ -58,6 +58,13 @@ Generate 100% conflict-free routines in milliseconds, customize faculty preferen
 
 ---
 
+## 📐 Layout & Page Max-Width
+
+The desktop container max-width across all pages (`SiteNav`, `SiteFooter`, Builder `<main>`, Course Directory, Landing sections) is standardized via a single CSS variable:
+- Change `--page-max-w` in `src/app/globals.css` to try another width (1360, 1400, 1440, 1480...). Default is `1440px`.
+
+---
+
 ## 📊 Dataset Overview
 
 Extracted from the official United International University Fall 2026 Class Schedule (Dept. of CSE & BSDS):

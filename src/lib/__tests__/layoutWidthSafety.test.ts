@@ -5,8 +5,11 @@ import { PAGE_MAX_W } from '../../config/layout';
 describe('Layout Desktop Width Consistency & Safety Tests', () => {
   const rootDir = path.resolve(__dirname, '../../..');
 
-  it('exports PAGE_MAX_W as max-w-[1400px]', () => {
-    expect(PAGE_MAX_W).toBe('max-w-[1400px]');
+  it('exports PAGE_MAX_W as max-w-[var(--page-max-w,1440px)] and globals.css sets --page-max-w: 1440px', () => {
+    expect(PAGE_MAX_W).toBe('max-w-[var(--page-max-w,1440px)]');
+
+    const globalsCss = fs.readFileSync(path.join(rootDir, 'src/app/globals.css'), 'utf-8');
+    expect(globalsCss).toContain('--page-max-w: 1440px;');
   });
 
   it('Builder page uses shared PAGE_MAX_W on <main> and does NOT have max-w-full or max-w-[1600px]', () => {
@@ -17,8 +20,10 @@ describe('Layout Desktop Width Consistency & Safety Tests', () => {
     expect(content).toContain('PAGE_MAX_W');
     expect(content).toMatch(/<main[^>]*\$\{PAGE_MAX_W\}[^>]*>/);
 
-    // Must NOT contain old 1600px max-width
+    // Must NOT contain old hardcoded max-width
     expect(content).not.toContain('max-w-[1600px]');
+    expect(content).not.toContain('max-w-[1400px]');
+    expect(content).not.toContain('max-w-[1536px]');
 
     // Must NOT have max-w-full next to or on <main>
     const mainTagMatch = content.match(/<main[^>]*>/);
@@ -41,6 +46,7 @@ describe('Layout Desktop Width Consistency & Safety Tests', () => {
     // Hardcoded max-width values should be replaced
     expect(content).not.toContain('max-w-[1400px]');
     expect(content).not.toContain('max-w-[1600px]');
+    expect(content).not.toContain('max-w-[1536px]');
   });
 
   it('SiteNav uses shared PAGE_MAX_W so header aligns with content on all pages', () => {
@@ -48,9 +54,10 @@ describe('Layout Desktop Width Consistency & Safety Tests', () => {
     const content = fs.readFileSync(navPath, 'utf-8');
 
     expect(content).toContain('PAGE_MAX_W');
-    expect(content).toContain('${PAGE_MAX_W} mx-auto px-3 sm:px-6');
+    expect(content).toContain('${PAGE_MAX_W} mx-auto w-full px-4 sm:px-6');
     expect(content).not.toContain('max-w-[1600px]');
     expect(content).not.toContain('max-w-[1400px]');
+    expect(content).not.toContain('max-w-[1536px]');
   });
 
   it('SiteFooter uses shared PAGE_MAX_W without hardcoding 1400px or 1600px', () => {
@@ -61,6 +68,7 @@ describe('Layout Desktop Width Consistency & Safety Tests', () => {
     expect(content).toContain('${PAGE_MAX_W} mx-auto px-4 sm:px-6');
     expect(content).not.toContain('max-w-[1400px]');
     expect(content).not.toContain('max-w-[1600px]');
+    expect(content).not.toContain('max-w-[1536px]');
   });
 
   it('Timetable grid columns shrink with 56px time column and minmax(0,1fr) for day columns', () => {

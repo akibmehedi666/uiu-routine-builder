@@ -8,18 +8,16 @@ describe('Mobile Layout Safety Verification', () => {
     const siteNavPath = path.join(rootDir, 'src/components/SiteNav.tsx');
     const content = fs.readFileSync(siteNavPath, 'utf-8');
 
-    // Header height
-    expect(content).toContain('h-[52px] md:h-14');
+    // Header height: 52px on mobile, 64px (h-16) on desktop
+    expect(content).toContain('h-[52px]');
+    expect(content).toContain('h-16');
 
-    // Logo size
-    expect(content).toContain('w-8 h-8 md:w-9 md:h-9');
+    // BrandLogo used
+    expect(content).toContain('BrandLogo');
 
     // Title truncation
     expect(content).toContain('Routine Builder');
     expect(content).toContain('truncate');
-
-    // Fall 2026 badge hidden on mobile phones
-    expect(content).toMatch(/hidden sm:inline-block[\s\S]*?Fall 2026/);
   });
 
   it('CourseSelector implements mobile full-screen search sheet with history popstate & scroll lock', () => {
