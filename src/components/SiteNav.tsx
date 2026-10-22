@@ -94,7 +94,7 @@ export function SiteNav() {
           {/* Center Cell: Exactly Centered Nav Links (Never shifts across pages) */}
           <nav
             aria-label="Primary Navigation"
-            className="justify-self-center flex items-center gap-6 sm:gap-8 text-sm font-medium"
+            className="justify-self-center flex items-center gap-4 md:gap-4 lg:gap-6 xl:gap-8 text-sm font-medium whitespace-nowrap"
           >
             <Link
               href="/"
@@ -127,6 +127,17 @@ export function SiteNav() {
               }`}
             >
               Course Directory
+            </Link>
+
+            <Link
+              href="/faculty-directory"
+              className={`py-1 border-b-2 transition-colors ${
+                activeRoute === 'faculty-directory'
+                  ? 'border-orange-500 font-semibold text-orange-600'
+                  : 'border-transparent text-text-secondary hover:text-orange-600'
+              }`}
+            >
+              Faculty Directory
             </Link>
           </nav>
 
@@ -274,6 +285,17 @@ export function SiteNav() {
               }`}
             >
               Course Directory
+            </Link>
+            <Link
+              href="/faculty-directory"
+              onClick={() => setMobileOpen(false)}
+              className={`min-h-[44px] flex items-center px-3 rounded-lg font-medium transition-colors ${
+                activeRoute === 'faculty-directory'
+                  ? 'text-orange-600 font-bold bg-orange-50'
+                  : 'text-text-secondary hover:bg-subtle'
+              }`}
+            >
+              Faculty Directory
             </Link>
 
             <div className="pt-2 border-t border-app-border space-y-1">

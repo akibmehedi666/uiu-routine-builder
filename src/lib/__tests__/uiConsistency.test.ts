@@ -53,13 +53,15 @@ describe('UI Consistency & Alignment Audit Tests', () => {
       // Uses shared PAGE_MAX_W
       expect(navContent).toContain('PAGE_MAX_W');
 
-      // Nav links in fixed order: Home, Builder, Course Directory
+      // Nav links in fixed order: Home, Builder, Course Directory, Faculty Directory
       const homeIdx = navContent.indexOf('Home');
       const builderIdx = navContent.indexOf('Builder');
       const dirIdx = navContent.indexOf('Course Directory');
+      const facDirIdx = navContent.indexOf('Faculty Directory');
       expect(homeIdx).toBeGreaterThan(-1);
       expect(builderIdx).toBeGreaterThan(homeIdx);
       expect(dirIdx).toBeGreaterThan(builderIdx);
+      expect(facDirIdx).toBeGreaterThan(dirIdx);
 
       // Reserved border-b-2 on all links
       expect(navContent).toContain('border-b-2');
