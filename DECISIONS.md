@@ -329,14 +329,13 @@ Following a session interruption audit:
     - "Busiest": 6+ sections (top 10 tier).
     - "Weekend Starter": >= 70% of sections scheduled on Sat/Tue (with min 2 sections).
   - Rendered with warm theme tokens, small icons, and descriptive tooltips. Max 3 badges per card; all shown on detail profiles.
-- **Directory List UI (`/faculty-directory`)**:
-  - Header with count chip ("207 faculty") and one-line subtitle.
-  - Deterministic daily-rotating "Faculty Spotlight" card driven by date string hash (no hydration mismatches).
-  - Expandable Leaderboards tab featuring four Top-5 lists (Most sections, Most courses, Most weekly hours, Most First Bell sections).
-  - Collapsible Unassigned (TBA) panel grouping 25 TBA sections by course code.
+- **Two-Pane Directory UI (`/faculty-directory`)**:
+  - Exact layout architecture from the Course Directory (`/faculty`):
+    - **Left Sticky Pane** (`md:grid-cols-[300px_1fr] lg:grid-cols-[minmax(340px,380px)_1fr]`): Scrollable list of faculty with avatar initials, name with match highlighting, program tags, section/course/hour metrics, badges, and Sat–Wed day dots. Selecting any faculty immediately activates them with the reserved orange indicator (`border-l-[3px] border-l-orange-500`).
+    - **Right Details Pane**: Displays the active instructor's full profile: header banner with avatar, stats, badges, and "Copy link"; compact Sat–Wed 08:30–16:30 weekly teaching timetable mini-grid; UCAM-inspired course & section rows (with code, title, credits, section count, meeting times, room, and tentative flag, strictly **WITHOUT** prefer/avoid buttons); and "Teaches with" co-instructors strip (clicking any co-instructor selects them in the left pane).
+    - **Mobile Accordion** (`< 768px`): In-place accordion expansion where tapping an instructor reveals their weekly timetable and assigned sections.
   - Interactive toolbar with live search (press `/` to focus, `Esc` to clear), program chips (ALL/BSCSE/BSDS), day chips (Sat–Wed), time slot chips, course kind chips, and sort dropdown (A–Z default).
-  - 3-column card grid with avatar initials, program tags, 3 stat chips (courses, sections, hours), badges, Sat–Wed day dots, and pagination (24/page with "Load more").
-  - Side-by-side comparison modal/drawer (checkbox on cards, sticky "Compare (2)" bar, shared courses matrix).
+  - Collapsible panels for Top-5 Teaching Load Leaderboards and Unassigned (TBA) section tracker.
 - **Detail Profile UI (`/faculty-directory/[id]`)**:
   - Header profile card with pastel avatar, name, programs, badges, stats row, "Copy link" action, and breadcrumb back link.
   - Page-level stats card: busiest day, days on campus, earliest start, latest end, and slot breakdown.
