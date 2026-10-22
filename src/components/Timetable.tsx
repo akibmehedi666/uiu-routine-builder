@@ -422,7 +422,7 @@ export function Timetable({
       >
         <div className="min-w-[720px]">
           {/* Day Headers (Sticky) */}
-          <div className="grid grid-cols-[64px_repeat(5,1fr)] gap-2 pb-2.5 border-b border-app-border text-center font-bold text-xs uppercase tracking-wider text-text-muted">
+          <div className="grid grid-cols-[56px_repeat(5,minmax(0,1fr))] gap-2 pb-2.5 border-b border-app-border text-center font-bold text-xs uppercase tracking-wider text-text-muted">
             <div className="py-1">Time</div>
             {DAYS_LIST.map((day) => {
               const hasClasses = meetingsByDay[day].length > 0;
@@ -448,7 +448,7 @@ export function Timetable({
           </div>
 
           {/* Timetable Body (480 minutes total, from 510 to 990 min) */}
-          <div className="relative grid grid-cols-[64px_repeat(5,1fr)] gap-2 h-[600px] mt-2 bg-white">
+          <div className="relative grid grid-cols-[56px_repeat(5,minmax(0,1fr))] gap-2 h-[600px] mt-2 bg-white">
             {/* Left Time Axis */}
             <div className="relative h-full select-none text-[10px] font-mono text-text-muted">
               {TIME_SLOTS.map((slot) => {
@@ -466,7 +466,7 @@ export function Timetable({
             </div>
 
             {/* Horizontal Grid Slot Lines across all days */}
-            <div className="col-span-5 absolute inset-y-0 right-0 left-[64px] pointer-events-none">
+            <div className="col-span-5 absolute inset-y-0 right-0 left-[56px] pointer-events-none">
               {TIME_SLOTS.map((slot) => {
                 const topPct = ((slot.min - 510) / 480) * 100;
                 return (

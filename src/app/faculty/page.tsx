@@ -49,6 +49,7 @@ import { SiteFooter } from '../../components/SiteFooter';
 import { getCourseColor } from '../../utils/colors';
 import { formatTime24 } from '../../utils/export';
 import { applyFixedCourseOverlay, isFixedCourse, isManualScheduleCourse } from '../../lib/fixedCourses';
+import { PAGE_MAX_W } from '../../config/layout';
 
 /**
  * Highlights matching search query substrings in text with a subtle orange mark
@@ -551,7 +552,7 @@ function CourseDirectoryContent() {
 
       {/* 2. Compact Page Sub-Header */}
       <div className="border-b border-app-border bg-surface">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div className={`${PAGE_MAX_W} mx-auto px-4 sm:px-6 py-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3`}>
           <div>
             <div className="flex items-center gap-2.5">
               <h1 className="text-xl sm:text-2xl font-extrabold text-text-primary tracking-tight">
@@ -580,7 +581,7 @@ function CourseDirectoryContent() {
 
       {/* 3. Global Filter Toolbar */}
       <div className="border-b border-app-border bg-surface/60 backdrop-blur-sm sticky top-14 z-20">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-2.5 space-y-2">
+        <div className={`${PAGE_MAX_W} mx-auto px-4 sm:px-6 py-2.5 space-y-2`}>
           {/* Main Toolbar Row */}
           <div className="flex flex-wrap items-center gap-2 text-xs">
             {/* Search Box */}
@@ -702,7 +703,7 @@ function CourseDirectoryContent() {
       </div>
 
       {/* 4. Main Two-Pane Layout (Desktop & Tablet) / Accordion (Mobile) */}
-      <main className="flex-1 max-w-[1400px] w-full mx-auto px-4 sm:px-6 py-5">
+      <main className={`flex-1 ${PAGE_MAX_W} w-full mx-auto px-4 sm:px-6 py-5`}>
         {/* Desktop / Tablet Two-Pane Grid (>=768px) */}
         <div className="hidden md:grid md:grid-cols-[300px_1fr] lg:grid-cols-[minmax(340px,400px)_1fr] gap-6 items-start">
           {/* LEFT PANE: Course List */}

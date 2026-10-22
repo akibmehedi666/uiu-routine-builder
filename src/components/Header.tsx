@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { HelpCircle, Keyboard, Star } from 'lucide-react';
+import { PAGE_MAX_W } from '../config/layout';
 
 interface HeaderProps {
   onOpenHelp: () => void;
@@ -19,7 +20,7 @@ export function Header({
 }: HeaderProps) {
   return (
     <header className="border-b border-app-border bg-surface/90 backdrop-blur-md sticky top-0 z-40">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+      <div className={`${PAGE_MAX_W} mx-auto px-4 sm:px-6 h-14 flex items-center justify-between`}>
         {/* Left: Brand & Term Badge */}
         <Link href="/" className="flex items-center space-x-3 group">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-warm text-white font-black text-lg tracking-tight group-hover:scale-105 transition-transform">
