@@ -1089,7 +1089,7 @@ export default function BuilderPage() {
   };
 
   return (
-    <div className="min-h-[100dvh] flex flex-col bg-page text-text-primary">
+    <div className="min-h-[100dvh] flex flex-col bg-page text-text-primary w-full max-w-full overflow-x-clip">
       {/* 1. Header */}
       <SiteNav
         onOpenHelp={() => setIsHelpOpen(true)}
@@ -1113,9 +1113,9 @@ export default function BuilderPage() {
       )}
 
       {/* 2. Main Workspace Layout */}
-      <main className="flex-1 max-w-[1600px] w-full mx-auto px-3 sm:px-6 py-4 pb-[calc(56px+env(safe-area-inset-bottom,0px)+16px)] lg:pb-4 grid grid-cols-1 lg:grid-cols-[minmax(340px,400px)_1fr] gap-5 items-start">
+      <main className="flex-1 max-w-[1600px] w-full max-w-full mx-auto px-3 sm:px-6 py-4 pb-[calc(56px+env(safe-area-inset-bottom,0px)+24px)] lg:pb-4 grid grid-cols-1 lg:grid-cols-[minmax(340px,400px)_1fr] gap-5 items-start min-w-0">
         {/* Left Sidebar: Course & Faculty Selector */}
-        <div className={mobileTab === 'results' ? 'hidden lg:block' : 'block'}>
+        <div className={`w-full max-w-full min-w-0 ${mobileTab === 'results' ? 'hidden lg:block' : 'block'}`}>
           <CourseSelector
             courses={effectiveCourses}
             sections={effectiveSections}
@@ -1131,7 +1131,7 @@ export default function BuilderPage() {
         </div>
 
         {/* Right Content Area */}
-        <div className={`flex-1 flex flex-col min-w-0 space-y-6 ${mobileTab !== 'results' ? 'hidden lg:flex' : 'flex'}`}>
+        <div className={`flex-1 flex flex-col w-full max-w-full min-w-0 space-y-6 ${mobileTab !== 'results' ? 'hidden lg:flex' : 'flex'}`}>
           {/* If viewing a saved/shared routine, show the banner */}
           {viewingSavedRoutine && (
             <SavedRoutineBanner
@@ -1358,7 +1358,7 @@ export default function BuilderPage() {
       {/* Sticky Bottom Tab Bar (Phones & Small Tablets < 1024px) */}
       <nav
         aria-label="Mobile workspace navigation"
-        className="fixed bottom-0 inset-x-0 z-40 lg:hidden bg-white border-t border-app-border shadow-warm"
+        className="fixed bottom-0 inset-x-0 w-full max-w-full z-40 lg:hidden bg-white border-t border-app-border shadow-warm"
         style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
       >
         <div className="h-14 grid grid-cols-3 max-w-md mx-auto">
@@ -1525,7 +1525,7 @@ export default function BuilderPage() {
 
       {/* 6. Saved Routine Toast Notification */}
       {savedToast && (
-        <div className="fixed bottom-[calc(56px+env(safe-area-inset-bottom,0px)+16px)] md:bottom-6 right-4 md:right-6 z-50 bg-slate-900 text-white px-4 py-2.5 rounded-card shadow-warm-lg flex items-center gap-3 text-xs animate-in fade-in slide-in-from-bottom-2">
+        <div className="fixed bottom-[calc(56px+env(safe-area-inset-bottom,0px)+24px)] md:bottom-6 right-4 md:right-6 z-50 bg-slate-900 text-white px-4 py-2.5 rounded-card shadow-warm-lg flex items-center gap-3 text-xs animate-in fade-in slide-in-from-bottom-2">
           <span>{savedToast.message}</span>
           {savedToast.showView && (
             <button

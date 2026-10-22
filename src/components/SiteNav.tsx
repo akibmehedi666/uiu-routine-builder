@@ -39,8 +39,8 @@ export function SiteNav({
   const isFaculty = pathname.startsWith('/faculty');
 
   return (
-    <header className="sticky top-0 z-40 bg-surface/90 backdrop-blur-md border-b border-app-border">
-      <div className="max-w-[1600px] mx-auto px-3 sm:px-6 h-[52px] md:h-14 flex items-center justify-between gap-1 sm:gap-2">
+    <header className="sticky top-0 z-40 bg-surface border-b border-app-border w-full max-w-full">
+      <div className="w-full max-w-[1600px] mx-auto px-3 sm:px-6 h-[52px] md:h-14 flex items-center justify-between gap-1 sm:gap-2 min-w-0">
         {/* Left: Brand & Term Badge */}
         <Link href="/" className="flex items-center space-x-2 sm:space-x-3 group min-w-0 flex-1 sm:flex-initial">
           <div className="w-8 h-8 md:w-9 md:h-9 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-warm text-white font-black text-sm md:text-base tracking-tight group-hover:scale-105 transition-transform shrink-0">
