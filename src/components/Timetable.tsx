@@ -255,7 +255,7 @@ export function Timetable({
 
           {isTruncated && (
             <span
-              className="text-[10px] px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-300 font-medium hidden sm:inline"
+              className="text-[11px] px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-300 font-medium hidden sm:inline"
               title="Search reached node/timeout limit. Showing top 50 discovered."
             >
               Top 50
@@ -557,7 +557,7 @@ export function Timetable({
                 >
                   <span>{day}</span>
                   {hasClasses && (
-                    <span className="block text-[10px] font-normal text-text-secondary lowercase">
+                    <span className="block text-[11px] font-normal text-text-secondary lowercase">
                       {meetingsByDay[day].length} class
                       {meetingsByDay[day].length > 1 ? 'es' : ''}
                     </span>
@@ -570,7 +570,7 @@ export function Timetable({
           {/* Timetable Body (480 minutes total, from 510 to 990 min) */}
           <div className="relative grid grid-cols-[56px_repeat(5,minmax(0,1fr))] gap-2 h-[600px] mt-2 bg-white">
             {/* Left Time Axis */}
-            <div className="relative h-full select-none text-[10px] font-mono text-text-muted">
+            <div className="relative h-full select-none text-[11px] font-mono text-text-muted">
               {TIME_SLOTS.map((slot) => {
                 const topPct = ((slot.min - 510) / 480) * 100;
                 return (
@@ -654,7 +654,7 @@ export function Timetable({
                                 </button>
                               )}
                             <span
-                              className={`text-[10px] font-bold px-1.5 py-0.2 rounded border flex items-center gap-0.5 ${
+                              className={`text-[11px] font-bold px-1.5 py-0.2 rounded border flex items-center gap-0.5 ${
                                 section.manual || section.fixed || isFixedCourse(section.courseCode)
                                   ? 'bg-amber-100/90 text-amber-900 border-amber-300'
                                   : color.badgeBg
@@ -685,7 +685,7 @@ export function Timetable({
                         </div>
 
                         {/* Bottom: Room + Faculty */}
-                        <div className="flex items-center justify-between text-[10px] pt-1 border-t border-black/10 text-text-secondary">
+                        <div className="flex items-center justify-between text-[11px] pt-1 border-t border-black/10 text-text-secondary">
                           <span className="flex items-center gap-0.5 truncate font-medium">
                             <MapPin className="w-3 h-3 text-text-muted flex-shrink-0" />
                             {meeting.room || 'TBA'}
@@ -713,7 +713,7 @@ export function Timetable({
                             <div className="font-extrabold text-xs text-orange-900">
                               {previewSection.courseCode} (Sec {previewSection.section})
                             </div>
-                            <div className="text-[10px] text-orange-950 font-bold">
+                            <div className="text-[11px] text-orange-950 font-bold">
                               Previewing slot
                             </div>
                           </div>

@@ -169,7 +169,7 @@ export function DayListTimetable({
                               <User className="w-3 h-3 text-sky-600 shrink-0" />
                               <span className="truncate">{item.section.faculty.join(', ') || 'TBA'}</span>
                             </span>
-                            <span className="text-[10px] text-orange-600 font-semibold flex items-center shrink-0">
+                            <span className="text-[11px] text-orange-600 font-semibold flex items-center shrink-0">
                               Details <ChevronRight className="w-3 h-3 ml-0.5" />
                             </span>
                           </div>
@@ -184,7 +184,7 @@ export function DayListTimetable({
                                 <span>{item.tightTransitionMessage}</span>
                               </div>
                             ) : (
-                              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-subtle text-text-muted border border-app-border text-[10px] font-medium">
+                              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-subtle text-text-muted border border-app-border text-[11px] font-medium">
                                 <Clock className="w-2.5 h-2.5 text-text-muted" />
                                 <span>{item.gapAfterLabel}</span>
                               </div>

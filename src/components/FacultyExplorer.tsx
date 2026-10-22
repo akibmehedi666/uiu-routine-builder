@@ -389,7 +389,7 @@ export function FacultyExplorer({
                 <button
                   key={s}
                   onClick={() => setSortBy(s)}
-                  className={`px-2 py-0.5 rounded text-[10px] capitalize font-medium ${
+                  className={`px-2 py-0.5 rounded text-[11px] capitalize font-medium ${
                     sortBy === s
                       ? 'text-orange-600 font-bold bg-orange-50 border border-orange-200'
                       : 'text-text-secondary hover:text-text-primary'
@@ -452,7 +452,7 @@ export function FacultyExplorer({
                       >
                         {group.facultyName}
                       </Link>
-                      <span className="px-1.5 py-0.2 rounded text-[10px] font-semibold bg-subtle text-text-muted border border-app-border">
+                      <span className="px-1.5 py-0.2 rounded text-[11px] font-semibold bg-subtle text-text-muted border border-app-border">
                         {group.sections.length} section{group.sections.length > 1 ? 's' : ''}
                       </span>
                     </div>
@@ -461,7 +461,7 @@ export function FacultyExplorer({
                     <div className="flex items-center gap-1">
                       <button
                         onClick={() => handleFacultyPreference('pref', group.facultyId)}
-                        className={`px-2 py-0.5 rounded text-[10px] font-semibold transition-colors ${
+                        className={`min-h-[28px] px-2.5 py-1 rounded text-xs font-semibold transition-colors ${
                           isPref
                             ? 'bg-success text-white'
                             : 'bg-subtle text-text-secondary hover:text-success border border-app-border'
@@ -472,7 +472,7 @@ export function FacultyExplorer({
                       </button>
                       <button
                         onClick={() => handleFacultyPreference('avoid', group.facultyId)}
-                        className={`px-2 py-0.5 rounded text-[10px] font-semibold transition-colors ${
+                        className={`min-h-[28px] px-2.5 py-1 rounded text-xs font-semibold transition-colors ${
                           isAvoid
                             ? 'bg-danger text-white'
                             : 'bg-subtle text-text-secondary hover:text-danger border border-app-border'
@@ -522,7 +522,7 @@ export function FacultyExplorer({
                             {/* Clash Badge if clashes with active routine */}
                             {clashCourse && (
                               <span
-                                className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-danger-bg text-danger border border-danger/30 flex items-center gap-0.5"
+                                className="px-1.5 py-0.5 rounded text-[11px] font-bold bg-danger-bg text-danger border border-danger/30 flex items-center gap-0.5"
                                 title={`Clashes with ${clashCourse} in active routine`}
                               >
                                 <AlertTriangle className="w-2.5 h-2.5" />
@@ -532,7 +532,7 @@ export function FacultyExplorer({
 
                             {/* Tentative badge */}
                             {sec.tentative && (
-                              <span className="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                              <span className="px-1.5 py-0.5 rounded text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
                                 Tentative
                               </span>
                             )}

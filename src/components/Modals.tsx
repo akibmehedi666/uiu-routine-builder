@@ -239,10 +239,10 @@ export function FavoritesModal({
                     <span className="font-bold text-text-primary text-xs">
                       {fav.name}
                     </span>
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-orange-50 text-orange-600 border border-orange-200">
+                    <span className="px-1.5 py-0.5 rounded text-[11px] font-bold bg-orange-50 text-orange-600 border border-orange-200">
                       Score: {fav.schedule.score}/100
                     </span>
-                    <span className="text-[10px] text-text-muted">
+                    <span className="text-[11px] text-text-muted">
                       {fav.schedule.stats.credits} cr
                     </span>
                   </div>

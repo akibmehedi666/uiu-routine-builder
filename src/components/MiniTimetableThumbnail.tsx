@@ -55,7 +55,7 @@ export function MiniTimetableThumbnail({
             }`}
           >
             {/* Tiny day header */}
-            <div className="text-[8px] font-mono font-medium text-text-muted text-center leading-none pt-0.5 pb-0.5">
+            <div className="text-[11px] font-mono font-medium text-text-muted text-center leading-none pt-0.5 pb-0.5">
               {day[0]}
             </div>
 

@@ -260,7 +260,7 @@ export function SaveRoutinePopover({
               <button
                 type="button"
                 onClick={() => setColorTag(undefined)}
-                className={`px-2 py-1 rounded-btn text-[10px] font-medium border transition-colors ${
+                className={`px-2 py-1 rounded-btn text-[11px] font-medium border transition-colors ${
                   colorTag === undefined
                     ? 'bg-subtle text-text-primary border-orange-500 ring-1 ring-orange-500'
                     : 'bg-page text-text-muted border-app-border hover:border-orange-300'
@@ -275,7 +275,7 @@ export function SaveRoutinePopover({
                     key={c.id}
                     type="button"
                     onClick={() => setColorTag(c.id)}
-                    className={`flex items-center gap-1 px-2 py-1 rounded-btn text-[10px] font-medium border transition-all ${
+                    className={`flex items-center gap-1 px-2 py-1 rounded-btn text-[11px] font-medium border transition-all ${
                       isSelected
                         ? `${c.bgClass} ${c.textClass} border-orange-500 ring-1 ring-orange-500`
                         : `${c.bgClass} ${c.textClass} border-app-border hover:border-orange-300`
@@ -296,7 +296,7 @@ export function SaveRoutinePopover({
               <label className="text-[11px] font-semibold text-text-secondary">
                 Personal Note (Optional)
               </label>
-              <span className="text-[10px] text-text-muted">{note.length}/300</span>
+              <span className="text-[11px] text-text-muted">{note.length}/300</span>
             </div>
             <textarea
               value={note}

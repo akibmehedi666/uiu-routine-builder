@@ -504,7 +504,7 @@ export function SavedRoutinesDrawer({
                 <button
                   type="button"
                   onClick={() => setSelectedColor('all')}
-                  className={`px-1.5 py-0.5 rounded text-[10px] font-medium border ${
+                  className={`px-1.5 py-0.5 rounded text-[11px] font-medium border ${
                     selectedColor === 'all'
                       ? 'bg-orange-500 text-white border-orange-500 font-bold'
                       : 'bg-surface text-text-muted border-app-border hover:text-text-primary'
@@ -644,11 +644,11 @@ export function SavedRoutinesDrawer({
                             />
                             {/* Color Tag Picker */}
                             <div className="flex items-center gap-1.5 flex-wrap">
-                              <span className="text-[10px] text-text-muted">Tag:</span>
+                              <span className="text-[11px] text-text-muted">Tag:</span>
                               <button
                                 type="button"
                                 onClick={() => setEditColor(undefined)}
-                                className={`px-1.5 py-0.5 rounded text-[10px] border ${
+                                className={`px-1.5 py-0.5 rounded text-[11px] border ${
                                   editColor === undefined
                                     ? 'bg-subtle border-orange-500 font-bold'
                                     : 'border-app-border'
@@ -695,7 +695,7 @@ export function SavedRoutinesDrawer({
                               <span>{routine.name}</span>
                               <Edit2 className="w-2.5 h-2.5 text-text-muted opacity-0 hover:opacity-100 group-hover:opacity-100" />
                             </h4>
-                            <span className="text-[10px] text-text-muted">
+                            <span className="text-[11px] text-text-muted">
                               Saved {new Date(routine.createdAt).toLocaleDateString()}
                             </span>
                           </div>
@@ -766,7 +766,7 @@ export function SavedRoutinesDrawer({
                               <AlertTriangle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                               <span>Data changed since you saved this routine</span>
                             </div>
-                            <ul className="text-[10px] text-amber-800 list-disc list-inside space-y-0.5">
+                            <ul className="text-[11px] text-amber-800 list-disc list-inside space-y-0.5">
                               {validation.diffs.map((d, idx) => (
                                 <li key={idx}>
                                   <span className="font-semibold">
@@ -784,7 +784,7 @@ export function SavedRoutinesDrawer({
                                 );
                                 onAddUpdatedCopy(updatedRoutine);
                               }}
-                              className="mt-1 px-2 py-0.5 rounded bg-amber-200 hover:bg-amber-300 text-amber-950 font-semibold text-[10px] transition-colors"
+                              className="mt-1 px-2 py-0.5 rounded bg-amber-200 hover:bg-amber-300 text-amber-950 font-semibold text-[11px] transition-colors"
                             >
                               Update to latest data (keep copy)
                             </button>

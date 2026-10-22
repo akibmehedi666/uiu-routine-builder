@@ -629,7 +629,7 @@ export function CourseSelector({
                 </span>
               )}
             </div>
-            <span className="text-[10px] text-danger/70 underline shrink-0 sm:hidden">
+            <span className="text-[11px] text-danger/70 underline shrink-0 sm:hidden">
               {creditWarningExpanded ? 'Less' : 'Info'}
             </span>
           </div>
@@ -655,7 +655,7 @@ export function CourseSelector({
                 </span>
               )}
             </div>
-            <span className="text-[10px] text-warning/70 underline shrink-0 sm:hidden">
+            <span className="text-[11px] text-warning/70 underline shrink-0 sm:hidden">
               {creditWarningExpanded ? 'Less' : 'Info'}
             </span>
           </div>
@@ -785,14 +785,14 @@ export function CourseSelector({
                             <span className="font-semibold text-xs text-text-primary group-hover:text-orange-600">
                               {course.code}
                             </span>
-                            <span className="text-[10px] px-1.5 py-0.2 rounded bg-subtle text-text-secondary border border-app-border">
+                            <span className="text-[11px] px-1.5 py-0.2 rounded bg-subtle text-text-secondary border border-app-border">
                               {course.credit} cr
                             </span>
-                            <span className="text-[10px] px-1.5 py-0.2 rounded bg-subtle text-text-muted">
+                            <span className="text-[11px] px-1.5 py-0.2 rounded bg-subtle text-text-muted">
                               {course.program}
                             </span>
                             {isManualScheduleCourse(course.code) && (
-                              <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-50 text-amber-800 border border-amber-300 font-semibold flex items-center gap-0.5">
+                              <span className="text-[11px] px-1.5 py-0.2 rounded bg-amber-50 text-amber-800 border border-amber-300 font-semibold flex items-center gap-0.5">
                                 <Pencil className="w-2.5 h-2.5 text-amber-600" />
                                 Manual
                               </span>
@@ -938,7 +938,7 @@ export function CourseSelector({
                           {course.program}
                         </span>
                         {isManualScheduleCourse(course.code) && (
-                          <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-50 text-amber-800 border border-amber-300 font-semibold flex items-center gap-0.5">
+                          <span className="text-[11px] px-1.5 py-0.2 rounded bg-amber-50 text-amber-800 border border-amber-300 font-semibold flex items-center gap-0.5">
                             <Pencil className="w-2.5 h-2.5 text-amber-600" />
                             Manual
                           </span>
@@ -1097,13 +1097,13 @@ export function CourseSelector({
                       <span className="font-bold text-xs text-text-primary hover:text-orange-600 transition-colors">
                         {course.code}
                       </span>
-                      <span className="text-[10px] px-1.5 py-0.2 rounded bg-subtle text-text-secondary border border-app-border font-medium">
+                      <span className="text-[11px] px-1.5 py-0.2 rounded bg-subtle text-text-secondary border border-app-border font-medium">
                         {course.credit} cr
                       </span>
                       {!isFixed && lockedSecId && (
                         <span
                           data-testid={`locked-badge-${course.code}`}
-                          className="text-[10px] px-1.5 py-0.2 rounded bg-orange-50 text-orange-700 border border-orange-200 font-semibold flex items-center gap-0.5"
+                          className="text-[11px] px-1.5 py-0.2 rounded bg-orange-50 text-orange-700 border border-orange-200 font-semibold flex items-center gap-0.5"
                           title="Section locked for this course"
                         >
                           <Lock className="w-2.5 h-2.5 text-orange-500" />
@@ -1111,18 +1111,18 @@ export function CourseSelector({
                         </span>
                       )}
                       {isFixed ? (
-                        <span className="text-[10px] text-text-muted">
+                        <span className="text-[11px] text-text-muted">
                           ({courseSections.length} available)
                         </span>
                       ) : isManualScheduleCourse(course.code) ? (
-                        <span className="text-[10px] text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 font-semibold flex items-center gap-1">
+                        <span className="text-[11px] text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 font-semibold flex items-center gap-1">
                           <Pencil className="w-2.5 h-2.5 text-amber-600" />
                           {manualSchedules[course.code]
                             ? `Manual: ${manualSchedules[course.code].days.join('-')} ${manualSchedules[course.code].startTime}-${manualSchedules[course.code].endTime}, Sec ${manualSchedules[course.code].section}`
                             : 'Manual: Schedule required'}
                         </span>
                       ) : (
-                        <span className="text-[10px] text-text-muted">
+                        <span className="text-[11px] text-text-muted">
                           ({courseSections.length} secs)
                         </span>
                       )}
@@ -1137,7 +1137,7 @@ export function CourseSelector({
                       <button
                         type="button"
                         onClick={() => onOpenManualScheduleModal?.(course.code)}
-                        className="px-1.5 py-0.5 text-amber-800 hover:text-amber-950 bg-amber-100/70 hover:bg-amber-100 border border-amber-300 rounded-btn transition-colors text-[10px] font-semibold flex items-center gap-1"
+                        className="px-1.5 py-0.5 text-amber-800 hover:text-amber-950 bg-amber-100/70 hover:bg-amber-100 border border-amber-300 rounded-btn transition-colors text-[11px] font-semibold flex items-center gap-1"
                         title="Edit schedule"
                       >
                         <Pencil className="w-2.5 h-2.5" />
@@ -1148,7 +1148,7 @@ export function CourseSelector({
                         <button
                           type="button"
                           onClick={() => onOpenExplorer(course.code)}
-                          className="p-1 text-text-muted hover:text-orange-600 hover:bg-subtle rounded-btn transition-colors text-[10px]"
+                          className="p-1 text-text-muted hover:text-orange-600 hover:bg-subtle rounded-btn transition-colors text-[11px]"
                           title="Faculty & sections explorer"
                           aria-label={`Explore faculty for ${course.code}`}
                         >
@@ -1229,7 +1229,7 @@ export function CourseSelector({
                         Choose Section (Required):
                       </span>
                       {lockedSecId && (
-                        <span className="text-[10px] text-success font-semibold flex items-center gap-0.5">
+                        <span className="text-[11px] text-success font-semibold flex items-center gap-0.5">
                           <Check className="w-3 h-3 text-success" />
                           Locked
                         </span>
@@ -1285,7 +1285,7 @@ export function CourseSelector({
                             <Check className="w-3.5 h-3.5 text-orange-600" />
                             <span>Sec {chosenFixedSection.section}</span>
                           </span>
-                          <span className="text-[10px] px-1.5 py-0.2 rounded bg-orange-200 text-orange-900 font-extrabold uppercase tracking-wider">
+                          <span className="text-[11px] px-1.5 py-0.2 rounded bg-orange-200 text-orange-900 font-extrabold uppercase tracking-wider">
                             Fixed Section
                           </span>
                         </div>
@@ -1322,7 +1322,7 @@ export function CourseSelector({
                         <button
                           type="button"
                           onClick={() => onRemoveBlockedSlot?.(course.code)}
-                          className="px-2 py-0.5 rounded-btn bg-amber-200 hover:bg-amber-300 text-amber-950 text-[10px] font-bold border border-amber-400 whitespace-nowrap transition-colors"
+                          className="px-2 py-0.5 rounded-btn bg-amber-200 hover:bg-amber-300 text-amber-950 text-[11px] font-bold border border-amber-400 whitespace-nowrap transition-colors"
                         >
                           Remove block
                         </button>
@@ -1342,7 +1342,7 @@ export function CourseSelector({
                     <button
                       type="button"
                       onClick={() => onOpenManualScheduleModal?.(course.code)}
-                      className="font-semibold text-amber-900 text-[10px] px-2 py-0.5 rounded bg-amber-100 hover:bg-amber-200 border border-amber-300 transition-colors flex items-center gap-1"
+                      className="font-semibold text-amber-900 text-[11px] px-2 py-0.5 rounded bg-amber-100 hover:bg-amber-200 border border-amber-300 transition-colors flex items-center gap-1"
                     >
                       <Pencil className="w-2.5 h-2.5" />
                       <span>{manualSchedules[course.code] ? 'Edit' : 'Set Schedule'}</span>
@@ -1427,7 +1427,7 @@ export function CourseSelector({
                                 <div className="flex items-center gap-1">
                                   <button
                                     onClick={() => toggleFacultyPref(course.code, f.id)}
-                                    className={`px-1.5 py-0.5 rounded text-[10px] font-medium transition-colors ${
+                                    className={`px-1.5 py-0.5 rounded text-[11px] font-medium transition-colors ${
                                       isPref
                                         ? 'bg-success text-white font-bold'
                                         : 'bg-surface text-text-secondary hover:text-success border border-app-border'
@@ -1438,7 +1438,7 @@ export function CourseSelector({
                                   </button>
                                   <button
                                     onClick={() => toggleFacultyAvoid(course.code, f.id)}
-                                    className={`px-1.5 py-0.5 rounded text-[10px] font-medium transition-colors ${
+                                    className={`px-1.5 py-0.5 rounded text-[11px] font-medium transition-colors ${
                                       isAvoid
                                         ? 'bg-danger text-white font-bold'
                                         : 'bg-surface text-text-secondary hover:text-danger border border-app-border'
@@ -1496,14 +1496,14 @@ export function CourseSelector({
                                   return next;
                                 });
                               }}
-                              className="text-text-muted hover:text-text-primary underline flex items-center gap-0.5 text-[10px]"
+                              className="text-text-muted hover:text-text-primary underline flex items-center gap-0.5 text-[11px]"
                             >
                               <span>Hidden by FYDP ({clashInfo.hiddenSections.length})</span>
                               <ChevronDown className={`w-3 h-3 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
                             </button>
                           </div>
                           {isExpanded && (
-                            <div className="mt-1.5 p-2 rounded bg-subtle border border-app-border text-[10px] space-y-1">
+                            <div className="mt-1.5 p-2 rounded bg-subtle border border-app-border text-[11px] space-y-1">
                               <div className="font-semibold text-text-muted">Clashes with FYDP ({clashLabel}):</div>
                               {clashInfo.hiddenSections.map((h) => (
                                 <div key={h.section} className="flex items-center justify-between text-text-secondary">
@@ -1678,7 +1678,7 @@ export function CourseSelector({
                   <span className="font-semibold text-text-primary">Ranking Weights</span>
                   <button
                     onClick={resetWeights}
-                    className="text-[10px] text-text-muted hover:text-orange-600 flex items-center gap-1"
+                    className="text-[11px] text-text-muted hover:text-orange-600 flex items-center gap-1"
                   >
                     <RotateCcw className="w-3 h-3" /> Reset
                   </button>

@@ -78,12 +78,12 @@ export function ScheduleComparison({
                     Rank #{idx + 1}
                   </span>
                   {idx === 0 && (
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-orange-500 text-white">
+                    <span className="px-1.5 py-0.5 rounded text-[11px] font-bold bg-orange-500 text-white">
                       BEST
                     </span>
                   )}
                   {isActive && (
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-success-bg text-success border border-success/30">
+                    <span className="px-1.5 py-0.5 rounded text-[11px] font-bold bg-success-bg text-success border border-success/30">
                       Active
                     </span>
                   )}
@@ -93,7 +93,7 @@ export function ScheduleComparison({
                     <span className="text-sm font-black text-orange-600">
                       {sched.score}
                     </span>
-                    <span className="text-[10px] text-text-muted">/100</span>
+                    <span className="text-[11px] text-text-muted">/100</span>
                   </div>
                   {onSaveSchedule && (
                     <button
@@ -195,7 +195,7 @@ export function ScheduleComparison({
                         />
                         <div>
                           <span className="font-bold">{sec.courseCode}</span>
-                          <span className="text-[10px] text-text-muted ml-1 hidden sm:inline">
+                          <span className="text-[11px] text-text-muted ml-1 hidden sm:inline">
                             ({sec.kind})
                           </span>
                         </div>
@@ -235,20 +235,20 @@ export function ScheduleComparison({
                                 Sec {matchSec.section}
                               </span>
                               {isFixedCourse(matchSec.courseCode) && (
-                                <span className="px-1 py-0.2 rounded text-[9px] bg-amber-100 text-amber-900 border border-amber-300 font-bold">
+                                <span className="px-1 py-0.2 rounded text-[11px] bg-amber-100 text-amber-900 border border-amber-300 font-bold">
                                   Fixed
                                 </span>
                               )}
                               {isDiffFromBase && (
-                                <span className="px-1 py-0.2 rounded text-[9px] bg-orange-500 text-white font-bold">
+                                <span className="px-1 py-0.2 rounded text-[11px] bg-orange-500 text-white font-bold">
                                   DIFF
                                 </span>
                               )}
                             </div>
-                            <div className="text-[10px] text-text-muted line-clamp-1">
+                            <div className="text-[11px] text-text-muted line-clamp-1">
                               {matchSec.faculty.join(', ')}
                             </div>
-                            <div className="text-[10px] text-text-secondary mt-0.5">
+                            <div className="text-[11px] text-text-secondary mt-0.5">
                               {matchSec.meetings
                                 .map(
                                   (m) =>

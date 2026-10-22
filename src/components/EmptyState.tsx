@@ -4,6 +4,7 @@ import React from 'react';
 import { DAYS_LIST, Day, SolveRequest } from '../types';
 import { AlertTriangle, RotateCcw, HelpCircle, Lightbulb, Lock, Unlock } from 'lucide-react';
 import { isFixedCourse } from '../config/fixedCourses';
+import { BrandLogo } from './BrandLogo';
 
 interface EmptyStateProps {
   type: 'welcome' | 'conflict';
@@ -53,7 +54,7 @@ export function EmptyState({
           {/* Ghost Timetable Body with Slot Lines */}
           <div className="relative grid grid-cols-[56px_repeat(5,1fr)] gap-2 flex-1 mt-2 min-h-[380px]">
             {/* Time labels axis */}
-            <div className="relative h-full select-none text-[10px] font-mono text-text-muted/50 flex flex-col justify-between py-1 text-right pr-2">
+            <div className="relative h-full select-none text-[11px] font-mono text-text-muted/50 flex flex-col justify-between py-1 text-right pr-2">
               {GHOST_TIME_SLOTS.map((slot) => (
                 <div key={slot}>{slot}</div>
               ))}
@@ -72,9 +73,7 @@ export function EmptyState({
             {/* Centered Overlay Prompt */}
             <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center z-10 pointer-events-none">
               <div className="p-4 sm:p-6 rounded-card bg-surface/95 border border-app-border shadow-warm backdrop-blur-xs max-w-sm space-y-2">
-                <div className="w-10 h-10 rounded-full bg-orange-50 text-orange-600 border border-orange-200 flex items-center justify-center mx-auto shadow-2xs font-bold text-sm">
-                  UIU
-                </div>
+                <BrandLogo size="md" className="justify-center" />
                 <h3 className="text-sm sm:text-base font-bold text-text-primary">
                   Add courses on the left to see your routine here.
                 </h3>
@@ -156,7 +155,7 @@ export function EmptyState({
                 <button
                   type="button"
                   onClick={onUnlockAllSections}
-                  className="px-2 py-0.5 rounded bg-orange-500 hover:bg-orange-600 text-white font-bold text-[10px] transition-colors"
+                  className="px-2.5 py-1 rounded-btn bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs transition-colors"
                 >
                   Unlock all
                 </button>
@@ -168,7 +167,7 @@ export function EmptyState({
                 .map(([code, secId]) => (
                   <div
                     key={code}
-                    className="flex items-center justify-between text-[11px] bg-surface p-1.5 rounded border border-app-border"
+                    className="flex items-center justify-between text-xs bg-surface p-1.5 rounded border border-app-border"
                   >
                     <span className="font-medium text-text-primary">
                       {code}
@@ -177,7 +176,7 @@ export function EmptyState({
                       <button
                         type="button"
                         onClick={() => onUnlockCourse(code)}
-                        className="text-orange-600 hover:text-orange-800 font-semibold underline text-[10px] flex items-center gap-0.5"
+                        className="text-orange-600 hover:text-orange-800 font-semibold underline text-xs flex items-center gap-0.5"
                       >
                         <Unlock className="w-2.5 h-2.5" />
                         <span>Unlock {code}</span>
