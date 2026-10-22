@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { DAYS_LIST, Day, SolveRequest } from '../types';
-import { AlertTriangle, RotateCcw, HelpCircle, Lightbulb } from 'lucide-react';
+import { AlertTriangle, RotateCcw, HelpCircle, Lightbulb, Lock, Unlock } from 'lucide-react';
 import { isFixedCourse } from '../config/fixedCourses';
 
 interface EmptyStateProps {
@@ -10,6 +10,8 @@ interface EmptyStateProps {
   request: SolveRequest;
   errorMessage?: string | null;
   onResetFilters: () => void;
+  onUnlockAllSections?: () => void;
+  onUnlockCourse?: (courseCode: string) => void;
 }
 
 const GHOST_TIME_SLOTS = [
@@ -27,6 +29,8 @@ export function EmptyState({
   request,
   errorMessage,
   onResetFilters,
+  onUnlockAllSections,
+  onUnlockCourse,
 }: EmptyStateProps) {
   if (type === 'welcome') {
     return (
@@ -140,11 +144,48 @@ export function EmptyState({
         )}
 
         {hasNonFixedLocked && (
-          <div className="flex items-start gap-2 text-text-secondary">
-            <span className="text-orange-500">•</span>
-            <span>
-              Unlock section locks: some locked sections may clash directly with other courses.
-            </span>
+          <div className="p-2.5 rounded-btn bg-orange-50/80 border border-orange-200 text-text-primary space-y-1.5">
+            <div className="font-semibold text-orange-950 flex items-center justify-between gap-2 text-[11px]">
+              <span className="flex items-center gap-1">
+                <Lock className="w-3 h-3 text-orange-600" />
+                <span>
+                  Locked sections ({Object.entries(request.lockedSections || {}).filter(([code]) => !isFixedCourse(code)).length}):
+                </span>
+              </span>
+              {onUnlockAllSections && (
+                <button
+                  type="button"
+                  onClick={onUnlockAllSections}
+                  className="px-2 py-0.5 rounded bg-orange-500 hover:bg-orange-600 text-white font-bold text-[10px] transition-colors"
+                >
+                  Unlock all
+                </button>
+              )}
+            </div>
+            <div className="space-y-1">
+              {Object.entries(request.lockedSections || {})
+                .filter(([code]) => !isFixedCourse(code))
+                .map(([code, secId]) => (
+                  <div
+                    key={code}
+                    className="flex items-center justify-between text-[11px] bg-surface p-1.5 rounded border border-app-border"
+                  >
+                    <span className="font-medium text-text-primary">
+                      {code}
+                    </span>
+                    {onUnlockCourse && (
+                      <button
+                        type="button"
+                        onClick={() => onUnlockCourse(code)}
+                        className="text-orange-600 hover:text-orange-800 font-semibold underline text-[10px] flex items-center gap-0.5"
+                      >
+                        <Unlock className="w-2.5 h-2.5" />
+                        <span>Unlock {code}</span>
+                      </button>
+                    )}
+                  </div>
+                ))}
+            </div>
           </div>
         )}
 

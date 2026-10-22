@@ -26,7 +26,10 @@ import {
   X,
   CalendarDays,
   ListFilter,
+  Unlock,
+  ChevronDown,
 } from 'lucide-react';
+import { getLockStatus } from '../lib/lockUtils';
 
 interface TimetableProps {
   schedule: ScheduleResult;
@@ -34,6 +37,10 @@ interface TimetableProps {
   totalSchedules: number;
   onSetRank: (rank: number) => void;
   onLockAllSections: (schedule: ScheduleResult) => void;
+  lockedSections?: Record<string, string>;
+  onUnlockAllSections?: () => void;
+  onLockRemainingSections?: (schedule: ScheduleResult) => void;
+  onUnlockCourse?: (courseCode: string) => void;
   isFavorite: boolean;
   onToggleFavorite: (schedule: ScheduleResult) => void;
   isSaved?: boolean;
@@ -60,6 +67,10 @@ export function Timetable({
   totalSchedules,
   onSetRank,
   onLockAllSections,
+  lockedSections = {},
+  onUnlockAllSections,
+  onLockRemainingSections,
+  onUnlockCourse,
   isFavorite,
   onToggleFavorite,
   isSaved,
@@ -69,6 +80,27 @@ export function Timetable({
   previewSection,
 }: TimetableProps) {
   const [copied, setCopied] = useState(false);
+  const [isLockMenuOpen, setIsLockMenuOpen] = useState(false);
+  const lockMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (lockMenuRef.current && !lockMenuRef.current.contains(e.target as Node)) {
+        setIsLockMenuOpen(false);
+      }
+    };
+    if (isLockMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isLockMenuOpen]);
+
+  const lockStatus = React.useMemo(
+    () => getLockStatus(schedule.sections, lockedSections),
+    [schedule.sections, lockedSections]
+  );
   const [hoveredSection, setHoveredSection] = useState<{
     section: Section;
     meeting: Meeting;
@@ -325,15 +357,82 @@ export function Timetable({
             </button>
           )}
 
-          {/* Lock all */}
-          <button
-            onClick={() => onLockAllSections(schedule)}
-            className="px-2.5 py-1.5 min-h-[38px] rounded-btn bg-surface hover:bg-subtle text-text-secondary hover:text-text-primary border border-app-border text-xs font-medium transition-colors hidden sm:flex items-center gap-1"
-            title="Lock this section combination"
-          >
-            <Lock className="w-3.5 h-3.5 text-orange-500" />
-            <span className="hidden xl:inline">Lock All</span>
-          </button>
+          {/* Lock / Unlock Toggle Button */}
+          <div ref={lockMenuRef} className="relative flex items-center">
+            {lockStatus.isNoneLocked ? (
+              <button
+                type="button"
+                onClick={() => onLockAllSections(schedule)}
+                className="px-2.5 py-1.5 min-h-[38px] rounded-btn bg-surface hover:bg-subtle text-text-secondary hover:text-text-primary border border-app-border text-xs font-medium transition-colors flex items-center gap-1 shadow-2xs active:scale-[0.98]"
+                title="Lock this section combination"
+                aria-label="Lock all sections"
+              >
+                <Lock className="w-3.5 h-3.5 text-orange-500" />
+                <span className="hidden xl:inline">Lock All</span>
+              </button>
+            ) : lockStatus.isAllLocked ? (
+              <button
+                type="button"
+                onClick={() => onUnlockAllSections?.()}
+                className="px-2.5 py-1.5 min-h-[38px] rounded-btn bg-orange-500 hover:bg-orange-600 text-white border border-orange-600 text-xs font-semibold shadow-xs transition-colors flex items-center gap-1 active:scale-[0.98]"
+                title="Unlock all sections"
+                aria-label="Unlock all sections"
+              >
+                <Unlock className="w-3.5 h-3.5 text-white" />
+                <span className="hidden xl:inline">Unlock All</span>
+              </button>
+            ) : (
+              /* Partially locked */
+              <div className="flex items-center">
+                <button
+                  type="button"
+                  onClick={() => onUnlockAllSections?.()}
+                  className="px-2.5 py-1.5 min-h-[38px] rounded-l-btn bg-orange-50 hover:bg-orange-100 text-orange-700 border border-r-0 border-orange-300 text-xs font-semibold transition-colors flex items-center gap-1 active:scale-[0.98]"
+                  title={`Unlock ${lockStatus.lockedCount} locked sections`}
+                  aria-label={`Unlock ${lockStatus.lockedCount} locked sections`}
+                >
+                  <Unlock className="w-3.5 h-3.5 text-orange-600" />
+                  <span>Unlock ({lockStatus.lockedCount})</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsLockMenuOpen((prev) => !prev)}
+                  className="px-1.5 py-1.5 min-h-[38px] rounded-r-btn bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-300 text-xs font-semibold transition-colors flex items-center justify-center active:scale-[0.98]"
+                  title="More lock options"
+                  aria-label="More lock options"
+                >
+                  <ChevronDown className="w-3.5 h-3.5 text-orange-600" />
+                </button>
+
+                {isLockMenuOpen && (
+                  <div className="absolute right-0 top-full mt-1 w-48 bg-surface border border-app-border rounded-card shadow-warm py-1 z-50 text-xs animate-in fade-in slide-in-from-top-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onLockRemainingSections?.(schedule);
+                        setIsLockMenuOpen(false);
+                      }}
+                      className="w-full text-left px-3 py-2 text-text-primary hover:bg-subtle flex items-center gap-2 font-medium transition-colors"
+                    >
+                      <Lock className="w-3.5 h-3.5 text-orange-500" />
+                      <span>Lock remaining ({lockStatus.remainingLockable.length})</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onUnlockAllSections?.();
+                        setIsLockMenuOpen(false);
+                      }}
+                      className="w-full text-left px-3 py-2 text-text-primary hover:bg-subtle flex items-center gap-2 font-medium border-t border-app-border transition-colors"
+                    >
+                      <Unlock className="w-3.5 h-3.5 text-orange-500" />
+                      <span>Unlock all</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
 
           {/* Copy for UCAM */}
           <button
@@ -377,6 +476,27 @@ export function Timetable({
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
             <span>Conflict-Free</span>
           </div>
+
+          {lockStatus.lockedCount > 0 && (
+            <div
+              data-testid="locked-stats-chip"
+              className="px-2.5 py-1 rounded-chip bg-orange-50 text-orange-800 border border-orange-300 font-semibold flex items-center gap-1.5 shadow-2xs"
+            >
+              <Lock className="w-3 h-3 text-orange-600 shrink-0" />
+              <span>{lockStatus.lockedCount} locked</span>
+              {onUnlockAllSections && (
+                <button
+                  type="button"
+                  onClick={onUnlockAllSections}
+                  className="text-orange-600 hover:text-orange-950 p-0.5 rounded-full hover:bg-orange-200 transition-colors"
+                  title="Unlock all sections"
+                  aria-label="Unlock all sections"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              )}
+            </div>
+          )}
 
           <div className="px-2.5 py-1 rounded-chip bg-surface text-text-secondary border border-app-border font-medium shadow-2xs">
             {schedule.stats.credits} Credits
@@ -511,30 +631,49 @@ export function Timetable({
                         } hover:scale-[1.01] hover:z-20 hover:shadow-warm`}
                       >
                         {/* Top: Course Code + Section */}
-                        <div className="flex items-center justify-between gap-1">
+                        <div className="flex items-center justify-between gap-1 min-w-0">
                           <span className={`font-extrabold text-xs tracking-tight truncate ${color.text}`}>
                             {section.courseCode}
                           </span>
-                          <span
-                            className={`text-[10px] font-bold px-1.5 py-0.2 rounded border flex items-center gap-0.5 ${
-                              section.manual || section.fixed || isFixedCourse(section.courseCode)
-                                ? 'bg-amber-100/90 text-amber-900 border-amber-300'
-                                : color.badgeBg
-                            }`}
-                          >
-                            {section.manual ? (
-                              <Pencil className="w-2.5 h-2.5 text-amber-700 shrink-0" />
-                            ) : (section.fixed || isFixedCourse(section.courseCode)) ? (
-                              <Lock className="w-2.5 h-2.5 text-amber-700 shrink-0" />
-                            ) : null}
-                            <span>
-                              {section.manual
-                                ? 'Manual • '
-                                : section.fixed || isFixedCourse(section.courseCode)
-                                ? 'Fixed • '
-                                : ''}Sec {section.section}
+                          <div className="flex items-center gap-1 shrink-0">
+                            {!isFixedCourse(section.courseCode) &&
+                              !section.manual &&
+                              lockedSections?.[section.courseCode] === section.id &&
+                              onUnlockCourse && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    onUnlockCourse(section.courseCode);
+                                  }}
+                                  className="p-0.5 rounded hover:bg-black/10 text-orange-600 transition-colors"
+                                  title="Locked - click to unlock"
+                                  aria-label={`Unlock ${section.courseCode}`}
+                                >
+                                  <Lock className="w-3 h-3" />
+                                </button>
+                              )}
+                            <span
+                              className={`text-[10px] font-bold px-1.5 py-0.2 rounded border flex items-center gap-0.5 ${
+                                section.manual || section.fixed || isFixedCourse(section.courseCode)
+                                  ? 'bg-amber-100/90 text-amber-900 border-amber-300'
+                                  : color.badgeBg
+                              }`}
+                            >
+                              {section.manual ? (
+                                <Pencil className="w-2.5 h-2.5 text-amber-700 shrink-0" />
+                              ) : (section.fixed || isFixedCourse(section.courseCode)) ? (
+                                <Lock className="w-2.5 h-2.5 text-amber-700 shrink-0" />
+                              ) : null}
+                              <span>
+                                {section.manual
+                                  ? 'Manual • '
+                                  : section.fixed || isFixedCourse(section.courseCode)
+                                  ? 'Fixed • '
+                                  : ''}Sec {section.section}
+                              </span>
                             </span>
-                          </span>
+                          </div>
                         </div>
 
                         {/* Middle: Title */}
@@ -717,18 +856,47 @@ export function Timetable({
               )}
             </div>
 
-            <div className="pt-2 flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  onLockAllSections(schedule);
-                  setActiveSheetSection(null);
-                }}
-                className="flex-1 min-h-[44px] py-2.5 px-4 rounded-btn bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xs transition-colors active:scale-[0.98]"
-              >
-                <Lock className="w-4 h-4" />
-                <span>Lock Routine Combination</span>
-              </button>
+            <div className="pt-2 flex items-center gap-2 flex-wrap">
+              {activeSheetSection &&
+              !isFixedCourse(activeSheetSection.section.courseCode) &&
+              !activeSheetSection.section.manual &&
+              lockedSections?.[activeSheetSection.section.courseCode] === activeSheetSection.section.id ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onUnlockCourse?.(activeSheetSection.section.courseCode);
+                    setActiveSheetSection(null);
+                  }}
+                  className="flex-1 min-h-[44px] py-2.5 px-4 rounded-btn bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xs transition-colors active:scale-[0.98]"
+                >
+                  <Unlock className="w-4 h-4" />
+                  <span>Unlock {activeSheetSection.section.courseCode}</span>
+                </button>
+              ) : lockStatus.isNoneLocked ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onLockAllSections(schedule);
+                    setActiveSheetSection(null);
+                  }}
+                  className="flex-1 min-h-[44px] py-2.5 px-4 rounded-btn bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xs transition-colors active:scale-[0.98]"
+                >
+                  <Lock className="w-4 h-4" />
+                  <span>Lock Routine Combination</span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onUnlockAllSections?.();
+                    setActiveSheetSection(null);
+                  }}
+                  className="flex-1 min-h-[44px] py-2.5 px-4 rounded-btn bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xs transition-colors active:scale-[0.98]"
+                >
+                  <Unlock className="w-4 h-4" />
+                  <span>Unlock All Sections</span>
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => setActiveSheetSection(null)}

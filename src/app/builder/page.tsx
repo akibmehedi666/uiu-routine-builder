@@ -55,6 +55,14 @@ import {
 import { SavedRoutinesDrawer } from '../../components/SavedRoutinesDrawer';
 import { SaveRoutinePopover } from '../../components/SaveRoutinePopover';
 import { SavedRoutineBanner } from '../../components/SavedRoutineBanner';
+import {
+  lockAllSections,
+  unlockAllSections,
+  lockRemainingSections,
+  unlockCourse,
+  filterValidLocks,
+  getLockStatus,
+} from '../../lib/lockUtils';
 
 const allSections = sectionsJson as unknown as Section[];
 const allCourses = coursesJson as unknown as Course[];
@@ -110,7 +118,18 @@ export default function BuilderPage() {
   const [isSharedViewing, setIsSharedViewing] = useState(false);
   const [comparingSavedRoutines, setComparingSavedRoutines] = useState<SavedRoutine[] | null>(null);
   const [storageBlockedNotice, setStorageBlockedNotice] = useState<string | null>(null);
-  const [savedToast, setSavedToast] = useState<{ message: string; showView: boolean } | null>(null);
+  const [savedToast, setSavedToast] = useState<{
+    message: string;
+    showView: boolean;
+    onUndo?: () => void;
+  } | null>(null);
+
+  const showToast = useCallback((message: string, showView = true, onUndo?: () => void) => {
+    setSavedToast({ message, showView, onUndo });
+    setTimeout(() => {
+      setSavedToast(null);
+    }, 4000);
+  }, []);
   const savedButtonRef = useRef<HTMLButtonElement>(null);
 
   // Faculty Explorer state
@@ -188,11 +207,10 @@ export default function BuilderPage() {
 
         fromUrl = parseFromParams(window.location.search);
         const combinedLocks = { ...(storedReq.lockedSections || {}), ...(fromUrl.lockedSections || {}) };
-        const validLocks: Record<string, string> = {};
-        for (const [code, secId] of Object.entries(combinedLocks)) {
-          if (allSections.some((s) => s.courseCode === code && s.id === secId)) {
-            validLocks[code] = secId;
-          }
+        const { validLocks, staleCodes } = filterValidLocks(combinedLocks, allSections);
+        const staleCount = staleCodes.length;
+        if (staleCount > 0) {
+          showToast(`Cleared ${staleCount} stale locked section${staleCount > 1 ? 's' : ''}`, false);
         }
         setRequest((prev) => ({
           ...prev,
@@ -203,11 +221,10 @@ export default function BuilderPage() {
         }));
       } else if (Object.keys(storedReq).length > 0) {
         const combinedLocks = storedReq.lockedSections || {};
-        const validLocks: Record<string, string> = {};
-        for (const [code, secId] of Object.entries(combinedLocks)) {
-          if (allSections.some((s) => s.courseCode === code && s.id === secId)) {
-            validLocks[code] = secId;
-          }
+        const { validLocks, staleCodes } = filterValidLocks(combinedLocks, allSections);
+        const staleCount = staleCodes.length;
+        if (staleCount > 0) {
+          showToast(`Cleared ${staleCount} stale locked section${staleCount > 1 ? 's' : ''}`, false);
         }
         setRequest((prev) => ({
           ...prev,
@@ -733,13 +750,6 @@ export default function BuilderPage() {
     return results ? results.schedules : [];
   }, [comparingSavedRoutines, results]);
 
-  const showToast = (message: string, showView = true) => {
-    setSavedToast({ message, showView });
-    setTimeout(() => {
-      setSavedToast(null);
-    }, 4000);
-  };
-
   const handleOpenSavePopover = (sched?: ScheduleResult) => {
     setScheduleToSave(sched || activeDisplaySchedule);
     setIsSavePopoverOpen(true);
@@ -952,6 +962,67 @@ export default function BuilderPage() {
     });
   }, []);
 
+  // Lock & Unlock handlers
+  const handleLockAllSections = useCallback((schedule: ScheduleResult) => {
+    const prevLocks = { ...(request.lockedSections || {}) };
+    const { newLocks, lockedCount } = lockAllSections(schedule.sections, request.lockedSections);
+    setRequest((prev) => ({
+      ...prev,
+      lockedSections: newLocks,
+    }));
+    showToast(`${lockedCount} sections locked`, false, () => {
+      setRequest((prev) => ({
+        ...prev,
+        lockedSections: prevLocks,
+      }));
+    });
+  }, [request.lockedSections, showToast]);
+
+  const handleUnlockAllSections = useCallback(() => {
+    const prevLocks = { ...(request.lockedSections || {}) };
+    const { newLocks, unlockedCount } = unlockAllSections(request.lockedSections);
+    setRequest((prev) => ({
+      ...prev,
+      lockedSections: newLocks,
+    }));
+    showToast(`${unlockedCount} sections unlocked`, false, () => {
+      setRequest((prev) => ({
+        ...prev,
+        lockedSections: prevLocks,
+      }));
+    });
+  }, [request.lockedSections, showToast]);
+
+  const handleLockRemainingSections = useCallback((schedule: ScheduleResult) => {
+    const prevLocks = { ...(request.lockedSections || {}) };
+    const { newLocks, newlyLockedCount } = lockRemainingSections(schedule.sections, request.lockedSections);
+    setRequest((prev) => ({
+      ...prev,
+      lockedSections: newLocks,
+    }));
+    showToast(`${newlyLockedCount} sections locked`, false, () => {
+      setRequest((prev) => ({
+        ...prev,
+        lockedSections: prevLocks,
+      }));
+    });
+  }, [request.lockedSections, showToast]);
+
+  const handleUnlockCourse = useCallback((courseCode: string) => {
+    const prevLocks = { ...(request.lockedSections || {}) };
+    const newLocks = unlockCourse(courseCode, request.lockedSections);
+    setRequest((prev) => ({
+      ...prev,
+      lockedSections: newLocks,
+    }));
+    showToast(`${courseCode} unlocked`, false, () => {
+      setRequest((prev) => ({
+        ...prev,
+        lockedSections: prevLocks,
+      }));
+    });
+  }, [request.lockedSections, showToast]);
+
   // Global Keyboard Navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -989,6 +1060,17 @@ export default function BuilderPage() {
           e.preventDefault();
           setIsSavedDrawerOpen((prev) => !prev);
         }
+      } else if (e.key === 'u' || e.key === 'U') {
+        if (!e.ctrlKey && !e.metaKey && !e.altKey) {
+          e.preventDefault();
+          const targetSchedule = activeDisplaySchedule || currentSchedule;
+          const status = getLockStatus(targetSchedule?.sections || [], request.lockedSections);
+          if (status.lockedCount > 0) {
+            handleUnlockAllSections();
+          } else if (targetSchedule) {
+            handleLockAllSections(targetSchedule);
+          }
+        }
       } else if (e.key === 'f' || e.key === 'F') {
         e.preventDefault();
         if (currentSchedule) {
@@ -1009,7 +1091,18 @@ export default function BuilderPage() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentRank, results, currentSchedule, setRank, explorerCourseCode, request.selectedCourses]);
+  }, [
+    currentRank,
+    results,
+    currentSchedule,
+    activeDisplaySchedule,
+    setRank,
+    explorerCourseCode,
+    request.selectedCourses,
+    request.lockedSections,
+    handleUnlockAllSections,
+    handleLockAllSections,
+  ]);
 
   // Reset filters
   const handleResetFilters = () => {
@@ -1019,17 +1112,6 @@ export default function BuilderPage() {
       filterTimeWindow: undefined,
       maxGapMinutesPerDay: undefined,
       lockedSections: {},
-    }));
-  };
-
-  const handleLockAllSections = (schedule: ScheduleResult) => {
-    const newLocks: Record<string, string> = {};
-    for (const sec of schedule.sections) {
-      newLocks[sec.courseCode] = sec.id;
-    }
-    setRequest((prev) => ({
-      ...prev,
-      lockedSections: newLocks,
     }));
   };
 
@@ -1210,6 +1292,10 @@ export default function BuilderPage() {
                   totalSchedules={1}
                   onSetRank={() => {}}
                   onLockAllSections={handleLockAllSections}
+                  lockedSections={request.lockedSections}
+                  onUnlockAllSections={handleUnlockAllSections}
+                  onLockRemainingSections={handleLockRemainingSections}
+                  onUnlockCourse={handleUnlockCourse}
                   isFavorite={Boolean(viewingSavedRoutine.isFavorite)}
                   onToggleFavorite={() =>
                     handleUpdateRoutine(viewingSavedRoutine.id, {
@@ -1248,6 +1334,10 @@ export default function BuilderPage() {
                   totalSchedules={activeComparisonSchedules.length}
                   onSetRank={setRank}
                   onLockAllSections={handleLockAllSections}
+                  lockedSections={request.lockedSections}
+                  onUnlockAllSections={handleUnlockAllSections}
+                  onLockRemainingSections={handleLockRemainingSections}
+                  onUnlockCourse={handleUnlockCourse}
                   isFavorite={isCurrentFavorite}
                   onToggleFavorite={toggleFavorite}
                   isSaved={Boolean(existingSavedForActive)}
@@ -1309,6 +1399,8 @@ export default function BuilderPage() {
               request={request}
               errorMessage={effectiveErrorMessage}
               onResetFilters={handleResetFilters}
+              onUnlockAllSections={handleUnlockAllSections}
+              onUnlockCourse={handleUnlockCourse}
             />
           ) : (
             /* Timetable View & Multi-Schedule Comparison */
@@ -1320,6 +1412,10 @@ export default function BuilderPage() {
                   totalSchedules={results.schedules.length}
                   onSetRank={setRank}
                   onLockAllSections={handleLockAllSections}
+                  lockedSections={request.lockedSections}
+                  onUnlockAllSections={handleUnlockAllSections}
+                  onLockRemainingSections={handleLockRemainingSections}
+                  onUnlockCourse={handleUnlockCourse}
                   isFavorite={isCurrentFavorite}
                   onToggleFavorite={toggleFavorite}
                   isSaved={Boolean(existingSavedForActive)}
@@ -1528,6 +1624,17 @@ export default function BuilderPage() {
       {savedToast && (
         <div className="fixed bottom-[calc(56px+env(safe-area-inset-bottom,0px)+16px)] md:bottom-6 right-4 md:right-6 z-50 bg-slate-900 text-white px-4 py-2.5 rounded-card shadow-warm-lg flex items-center gap-3 text-xs animate-in fade-in slide-in-from-bottom-2">
           <span>{savedToast.message}</span>
+          {savedToast.onUndo && (
+            <button
+              onClick={() => {
+                savedToast.onUndo?.();
+                setSavedToast(null);
+              }}
+              className="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-orange-400 hover:text-orange-300 font-bold text-[11px] transition-colors border border-slate-700 active:scale-95"
+            >
+              Undo
+            </button>
+          )}
           {savedToast.showView && (
             <button
               onClick={() => {

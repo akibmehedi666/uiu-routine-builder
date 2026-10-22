@@ -1100,6 +1100,16 @@ export function CourseSelector({
                       <span className="text-[10px] px-1.5 py-0.2 rounded bg-subtle text-text-secondary border border-app-border font-medium">
                         {course.credit} cr
                       </span>
+                      {!isFixed && lockedSecId && (
+                        <span
+                          data-testid={`locked-badge-${course.code}`}
+                          className="text-[10px] px-1.5 py-0.2 rounded bg-orange-50 text-orange-700 border border-orange-200 font-semibold flex items-center gap-0.5"
+                          title="Section locked for this course"
+                        >
+                          <Lock className="w-2.5 h-2.5 text-orange-500" />
+                          <span>Locked</span>
+                        </span>
+                      )}
                       {isFixed ? (
                         <span className="text-[10px] text-text-muted">
                           ({courseSections.length} available)
@@ -1342,7 +1352,7 @@ export function CourseSelector({
                   <div className={`space-y-2 pt-1 ${mobileTab === 'courses' ? 'hidden lg:block' : 'block'}`}>
                     {/* Section Lock Dropdown */}
                     <div className="flex items-center gap-2 text-xs">
-                      <span className="text-text-muted flex items-center gap-1 text-[11px]">
+                      <span className="text-text-muted flex items-center gap-1 text-[11px] shrink-0">
                         {lockedSecId ? (
                           <Lock className="w-3 h-3 text-orange-500" />
                         ) : (
@@ -1351,9 +1361,12 @@ export function CourseSelector({
                         Lock:
                       </span>
                       <select
+                        aria-label={`Lock section for ${course.code}`}
                         value={lockedSecId}
                         onChange={(e) => handleLockSection(course.code, e.target.value)}
-                        className="flex-1 bg-subtle border border-app-border rounded-btn py-1 px-2 text-[11px] text-text-primary focus:outline-none focus:ring-1 focus:ring-orange-400"
+                        className={`flex-1 bg-subtle border rounded-btn py-1 px-2 text-[11px] text-text-primary focus:outline-none focus:ring-1 focus:ring-orange-400 min-w-0 truncate ${
+                          lockedSecId ? 'border-orange-400 bg-orange-50/20 font-medium' : 'border-app-border'
+                        }`}
                       >
                         <option value="">Any Section ({courseSections.length} available)</option>
                         {courseSections.map((s) => (
@@ -1362,6 +1375,19 @@ export function CourseSelector({
                           </option>
                         ))}
                       </select>
+                      {lockedSecId && (
+                        <button
+                          type="button"
+                          data-testid={`unlock-course-${course.code}`}
+                          onClick={() => handleLockSection(course.code, '')}
+                          className="p-1 min-h-[44px] min-w-[44px] md:min-h-[28px] md:min-w-[28px] rounded-btn text-orange-600 hover:text-orange-800 hover:bg-orange-50 border border-orange-200 flex items-center justify-center shrink-0 transition-colors"
+                          title={`Unlock ${course.code}`}
+                          aria-label={`Unlock ${course.code}`}
+                        >
+                          <Unlock className="w-3.5 h-3.5" />
+                          <span className="sr-only">Unlock</span>
+                        </button>
+                      )}
                     </div>
 
                     {/* Faculty Preferences */}
