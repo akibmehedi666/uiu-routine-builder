@@ -301,3 +301,53 @@ Following a session interruption audit:
 - **Verification**:
   - All 48 Vitest test suites pass (`npm test`).
   - Next.js production build (`npm run build`) compiles cleanly without lint or type errors.
+
+## Decision 13: Dedicated Faculty Directory Page & Teaching Profiles (Phase 16)
+- **Context & Problem**:
+  - While `/faculty` serves as the UCAM-inspired Course Directory, students and faculty lacked an instructor-first directory to browse who teaches what, view full weekly schedules, and inspect teaching loads across departments.
+- **Route Choice & Compatibility**:
+  - Existing `/faculty` remains untouched as the Course Directory (with `/courses` redirecting to `/faculty`).
+  - Dedicated Faculty Directory placed at `/faculty-directory` (list) and `/faculty-directory/[id]` (detail profile).
+  - Uses Next.js App Router `generateStaticParams()` to pre-render all 207 faculty detail pages statically at build time (100% static-export and Vercel compatible).
+  - Nav config updated in `src/config/nav.ts` with prefix match for `/faculty-directory` evaluated before `/faculty`.
+- **Pure Data Layer (`src/lib/facultyStats.ts`)**:
+  - Precomputes all instructor metrics from `data/sections.json` and `data/faculty.json`.
+  - Multi-faculty section `CSE 4399 A` credited to both instructors (`Siddique Md. Lutful Kabir` and `Mr. Angkon Deb`).
+  - TBA sections (25 sections) excluded from the instructor list and tracked in a dedicated TBA panel.
+  - Total section count sanity verified: 767 faculty assigned + 25 TBA = 792 (791 raw sections + 1 shared section).
+  - Accurate UIU time slot classification:
+    - Morning: start < 11:11 (< 671 minutes)
+    - Midday: 11:11 – 13:50 (671 <= minutes <= 830)
+    - Afternoon: start >= 13:51 (>= 831 minutes)
+  - Title-insensitive sorting (`stripFacultyTitle`) ignoring prefixes (`Mr.`, `Ms.`, `Mrs.`, `Dr.`, `Prof.`, `Md.`, `Mst.`, `Engr.`).
+- **Badge Rules & Tuning (`src/config/facultyBadges.ts`)**:
+  - Centralized thresholds config:
+    - "First Bell": 3+ sections starting at 08:30 AM (top ~6-10%).
+    - "Late Shift": 3+ sections starting at 01:51 PM or later (top ~11%).
+    - "Lab Pro": 3+ lab sections.
+    - "Multi-Course": 5+ distinct courses taught.
+    - "Busiest": 6+ sections (top 10 tier).
+    - "Weekend Starter": >= 70% of sections scheduled on Sat/Tue (with min 2 sections).
+  - Rendered with warm theme tokens, small icons, and descriptive tooltips. Max 3 badges per card; all shown on detail profiles.
+- **Directory List UI (`/faculty-directory`)**:
+  - Header with count chip ("207 faculty") and one-line subtitle.
+  - Deterministic daily-rotating "Faculty Spotlight" card driven by date string hash (no hydration mismatches).
+  - Expandable Leaderboards tab featuring four Top-5 lists (Most sections, Most courses, Most weekly hours, Most First Bell sections).
+  - Collapsible Unassigned (TBA) panel grouping 25 TBA sections by course code.
+  - Interactive toolbar with live search (press `/` to focus, `Esc` to clear), program chips (ALL/BSCSE/BSDS), day chips (Sat–Wed), time slot chips, course kind chips, and sort dropdown (A–Z default).
+  - 3-column card grid with avatar initials, program tags, 3 stat chips (courses, sections, hours), badges, Sat–Wed day dots, and pagination (24/page with "Load more").
+  - Side-by-side comparison modal/drawer (checkbox on cards, sticky "Compare (2)" bar, shared courses matrix).
+- **Detail Profile UI (`/faculty-directory/[id]`)**:
+  - Header profile card with pastel avatar, name, programs, badges, stats row, "Copy link" action, and breadcrumb back link.
+  - Page-level stats card: busiest day, days on campus, earliest start, latest end, and slot breakdown.
+  - Compact Sat–Wed 08:30–16:30 weekly teaching timetable mini-grid with course pastel color coding and accessible screen reader text alternative.
+  - Courses & sections list grouped by course with deep links to Course Directory (`/faculty?c=...`).
+  - "Teaches With" strip displaying top 6 co-instructors sharing the same courses.
+- **Navigation & Layout Consistency**:
+  - SiteNav updated with 4 centered links (`Home`, `Builder`, `Course Directory`, `Faculty Directory`) with reserved 2px border and reduced gap on 768–1024px tablet viewports to prevent wrapping.
+  - Added link to SiteFooter navigation and mobile drawer menu.
+  - Adheres strictly to `--page-max-w` (1440px) and typography scale [11, 12, 13, 14, 16, 18, 20, 24, 28, 32, 40].
+- **Verification**:
+  - 12 Vitest test files passing (130 tests total, including 19 new facultyStats tests).
+  - Next.js production build (`npm run build`) generates 219 static pages (all 207 faculty SSG pages + directory) with zero errors.
+

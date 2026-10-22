@@ -66,6 +66,7 @@ uiu-routine-builder/
 │   │   ├── page.tsx         # Landing page (Server Component)
 │   │   ├── builder/         # /builder route (Routine Builder page)
 │   │   ├── faculty/         # /faculty route (Course Directory page)
+│   │   ├── faculty-directory/ # /faculty-directory route (Faculty Directory & [id] detail)
 │   │   ├── courses/         # /courses route (Redirects to /faculty)
 │   │   ├── icon.svg         # Clean timetable blocks vector favicon
 │   │   ├── favicon.ico      # Multi-resolution ICO (16, 32, 48)
@@ -89,16 +90,18 @@ uiu-routine-builder/
 │   │   ├── site.ts          # Creator bio, links, and disclaimers
 │   │   ├── layout.ts        # PAGE_MAX_W shared constant
 │   │   ├── nav.ts           # Route-driven navigation configuration
-│   │   └── fixedCourses.ts  # Fixed courses configuration (FYDP)
+│   │   ├── fixedCourses.ts  # Fixed courses configuration (FYDP)
+│   │   └── facultyBadges.ts # Centralized faculty badge thresholds
 │   ├── hooks/
 │   │   └── useSolver.ts     # Web Worker management, state machine, and cache
 │   ├── lib/
+│   │   ├── facultyStats.ts  # Pure faculty stats, badges, leaderboards, filters
 │   │   ├── courseSearch.ts  # Pure, tokenized course search index with alias support
 │   │   ├── courseDirectory.ts # Course directory filtering, grouping, and natural sorting
 │   │   ├── fixedCourses.ts  # FYDP overlay and conflict bitmask checks
 │   │   ├── facultyIndex.ts  # Faculty normalization and deterministic slugs
 │   │   ├── storage.ts       # LocalStorage safe helpers
-│   │   └── __tests__/       # Vitest test suites (11 files, 111 tests)
+│   │   └── __tests__/       # Vitest test suites (12 files, 130 tests)
 │   ├── solver/              # Client-side solver engine
 │   │   ├── bitmask.ts       # 5-day x 288-cell bitmask math (BigInt)
 │   │   ├── solver.ts        # Backtracking search with MRV and branch-and-bound
@@ -174,6 +177,8 @@ uiu-routine-builder/
 | Export iCal (.ics) | `export.ts` | Done | 12-week recurring schedule for Google/Apple Calendar |
 | Print / PDF Output | `globals.css` (`@media print`)| Done | Strips nav, toolbar, and background for clean PDF printing |
 | Course Directory | `/faculty` (`faculty/page.tsx`)| Done | Course-first directory, alias search (DSA, OS, etc.), UCAM cards |
+| Faculty Directory | `/faculty-directory` (`faculty-directory/page.tsx`)| Done | Faculty-first directory: search, filters, card grid, daily spotlight, leaderboards, compare, TBA tracker |
+| Faculty Detail Profile | `/faculty-directory/[id]` (`faculty-directory/[id]/page.tsx`)| Done | Static SSG (207 faculty), profile header, weekly timetable mini-grid, courses & sections, co-instructors |
 | Invariant SiteNav | `SiteNav.tsx` | Done | Single instance in root layout, 3-column grid, 0px shift |
 | Site Footer Credit | `SiteFooter.tsx` | Done | Compact creator credit (Md. Akib Mehedi) & feedback link |
 | Favicon & Manifest | `icon.svg`, `manifest.ts` | Done | Letter-free timetable blocks mark, multi-res ICO, PWA ready |
@@ -185,13 +190,15 @@ uiu-routine-builder/
   - `/` : Landing page (Server Component).
   - `/builder` : Routine Builder app.
   - `/faculty` : Course Directory (UCAM-inspired course-first directory).
+  - `/faculty-directory` : Faculty Directory (searchable instructor list, leaderboards, spotlight, compare).
+  - `/faculty-directory/[id]` : Faculty detail profile with weekly teaching timetable and course sections (SSG for all 207 faculty).
   - `/courses` : Immediate redirect to `/faculty`.
 - **Navigation Bar (`SiteNav`)**:
   - Rendered **once** from root `src/app/layout.tsx`. Never re-mounts on navigation.
   - Desktop height 64px (`h-16`), mobile height 52px (`h-[52px]`).
   - Layout: CSS Grid `grid-cols-[1fr_auto_1fr] items-center`.
     - Left (start): `<BrandLogo size="nav" />` and brand text.
-    - Center: Nav links (`Home`, `Builder`, `Course Directory`) with reserved 2px transparent bottom border (`border-b-2 border-transparent`, active `border-orange-500 font-semibold text-orange-600`), ensuring mathematically invariant coordinates across routes.
+    - Center: Nav links (`Home`, `Builder`, `Course Directory`, `Faculty Directory`) with reserved 2px transparent bottom border (`border-b-2 border-transparent`, active `border-orange-500 font-semibold text-orange-600`), ensuring mathematically invariant coordinates across routes.
     - Right (end): Route-driven action cluster configured in `src/config/nav.ts`.
 - **Page Max-Width Knob**:
   - Single source of truth: `--page-max-w: 1440px;` in `src/app/globals.css`.
