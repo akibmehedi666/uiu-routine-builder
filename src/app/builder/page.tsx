@@ -13,7 +13,6 @@ import {
   SolveRequest,
 } from '../../types';
 import { useSolver } from '../../hooks/useSolver';
-import { SiteNav } from '../../components/SiteNav';
 import { SiteFooter } from '../../components/SiteFooter';
 import { CourseSelector } from '../../components/CourseSelector';
 import { Timetable } from '../../components/Timetable';
@@ -132,6 +131,32 @@ export default function BuilderPage() {
   }, []);
   const savedButtonRef = useRef<HTMLButtonElement>(null);
 
+  // Listen for nav action events from shared SiteNav
+  useEffect(() => {
+    const handleOpenSaved = () => setIsSavedDrawerOpen(true);
+    const handleOpenShortcuts = () => setIsShortcutsOpen(true);
+    const handleOpenGuide = () => setIsHelpOpen(true);
+
+    window.addEventListener('nav:open-saved', handleOpenSaved);
+    window.addEventListener('nav:open-shortcuts', handleOpenShortcuts);
+    window.addEventListener('nav:open-guide', handleOpenGuide);
+
+    return () => {
+      window.removeEventListener('nav:open-saved', handleOpenSaved);
+      window.removeEventListener('nav:open-shortcuts', handleOpenShortcuts);
+      window.removeEventListener('nav:open-guide', handleOpenGuide);
+    };
+  }, []);
+
+  // Broadcast saved routines count changes to SiteNav
+  useEffect(() => {
+    window.dispatchEvent(
+      new CustomEvent('saved-routines-updated', {
+        detail: { count: savedRoutines.length },
+      })
+    );
+  }, [savedRoutines.length]);
+
   // Faculty Explorer state
   const [explorerCourseCode, setExplorerCourseCode] = useState<string | null>(null);
   const [previewSection, setPreviewSection] = useState<Section | null>(null);
@@ -203,6 +228,9 @@ export default function BuilderPage() {
         const openCourse = urlParams.get('course');
         if (openCourse) {
           setExplorerCourseCode(openCourse);
+        }
+        if (urlParams.get('saved') === 'true') {
+          setIsSavedDrawerOpen(true);
         }
 
         fromUrl = parseFromParams(window.location.search);
@@ -1173,15 +1201,6 @@ export default function BuilderPage() {
 
   return (
     <div className="min-h-[100dvh] flex flex-col bg-page text-text-primary">
-      {/* 1. Header */}
-      <SiteNav
-        onOpenHelp={() => setIsHelpOpen(true)}
-        onOpenShortcuts={() => setIsShortcutsOpen(true)}
-        totalSaved={savedRoutines.length}
-        onOpenSavedRoutines={() => setIsSavedDrawerOpen(true)}
-        savedButtonRef={savedButtonRef}
-      />
-
       {/* Storage Blocked Banner (if private browser mode) */}
       {storageBlockedNotice && (
         <div className="bg-amber-50 border-b border-amber-300 px-4 py-2 text-xs text-amber-900 flex items-center justify-between">
@@ -1196,7 +1215,8 @@ export default function BuilderPage() {
       )}
 
       {/* 2. Main Workspace Layout */}
-      <main className={`flex-1 ${PAGE_MAX_W} w-full mx-auto px-3 sm:px-6 py-4 pb-[calc(56px+env(safe-area-inset-bottom,0px)+16px)] lg:pb-4 grid grid-cols-1 lg:grid-cols-[minmax(340px,400px)_1fr] gap-5 items-start`}>
+      <main className={`flex-1 ${PAGE_MAX_W} w-full mx-auto px-4 sm:px-6 py-4 pb-[calc(56px+env(safe-area-inset-bottom,0px)+16px)] lg:pb-4 grid grid-cols-1 lg:grid-cols-[minmax(340px,400px)_1fr] gap-5 items-start`}>
+        <h1 className="sr-only">UIU Routine Builder</h1>
         {/* Left Sidebar: Course & Faculty Selector */}
         <div className={mobileTab === 'results' ? 'hidden lg:block' : 'block'}>
           <CourseSelector
@@ -1472,7 +1492,7 @@ export default function BuilderPage() {
             <div className="relative">
               <BookOpen className="w-5 h-5" />
               {request.selectedCourses.length > 0 && (
-                <span className="absolute -top-1.5 -right-2.5 min-w-[16px] h-4 px-1 rounded-full bg-orange-500 text-white text-[10px] font-bold flex items-center justify-center shadow-xs">
+                <span className="absolute -top-1.5 -right-2.5 min-w-[16px] h-4 px-1 rounded-full bg-orange-500 text-white text-[11px] font-bold flex items-center justify-center shadow-xs">
                   {request.selectedCourses.length}
                 </span>
               )}
@@ -1496,7 +1516,7 @@ export default function BuilderPage() {
             <div className="relative">
               <Sliders className="w-5 h-5" />
               {activeFiltersCount > 0 && (
-                <span className="absolute -top-1.5 -right-2.5 min-w-[16px] h-4 px-1 rounded-full bg-orange-500 text-white text-[10px] font-bold flex items-center justify-center shadow-xs">
+                <span className="absolute -top-1.5 -right-2.5 min-w-[16px] h-4 px-1 rounded-full bg-orange-500 text-white text-[11px] font-bold flex items-center justify-center shadow-xs">
                   {activeFiltersCount}
                 </span>
               )}
@@ -1523,7 +1543,7 @@ export default function BuilderPage() {
             <div className="relative">
               <Calendar className="w-5 h-5" />
               {results && results.schedules.length > 0 && (
-                <span className="absolute -top-1.5 -right-2.5 min-w-[18px] h-[18px] px-1 rounded-full bg-orange-500 text-white text-[10px] font-bold flex items-center justify-center shadow-xs">
+                <span className="absolute -top-1.5 -right-2.5 min-w-[18px] h-[18px] px-1 rounded-full bg-orange-500 text-white text-[11px] font-bold flex items-center justify-center shadow-xs">
                   {results.schedules.length}
                 </span>
               )}

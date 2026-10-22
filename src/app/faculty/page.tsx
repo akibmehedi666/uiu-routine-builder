@@ -44,7 +44,6 @@ import {
   CourseSortOption,
   FacultyCrossReferenceItem,
 } from '../../lib/courseDirectory';
-import { SiteNav } from '../../components/SiteNav';
 import { SiteFooter } from '../../components/SiteFooter';
 import { getCourseColor } from '../../utils/colors';
 import { formatTime24 } from '../../utils/export';
@@ -539,9 +538,6 @@ function CourseDirectoryContent() {
 
   return (
     <div className="min-h-screen flex flex-col bg-page text-text-primary">
-      {/* 1. Shared Navigation */}
-      <SiteNav />
-
       {/* Floating Toast Notification */}
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-50 px-4 py-2.5 rounded-card bg-text-primary text-white text-xs font-semibold shadow-warm flex items-center gap-2 animate-in fade-in slide-in-from-bottom-2">
@@ -555,7 +551,7 @@ function CourseDirectoryContent() {
         <div className={`${PAGE_MAX_W} mx-auto px-4 sm:px-6 py-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3`}>
           <div>
             <div className="flex items-center gap-2.5">
-              <h1 className="text-xl sm:text-2xl font-extrabold text-text-primary tracking-tight">
+              <h1 className="text-24 sm:text-[28px] font-bold text-text-primary tracking-tight">
                 Course Directory
               </h1>
               <span className="px-2.5 py-0.5 rounded-full bg-orange-50 text-orange-600 border border-orange-200 text-xs font-bold">
@@ -566,21 +562,11 @@ function CourseDirectoryContent() {
               Pick a course to see which faculty teach which section, and when.
             </p>
           </div>
-
-          <div className="flex items-center gap-2">
-            <Link
-              href="/builder"
-              className="px-3.5 py-1.5 rounded-btn bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs shadow-xs flex items-center gap-1.5 transition-colors"
-            >
-              <span>Go to Routine Builder</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
         </div>
       </div>
 
       {/* 3. Global Filter Toolbar */}
-      <div className="border-b border-app-border bg-surface/60 backdrop-blur-sm sticky top-14 z-20">
+      <div className="border-b border-app-border bg-surface/60 backdrop-blur-sm sticky top-[52px] md:top-16 z-20">
         <div className={`${PAGE_MAX_W} mx-auto px-4 sm:px-6 py-2.5 space-y-2`}>
           {/* Main Toolbar Row */}
           <div className="flex flex-wrap items-center gap-2 text-xs">
@@ -683,7 +669,7 @@ function CourseDirectoryContent() {
                 {courseDirectory.length} courses
               </span>
               {searchQuery.trim() && effectiveSortBy === 'relevance' && (
-                <span className="px-1.5 py-0.2 rounded bg-orange-50 text-orange-700 border border-orange-200 text-[10px] font-semibold">
+                <span className="px-1.5 py-0.2 rounded bg-orange-50 text-orange-700 border border-orange-200 text-[11px] font-semibold">
                   Sorted by relevance
                 </span>
               )}
@@ -790,10 +776,10 @@ function CourseDirectoryContent() {
                         >
                           <HighlightText text={c.code} query={searchQuery} />
                         </span>
-                        <span className="px-1.5 py-0.2 rounded text-[10px] font-bold bg-subtle text-text-muted border border-app-border">
+                        <span className="px-1.5 py-0.2 rounded text-[11px] font-bold bg-subtle text-text-muted border border-app-border">
                           {c.credit} Cr
                         </span>
-                        <span className="px-1.5 py-0.2 rounded text-[10px] font-bold bg-orange-50 text-orange-600 border border-orange-200">
+                        <span className="px-1.5 py-0.2 rounded text-[11px] font-bold bg-orange-50 text-orange-600 border border-orange-200">
                           {c.program}
                         </span>
                       </div>
@@ -801,7 +787,7 @@ function CourseDirectoryContent() {
                       {hasSections ? (
                         <div className="flex items-center gap-1 text-[11px] text-text-muted">
                           {isManualCourse ? (
-                            <span className="text-[10px] text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-300 font-semibold flex items-center gap-0.5">
+                            <span className="text-[11px] text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-300 font-semibold flex items-center gap-0.5">
                               <Pencil className="w-2.5 h-2.5 text-amber-600" />
                               Manual
                             </span>
@@ -818,7 +804,7 @@ function CourseDirectoryContent() {
                         </div>
                       ) : isManualCourse ? (
                         <div className="flex items-center gap-1 text-[11px] text-text-muted">
-                          <span className="text-[10px] text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-300 font-semibold flex items-center gap-0.5">
+                          <span className="text-[11px] text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-300 font-semibold flex items-center gap-0.5">
                             <Pencil className="w-2.5 h-2.5 text-amber-600" />
                             Manual
                           </span>
@@ -829,7 +815,7 @@ function CourseDirectoryContent() {
                           />
                         </div>
                       ) : (
-                        <span className="text-[10px] text-text-muted italic">No sections</span>
+                        <span className="text-[11px] text-text-muted italic">No sections</span>
                       )}
                     </div>
 
@@ -854,7 +840,7 @@ function CourseDirectoryContent() {
                             e.stopPropagation();
                             handleSelectCourse(c.pairedCourseCode!);
                           }}
-                          className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-1.5 py-0.2 rounded transition-colors"
+                          className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-1.5 py-0.2 rounded transition-colors"
                         >
                           <Layers className="w-2.5 h-2.5" />
                           <span>
@@ -875,7 +861,7 @@ function CourseDirectoryContent() {
             {selectedCourse && !isSelectedInResults && filteredCourses.length > 0 && (
               <div className="p-3 rounded-card bg-amber-50 border border-amber-200 text-xs text-amber-900 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 shadow-2xs animate-in fade-in">
                 <div className="flex items-center gap-2">
-                  <span className="font-bold px-1.5 py-0.5 rounded bg-amber-200 text-amber-900 text-[10px] uppercase tracking-wide">
+                  <span className="font-bold px-1.5 py-0.5 rounded bg-amber-200 text-amber-900 text-[11px] uppercase tracking-wide">
                     Notice
                   </span>
                   <span>
@@ -1000,10 +986,10 @@ function CourseDirectoryContent() {
                         <span className="font-extrabold text-sm text-text-primary">
                           <HighlightText text={c.code} query={searchQuery} />
                         </span>
-                        <span className="px-1.5 py-0.2 rounded text-[10px] font-bold bg-subtle text-text-muted border border-app-border">
+                        <span className="px-1.5 py-0.2 rounded text-[11px] font-bold bg-subtle text-text-muted border border-app-border">
                           {c.credit} Cr
                         </span>
-                        <span className="px-1.5 py-0.2 rounded text-[10px] font-bold bg-orange-50 text-orange-600 border border-orange-200">
+                        <span className="px-1.5 py-0.2 rounded text-[11px] font-bold bg-orange-50 text-orange-600 border border-orange-200">
                           {c.program}
                         </span>
                       </div>
@@ -1011,7 +997,7 @@ function CourseDirectoryContent() {
                         <HighlightText text={c.title} query={searchQuery} />
                       </div>
                       {c.searchMatchDetail && (
-                        <div className="text-[10px] text-orange-700 font-semibold flex items-center gap-1 pt-0.5">
+                        <div className="text-[11px] text-orange-700 font-semibold flex items-center gap-1 pt-0.5">
                           <Sparkles className="w-2.5 h-2.5 shrink-0" />
                           <span>{c.searchMatchDetail}</span>
                         </div>
@@ -1022,7 +1008,7 @@ function CourseDirectoryContent() {
                       {hasSections ? (
                         <>
                           {isManualCourse ? (
-                            <span className="text-[10px] text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-300 font-semibold flex items-center gap-0.5">
+                            <span className="text-[11px] text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-300 font-semibold flex items-center gap-0.5">
                               <Pencil className="w-2.5 h-2.5 text-amber-600" />
                               Manual
                             </span>
@@ -1039,7 +1025,7 @@ function CourseDirectoryContent() {
                         </>
                       ) : isManualCourse ? (
                         <>
-                          <span className="text-[10px] text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-300 font-semibold flex items-center gap-0.5">
+                          <span className="text-[11px] text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-300 font-semibold flex items-center gap-0.5">
                             <Pencil className="w-2.5 h-2.5 text-amber-600" />
                             Manual
                           </span>
@@ -1050,7 +1036,7 @@ function CourseDirectoryContent() {
                           />
                         </>
                       ) : (
-                        <span className="text-[10px] text-text-muted italic">No sections</span>
+                        <span className="text-[11px] text-text-muted italic">No sections</span>
                       )}
                     </div>
                   </button>
@@ -1161,14 +1147,14 @@ function CourseDirectoryContent() {
                     <span className="font-bold text-text-primary">
                       {ref.courseCode} ({ref.section})
                     </span>
-                    <span className="text-[10px] uppercase font-bold text-text-muted">
+                    <span className="text-[11px] uppercase font-bold text-text-muted">
                       {ref.kind}
                     </span>
                   </div>
                   <div className="text-[11px] text-text-secondary truncate">
                     {ref.courseTitle}
                   </div>
-                  <div className="text-[10px] text-text-muted">
+                  <div className="text-[11px] text-text-muted">
                     {ref.meetings
                       .map(
                         (m) =>
@@ -1370,7 +1356,7 @@ function SelectedCourseSectionView({
           {(course.isManual || isManualScheduleCourse(course.code)) && (
             <div className="p-3 rounded-card bg-amber-50/80 border border-amber-200 text-xs text-amber-900 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 shadow-2xs">
               <div className="flex items-center gap-2">
-                <span className="font-bold px-1.5 py-0.5 rounded bg-amber-200 text-amber-900 text-[10px] uppercase tracking-wide">
+                <span className="font-bold px-1.5 py-0.5 rounded bg-amber-200 text-amber-900 text-[11px] uppercase tracking-wide">
                   Manual Option
                 </span>
                 <span>
@@ -1459,7 +1445,7 @@ function SelectedCourseSectionView({
 
           {/* Section Sort */}
           <div className="flex items-center gap-1">
-            <span className="text-[10px] text-text-muted">Sort:</span>
+            <span className="text-[11px] text-text-muted">Sort:</span>
             {(
               [
                 { id: 'section', label: 'Section' },
@@ -1470,7 +1456,7 @@ function SelectedCourseSectionView({
               <button
                 key={s.id}
                 onClick={() => onSectionSortByChange(s.id)}
-                className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${
+                className={`px-1.5 py-0.5 rounded text-[11px] font-semibold ${
                   sectionSortBy === s.id
                     ? 'bg-orange-50 text-orange-600 border border-orange-200'
                     : 'text-text-muted hover:text-text-primary'
@@ -1538,7 +1524,7 @@ function SelectedCourseSectionView({
                   <span className="font-extrabold text-xs text-text-primary">
                     {group.facultyName}
                   </span>
-                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-orange-50 text-orange-600 border border-orange-200">
+                  <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-orange-50 text-orange-600 border border-orange-200">
                     {group.sections.length} section{group.sections.length > 1 ? 's' : ''}
                   </span>
                 </div>
@@ -1641,7 +1627,7 @@ function SectionRowItem({
             </span>
 
             {(section.fixed || isFixedCourse(courseCode)) && (
-              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-300 flex items-center gap-1">
+              <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-300 flex items-center gap-1">
                 <Lock className="w-2.5 h-2.5 text-amber-600" />
                 Fixed schedule
               </span>
@@ -1657,7 +1643,7 @@ function SectionRowItem({
             </button>
 
             {section.tentative && (
-              <span className="px-1.5 py-0.2 rounded text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+              <span className="px-1.5 py-0.2 rounded text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
                 Tentative
               </span>
             )}
@@ -1708,7 +1694,7 @@ function SectionRowItem({
                   backgroundColor: isOccupied ? courseColor.border : 'transparent',
                   color: isOccupied ? '#FFFFFF' : '#9CA3AF',
                 }}
-                className={`w-4 h-4 rounded text-[9px] font-bold flex items-center justify-center transition-colors`}
+                className={`w-4 h-4 rounded text-[11px] leading-none font-bold flex items-center justify-center transition-colors`}
               >
                 {d[0]}
               </span>

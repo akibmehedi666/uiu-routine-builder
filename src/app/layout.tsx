@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
+import { SiteNav } from '../components/SiteNav';
 import './globals.css';
 
 const inter = Inter({
@@ -17,7 +18,11 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'UIU Routine Builder | Fall 2026 Class Schedule Solver',
+  metadataBase: new URL('https://uiu-routine-builder.vercel.app'),
+  title: {
+    default: 'Routine Builder | UIU',
+    template: '%s | UIU Routine Builder',
+  },
   description:
     'Automated clash-free routine generator and section optimizer for United International University (UIU), Dhaka. Dept. of CSE & Data Science.',
   keywords: [
@@ -31,7 +36,13 @@ export const metadata: Metadata = {
     'UCAM',
   ],
   icons: {
-    icon: 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2224%22 fill=%22%23F26B21%22/><text y=%2268%22 font-size=%2260%22 font-family=%22system-ui,sans-serif%22 font-weight=%22bold%22 fill=%22white%22 text-anchor=%22middle%22 x=%2250%22>U</text></svg>',
+    icon: [
+      { url: '/icon.svg?v=2', type: 'image/svg+xml' },
+      { url: '/favicon.ico?v=2', sizes: 'any' },
+    ],
+    apple: [
+      { url: '/apple-icon.png?v=2', sizes: '180x180', type: 'image/png' },
+    ],
   },
 };
 
@@ -42,7 +53,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={inter.variable}>
-      <body className={`${inter.className} min-h-[100dvh] bg-page text-text-primary antialiased selection:bg-orange-500 selection:text-white`}>
+      <body className={`${inter.className} min-h-[100dvh] bg-page text-text-primary antialiased selection:bg-orange-500 selection:text-white flex flex-col`}>
+        <SiteNav />
         {children}
         <Analytics />
       </body>
