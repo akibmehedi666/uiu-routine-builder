@@ -37,11 +37,11 @@ export const metadata: Metadata = {
   ],
   icons: {
     icon: [
-      { url: '/icon.svg?v=2', type: 'image/svg+xml' },
-      { url: '/favicon.ico?v=2', sizes: 'any' },
+      { url: '/icon.svg?v=4', type: 'image/svg+xml' },
+      { url: '/favicon.ico?v=4', sizes: 'any' },
     ],
     apple: [
-      { url: '/apple-icon.png?v=2', sizes: '180x180', type: 'image/png' },
+      { url: '/apple-icon.png?v=4', sizes: '180x180', type: 'image/png' },
     ],
   },
 };

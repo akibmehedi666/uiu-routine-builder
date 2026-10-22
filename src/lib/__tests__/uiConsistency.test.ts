@@ -158,13 +158,44 @@ describe('UI Consistency & Alignment Audit Tests', () => {
       expect(fs.existsSync(path.join(rootDir, 'src/app/manifest.ts'))).toBe(true);
     });
 
-    it('RootLayout declares metadata title template and cache-busting icons', () => {
+    it('icon.svg contains no text elements or rendered letters and uses timetable blocks', () => {
+      const svgContent = fs.readFileSync(path.join(rootDir, 'src/app/icon.svg'), 'utf-8');
+      expect(svgContent).not.toMatch(/<text/i);
+      expect(svgContent).not.toMatch(/<tspan/i);
+      // Stripping all XML tags leaves zero text/letter content
+      const textOnly = svgContent.replace(/<[^>]+>/g, '').trim();
+      expect(textOnly).toBe('');
+      // Contains the three timetable block rects with specified dimensions
+      expect(svgContent).toContain('x="13" y="13" width="17" height="17"');
+      expect(svgContent).toContain('x="13" y="34" width="17" height="17"');
+      expect(svgContent).toContain('x="34" y="13" width="17" height="38"');
+      expect(svgContent).toContain('rx="14"');
+    });
+
+    it('favicon.ico contains 16x16, 32x32, and 48x48 icon sizes', () => {
+      const icoBuf = fs.readFileSync(path.join(rootDir, 'src/app/favicon.ico'));
+      const count = icoBuf.readUInt16LE(4);
+      expect(count).toBe(3);
+      const iconSizes = [];
+      for (let i = 0; i < count; i++) {
+        const width = icoBuf.readUInt8(6 + i * 16);
+        const height = icoBuf.readUInt8(6 + i * 16 + 1);
+        iconSizes.push({ width, height });
+      }
+      expect(iconSizes).toEqual([
+        { width: 16, height: 16 },
+        { width: 32, height: 32 },
+        { width: 48, height: 48 },
+      ]);
+    });
+
+    it('RootLayout declares metadata title template and cache-busting icons (?v=4)', () => {
       const layoutContent = fs.readFileSync(path.join(rootDir, 'src/app/layout.tsx'), 'utf-8');
       expect(layoutContent).toContain("template: '%s | UIU Routine Builder'");
       expect(layoutContent).toContain("default: 'Routine Builder | UIU'");
-      expect(layoutContent).toContain('/icon.svg?v=2');
-      expect(layoutContent).toContain('/favicon.ico?v=2');
-      expect(layoutContent).toContain('/apple-icon.png?v=2');
+      expect(layoutContent).toContain('/icon.svg?v=4');
+      expect(layoutContent).toContain('/favicon.ico?v=4');
+      expect(layoutContent).toContain('/apple-icon.png?v=4');
     });
 
     it('Landing page declares absolute title', () => {
