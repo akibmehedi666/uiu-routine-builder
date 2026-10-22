@@ -29,6 +29,7 @@ export interface SiteConfig {
   links: {
     routineBuilder: string;
     courseDirectory: string;
+    facultyDirectory: string;
     userGuide: string;
     githubRepo: string;
   };
@@ -61,6 +62,7 @@ export const siteConfig: SiteConfig = {
   links: {
     routineBuilder: '/builder',
     courseDirectory: '/faculty',
+    facultyDirectory: '/faculty-directory',
     userGuide: 'https://github.com/akibmehedi666/uiu-routine-builder#readme',
     githubRepo: 'https://github.com/akibmehedi666/uiu-routine-builder',
   },
