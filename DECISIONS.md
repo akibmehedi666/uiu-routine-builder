@@ -331,9 +331,20 @@ Following a session interruption audit:
   - Rendered with warm theme tokens, small icons, and descriptive tooltips. Max 3 badges per card; all shown on detail profiles.
 - **Two-Pane Directory UI (`/faculty-directory`)**:
   - Exact layout architecture from the Course Directory (`/faculty`):
-    - **Left Sticky Pane** (`md:grid-cols-[300px_1fr] lg:grid-cols-[minmax(340px,380px)_1fr]`): Scrollable list of faculty with avatar initials, name with match highlighting, program tags, section/course/hour metrics, badges, and Sat–Wed day dots. Selecting any faculty immediately activates them with the reserved orange indicator (`border-l-[3px] border-l-orange-500`).
+    - **Faculty Spotlight Banner (Daily Highlight)**: Prominently featured banner at the top displaying a daily instructor highlight deterministically chosen by date, featuring avatar, earned badges, teaching load metrics (sections, theory vs lab, weekly contact hours, busiest day), and a direct "View Schedule" action button.
+    - **Prominent Teaching Load Leaderboards Showcase**: Collapsible showcase featuring 5 distinct top-5 ranking categories:
+      1. 📚 Most Theory Courses (distinct theory courses taught)
+      2. 🔬 Most Lab Courses (distinct lab courses taught)
+      3. 🔥 Most Sections Overall (total assigned sections)
+      4. ⏰ Most Weekly Hours (contact hours per week)
+      5. 🔔 08:30 AM Starts (early morning sections)
+      - Includes podium rank badges (🥇 #1 gold, 🥈 #2 silver, 🥉 #3 bronze), colored metric badges, and interactive click-to-select functionality that immediately jumps to and activates that instructor.
+    - **Left Sticky Pane** (`md:grid-cols-[300px_1fr] lg:grid-cols-[minmax(340px,380px)_1fr]`):
+      - Strictly organized in natural alphabetical order (`a.name.localeCompare(b.name)`), matching `data/faculty.json`.
+      - Displays sticky alphabetical letter dividers (`A`, `B`, ..., `M`, ...) with instructor counts per letter group when sorted A–Z.
+      - Each item includes avatar initials, name with search query match highlighting, program tags, section/course/hour metrics, badges, and Sat–Wed day dots. Selecting any faculty immediately activates them with the reserved orange indicator (`border-l-[3px] border-l-orange-500`).
     - **Right Details Pane**: Displays the active instructor's full profile: header banner with avatar, stats, badges, and "Copy link"; compact Sat–Wed 08:30–16:30 weekly teaching timetable mini-grid; UCAM-inspired course & section rows (with code, title, credits, section count, meeting times, room, and tentative flag, strictly **WITHOUT** prefer/avoid buttons); and "Teaches with" co-instructors strip (clicking any co-instructor selects them in the left pane).
-    - **Mobile Accordion** (`< 768px`): In-place accordion expansion where tapping an instructor reveals their weekly timetable and assigned sections.
+    - **Mobile Accordion** (`< 768px`): In-place accordion expansion where tapping an instructor reveals their weekly timetable and assigned sections, complete with alphabetical letter dividers.
   - Interactive toolbar with live search (press `/` to focus, `Esc` to clear), program chips (ALL/BSCSE/BSDS), day chips (Sat–Wed), time slot chips, course kind chips, and sort dropdown (A–Z default).
   - Collapsible panels for Top-5 Teaching Load Leaderboards and Unassigned (TBA) section tracker.
 - **Detail Profile UI (`/faculty-directory/[id]`)**:

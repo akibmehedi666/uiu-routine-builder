@@ -341,3 +341,4 @@ Key prompts and tasks executed during development:
 9. `nav-consistency`: Invariant 3-column CSS grid navigation bar in root layout with 0px horizontal shift.
 10. `favicon-redesign`: Clean letter-free timetable blocks vector icon, multi-resolution ICO, Apple icon, and PWA manifest.
 11. `lock-unlock-toggle`: "Lock All" / "Unlock All" toggle state machine with badges and undo feedback.
+12. `faculty-directory`: Faculty Directory page (`/faculty-directory`) with two-pane layout, weekly timetable, prominent multi-category leaderboards (theory courses, lab courses, sections, hours, early starts), daily faculty spotlight, strict natural A–Z alphabetical sorting with sticky letter dividers, and individual SSG faculty profiles (`/faculty-directory/[id]`).
