@@ -41,8 +41,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} overflow-x-clip`}>
-      <body className={`${inter.className} min-h-[100dvh] bg-page text-text-primary antialiased selection:bg-orange-500 selection:text-white overflow-x-clip`}>
+    <html lang="en" className={inter.variable}>
+      <body className={`${inter.className} min-h-[100dvh] bg-page text-text-primary antialiased selection:bg-orange-500 selection:text-white`}>
         {children}
         <Analytics />
       </body>

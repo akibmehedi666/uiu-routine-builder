@@ -72,8 +72,6 @@ export function CourseSelector({
   const [isFiltersOpen, setIsFiltersOpen] = useState(request.selectedCourses.length > 0);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [creditWarningExpanded, setCreditWarningExpanded] = useState(false);
-  const [expandedFacultyCourse, setExpandedFacultyCourse] = useState<string | null>(null);
-  const [facultyFilterTerms, setFacultyFilterTerms] = useState<Record<string, string>>({});
   const searchInputRef = useRef<HTMLInputElement>(null);
   const courseListRef = useRef<HTMLDivElement>(null);
   const prevCourseCountRef = useRef(request.selectedCourses.length);
@@ -510,19 +508,29 @@ export function CourseSelector({
   };
 
   return (
-    <aside className="w-full max-w-full min-w-0 flex-shrink-0 flex flex-col space-y-3.5 bg-surface p-3.5 sm:p-4 rounded-card border border-app-border shadow-warm lg:sticky lg:top-[72px] lg:max-h-[calc(100dvh-88px)] lg:overflow-y-auto">
-      {/* 1. Header with Credit Limit Badge & Clear All (Courses Tab on mobile; always on desktop) */}
-      <div className={`items-center justify-between pb-3 border-b border-app-border w-full max-w-full min-w-0 ${mobileTab === 'preferences' ? 'hidden lg:flex' : 'flex'}`}>
-        <div className="min-w-0 flex-1 mr-2">
-          <h2 className="text-sm font-semibold text-text-primary tracking-wide uppercase truncate">
-            Course Selection
+    <aside className="w-full flex-shrink-0 flex flex-col space-y-3.5 bg-surface p-3.5 sm:p-4 rounded-card border border-app-border shadow-warm lg:sticky lg:top-[72px] lg:max-h-[calc(100dvh-88px)] lg:overflow-y-auto">
+      {/* 1. Header with Credit Limit Badge & Clear All */}
+      <div className="flex items-center justify-between pb-3 border-b border-app-border">
+        <div>
+          <h2 className="text-sm font-semibold text-text-primary tracking-wide uppercase">
+            <span className={mobileTab === 'preferences' ? 'hidden lg:inline' : 'inline'}>
+              Course Selection
+            </span>
+            {mobileTab === 'preferences' && (
+              <span className="lg:hidden">Preferences & Filters</span>
+            )}
           </h2>
-          <span className="text-xs text-text-muted truncate block">
-            {request.selectedCourses.length} course(s) selected
+          <span className="text-xs text-text-muted">
+            <span className={mobileTab === 'preferences' ? 'hidden lg:inline' : 'inline'}>
+              {request.selectedCourses.length} course(s) selected
+            </span>
+            {mobileTab === 'preferences' && (
+              <span className="lg:hidden">{request.selectedCourses.length} course(s) configured</span>
+            )}
           </span>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className={`items-center gap-2 ${mobileTab === 'preferences' ? 'hidden lg:flex' : 'flex'}`}>
           {request.selectedCourses.length >= 2 && (
             <button
               type="button"
@@ -976,12 +984,7 @@ export function CourseSelector({
       )}
 
       {/* 3. Selected Courses List */}
-      <div
-        ref={courseListRef}
-        className={`selected-courses-box space-y-2.5 overflow-visible lg:overflow-y-auto pr-0 lg:pr-1 w-full max-w-full min-w-0 ${
-          mobileTab === 'preferences' ? 'hidden lg:block' : 'block'
-        }`}
-      >
+      <div ref={courseListRef} className="selected-courses-box space-y-2.5 overflow-visible lg:overflow-y-auto pr-0 lg:pr-1">
         {selectedFYDPCourses.length > 1 && (
           <div className="p-2.5 rounded-btn bg-amber-50 border border-amber-300 text-amber-800 text-xs flex items-center gap-2">
             <AlertTriangle className="w-4 h-4 flex-shrink-0 text-amber-600" />
@@ -1082,7 +1085,7 @@ export function CourseSelector({
                     handleInitiateRemove(course.code);
                   }
                 }}
-                className="p-3 rounded-card bg-surface border border-app-border hover:border-orange-300 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-500 transition-all space-y-2 shadow-2xs w-full max-w-full min-w-0"
+                className="p-3 rounded-card bg-surface border border-app-border hover:border-orange-300 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-500 transition-all space-y-2 shadow-2xs"
               >
                 {/* Course Header */}
                 <div className="flex items-center justify-between gap-2 min-w-0">
@@ -1196,12 +1199,13 @@ export function CourseSelector({
                 {/* Co-requisite Lab One-Click Button */}
                 {canAddLab && (
                   <button
-                    type="button"
                     onClick={() => handleAddLab(course.labCode!)}
-                    className="w-full max-w-full min-w-0 py-1.5 px-2 rounded-btn bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors group"
+                    className={`w-full py-1.5 px-2 rounded-btn bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-semibold items-center justify-center gap-1.5 transition-colors group ${
+                      mobileTab === 'preferences' ? 'hidden lg:flex' : 'flex'
+                    }`}
                   >
-                    <Beaker className="w-3.5 h-3.5 text-emerald-600 group-hover:scale-110 transition-transform shrink-0" />
-                    <span className="truncate min-w-0">+ Add Co-requisite Lab ({course.labCode})</span>
+                    <Beaker className="w-3.5 h-3.5 text-emerald-600 group-hover:scale-110 transition-transform" />
+                    <span>+ Add Co-requisite Lab ({course.labCode})</span>
                   </button>
                 )}
 
@@ -1229,7 +1233,7 @@ export function CourseSelector({
                       aria-label={`Choose section for ${course.code}`}
                       value={lockedSecId}
                       onChange={(e) => handleLockSection(course.code, e.target.value)}
-                      className={`w-full max-w-full min-w-0 truncate h-11 md:h-9 bg-subtle border rounded-btn py-1.5 px-2 text-[11px] text-text-primary focus:outline-none focus:ring-1 focus:ring-orange-400 font-medium ${
+                      className={`w-full bg-subtle border rounded-btn py-1.5 px-2 text-[11px] text-text-primary focus:outline-none focus:ring-1 focus:ring-orange-400 font-medium ${
                         lockedSecId ? 'border-orange-400 bg-orange-50/20' : 'border-amber-400 bg-amber-50/20'
                       }`}
                     >
@@ -1335,10 +1339,10 @@ export function CourseSelector({
                     </button>
                   </div>
                 ) : (
-                  <div className="space-y-2 pt-1 w-full max-w-full min-w-0">
+                  <div className={`space-y-2 pt-1 ${mobileTab === 'courses' ? 'hidden lg:block' : 'block'}`}>
                     {/* Section Lock Dropdown */}
-                    <div className="flex items-center gap-2 text-xs w-full max-w-full min-w-0">
-                      <span className="text-text-muted flex items-center gap-1 text-[11px] shrink-0">
+                    <div className="flex items-center gap-2 text-xs">
+                      <span className="text-text-muted flex items-center gap-1 text-[11px]">
                         {lockedSecId ? (
                           <Lock className="w-3 h-3 text-orange-500" />
                         ) : (
@@ -1349,7 +1353,7 @@ export function CourseSelector({
                       <select
                         value={lockedSecId}
                         onChange={(e) => handleLockSection(course.code, e.target.value)}
-                        className="flex-1 w-full max-w-full min-w-0 truncate h-11 md:h-8 bg-subtle border border-app-border rounded-btn py-1 px-2 text-[11px] text-text-primary focus:outline-none focus:ring-1 focus:ring-orange-400"
+                        className="flex-1 bg-subtle border border-app-border rounded-btn py-1 px-2 text-[11px] text-text-primary focus:outline-none focus:ring-1 focus:ring-orange-400"
                       >
                         <option value="">Any Section ({courseSections.length} available)</option>
                         {courseSections.map((s) => (
@@ -1362,162 +1366,67 @@ export function CourseSelector({
 
                     {/* Faculty Preferences */}
                     {facultyStats.size > 0 && (
-                      <>
-                        {/* Desktop: standard details open */}
-                        <details open className="hidden lg:block text-[11px] group/details w-full max-w-full min-w-0">
-                          <summary className="cursor-pointer text-text-muted hover:text-text-primary select-none flex items-center justify-between py-1">
-                            <span>
-                              Faculty Preference{' '}
-                              {preferredFids.length > 0 && (
-                                <span className="text-success font-semibold">
-                                  ({preferredFids.length} pref)
+                      <details open className="text-[11px] group/details">
+                        <summary className="cursor-pointer text-text-muted hover:text-text-primary select-none flex items-center justify-between py-1">
+                          <span>
+                            Faculty Preference{' '}
+                            {preferredFids.length > 0 && (
+                              <span className="text-success font-semibold">
+                                ({preferredFids.length} pref)
+                              </span>
+                            )}
+                            {avoidFids.length > 0 && (
+                              <span className="text-danger font-semibold">
+                                ({avoidFids.length} avoid)
+                              </span>
+                            )}
+                          </span>
+                          <ChevronDown className="w-3 h-3 group-open/details:rotate-180 transition-transform" />
+                        </summary>
+
+                        <div className="pt-1.5 space-y-1">
+                          {Array.from(facultyStats.values()).map(({ faculty: f, count }) => {
+                            const isPref = preferredFids.includes(f.id);
+                            const isAvoid = avoidFids.includes(f.id);
+
+                            return (
+                              <div
+                                key={f.id}
+                                className="flex items-center justify-between p-1.5 rounded-btn bg-subtle border border-app-border"
+                              >
+                                <span className="text-text-primary truncate max-w-[170px]" title={f.name}>
+                                  {f.name} <span className="text-text-muted">({count} sec)</span>
                                 </span>
-                              )}
-                              {avoidFids.length > 0 && (
-                                <span className="text-danger font-semibold">
-                                  ({avoidFids.length} avoid)
-                                </span>
-                              )}
-                            </span>
-                            <ChevronDown className="w-3 h-3 group-open/details:rotate-180 transition-transform" />
-                          </summary>
 
-                          <div className="pt-1.5 space-y-1 w-full max-w-full min-w-0">
-                            {Array.from(facultyStats.values()).map(({ faculty: f, count }) => {
-                              const isPref = preferredFids.includes(f.id);
-                              const isAvoid = avoidFids.includes(f.id);
-
-                              return (
-                                <div
-                                  key={f.id}
-                                  className="flex items-center justify-between p-1.5 rounded-btn bg-subtle border border-app-border min-w-0"
-                                >
-                                  <span className="text-text-primary truncate max-w-[170px]" title={f.name}>
-                                    {f.name} <span className="text-text-muted">({count} sec)</span>
-                                  </span>
-
-                                  <div className="flex items-center gap-1 shrink-0">
-                                    <button
-                                      type="button"
-                                      onClick={() => toggleFacultyPref(course.code, f.id)}
-                                      className={`px-1.5 py-0.5 rounded text-[10px] font-medium transition-colors ${
-                                        isPref
-                                          ? 'bg-success text-white font-bold'
-                                          : 'bg-surface text-text-secondary hover:text-success border border-app-border'
-                                      }`}
-                                      title="Prefer this faculty"
-                                    >
-                                      Prefer
-                                    </button>
-                                    <button
-                                      type="button"
-                                      onClick={() => toggleFacultyAvoid(course.code, f.id)}
-                                      className={`px-1.5 py-0.5 rounded text-[10px] font-medium transition-colors ${
-                                        isAvoid
-                                          ? 'bg-danger text-white font-bold'
-                                          : 'bg-surface text-text-secondary hover:text-danger border border-app-border'
-                                      }`}
-                                      title="Avoid this faculty"
-                                    >
-                                      Avoid
-                                    </button>
-                                  </div>
+                                <div className="flex items-center gap-1">
+                                  <button
+                                    onClick={() => toggleFacultyPref(course.code, f.id)}
+                                    className={`px-1.5 py-0.5 rounded text-[10px] font-medium transition-colors ${
+                                      isPref
+                                        ? 'bg-success text-white font-bold'
+                                        : 'bg-surface text-text-secondary hover:text-success border border-app-border'
+                                    }`}
+                                    title="Prefer this faculty"
+                                  >
+                                    Prefer
+                                  </button>
+                                  <button
+                                    onClick={() => toggleFacultyAvoid(course.code, f.id)}
+                                    className={`px-1.5 py-0.5 rounded text-[10px] font-medium transition-colors ${
+                                      isAvoid
+                                        ? 'bg-danger text-white font-bold'
+                                        : 'bg-surface text-text-secondary hover:text-danger border border-app-border'
+                                    }`}
+                                    title="Avoid this faculty"
+                                  >
+                                    Avoid
+                                  </button>
                                 </div>
-                              );
-                            })}
-                          </div>
-                        </details>
-
-                        {/* Mobile: Collapsed-by-default accordion, single card open at a time */}
-                        <div className="lg:hidden w-full max-w-full min-w-0 text-[11px] pt-0.5">
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setExpandedFacultyCourse((prev) => (prev === course.code ? null : course.code))
-                            }
-                            className="w-full flex items-center justify-between py-1.5 px-2 rounded-btn bg-subtle/70 border border-app-border text-left hover:bg-subtle transition-colors"
-                          >
-                            <span className="truncate min-w-0 text-text-primary font-medium">
-                              Faculty Preference · {facultyStats.size} faculty
-                              {preferredFids.length > 0 && ` · ${preferredFids.length} preferred`}
-                              {avoidFids.length > 0 && ` · ${avoidFids.length} avoided`}
-                            </span>
-                            <ChevronDown
-                              className={`w-3.5 h-3.5 text-text-muted shrink-0 transition-transform ${
-                                expandedFacultyCourse === course.code ? 'rotate-180' : ''
-                              }`}
-                            />
-                          </button>
-
-                          {expandedFacultyCourse === course.code && (
-                            <div className="mt-2 space-y-1.5 animate-in fade-in duration-150 w-full max-w-full min-w-0">
-                              {facultyStats.size > 8 && (
-                                <input
-                                  type="text"
-                                  placeholder="Filter faculty..."
-                                  value={facultyFilterTerms[course.code] || ''}
-                                  onChange={(e) => {
-                                    const val = e.target.value;
-                                    setFacultyFilterTerms((prev) => ({ ...prev, [course.code]: val }));
-                                  }}
-                                  className="w-full max-w-full min-w-0 h-10 px-2.5 text-xs bg-subtle border border-app-border rounded-btn focus:outline-none focus:ring-1 focus:ring-orange-400 placeholder:text-text-muted"
-                                />
-                              )}
-
-                              {Array.from(facultyStats.values())
-                                .filter(({ faculty: f }) => {
-                                  const term = (facultyFilterTerms[course.code] || '').trim().toLowerCase();
-                                  return !term || f.name.toLowerCase().includes(term);
-                                })
-                                .map(({ faculty: f, count }) => {
-                                  const isPref = preferredFids.includes(f.id);
-                                  const isAvoid = avoidFids.includes(f.id);
-
-                                  return (
-                                    <div
-                                      key={f.id}
-                                      className="flex flex-wrap items-center justify-between gap-2 p-2 rounded-btn bg-subtle border border-app-border w-full max-w-full min-w-0"
-                                    >
-                                      <span
-                                        className="text-text-primary text-xs font-medium truncate min-w-0 flex-1"
-                                        title={f.name}
-                                      >
-                                        {f.name} <span className="text-text-muted">({count} sec)</span>
-                                      </span>
-
-                                      <div className="flex items-center gap-2 shrink-0">
-                                        <button
-                                          type="button"
-                                          onClick={() => toggleFacultyPref(course.code, f.id)}
-                                          className={`min-h-[36px] min-w-[56px] px-2.5 py-1.5 rounded text-xs font-medium transition-colors ${
-                                            isPref
-                                              ? 'bg-success text-white font-bold'
-                                              : 'bg-surface text-text-secondary hover:text-success border border-app-border'
-                                          }`}
-                                          title="Prefer this faculty"
-                                        >
-                                          Prefer
-                                        </button>
-                                        <button
-                                          type="button"
-                                          onClick={() => toggleFacultyAvoid(course.code, f.id)}
-                                          className={`min-h-[36px] min-w-[56px] px-2.5 py-1.5 rounded text-xs font-medium transition-colors ${
-                                            isAvoid
-                                              ? 'bg-danger text-white font-bold'
-                                              : 'bg-surface text-text-secondary hover:text-danger border border-app-border'
-                                          }`}
-                                          title="Avoid this faculty"
-                                        >
-                                          Avoid
-                                        </button>
-                                      </div>
-                                    </div>
-                                  );
-                                })}
-                            </div>
-                          )}
+                              </div>
+                            );
+                          })}
                         </div>
-                      </>
+                      </details>
                     )}
                   </div>
                 )}
@@ -1602,25 +1511,17 @@ export function CourseSelector({
         </div>
       )}
 
-      {/* Dismissible Tip */}
-      {showRemoveHint && selectedCourseObjs.length > 0 && (
-        <div className={`items-center justify-between px-2.5 py-1.5 rounded-btn bg-subtle border border-app-border text-[11px] text-text-muted ${mobileTab === 'preferences' ? 'hidden lg:flex' : 'flex'}`}>
-          <span>Tip: click Remove or press Delete to drop a course.</span>
-          <button
-            type="button"
-            onClick={handleDismissHint}
-            className="text-text-muted hover:text-text-primary p-0.5 rounded transition-colors"
-            aria-label="Dismiss tip"
-          >
-            <X className="w-3.5 h-3.5" />
-          </button>
+      {/* Empty Notice for Preferences Tab when no courses selected */}
+      {selectedCourseObjs.length === 0 && (
+        <div className={`p-4 rounded-card bg-subtle border border-app-border text-center text-xs text-text-muted space-y-1 ${mobileTab === 'preferences' ? 'block lg:hidden' : 'hidden'}`}>
+          <div className="font-semibold text-text-primary">No courses selected yet</div>
+          <div>Switch to the Courses tab to add courses, then customize section locks and faculty preferences here.</div>
         </div>
       )}
 
       {/* 4. Filter & Weights Controls */}
-      <div className={`border-t border-app-border pt-2 w-full max-w-full min-w-0 ${mobileTab === 'courses' ? 'hidden lg:block' : 'block'}`}>
+      <div className={`border-t border-app-border pt-2 ${mobileTab === 'courses' ? 'hidden lg:block' : 'block'}`}>
         <button
-          type="button"
           onClick={() => setIsFiltersOpen(!isFiltersOpen)}
           className="w-full flex items-center justify-between py-2 text-xs font-semibold text-text-secondary hover:text-text-primary transition-colors"
         >
@@ -1628,7 +1529,7 @@ export function CourseSelector({
             <Sliders className="w-3.5 h-3.5 text-orange-500" />
             Filters & Scoring Weights
           </span>
-          {isFiltersOpen || mobileTab === 'preferences' ? (
+          {isFiltersOpen ? (
             <ChevronUp className="w-4 h-4" />
           ) : (
             <ChevronDown className="w-4 h-4" />
@@ -1636,219 +1537,171 @@ export function CourseSelector({
         </button>
 
         {(isFiltersOpen || mobileTab === 'preferences') && (
-          <div className="pt-2 space-y-4 text-xs animate-in fade-in duration-200 w-full max-w-full min-w-0">
-            {/* Day Off Filters */}
-            <div className="w-full max-w-full min-w-0">
-              <label className="block text-text-muted font-medium mb-1.5 text-xs truncate">
-                Must-Have Day Off (0 classes):
-              </label>
-              <div className="grid grid-cols-5 gap-1 w-full max-w-full min-w-0">
-                {DAYS_LIST.map((day) => {
-                  const isOff = (request.filterDayOff || []).includes(day);
-                  return (
-                    <button
-                      key={day}
-                      type="button"
-                      onClick={() => toggleDayOff(day)}
-                      className={`h-11 md:h-8 rounded-btn text-xs font-bold transition-all min-w-0 truncate ${
-                        isOff
-                          ? 'bg-danger-bg text-danger border border-danger/40 shadow-xs'
-                          : 'bg-subtle text-text-secondary hover:bg-orange-50 border border-app-border'
-                      }`}
-                    >
-                      {day}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Time Window Filters */}
-            <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-2 w-full max-w-full min-w-0">
-              <div className="min-w-0">
-                <label className="block text-text-secondary text-[13px] font-medium mb-1 truncate">
-                  Earliest Start:
+          <div className="pt-2 space-y-4 text-xs animate-in fade-in duration-200">
+              {/* Day Off Filters */}
+              <div>
+                <label className="block text-text-muted font-medium mb-1.5">
+                  Must-Have Day Off (0 classes):
                 </label>
-                <select
-                  value={request.filterTimeWindow?.earliestStart || ''}
-                  onChange={(e) =>
-                    onRequestChange({
-                      ...request,
-                      filterTimeWindow: {
-                        ...request.filterTimeWindow,
-                        earliestStart: e.target.value ? parseInt(e.target.value, 10) : undefined,
-                      },
-                    })
-                  }
-                  className="w-full max-w-full min-w-0 truncate h-11 bg-subtle border border-app-border rounded-btn px-2 text-xs md:text-xs text-text-primary"
-                >
-                  <option value="">Any (from 08:30)</option>
-                  <option value="591">09:50 AM or later</option>
-                  <option value="671">11:10 AM or later</option>
-                  <option value="751">12:30 PM or later</option>
-                </select>
+                <div className="grid grid-cols-5 gap-1">
+                  {DAYS_LIST.map((day) => {
+                    const isOff = (request.filterDayOff || []).includes(day);
+                    return (
+                      <button
+                        key={day}
+                        onClick={() => toggleDayOff(day)}
+                        className={`py-1.5 rounded-btn text-xs font-bold transition-all ${
+                          isOff
+                            ? 'bg-danger-bg text-danger border border-danger/40 shadow-xs'
+                            : 'bg-subtle text-text-secondary hover:bg-orange-50 border border-app-border'
+                        }`}
+                      >
+                        {day}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
-              <div className="min-w-0">
-                <label className="block text-text-secondary text-[13px] font-medium mb-1 truncate">
-                  Latest End:
-                </label>
-                <select
-                  value={request.filterTimeWindow?.latestEnd || ''}
-                  onChange={(e) =>
-                    onRequestChange({
-                      ...request,
-                      filterTimeWindow: {
-                        ...request.filterTimeWindow,
-                        latestEnd: e.target.value ? parseInt(e.target.value, 10) : undefined,
-                      },
-                    })
-                  }
-                  className="w-full max-w-full min-w-0 truncate h-11 bg-subtle border border-app-border rounded-btn px-2 text-xs md:text-xs text-text-primary"
-                >
-                  <option value="">Any (until 16:30)</option>
-                  <option value="830">01:50 PM or earlier</option>
-                  <option value="910">03:10 PM or earlier</option>
-                  <option value="990">04:30 PM</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Max Gap Per Day */}
-            <div className="w-full max-w-full min-w-0">
-              <label className="block text-text-muted font-medium mb-1 text-xs truncate">
-                Max Gap Between Classes:
-              </label>
-              <div className="grid grid-cols-4 gap-1 w-full max-w-full min-w-0">
-                {[
-                  { label: 'Any', value: undefined },
-                  { label: '60m', value: 60 },
-                  { label: '120m', value: 120 },
-                  { label: '180m', value: 180 },
-                ].map((item) => (
-                  <button
-                    key={item.label}
-                    type="button"
-                    onClick={() =>
-                      onRequestChange({
-                        ...request,
-                        maxGapMinutesPerDay: item.value,
-                      })
-                    }
-                    className={`h-11 md:h-8 rounded-btn text-[11px] font-medium transition-colors min-w-0 truncate ${
-                      request.maxGapMinutesPerDay === item.value
-                        ? 'bg-orange-500 text-white font-semibold'
-                        : 'bg-subtle text-text-secondary hover:bg-orange-50 border border-app-border'
-                    }`}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Ranking Weights Sliders */}
-            <div className="space-y-2 pt-2 border-t border-app-border w-full max-w-full min-w-0">
-              <div className="flex items-center justify-between">
-                <span className="font-semibold text-text-primary text-xs">Ranking Weights</span>
-                <button
-                  type="button"
-                  onClick={resetWeights}
-                  className="text-[10px] text-text-muted hover:text-orange-600 flex items-center gap-1"
-                >
-                  <RotateCcw className="w-3 h-3" /> Reset
-                </button>
-              </div>
-
-              {[
-                { key: 'facultyPreference' as const, label: 'Faculty Preference' },
-                { key: 'minimizeGaps' as const, label: 'Minimize Gaps' },
-                { key: 'compactDays' as const, label: 'Compact Days (Fewer days)' },
-                { key: 'avoidEarlyLate' as const, label: 'Avoid Early/Late Hours' },
-                { key: 'avoidTentative' as const, label: 'Avoid Tentative Sections' },
-              ].map(({ key, label }) => (
-                <div key={key} className="space-y-1 w-full max-w-full min-w-0">
-                  <div className="flex justify-between text-[11px] text-text-muted">
-                    <span>{label}</span>
-                    <span className="font-mono font-semibold text-text-primary">
-                      {request.weights[key]}%
-                    </span>
-                  </div>
-                  <input
-                    type="range"
-                    min="0"
-                    max="50"
-                    step="5"
-                    value={request.weights[key]}
+              {/* Time Window Filters */}
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-text-muted font-medium mb-1">
+                    Earliest Start:
+                  </label>
+                  <select
+                    value={request.filterTimeWindow?.earliestStart || ''}
                     onChange={(e) =>
                       onRequestChange({
                         ...request,
-                        weights: {
-                          ...request.weights,
-                          [key]: parseInt(e.target.value, 10),
+                        filterTimeWindow: {
+                          ...request.filterTimeWindow,
+                          earliestStart: e.target.value ? parseInt(e.target.value, 10) : undefined,
                         },
                       })
                     }
-                    className="w-full accent-orange-500 h-1.5 bg-border rounded-lg cursor-pointer"
-                  />
+                    className="w-full bg-subtle border border-app-border rounded-btn p-1.5 text-xs text-text-primary"
+                  >
+                    <option value="">Any (from 08:30)</option>
+                    <option value="591">09:50 AM or later</option>
+                    <option value="671">11:10 AM or later</option>
+                    <option value="751">12:30 PM or later</option>
+                  </select>
                 </div>
-              ))}
-            </div>
 
-            {/* Blocked Time Slots */}
-            <div className="space-y-2 pt-3 border-t border-app-border w-full max-w-full min-w-0">
-              <div className="flex items-center justify-between">
-                <span className="font-semibold text-text-primary text-xs flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-orange-500" />
-                  Blocked Time Slots
-                </span>
-                {Object.keys(manualSchedules).length > 0 && (
-                  <span className="text-[10px] text-orange-600 font-semibold">
-                    {Object.keys(manualSchedules).length} active
-                  </span>
-                )}
+                <div>
+                  <label className="block text-text-muted font-medium mb-1">
+                    Latest End:
+                  </label>
+                  <select
+                    value={request.filterTimeWindow?.latestEnd || ''}
+                    onChange={(e) =>
+                      onRequestChange({
+                        ...request,
+                        filterTimeWindow: {
+                          ...request.filterTimeWindow,
+                          latestEnd: e.target.value ? parseInt(e.target.value, 10) : undefined,
+                        },
+                      })
+                    }
+                    className="w-full bg-subtle border border-app-border rounded-btn p-1.5 text-xs text-text-primary"
+                  >
+                    <option value="">Any (until 16:30)</option>
+                    <option value="830">01:50 PM or earlier</option>
+                    <option value="910">03:10 PM or earlier</option>
+                    <option value="990">04:30 PM</option>
+                  </select>
+                </div>
               </div>
-              {Object.keys(manualSchedules).length === 0 ? (
-                <p className="text-[11px] text-text-muted">
-                  No manual blocked time slots configured.
-                </p>
-              ) : (
-                <div className="space-y-1.5 w-full max-w-full min-w-0">
-                  {Object.entries(manualSchedules).map(([code, sched]) => (
-                    <div
-                      key={code}
-                      className="p-2 rounded-btn bg-subtle border border-app-border flex items-center justify-between gap-2 text-xs w-full max-w-full min-w-0"
+
+              {/* Max Gap Per Day */}
+              <div>
+                <label className="block text-text-muted font-medium mb-1">
+                  Max Gap Between Classes:
+                </label>
+                <div className="grid grid-cols-4 gap-1">
+                  {[
+                    { label: 'Any', value: undefined },
+                    { label: '60m', value: 60 },
+                    { label: '120m', value: 120 },
+                    { label: '180m', value: 180 },
+                  ].map((item) => (
+                    <button
+                      key={item.label}
+                      onClick={() =>
+                        onRequestChange({
+                          ...request,
+                          maxGapMinutesPerDay: item.value,
+                        })
+                      }
+                      className={`py-1 rounded-btn text-[11px] font-medium transition-colors ${
+                        request.maxGapMinutesPerDay === item.value
+                          ? 'bg-orange-500 text-white font-semibold'
+                          : 'bg-subtle text-text-secondary hover:bg-orange-50 border border-app-border'
+                      }`}
                     >
-                      <div className="min-w-0 flex-1 truncate">
-                        <span className="font-bold text-text-primary">{code}</span>
-                        <span className="text-text-muted ml-1.5 text-[11px]">
-                          {sched.days.join(', ')} {sched.startTime}-{sched.endTime} (Sec {sched.section})
-                        </span>
-                      </div>
-                      {onRemoveBlockedSlot && (
-                        <button
-                          type="button"
-                          onClick={() => onRemoveBlockedSlot(code)}
-                          className="text-[11px] font-medium text-danger hover:underline shrink-0 px-1 py-0.5"
-                        >
-                          Remove
-                        </button>
-                      )}
-                    </div>
+                      {item.label}
+                    </button>
                   ))}
                 </div>
-              )}
+              </div>
+
+              {/* Ranking Weights Sliders */}
+              <div className="space-y-2 pt-2 border-t border-app-border">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-text-primary">Ranking Weights</span>
+                  <button
+                    onClick={resetWeights}
+                    className="text-[10px] text-text-muted hover:text-orange-600 flex items-center gap-1"
+                  >
+                    <RotateCcw className="w-3 h-3" /> Reset
+                  </button>
+                </div>
+
+                {[
+                  { key: 'facultyPreference' as const, label: 'Faculty Preference' },
+                  { key: 'minimizeGaps' as const, label: 'Minimize Gaps' },
+                  { key: 'compactDays' as const, label: 'Compact Days (Fewer days)' },
+                  { key: 'avoidEarlyLate' as const, label: 'Avoid Early/Late Hours' },
+                  { key: 'avoidTentative' as const, label: 'Avoid Tentative Sections' },
+                ].map(({ key, label }) => (
+                  <div key={key} className="space-y-1">
+                    <div className="flex justify-between text-[11px] text-text-muted">
+                      <span>{label}</span>
+                      <span className="font-mono font-semibold text-text-primary">
+                        {request.weights[key]}%
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="50"
+                      step="5"
+                      value={request.weights[key]}
+                      onChange={(e) =>
+                        onRequestChange({
+                          ...request,
+                          weights: {
+                            ...request.weights,
+                            [key]: parseInt(e.target.value, 10),
+                          },
+                        })
+                      }
+                      className="w-full accent-orange-500 h-1.5 bg-border rounded-lg cursor-pointer"
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
 
       {/* Undo Toast */}
       {undoToast && (
         <div
           role="status"
           aria-live="polite"
-          className="fixed bottom-[calc(56px+env(safe-area-inset-bottom,0px)+24px)] md:bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-4 py-2.5 rounded-card bg-text-primary text-surface shadow-warm border border-app-border text-xs md:text-sm animate-in fade-in slide-in-from-bottom-2 duration-200 motion-reduce:transition-none motion-reduce:animate-none"
+          className="fixed bottom-[calc(56px+env(safe-area-inset-bottom,0px)+16px)] md:bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-4 py-2.5 rounded-card bg-text-primary text-surface shadow-warm border border-app-border text-xs md:text-sm animate-in fade-in slide-in-from-bottom-2 duration-200 motion-reduce:transition-none motion-reduce:animate-none"
         >
           <span className="font-medium">{undoToast.message}</span>
           <span className="text-text-muted">·</span>
