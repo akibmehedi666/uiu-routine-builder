@@ -1,7 +1,7 @@
 [
   {
-    "id": "abdullah-ibne-masud-ma",
-    "name": "Abdullah Ibne Masud Ma",
+    "id": "abdullah-ibne-masud-mahi",
+    "name": "Abdullah Ibne Masud Mahi",
     "courses": [
       {
         "program": "BSCSE",
@@ -213,8 +213,8 @@
     ]
   },
   {
-    "id": "abu-shafin-mohammad-m",
-    "name": "Abu Shafin Mohammad M",
+    "id": "abu-shafin-mohammad-mahdee-jameel",
+    "name": "Abu Shafin Mohammad Mahdee Jameel",
     "courses": [
       {
         "program": "BSCSE",
@@ -243,8 +243,8 @@
     ]
   },
   {
-    "id": "ahmed-abdullah-bin-faro",
-    "name": "Ahmed Abdullah Bin Faro",
+    "id": "ahmed-abdullah-bin-farooqi-rayhan",
+    "name": "Ahmed Abdullah Bin Farooqi Rayhan",
     "courses": [
       {
         "program": "BSCSE",
@@ -1705,8 +1705,8 @@
     ]
   },
   {
-    "id": "golam-mohammed-bhuiy",
-    "name": "Golam Mohammed Bhuiy",
+    "id": "golam-mohammed-bhuiyan",
+    "name": "Golam Mohammed Bhuiyan",
     "courses": [
       {
         "program": "BSCSE",
@@ -2524,8 +2524,8 @@
     ]
   },
   {
-    "id": "khandoker-makjum-wahi",
-    "name": "Khandoker Makjum Wahi",
+    "id": "khandoker-makjum-wahid",
+    "name": "Khandoker Makjum Wahid",
     "courses": [
       {
         "program": "BSCSE",
@@ -3211,8 +3211,8 @@
     ]
   },
   {
-    "id": "md-iqbal-bahar-chowdhu",
-    "name": "Md. Iqbal Bahar Chowdhu",
+    "id": "md-iqbal-bahar-chowdhury",
+    "name": "Md. Iqbal Bahar Chowdhury",
     "courses": [
       {
         "program": "BSCSE",
@@ -3646,8 +3646,8 @@
     ]
   },
   {
-    "id": "md-mutasim-billah-kouse",
-    "name": "Md. Mutasim Billah Kouse",
+    "id": "md-mutasim-billah-kouser",
+    "name": "Md. Mutasim Billah Kouser",
     "courses": [
       {
         "program": "BSCSE",
@@ -4809,8 +4809,8 @@
     ]
   },
   {
-    "id": "mohammad-akhtaruzzam",
-    "name": "Mohammad Akhtaruzzam",
+    "id": "mohammad-akhtaruzzaman",
+    "name": "Mohammad Akhtaruzzaman",
     "courses": [
       {
         "program": "BSCSE",
@@ -4867,8 +4867,8 @@
     ]
   },
   {
-    "id": "mohammad-mahmudul-h",
-    "name": "Mohammad Mahmudul H",
+    "id": "mohammad-mahmudul-hasan-chowdhury",
+    "name": "Mohammad Mahmudul Hasan Chowdhury",
     "courses": [
       {
         "program": "BSCSE",
@@ -4921,8 +4921,8 @@
     ]
   },
   {
-    "id": "mohammad-mamun-elah",
-    "name": "Mohammad Mamun Elah",
+    "id": "mohammad-mamun-elahi",
+    "name": "Mohammad Mamun Elahi",
     "courses": [
       {
         "program": "BSCSE",
@@ -5335,6 +5335,17 @@
           "Sun"
         ],
         "time": "671..820"
+      },
+      {
+        "program": "BSDS",
+        "code": "DS 1116",
+        "title": "Object Oriented Programming for Data Science Laboratory",
+        "section": "L",
+        "kind": "lab",
+        "days": [
+          "Wed"
+        ],
+        "time": "510..660"
       },
       {
         "program": "BSDS",
@@ -7311,8 +7322,8 @@
     ]
   },
   {
-    "id": "s-m-hasibul-hassan-rizve",
-    "name": "S.M. Hasibul Hassan Rizve",
+    "id": "s-m-hasibul-hassan-rizvee",
+    "name": "S.M. Hasibul Hassan Rizvee",
     "courses": [
       {
         "program": "BSCSE",
@@ -8389,8 +8400,8 @@
     ]
   },
   {
-    "id": "sheikh-mohammed-al-ha",
-    "name": "Sheikh Mohammed Al Ha",
+    "id": "sheikh-mohammed-al-hadi-elaf",
+    "name": "Sheikh Mohammed Al Hadi Elaf",
     "courses": [
       {
         "program": "BSCSE",
@@ -9035,8 +9046,8 @@
     ]
   },
   {
-    "id": "syed-abu-ammar-muhammad-sonnet",
-    "name": "Syed Abu Ammar Muhammad Sonnet",
+    "id": "syed-abu-ammar-muhammad-zarif",
+    "name": "Syed Abu Ammar Muhammad Zarif",
     "courses": [
       {
         "program": "BSCSE",
@@ -9375,8 +9386,8 @@
     ]
   },
   {
-    "id": "tanveer-ahmed-khan-fah",
-    "name": "Tanveer Ahmed Khan Fah",
+    "id": "tanveer-ahmed-khan-fahim",
+    "name": "Tanveer Ahmed Khan Fahim",
     "courses": [
       {
         "program": "BSCSE",

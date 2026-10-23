@@ -33,7 +33,7 @@ describe('Faculty Stats Data Layer & Integrity Tests', () => {
     it('sum of sections across faculty plus TBA sections equals raw sections + multi-faculty duplicates', () => {
       const tbaGroups = getTBASections();
       const tbaSectionsCount = tbaGroups.reduce((acc, g) => acc + g.sections.length, 0);
-      expect(tbaSectionsCount).toBe(25);
+      expect(tbaSectionsCount).toBe(24);
 
       const totalFacultyAssignedSections = allFaculty.reduce(
         (sum, f) => sum + f.totalSections,
@@ -45,7 +45,7 @@ describe('Faculty Stats Data Layer & Integrity Tests', () => {
       // Total sections in sections.json is 791.
       expect(totalFacultyAssignedSections + tbaSectionsCount).toBe(rawSections.length + 1);
       expect(rawSections.length).toBe(791);
-      expect(totalFacultyAssignedSections).toBe(767);
+      expect(totalFacultyAssignedSections).toBe(768);
     });
 
     it('multi-faculty section CSE 4399 is credited to both instructors', () => {

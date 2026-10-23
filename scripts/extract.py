@@ -77,11 +77,12 @@ def extract_pdf_data(pdf_path: str):
 
     # Pass 2: Extract raw character streams per line to bypass column-boundary clipping
     char_streams_by_sl: Dict[int, Tuple[str, float, int]] = {}
+    faculty_text_by_sl: Dict[int, str] = {}
     with pdfplumber.open(pdf_path) as pdf:
         for page_idx in range(num_pages):
             page = pdf.pages[page_idx]
             words = page.extract_words()
-            sl_words = [w for w in words if w['x0'] < 33 and w['text'].isdigit()]
+            sl_words = [w for w in words if w['x0'] < 33 and w['text'].isdigit() and w['top'] > 90]
             sl_words.sort(key=lambda w: w['top'])
             for sw in sl_words:
                 sl = int(sw['text'])
@@ -90,6 +91,34 @@ def extract_pdf_data(pdf_path: str):
                 row_chars = [c for c in page.chars if abs(c['top'] - top) < 4.5]
                 text = "".join([c['text'] for c in row_chars])
                 char_streams_by_sl[sl] = (text, top, page_idx + 1)
+
+                # Row 436 is special: multi-line cell in table extraction
+                if sl == 436:
+                    t11 = table_rows_by_sl.get(436, ['', '', '', '', '', '', '', '', '', '', '', ''])[11]
+                    faculty_text_by_sl[sl] = ' '.join(t11.split())
+                    continue
+
+                # Faculty column characters (x0 >= 615 and x0 < 775)
+                # Group by MCID in stream order to cleanly isolate the full faculty name
+                fac_chars = [c for c in page.chars if abs(c['top'] - top) < 4.5 and c['x0'] >= 615 and c['x0'] < 775]
+                if not fac_chars:
+                    faculty_text_by_sl[sl] = "TBA"
+                    continue
+
+                mcid_order = []
+                mcid_chars = {}
+                for c in fac_chars:
+                    m = c.get('mcid')
+                    if m not in mcid_chars:
+                        mcid_chars[m] = []
+                        mcid_order.append(m)
+                    mcid_chars[m].append(c['text'])
+
+                groups = [''.join(mcid_chars[m]).strip() for m in mcid_order if ''.join(mcid_chars[m]).strip()]
+                if not groups or groups[0].upper() in ['TBA', '-', 'NONE', '', '1', '2', '3']:
+                    faculty_text_by_sl[sl] = "TBA"
+                else:
+                    faculty_text_by_sl[sl] = groups[0]
 
     all_sls = sorted(set(table_rows_by_sl.keys()) | set(char_streams_by_sl.keys()))
     if not all_sls:
@@ -255,11 +284,16 @@ def extract_pdf_data(pdf_path: str):
             course_canonical_titles[course_code] = title
 
         # Parse Faculty Name
-        raw_fac = t_row[11] if len(t_row) > 11 else ""
+        raw_fac = faculty_text_by_sl.get(sl, "")
+        if not raw_fac or raw_fac.upper() in ['TBA', 'NONE', '-', '', '1', '2', '3']:
+            raw_fac_table = t_row[11] if len(t_row) > 11 else ""
+            if raw_fac_table and raw_fac_table.upper() not in ['TBA', 'NONE', '-']:
+                raw_fac = raw_fac_table
+
         raw_fac = raw_fac.replace('\n', ' ').strip()
         
         # Clean faculty
-        if not raw_fac or raw_fac.upper() in ['TBA', 'None', '-']:
+        if not raw_fac or raw_fac.upper() in ['TBA', 'NONE', '-', '1', '2', '3']:
             faculty = ["TBA"]
             faculty_ids = []
             tentative = True
@@ -269,32 +303,11 @@ def extract_pdf_data(pdf_path: str):
             faculty = []
             faculty_ids = []
             for fp in fac_parts:
-                # Clean any stray initials or whitespace
                 clean_f = re.sub(r'\s+', ' ', fp).strip()
-                # Special known fixes
-                if clean_f == "Mr. Sheikh Mostofa Amir":
-                    clean_f = "Mr. Sheikh Mostofa Amir Foisol"
-                elif clean_f.startswith("Muhammad Nomani Kabi") and not clean_f.endswith("Kabir"):
-                    clean_f = "Muhammad Nomani Kabir"
-                elif clean_f.startswith("Md. Muhaiminul Islam Na") and not clean_f.endswith("Nafi"):
-                    clean_f = "Md. Muhaiminul Islam Nafi"
-                elif clean_f.startswith("Mr. Abid Hasan Khondake") and not clean_f.endswith("Khondaker"):
-                    clean_f = "Mr. Abid Hasan Khondaker"
-                elif clean_f.startswith("Mr. Md. Nadeem Chowdh") and not clean_f.endswith("Chowdhury"):
-                    clean_f = "Mr. Md. Nadeem Chowdhury"
-                elif clean_f.startswith("Ms. Mehreen Hossain Cho") and not clean_f.endswith("Chowdhury"):
-                    clean_f = "Ms. Mehreen Hossain Chowdhury"
-                elif clean_f.startswith("Mohammad Shahriar Rah") and not clean_f.endswith("Rahman"):
-                    clean_f = "Mohammad Shahriar Rahman"
-                elif clean_f.startswith("Syed Abu Ammar Muham") and not clean_f.endswith("Sonnet"):
-                    clean_f = "Syed Abu Ammar Muhammad Sonnet"
-                elif clean_f.startswith("Md. Mushfiqul Haque Om") and not clean_f.endswith("Omi"):
-                    clean_f = "Md. Mushfiqul Haque Omi"
-                elif clean_f.startswith("Muhammad Anwarul Azi") and not clean_f.endswith("Azim"):
-                    clean_f = "Muhammad Anwarul Azim"
-                elif clean_f.startswith("Ms. Sumaiya Ahmed RaniMs"):
+                # Remove repeated initials artifact from rendering
+                if clean_f.startswith("Ms. Sumaiya Ahmed RaniMs"):
                     clean_f = "Ms. Sumaiya Ahmed Rani"
-                elif clean_f.startswith("Mr. Mabsur Fatin Bin HoMssra. iMna"):
+                elif clean_f.startswith("Mr. Mabsur Fatin Bin HoMssra"):
                     clean_f = "Mr. Mabsur Fatin Bin Hossain"
                 elif clean_f.startswith("Md. Saiful Islam MSIs"):
                     clean_f = "Md. Saiful Islam"
