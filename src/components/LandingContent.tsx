@@ -19,6 +19,8 @@ import {
 } from 'lucide-react';
 import { PAGE_MAX_W } from '../config/layout';
 import { SiteFooter } from './SiteFooter';
+import { DAYS_LIST } from '../types';
+import { LANDING_COURSE_EXPLORER, LANDING_SCHEDULE_PREVIEW } from '../lib/landingData';
 
 // Live metadata numbers directly from extracted datasets
 const STATS = {
@@ -123,13 +125,16 @@ export function LandingContent() {
 
           {/* Static polished mock of timetable grid using real data: Contained and horizontally scrollable on mobile */}
           <div className="mt-10 sm:mt-12 max-w-4xl mx-auto p-3 sm:p-5 rounded-card bg-surface border border-app-border shadow-warm text-left">
-            <div className="flex items-center justify-between pb-3 mb-3 border-b border-app-border text-xs gap-2">
-              <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center justify-between pb-3 mb-3 border-b border-app-border text-xs gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <span className="w-3 h-3 rounded-full bg-orange-500 inline-block shrink-0" />
-                <span className="font-bold text-text-primary line-clamp-1">Sample Optimal Schedule Preview</span>
+                <span className="font-bold text-text-primary">Sample Optimal Schedule Preview</span>
+                <span className="px-2 py-0.5 rounded bg-orange-50 text-orange-700 border border-orange-200 font-semibold text-[11px]">
+                  Example from Fall 2026 data
+                </span>
               </div>
               <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold text-[11px] shrink-0 font-mono">
-                Score 98/100
+                Score {LANDING_SCHEDULE_PREVIEW.score}/100
               </span>
             </div>
 
@@ -137,85 +142,49 @@ export function LandingContent() {
               <div className="min-w-[580px] sm:min-w-0">
                 {/* Timetable Header */}
                 <div className="grid grid-cols-5 gap-2 pb-2 border-b border-app-border text-center font-bold text-xs uppercase text-text-muted">
-                  <div>Sat</div>
-                  <div>Sun</div>
-                  <div>Mon</div>
-                  <div>Tue</div>
-                  <div>Wed</div>
+                  {DAYS_LIST.map((day) => (
+                    <div key={day}>{day}</div>
+                  ))}
                 </div>
 
                 {/* Course blocks layout */}
                 <div className="grid grid-cols-5 gap-2 mt-3 text-xs">
-                  {/* Sat Column */}
-                  <div className="space-y-2">
-                    <div className="p-2.5 rounded-btn bg-orange-50 border-l-4 border-orange-500 border border-orange-200">
-                      <div className="font-bold text-orange-950">CSE 1111 (A)</div>
-                      <div className="text-[11px] text-orange-900 line-clamp-1">Ishrat Jahan</div>
-                      <div className="text-[11px] text-text-secondary mt-1 font-mono">08:30–09:50 • R301</div>
-                    </div>
-                    <div className="p-2.5 rounded-btn bg-sky-50 border-l-4 border-sky-500 border border-sky-200">
-                      <div className="font-bold text-sky-950">MATH 1151 (B)</div>
-                      <div className="text-[11px] text-sky-900 line-clamp-1">Dr. Md. Tariqul Islam</div>
-                      <div className="text-[11px] text-text-secondary mt-1 font-mono">09:50–11:10 • R302</div>
-                    </div>
-                  </div>
-
-                  {/* Sun Column */}
-                  <div className="space-y-2">
-                    <div className="p-2.5 rounded-btn bg-emerald-50 border-l-4 border-emerald-600 border border-emerald-200">
-                      <div className="font-bold text-emerald-950">CSE 2213 (C)</div>
-                      <div className="text-[11px] text-emerald-900 line-clamp-1">Md. Muhaiminul Islam</div>
-                      <div className="text-[11px] text-text-secondary mt-1 font-mono">11:10–12:30 • R303</div>
-                    </div>
-                    <div className="p-2.5 rounded-btn bg-violet-50 border-l-4 border-violet-500 border border-violet-200">
-                      <div className="font-bold text-violet-950">CSE 2215 (D)</div>
-                      <div className="text-[11px] text-violet-900 line-clamp-1">Dr. Swakkhar Shatabda</div>
-                      <div className="text-[11px] text-text-secondary mt-1 font-mono">12:30–01:50 • R405</div>
-                    </div>
-                  </div>
-
-                  {/* Mon Column */}
-                  <div className="space-y-2">
-                    <div className="p-2.5 rounded-btn bg-rose-50 border-l-4 border-rose-500 border border-rose-200">
-                      <div className="font-bold text-rose-950">CSE 2216 (AL)</div>
-                      <div className="text-[11px] text-rose-900 line-clamp-1">Lab Section</div>
-                      <div className="text-[11px] text-text-secondary mt-1 font-mono">08:30–11:10 • Comp Lab 1</div>
-                    </div>
-                  </div>
-
-                  {/* Tue Column */}
-                  <div className="space-y-2">
-                    <div className="p-2.5 rounded-btn bg-orange-50 border-l-4 border-orange-500 border border-orange-200">
-                      <div className="font-bold text-orange-950">CSE 1111 (A)</div>
-                      <div className="text-[11px] text-orange-900 line-clamp-1">Ishrat Jahan</div>
-                      <div className="text-[11px] text-text-secondary mt-1 font-mono">08:30–09:50 • R301</div>
-                    </div>
-                    <div className="p-2.5 rounded-btn bg-sky-50 border-l-4 border-sky-500 border border-sky-200">
-                      <div className="font-bold text-sky-950">MATH 1151 (B)</div>
-                      <div className="text-[11px] text-sky-900 line-clamp-1">Dr. Md. Tariqul Islam</div>
-                      <div className="text-[11px] text-text-secondary mt-1 font-mono">09:50–11:10 • R302</div>
-                    </div>
-                  </div>
-
-                  {/* Wed Column */}
-                  <div className="space-y-2">
-                    <div className="p-2.5 rounded-btn bg-emerald-50 border-l-4 border-emerald-600 border border-emerald-200">
-                      <div className="font-bold text-emerald-950">CSE 2213 (C)</div>
-                      <div className="text-[11px] text-emerald-900 line-clamp-1">Md. Muhaiminul Islam</div>
-                      <div className="text-[11px] text-text-secondary mt-1 font-mono">11:10–12:30 • R303</div>
-                    </div>
-                    <div className="p-2.5 rounded-btn bg-violet-50 border-l-4 border-violet-500 border border-violet-200">
-                      <div className="font-bold text-violet-950">CSE 2215 (D)</div>
-                      <div className="text-[11px] text-violet-900 line-clamp-1">Dr. Swakkhar Shatabda</div>
-                      <div className="text-[11px] text-text-secondary mt-1 font-mono">12:30–01:50 • R405</div>
-                    </div>
-                  </div>
+                  {DAYS_LIST.map((day) => {
+                    const slots = LANDING_SCHEDULE_PREVIEW.schedule[day];
+                    return (
+                      <div key={day} className="space-y-2">
+                        {slots.length === 0 ? (
+                          <div className="h-full min-h-[72px] rounded-btn border border-dashed border-app-border/80 flex items-center justify-center text-[11px] text-text-muted/60 italic">
+                            No classes
+                          </div>
+                        ) : (
+                          slots.map((slot, idx) => (
+                            <div
+                              key={`${slot.courseCode}-${slot.section}-${idx}`}
+                              className={`p-2.5 rounded-btn ${slot.colorClass.bg} ${slot.colorClass.border}`}
+                            >
+                              <div className={`font-bold ${slot.colorClass.text}`}>
+                                {slot.courseCode} ({slot.section})
+                              </div>
+                              <div className={`text-[11px] ${slot.colorClass.subText} line-clamp-1`}>
+                                {slot.faculty}
+                              </div>
+                              <div className="text-[11px] text-text-secondary mt-1 font-mono">
+                                {slot.time} • {slot.room}
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
-            <p className="sm:hidden text-center text-[11px] text-text-muted pt-2 border-t border-app-border/60">
-              Swipe horizontally to view full 5-day week &rarr;
-            </p>
+            <div className="mt-3 pt-3 border-t border-app-border/60 flex flex-col sm:flex-row items-center justify-between text-[11px] text-text-muted gap-1">
+              <span>Your routine will depend on your choices.</span>
+              <span className="sm:hidden">Swipe horizontally to view full 5-day week &rarr;</span>
+            </div>
           </div>
         </div>
       </section>
@@ -392,61 +361,46 @@ export function LandingContent() {
               <div className="flex items-center justify-between pb-3 border-b border-app-border">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-sm text-text-primary">CSE 1111</span>
+                    <span className="font-bold text-sm text-text-primary">
+                      {LANDING_COURSE_EXPLORER.courseCode}
+                    </span>
                     <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-orange-50 text-orange-600 border border-orange-200">
-                      3 Credits
+                      {LANDING_COURSE_EXPLORER.credit} Credits
                     </span>
                     <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-subtle text-text-secondary border border-app-border">
-                      BSCSE
+                      {LANDING_COURSE_EXPLORER.program}
                     </span>
                   </div>
                   <div className="text-xs text-text-muted mt-0.5">
-                    Structured Programming Language • 25 Sections
+                    {LANDING_COURSE_EXPLORER.courseTitle} • {LANDING_COURSE_EXPLORER.totalSections} Sections
                   </div>
                 </div>
               </div>
 
               {/* Sample Faculty Groups */}
               <div className="space-y-2 text-xs">
-                {/* Faculty 1 */}
-                <div className="p-3 rounded-btn bg-surface border border-app-border space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-text-primary">Ishrat Jahan</span>
-                    <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-subtle text-text-muted">
-                      2 sections
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2 text-[11px]">
-                    <div className="p-1.5 rounded bg-subtle border border-app-border">
-                      <div className="font-semibold text-text-primary">Sec A (Sat/Tue)</div>
-                      <div className="text-text-muted font-mono">08:30–09:50 • Room 301</div>
+                {LANDING_COURSE_EXPLORER.faculty.map((fac) => (
+                  <div key={fac.facultyName} className="p-3 rounded-btn bg-surface border border-app-border space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-text-primary">{fac.facultyName}</span>
+                      <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-subtle text-text-muted">
+                        {fac.sectionCount} {fac.sectionCount === 1 ? 'section' : 'sections'}
+                      </span>
                     </div>
-                    <div className="p-1.5 rounded bg-subtle border border-app-border">
-                      <div className="font-semibold text-text-primary">Sec B (Sat/Tue)</div>
-                      <div className="text-text-muted font-mono">09:50–11:10 • Room 301</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Faculty 2 */}
-                <div className="p-3 rounded-btn bg-surface border border-app-border space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-text-primary">Md. Mahfuzur Rahman</span>
-                    <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-subtle text-text-muted">
-                      2 sections
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2 text-[11px]">
-                    <div className="p-1.5 rounded bg-subtle border border-app-border">
-                      <div className="font-semibold text-text-primary">Sec C (Sun/Wed)</div>
-                      <div className="text-text-muted font-mono">08:30–09:50 • Room 304</div>
-                    </div>
-                    <div className="p-1.5 rounded bg-subtle border border-app-border">
-                      <div className="font-semibold text-text-primary">Sec D (Sun/Wed)</div>
-                      <div className="text-text-muted font-mono">09:50–11:10 • Room 304</div>
+                    <div className="grid grid-cols-2 gap-2 text-[11px]">
+                      {fac.sections.map((sec) => (
+                        <div key={sec.section} className="p-1.5 rounded bg-subtle border border-app-border">
+                          <div className="font-semibold text-text-primary">
+                            Sec {sec.section} ({sec.days})
+                          </div>
+                          <div className="text-text-muted font-mono">
+                            {sec.time} • {sec.room}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                </div>
+                ))}
               </div>
 
               <p className="text-[11px] text-text-muted text-center pt-1 italic">
