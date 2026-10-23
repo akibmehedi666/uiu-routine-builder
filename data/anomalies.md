@@ -398,3 +398,95 @@ Applied 9 faculty override assignments synced with the UIU UCAM portal:
 Removed faculty with zero active teaching assignments (2 total):
 - Rion (id: rion) - 0 sections remaining
 - Sobur (id: sobur) - 0 sections remaining
+
+
+## Post-Extraction Overrides (Fall 2026 UCAM Sync - 2026-10-24)
+Applied 74 faculty override assignments synced with the UIU UCAM portal:
+- BSCSE CSE 1110 N: Replaced 'Ms. Sumaiya Ahmed Rani' with 'TBA'
+- BSCSE CSE 1111 S: Replaced 'Anika Tasnim Rodela' with 'TBA'
+- BSCSE CSE 1115 C: Replaced 'Mr. Sheikh Tanvir Ahmed' with 'TBA'
+- BSCSE CSE 1115 E: Replaced 'Mr. Sheikh Tanvir Ahmed' with 'TBA'
+- BSCSE CSE 1116 D: Replaced 'Mr. Sheikh Tanvir Ahmed' with 'TBA'
+- BSCSE CSE 1116 H: Replaced 'Mr. Sheikh Tanvir Ahmed' with 'TBA'
+- BSCSE CSE 1325 A: Replaced 'Mr. Kazi Abid Hasan' with 'TBA'
+- BSCSE CSE 1325 E: Replaced 'Mr. Angkon Deb' with 'TBA'
+- BSCSE CSE 1326 C: Replaced 'Mr. Angkon Deb' with 'TBA'
+- BSCSE CSE 1326 E: Replaced 'Mr. Kazi Abid Hasan' with 'TBA'
+- BSCSE CSE 2213 D: Replaced 'Mr. Masnoon Muztahid' with 'TBA'
+- BSCSE CSE 2213 J: Replaced 'Mr. Masnoon Muztahid' with 'TBA'
+- BSCSE CSE 2213 M: Replaced 'Mr. Masnoon Muztahid' with 'TBA'
+- BSCSE CSE 2215 E: Replaced 'Mr. Mabsur Fatin Bin Hossain' with 'TBA'
+- BSCSE CSE 2215 H: Replaced 'Rubaiya Rahtin Khan' with 'Anika Tasnim Rodela'
+- BSCSE CSE 2217 C: Replaced 'Ms. Mehreen Hossain Chowdhury' with 'TBA'
+- BSCSE CSE 2217 E: Replaced 'Ms. Sumaiya Ahmed Rani' with 'TBA'
+- BSCSE CSE 2217 F: Replaced 'Mr. Sheikh Tanvir Ahmed' with 'TBA'
+- BSCSE CSE 2217 G: Replaced 'Ms. Sumaiya Ahmed Rani' with 'TBA'
+- BSCSE CSE 2218 H: Replaced 'Ms. Sumaiya Ahmed Rani' with 'TBA'
+- BSCSE CSE 2233 F: Replaced 'Ms. Mehreen Hossain Chowdhury' with 'TBA'
+- BSCSE CSE 2233 G: Replaced 'Ms. Mehreen Hossain Chowdhury' with 'TBA'
+- BSCSE CSE 3421 C: Replaced 'Mr. Sheikh Mostofa Amir Foisol' with 'TBA'
+- BSCSE CSE 3421 K: Replaced 'Mr. Sheikh Mostofa Amir Foisol' with 'TBA'
+- BSCSE CSE 3422 M: Replaced 'Mr. Sheikh Mostofa Amir Foisol' with 'TBA'
+- BSCSE CSE 3422 O: Replaced 'Mr. Sheikh Mostofa Amir Foisol' with 'TBA'
+- BSCSE CSE 3712 D: Replaced 'Mr. Abid Hasan Khondaker' with 'TBA'
+- BSCSE CSE 3712 E: Replaced 'Mr. Abid Hasan Khondaker' with 'Miftahul Sheikh'
+- BSCSE CSE 3712 F: Replaced 'Mr. Abid Hasan Khondaker' with 'Abu Bakar Fahad'
+- BSCSE CSE 3712 G: Replaced 'Mr. Abid Hasan Khondaker' with 'TBA'
+- BSCSE CSE 3811 A: Replaced 'Mr. Sheikh Mostofa Amir Foisol' with 'TBA'
+- BSCSE CSE 3811 C: Replaced 'Mr. Md. Tamim Iqbal' with 'TBA'
+- BSCSE CSE 3811 E: Replaced 'Mr. Md. Tamim Iqbal' with 'TBA'
+- BSCSE CSE 3812 A: Replaced 'Mr. Sheikh Mostofa Amir Foisol' with 'TBA'
+- BSCSE CSE 3812 E: Replaced 'Mr. Mabsur Fatin Bin Hossain' with 'TBA'
+- BSCSE CSE 3812 F: Replaced 'Mr. Md. Tamim Iqbal' with 'TBA'
+- BSCSE CSE 3812 I: Replaced 'Mr. Masnoon Muztahid' with 'TBA'
+- BSCSE CSE 3812 M: Replaced 'Mr. Md. Tamim Iqbal' with 'TBA'
+- BSCSE CSE 4165 E: Replaced 'Mr. Abid Hasan Khondaker' with 'TBA'
+- BSCSE CSE 4165 K: Replaced 'Mr. Md. Tamim Iqbal' with 'TBA'
+- BSCSE CSE 4326 J: Replaced 'Mr. Angkon Deb' with 'TBA'
+- BSCSE CSE 4889 F: Replaced 'Mr. Abid Hasan Khondaker' with 'TBA'
+- BSCSE CSE 4889 G: Replaced 'Mr. Abid Hasan Khondaker' with 'TBA'
+- BSCSE CSE 4891 A: Replaced 'Sayem Shahad' with 'Sadia Islam'
+- BSCSE CSE 4891 C: Replaced 'Sadia Islam' with 'Sayem Shahad'
+- BSCSE EEE 2113 H: Replaced 'Mr. Md. Nadeem Chowdhury' with 'TBA'
+- BSCSE EEE 2113 J: Replaced 'Mr. Kazi Abid Hasan' with 'TBA'
+- BSCSE EEE 2123 H: Replaced 'Mr. Md. Nadeem Chowdhury' with 'TBA'
+- BSCSE EEE 2124 B: Replaced 'Mr. Md. Nadeem Chowdhury' with 'TBA'
+- BSCSE EEE 2124 H: Replaced 'Mr. Md. Nadeem Chowdhury' with 'TBA'
+- BSCSE EEE 2124 I: Replaced 'Mr. Kazi Abid Hasan' with 'TBA'
+- BSCSE ENG 1013 AF: Replaced 'TBA' with 'Muhammad Saiful Islam'
+- BSCSE ENG 1013 AS: Replaced 'Muhammad Saiful Islam' with 'TBA'
+- BSCSE MATH 1151 F: Replaced 'Myesha' with 'TBA'
+- BSCSE MATH 1151 J: Replaced 'Myesha' with 'TBA'
+- BSCSE MATH 1151 Q: Replaced 'Myesha' with 'TBA'
+- BSCSE MATH 1151 S: Replaced 'Myesha' with 'TBA'
+- BSCSE PHY 2105 A: Replaced 'RaAN' with 'Rahil Afzal Nihal'
+- BSCSE PHY 2105 B: Replaced 'Sagar Dutta' with 'Md. Asaduzzaman'
+- BSCSE PHY 2105 F: Replaced 'S.M. Hasibul Hassan Rizvee' with 'Md. Asaduzzaman'
+- BSCSE PHY 2105 G: Replaced 'Taherin' with 'TBA'
+- BSCSE PHY 2105 H: Replaced 'Badhan' with 'TBA'
+- BSCSE PHY 2105 I: Replaced 'Md. Asaduzzaman' with 'S.M. Hasibul Hassan Rizvee'
+- BSCSE PHY 2105 L: Replaced 'Taherin' with 'TBA'
+- BSCSE PHY 2105 M: Replaced 'Badhan' with 'TBA'
+- BSCSE PHY 2105 P: Replaced 'Arafat' with 'TBA'
+- BSCSE PHY 2106 A: Replaced 'Arafat' with 'TBA'
+- BSCSE PHY 2106 C: Replaced 'Taherin' with 'TBA'
+- BSCSE PHY 2106 D: Replaced 'Badhan' with 'TBA'
+- BSCSE PHY 2106 F: Replaced 'Arafat' with 'TBA'
+- BSCSE PHY 2106 J: Replaced 'Taherin' with 'TBA'
+- BSCSE PHY 2106 K: Replaced 'Badhan' with 'TBA'
+- BSCSE PMG 4101 D: Replaced 'Mr. Syed Tauhid Zuhori' with 'TBA'
+- BSCSE PMG 4101 L: Replaced 'Ms. Sumaiya Ahmed Rani' with 'TBA'
+
+Removed faculty with zero active teaching assignments (12 total):
+- Arafat (id: arafat) - 0 sections remaining
+- Badhan (id: badhan) - 0 sections remaining
+- Mr. Abid Hasan Khondaker (id: mr-abid-hasan-khondaker) - 0 sections remaining
+- Mr. Kazi Abid Hasan (id: mr-kazi-abid-hasan) - 0 sections remaining
+- Mr. Md. Nadeem Chowdhury (id: mr-md-nadeem-chowdhury) - 0 sections remaining
+- Mr. Md. Tamim Iqbal (id: mr-md-tamim-iqbal) - 0 sections remaining
+- Mr. Sheikh Mostofa Amir Foisol (id: mr-sheikh-mostofa-amir-foisol) - 0 sections remaining
+- Mr. Sheikh Tanvir Ahmed (id: mr-sheikh-tanvir-ahmed) - 0 sections remaining
+- Ms. Sumaiya Ahmed Rani (id: ms-sumaiya-ahmed-rani) - 0 sections remaining
+- Myesha (id: myesha) - 0 sections remaining
+- RaAN (id: raan) - 0 sections remaining
+- Taherin (id: taherin) - 0 sections remaining

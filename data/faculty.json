@@ -203,6 +203,20 @@
         "program": "BSCSE",
         "code": "CSE 3712",
         "title": "Computer Networks Laboratory",
+        "section": "F",
+        "kind": "lab",
+        "days": [
+          "Mon"
+        ],
+        "time": "671..820",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Faculty updated in UCAM"
+      },
+      {
+        "program": "BSCSE",
+        "code": "CSE 3712",
+        "title": "Computer Networks Laboratory",
         "section": "I",
         "kind": "lab",
         "days": [
@@ -454,18 +468,6 @@
       },
       {
         "program": "BSCSE",
-        "code": "CSE 1111",
-        "title": "Structured Programming Language",
-        "section": "S",
-        "kind": "theory",
-        "days": [
-          "Sun",
-          "Wed"
-        ],
-        "time": "751..830"
-      },
-      {
-        "program": "BSCSE",
         "code": "CSE 2215",
         "title": "Data Structure and Algorithms I",
         "section": "A",
@@ -487,6 +489,21 @@
           "Wed"
         ],
         "time": "591..670"
+      },
+      {
+        "program": "BSCSE",
+        "code": "CSE 2215",
+        "title": "Data Structure and Algorithms I",
+        "section": "H",
+        "kind": "theory",
+        "days": [
+          "Sun",
+          "Wed"
+        ],
+        "time": "671..750",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Faculty updated in UCAM"
       }
     ]
   },
@@ -581,46 +598,6 @@
           "Wed"
         ],
         "time": "831..910"
-      }
-    ]
-  },
-  {
-    "id": "arafat",
-    "name": "Arafat",
-    "courses": [
-      {
-        "program": "BSCSE",
-        "code": "PHY 2105",
-        "title": "Physics",
-        "section": "P",
-        "kind": "theory",
-        "days": [
-          "Sun",
-          "Wed"
-        ],
-        "time": "591..670"
-      },
-      {
-        "program": "BSCSE",
-        "code": "PHY 2106",
-        "title": "Physics Laboratory",
-        "section": "A",
-        "kind": "lab",
-        "days": [
-          "Sat"
-        ],
-        "time": "510..660"
-      },
-      {
-        "program": "BSCSE",
-        "code": "PHY 2106",
-        "title": "Physics Laboratory",
-        "section": "F",
-        "kind": "lab",
-        "days": [
-          "Sun"
-        ],
-        "time": "671..820"
       }
     ]
   },
@@ -1120,58 +1097,6 @@
           "Wed"
         ],
         "time": "911..990"
-      }
-    ]
-  },
-  {
-    "id": "badhan",
-    "name": "Badhan",
-    "courses": [
-      {
-        "program": "BSCSE",
-        "code": "PHY 2105",
-        "title": "Physics",
-        "section": "H",
-        "kind": "theory",
-        "days": [
-          "Sun",
-          "Wed"
-        ],
-        "time": "911..990"
-      },
-      {
-        "program": "BSCSE",
-        "code": "PHY 2105",
-        "title": "Physics",
-        "section": "M",
-        "kind": "theory",
-        "days": [
-          "Sat",
-          "Tue"
-        ],
-        "time": "671..750"
-      },
-      {
-        "program": "BSCSE",
-        "code": "PHY 2106",
-        "title": "Physics Laboratory",
-        "section": "D",
-        "kind": "lab",
-        "days": [
-          "Sat"
-        ],
-        "time": "840..990"
-      },
-      {
-        "program": "BSCSE",
-        "code": "PHY 2106",
-        "title": "Physics Laboratory",
-        "section": "K",
-        "kind": "lab",
-        "days": [
-          "Tue"
-        ],
-        "time": "510..660"
       }
     ]
   },
@@ -3000,13 +2925,31 @@
         "program": "BSCSE",
         "code": "PHY 2105",
         "title": "Physics",
-        "section": "I",
+        "section": "B",
         "kind": "theory",
         "days": [
-          "Sun",
-          "Wed"
+          "Sat",
+          "Tue"
         ],
-        "time": "591..670"
+        "time": "591..670",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Faculty updated in UCAM"
+      },
+      {
+        "program": "BSCSE",
+        "code": "PHY 2105",
+        "title": "Physics",
+        "section": "F",
+        "kind": "theory",
+        "days": [
+          "Sat",
+          "Tue"
+        ],
+        "time": "510..590",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Faculty updated in UCAM"
       },
       {
         "program": "BSCSE",
@@ -4625,6 +4568,20 @@
           "Tue"
         ],
         "time": "671..820"
+      },
+      {
+        "program": "BSCSE",
+        "code": "CSE 3712",
+        "title": "Computer Networks Laboratory",
+        "section": "E",
+        "kind": "lab",
+        "days": [
+          "Tue"
+        ],
+        "time": "510..660",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Faculty updated in UCAM"
       }
     ]
   },
@@ -5121,128 +5078,9 @@
     ]
   },
   {
-    "id": "mr-abid-hasan-khondaker",
-    "name": "Mr. Abid Hasan Khondaker",
-    "courses": [
-      {
-        "program": "BSCSE",
-        "code": "CSE 3712",
-        "title": "Computer Networks Laboratory",
-        "section": "D",
-        "kind": "lab",
-        "days": [
-          "Tue"
-        ],
-        "time": "671..820"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 3712",
-        "title": "Computer Networks Laboratory",
-        "section": "E",
-        "kind": "lab",
-        "days": [
-          "Tue"
-        ],
-        "time": "510..660"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 3712",
-        "title": "Computer Networks Laboratory",
-        "section": "F",
-        "kind": "lab",
-        "days": [
-          "Mon"
-        ],
-        "time": "671..820"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 3712",
-        "title": "Computer Networks Laboratory",
-        "section": "G",
-        "kind": "lab",
-        "days": [
-          "Mon"
-        ],
-        "time": "840..990"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 4165",
-        "title": "Web Programming",
-        "section": "E",
-        "kind": "single-day-theory",
-        "days": [
-          "Sun"
-        ],
-        "time": "510..660"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 4889",
-        "title": "Machine Learning",
-        "section": "F",
-        "kind": "theory",
-        "days": [
-          "Sun",
-          "Wed"
-        ],
-        "time": "831..910"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 4889",
-        "title": "Machine Learning",
-        "section": "G",
-        "kind": "theory",
-        "days": [
-          "Sun",
-          "Wed"
-        ],
-        "time": "671..750"
-      }
-    ]
-  },
-  {
     "id": "mr-angkon-deb",
     "name": "Mr. Angkon Deb",
     "courses": [
-      {
-        "program": "BSCSE",
-        "code": "CSE 1325",
-        "title": "Digital Logic Design",
-        "section": "E",
-        "kind": "theory",
-        "days": [
-          "Sun",
-          "Wed"
-        ],
-        "time": "510..590"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 1326",
-        "title": "Digital Logic Design Laboratory",
-        "section": "C",
-        "kind": "lab",
-        "days": [
-          "Sun"
-        ],
-        "time": "671..820"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 4326",
-        "title": "Microprocessors and Microcontrollers Laboratory",
-        "section": "J",
-        "kind": "lab",
-        "days": [
-          "Wed"
-        ],
-        "time": "671..820"
-      },
       {
         "program": "BSCSE",
         "code": "CSE 4399",
@@ -5258,84 +5096,9 @@
     ]
   },
   {
-    "id": "mr-kazi-abid-hasan",
-    "name": "Mr. Kazi Abid Hasan",
-    "courses": [
-      {
-        "program": "BSCSE",
-        "code": "CSE 1325",
-        "title": "Digital Logic Design",
-        "section": "A",
-        "kind": "theory",
-        "days": [
-          "Sat",
-          "Tue"
-        ],
-        "time": "510..590"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 1326",
-        "title": "Digital Logic Design Laboratory",
-        "section": "E",
-        "kind": "lab",
-        "days": [
-          "Tue"
-        ],
-        "time": "840..990"
-      },
-      {
-        "program": "BSCSE",
-        "code": "EEE 2113",
-        "title": "Electrical Circuits",
-        "section": "J",
-        "kind": "theory",
-        "days": [
-          "Sun",
-          "Wed"
-        ],
-        "time": "831..910"
-      },
-      {
-        "program": "BSCSE",
-        "code": "EEE 2124",
-        "title": "Electronics Laboratory",
-        "section": "I",
-        "kind": "lab",
-        "days": [
-          "Wed"
-        ],
-        "time": "510..660"
-      }
-    ]
-  },
-  {
     "id": "mr-mabsur-fatin-bin-hossain",
     "name": "Mr. Mabsur Fatin Bin Hossain",
     "courses": [
-      {
-        "program": "BSCSE",
-        "code": "CSE 2215",
-        "title": "Data Structure and Algorithms I",
-        "section": "E",
-        "kind": "theory",
-        "days": [
-          "Sat",
-          "Tue"
-        ],
-        "time": "831..910"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 3812",
-        "title": "Artificial Intelligence Laboratory",
-        "section": "E",
-        "kind": "lab",
-        "days": [
-          "Sun"
-        ],
-        "time": "671..820"
-      },
       {
         "program": "BSDS",
         "code": "DS 1116",
@@ -5366,53 +5129,6 @@
     "name": "Mr. Masnoon Muztahid",
     "courses": [
       {
-        "program": "BSCSE",
-        "code": "CSE 2213",
-        "title": "Discrete Mathematics",
-        "section": "D",
-        "kind": "theory",
-        "days": [
-          "Sat",
-          "Tue"
-        ],
-        "time": "751..830"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 2213",
-        "title": "Discrete Mathematics",
-        "section": "M",
-        "kind": "theory",
-        "days": [
-          "Sun",
-          "Wed"
-        ],
-        "time": "751..830"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 2213",
-        "title": "Discrete Mathematics",
-        "section": "J",
-        "kind": "theory",
-        "days": [
-          "Sun",
-          "Wed"
-        ],
-        "time": "510..590"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 3812",
-        "title": "Artificial Intelligence Laboratory",
-        "section": "I",
-        "kind": "lab",
-        "days": [
-          "Tue"
-        ],
-        "time": "840..990"
-      },
-      {
         "program": "BSDS",
         "code": "DS 1502",
         "title": "Programming for Data Science Laboratory",
@@ -5426,275 +5142,9 @@
     ]
   },
   {
-    "id": "mr-md-nadeem-chowdhury",
-    "name": "Mr. Md. Nadeem Chowdhury",
-    "courses": [
-      {
-        "program": "BSCSE",
-        "code": "EEE 2113",
-        "title": "Electrical Circuits",
-        "section": "H",
-        "kind": "theory",
-        "days": [
-          "Sun",
-          "Wed"
-        ],
-        "time": "671..750"
-      },
-      {
-        "program": "BSCSE",
-        "code": "EEE 2123",
-        "title": "Electronics",
-        "section": "H",
-        "kind": "theory",
-        "days": [
-          "Sun",
-          "Wed"
-        ],
-        "time": "831..910"
-      },
-      {
-        "program": "BSCSE",
-        "code": "EEE 2124",
-        "title": "Electronics Laboratory",
-        "section": "B",
-        "kind": "lab",
-        "days": [
-          "Sat"
-        ],
-        "time": "671..820"
-      },
-      {
-        "program": "BSCSE",
-        "code": "EEE 2124",
-        "title": "Electronics Laboratory",
-        "section": "H",
-        "kind": "lab",
-        "days": [
-          "Tue"
-        ],
-        "time": "840..990"
-      }
-    ]
-  },
-  {
-    "id": "mr-md-tamim-iqbal",
-    "name": "Mr. Md. Tamim Iqbal",
-    "courses": [
-      {
-        "program": "BSCSE",
-        "code": "CSE 3811",
-        "title": "Artificial Intelligence",
-        "section": "C",
-        "kind": "theory",
-        "days": [
-          "Sat",
-          "Tue"
-        ],
-        "time": "671..750"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 3811",
-        "title": "Artificial Intelligence",
-        "section": "E",
-        "kind": "theory",
-        "days": [
-          "Sat",
-          "Tue"
-        ],
-        "time": "831..910"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 3812",
-        "title": "Artificial Intelligence Laboratory",
-        "section": "F",
-        "kind": "lab",
-        "days": [
-          "Sun"
-        ],
-        "time": "840..990"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 3812",
-        "title": "Artificial Intelligence Laboratory",
-        "section": "M",
-        "kind": "lab",
-        "days": [
-          "Mon"
-        ],
-        "time": "671..820"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 4165",
-        "title": "Web Programming",
-        "section": "K",
-        "kind": "single-day-theory",
-        "days": [
-          "Mon"
-        ],
-        "time": "840..990"
-      }
-    ]
-  },
-  {
-    "id": "mr-sheikh-mostofa-amir-foisol",
-    "name": "Mr. Sheikh Mostofa Amir Foisol",
-    "courses": [
-      {
-        "program": "BSCSE",
-        "code": "CSE 3421",
-        "title": "Software Engineering",
-        "section": "C",
-        "kind": "theory",
-        "days": [
-          "Sat",
-          "Tue"
-        ],
-        "time": "751..830"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 3421",
-        "title": "Software Engineering",
-        "section": "K",
-        "kind": "theory",
-        "days": [
-          "Sat",
-          "Tue"
-        ],
-        "time": "591..670"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 3422",
-        "title": "Software Engineering Laboratory",
-        "section": "M",
-        "kind": "lab",
-        "days": [
-          "Wed"
-        ],
-        "time": "510..660"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 3422",
-        "title": "Software Engineering Laboratory",
-        "section": "O",
-        "kind": "lab",
-        "days": [
-          "Wed"
-        ],
-        "time": "840..990"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 3811",
-        "title": "Artificial Intelligence",
-        "section": "A",
-        "kind": "theory",
-        "days": [
-          "Sat",
-          "Tue"
-        ],
-        "time": "510..590"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 3812",
-        "title": "Artificial Intelligence Laboratory",
-        "section": "A",
-        "kind": "lab",
-        "days": [
-          "Sun"
-        ],
-        "time": "671..820"
-      }
-    ]
-  },
-  {
-    "id": "mr-sheikh-tanvir-ahmed",
-    "name": "Mr. Sheikh Tanvir Ahmed",
-    "courses": [
-      {
-        "program": "BSCSE",
-        "code": "CSE 1115",
-        "title": "Object Oriented Programming",
-        "section": "C",
-        "kind": "theory",
-        "days": [
-          "Sat",
-          "Tue"
-        ],
-        "time": "671..750"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 1115",
-        "title": "Object Oriented Programming",
-        "section": "E",
-        "kind": "theory",
-        "days": [
-          "Sun",
-          "Wed"
-        ],
-        "time": "591..670"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 1116",
-        "title": "Object Oriented Programming Laboratory",
-        "section": "D",
-        "kind": "lab",
-        "days": [
-          "Sun"
-        ],
-        "time": "840..990"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 1116",
-        "title": "Object Oriented Programming Laboratory",
-        "section": "H",
-        "kind": "lab",
-        "days": [
-          "Wed"
-        ],
-        "time": "840..990"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 2217",
-        "title": "Data Structure and Algorithms II",
-        "section": "F",
-        "kind": "theory",
-        "days": [
-          "Sat",
-          "Tue"
-        ],
-        "time": "911..990"
-      }
-    ]
-  },
-  {
     "id": "mr-syed-tauhid-zuhori",
     "name": "Mr. Syed Tauhid Zuhori",
     "courses": [
-      {
-        "program": "BSCSE",
-        "code": "PMG 4101",
-        "title": "Project Management",
-        "section": "D",
-        "kind": "theory",
-        "days": [
-          "Sat",
-          "Tue"
-        ],
-        "time": "831..910"
-      },
       {
         "program": "BSDS",
         "code": "DS 4115",
@@ -5727,42 +5177,6 @@
     "courses": [
       {
         "program": "BSCSE",
-        "code": "CSE 2217",
-        "title": "Data Structure and Algorithms II",
-        "section": "C",
-        "kind": "theory",
-        "days": [
-          "Sat",
-          "Tue"
-        ],
-        "time": "671..750"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 2233",
-        "title": "Theory of Computation",
-        "section": "F",
-        "kind": "theory",
-        "days": [
-          "Sun",
-          "Wed"
-        ],
-        "time": "751..830"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 2233",
-        "title": "Theory of Computation",
-        "section": "G",
-        "kind": "theory",
-        "days": [
-          "Sun",
-          "Wed"
-        ],
-        "time": "911..990"
-      },
-      {
-        "program": "BSCSE",
         "code": "CSE 3522",
         "title": "Database Management Systems Laboratory",
         "section": "S",
@@ -5771,70 +5185,6 @@
           "Sun"
         ],
         "time": "510..660"
-      }
-    ]
-  },
-  {
-    "id": "ms-sumaiya-ahmed-rani",
-    "name": "Ms. Sumaiya Ahmed Rani",
-    "courses": [
-      {
-        "program": "BSCSE",
-        "code": "CSE 1110",
-        "title": "Introduction to Computer Systems",
-        "section": "N",
-        "kind": "single-day-theory",
-        "days": [
-          "Sat"
-        ],
-        "time": "510..660"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 2217",
-        "title": "Data Structure and Algorithms II",
-        "section": "E",
-        "kind": "theory",
-        "days": [
-          "Sat",
-          "Tue"
-        ],
-        "time": "831..910"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 2217",
-        "title": "Data Structure and Algorithms II",
-        "section": "G",
-        "kind": "theory",
-        "days": [
-          "Sun",
-          "Wed"
-        ],
-        "time": "510..590"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 2218",
-        "title": "Data Structure and Algorithms II Laboratory",
-        "section": "H",
-        "kind": "lab",
-        "days": [
-          "Sun"
-        ],
-        "time": "671..820"
-      },
-      {
-        "program": "BSCSE",
-        "code": "PMG 4101",
-        "title": "Project Management",
-        "section": "L",
-        "kind": "theory",
-        "days": [
-          "Sat",
-          "Tue"
-        ],
-        "time": "911..990"
       }
     ]
   },
@@ -5983,13 +5333,16 @@
         "program": "BSCSE",
         "code": "ENG 1013",
         "title": "English II",
-        "section": "AS",
+        "section": "AF",
         "kind": "theory",
         "days": [
           "Sun",
           "Wed"
         ],
-        "time": "911..990"
+        "time": "591..670",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Faculty updated in UCAM"
       }
     ]
   },
@@ -6008,60 +5361,6 @@
           "Tue"
         ],
         "time": "751..830"
-      }
-    ]
-  },
-  {
-    "id": "myesha",
-    "name": "Myesha",
-    "courses": [
-      {
-        "program": "BSCSE",
-        "code": "MATH 1151",
-        "title": "Fundamental Calculus",
-        "section": "F",
-        "kind": "theory",
-        "days": [
-          "Sun",
-          "Wed"
-        ],
-        "time": "911..990"
-      },
-      {
-        "program": "BSCSE",
-        "code": "MATH 1151",
-        "title": "Fundamental Calculus",
-        "section": "S",
-        "kind": "theory",
-        "days": [
-          "Sun",
-          "Wed"
-        ],
-        "time": "751..830"
-      },
-      {
-        "program": "BSCSE",
-        "code": "MATH 1151",
-        "title": "Fundamental Calculus",
-        "section": "Q",
-        "kind": "theory",
-        "days": [
-          "Sat",
-          "Tue"
-        ],
-        "time": "671..750"
-      },
-      {
-        "program": "BSCSE",
-        "code": "MATH 1151",
-        "title": "Fundamental Calculus",
-        "section": "J",
-        "kind": "theory",
-        "days": [
-          "Sat",
-          "Tue"
-        ],
-        "time": "510..590"
       }
     ]
   },
@@ -6419,8 +5718,7 @@
           "Sat",
           "Tue"
         ],
-        "time": "751..830",
-        "updated": true
+        "time": "751..830"
       }
     ]
   },
@@ -6799,24 +6097,6 @@
     ]
   },
   {
-    "id": "raan",
-    "name": "RaAN",
-    "courses": [
-      {
-        "program": "BSCSE",
-        "code": "PHY 2105",
-        "title": "Physics",
-        "section": "A",
-        "kind": "theory",
-        "days": [
-          "Sat",
-          "Tue"
-        ],
-        "time": "911..990"
-      }
-    ]
-  },
-  {
     "id": "rafid-nahiyan-farabi",
     "name": "Rafid Nahiyan Farabi",
     "courses": [
@@ -6894,6 +6174,21 @@
     "id": "rahil-afzal-nihal",
     "name": "Rahil Afzal Nihal",
     "courses": [
+      {
+        "program": "BSCSE",
+        "code": "PHY 2105",
+        "title": "Physics",
+        "section": "A",
+        "kind": "theory",
+        "days": [
+          "Sat",
+          "Tue"
+        ],
+        "time": "911..990",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Faculty updated in UCAM"
+      },
       {
         "program": "BSCSE",
         "code": "PHY 2106",
@@ -7203,18 +6498,6 @@
       },
       {
         "program": "BSCSE",
-        "code": "CSE 2215",
-        "title": "Data Structure and Algorithms I",
-        "section": "H",
-        "kind": "theory",
-        "days": [
-          "Sun",
-          "Wed"
-        ],
-        "time": "671..750"
-      },
-      {
-        "program": "BSCSE",
         "code": "CSE 3811",
         "title": "Artificial Intelligence",
         "section": "D",
@@ -7277,18 +6560,6 @@
         "program": "BSCSE",
         "code": "PHY 2105",
         "title": "Physics",
-        "section": "F",
-        "kind": "theory",
-        "days": [
-          "Sat",
-          "Tue"
-        ],
-        "time": "510..590"
-      },
-      {
-        "program": "BSCSE",
-        "code": "PHY 2105",
-        "title": "Physics",
         "section": "O",
         "kind": "theory",
         "days": [
@@ -7296,6 +6567,21 @@
           "Wed"
         ],
         "time": "911..990"
+      },
+      {
+        "program": "BSCSE",
+        "code": "PHY 2105",
+        "title": "Physics",
+        "section": "I",
+        "kind": "theory",
+        "days": [
+          "Sun",
+          "Wed"
+        ],
+        "time": "591..670",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Faculty updated in UCAM"
       },
       {
         "program": "BSCSE",
@@ -7484,13 +6770,16 @@
         "program": "BSCSE",
         "code": "CSE 4891",
         "title": "Data Mining",
-        "section": "C",
+        "section": "A",
         "kind": "theory",
         "days": [
           "Sat",
           "Tue"
         ],
-        "time": "831..910"
+        "time": "671..750",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Faculty updated in UCAM"
       },
       {
         "program": "BSCSE",
@@ -7552,18 +6841,6 @@
     "id": "sagar-dutta",
     "name": "Sagar Dutta",
     "courses": [
-      {
-        "program": "BSCSE",
-        "code": "PHY 2105",
-        "title": "Physics",
-        "section": "B",
-        "kind": "theory",
-        "days": [
-          "Sat",
-          "Tue"
-        ],
-        "time": "591..670"
-      },
       {
         "program": "BSCSE",
         "code": "PHY 2105",
@@ -8083,13 +7360,16 @@
         "program": "BSCSE",
         "code": "CSE 4891",
         "title": "Data Mining",
-        "section": "A",
+        "section": "C",
         "kind": "theory",
         "days": [
           "Sat",
           "Tue"
         ],
-        "time": "671..750"
+        "time": "831..910",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Faculty updated in UCAM"
       }
     ]
   },
@@ -9076,58 +8356,6 @@
           "Tue"
         ],
         "time": "751..830"
-      }
-    ]
-  },
-  {
-    "id": "taherin",
-    "name": "Taherin",
-    "courses": [
-      {
-        "program": "BSCSE",
-        "code": "PHY 2105",
-        "title": "Physics",
-        "section": "G",
-        "kind": "theory",
-        "days": [
-          "Sun",
-          "Wed"
-        ],
-        "time": "831..910"
-      },
-      {
-        "program": "BSCSE",
-        "code": "PHY 2105",
-        "title": "Physics",
-        "section": "L",
-        "kind": "theory",
-        "days": [
-          "Sat",
-          "Tue"
-        ],
-        "time": "591..670"
-      },
-      {
-        "program": "BSCSE",
-        "code": "PHY 2106",
-        "title": "Physics Laboratory",
-        "section": "C",
-        "kind": "lab",
-        "days": [
-          "Sat"
-        ],
-        "time": "840..990"
-      },
-      {
-        "program": "BSCSE",
-        "code": "PHY 2106",
-        "title": "Physics Laboratory",
-        "section": "J",
-        "kind": "lab",
-        "days": [
-          "Sun"
-        ],
-        "time": "510..660"
       }
     ]
   },

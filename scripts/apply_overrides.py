@@ -10,9 +10,9 @@ import json
 import argparse
 from typing import Dict, List, Any, Tuple
 
-DEFAULT_OVERRIDES_PATH = os.path.join("data", "overrides", "2026-fall-faculty-changes.json")
+DEFAULT_OVERRIDES_PATH = os.path.join("data", "overrides", "2026-fall-faculty-changes-oct24.json")
 DEFAULT_DATA_DIR = "data"
-DEFAULT_DATE = "2026-10-23"
+DEFAULT_DATE = "2026-10-24"
 
 def slugify(text: str) -> str:
     import re
@@ -73,10 +73,176 @@ def rebuild_courses_and_faculty(sections: List[Dict[str, Any]]) -> Tuple[List[Di
                 }
                 if sec.get("updated"):
                     c_data["updated"] = True
+                    if sec.get("updatedOn"):
+                        c_data["updatedOn"] = sec["updatedOn"]
+                    if sec.get("updatedNote"):
+                        c_data["updatedNote"] = sec["updatedNote"]
                 faculty_map[f_id]["courses"].append(c_data)
 
     faculty_list = sorted(faculty_map.values(), key=lambda f: f["name"])
     return courses_list, faculty_list
+
+def generate_csv_diff_groups(sections: List[Dict[str, Any]], faculty_list: List[Dict[str, Any]], csv_path: str = "faculty-timings.csv"):
+    import csv
+    import re
+
+    if not os.path.exists(csv_path):
+        return None
+
+    with open(csv_path, "r", encoding="utf-8-sig") as f:
+        csv_rows = list(csv.DictReader(f))
+
+    day_map = {
+        'Saturday': 'Sat',
+        'Sunday': 'Sun',
+        'Monday': 'Mon',
+        'Tuesday': 'Tue',
+        'Wednesday': 'Wed',
+        'Thursday': 'Thu',
+        'Friday': 'Fri'
+    }
+
+    def parse_time_12h(t_str):
+        t_str = t_str.strip()
+        m = re.match(r'(\d{1,2}):(\d{2})\s*(AM|PM)', t_str, re.IGNORECASE)
+        if not m:
+            return None
+        hr, mn, meridiem = int(m.group(1)), int(m.group(2)), m.group(3).upper()
+        if meridiem == 'PM' and hr != 12:
+            hr += 12
+        elif meridiem == 'AM' and hr == 12:
+            hr = 0
+        return hr * 60 + mn
+
+    def clean_room(r):
+        if not r:
+            return ''
+        r = r.strip()
+        r = re.sub(r'\s*[-–—]\s*([A-Za-z\s]+Lab)', r' (\1)', r, flags=re.I)
+        r = re.sub(r'\s+', ' ', r)
+        return r
+
+    def parse_csv_meetings(timing_str, room_str):
+        if not timing_str or not timing_str.strip():
+            return []
+        norm_room = clean_room(room_str)
+        parts = [p.strip() for p in timing_str.split(';') if p.strip()]
+        meetings = []
+        for part in parts:
+            m = re.match(r'([A-Za-z]+)\s+([0-9:]+\s*[APap][Mm])\s*[–\-—]\s*([0-9:]+\s*[APap][Mm])', part)
+            if m:
+                day_full = m.group(1)
+                day = day_map.get(day_full, day_full[:3])
+                start = parse_time_12h(m.group(2))
+                end = parse_time_12h(m.group(3))
+                meetings.append({'day': day, 'start': start, 'end': end, 'room': norm_room})
+        meetings.sort(key=lambda x: (x['day'], x['start']))
+        return meetings
+
+    def norm_name(n):
+        n = n.lower().strip()
+        n = re.sub(r'^(dr|prof|md|mst|mr|mrs|engr)\.?\s+', '', n)
+        n = re.sub(r'[^a-z0-9]', '', n)
+        return n
+
+    faculty_by_norm = {norm_name(f['name']): f for f in faculty_list}
+
+    dataset_by_cs = {}
+    for s in sections:
+        key = (s['courseCode'], s['section'])
+        dataset_by_cs.setdefault(key, []).append(s)
+
+    matched_dataset_sec_ids = set()
+    group_b = []
+    group_c = []
+
+    for idx, r in enumerate(csv_rows):
+        course_raw = r['Course'].strip()
+        code = course_raw.split(' — ', 1)[0].strip()
+        sec_letter = r['Section'].strip()
+
+        csv_meetings = parse_csv_meetings(r['Class timing'], r['Room'])
+        csv_room = clean_room(r['Room'])
+        csv_fac_raw = r['Faculty'].strip()
+        is_csv_tba = csv_fac_raw.startswith('TBA') or not csv_fac_raw or csv_fac_raw == 'TBA / Not assigned'
+
+        if is_csv_tba:
+            csv_canonical_fac = 'TBA'
+        else:
+            f_match = faculty_by_norm.get(norm_name(csv_fac_raw))
+            csv_canonical_fac = f_match['name'] if f_match else csv_fac_raw
+
+        candidates = dataset_by_cs.get((code, sec_letter), [])
+        if not candidates:
+            group_c.append({
+                'code': code,
+                'title': course_raw.split(' — ', 1)[1].strip() if ' — ' in course_raw else '',
+                'section': sec_letter,
+                'timing': r['Class timing'],
+                'room': r['Room'],
+                'faculty': csv_canonical_fac
+            })
+            continue
+
+        chosen = None
+        if len(candidates) == 1:
+            chosen = candidates[0]
+        else:
+            for cand in candidates:
+                cand_meetings = [{'day': m['day'], 'start': m['start'], 'end': m['end'], 'room': clean_room(m.get('room'))} for m in cand['meetings']]
+                cand_meetings.sort(key=lambda x: (x['day'], x['start']))
+                if cand_meetings == csv_meetings:
+                    chosen = cand
+                    break
+            if not chosen:
+                chosen = candidates[0]
+
+        matched_dataset_sec_ids.add(chosen['id'])
+
+        cand_meetings = [{'day': m['day'], 'start': m['start'], 'end': m['end'], 'room': clean_room(m.get('room'))} for m in chosen['meetings']]
+        cand_meetings.sort(key=lambda x: (x['day'], x['start']))
+
+        timing_room_matches = (cand_meetings == csv_meetings) if csv_meetings else True
+
+        dataset_fac_list = chosen['faculty']
+        is_fac_same = False
+        if is_csv_tba:
+            is_fac_same = ('TBA' in dataset_fac_list)
+        else:
+            is_fac_same = any(norm_name(f) == norm_name(csv_canonical_fac) for f in dataset_fac_list)
+
+        if not timing_room_matches:
+            d_times = "/".join(dict.fromkeys(m["day"] for m in chosen["meetings"])) + " " + f"{chosen['meetings'][0]['start']//60:02d}:{chosen['meetings'][0]['start']%60:02d}-{chosen['meetings'][0]['end']//60:02d}:{chosen['meetings'][0]['end']%60:02d}"
+            d_room = chosen['meetings'][0].get('room', 'TBA') if chosen['meetings'] else 'TBA'
+            group_b.append({
+                'code': code,
+                'title': chosen['title'],
+                'section': sec_letter,
+                'dataset_schedule': f"{d_times} ({d_room})",
+                'csv_schedule': f"{r['Class timing']} ({r['Room']})",
+                'dataset_faculty': ", ".join(chosen['faculty']),
+                'csv_faculty': csv_canonical_fac
+            })
+
+    group_d = []
+    for s in sections:
+        if s['id'] not in matched_dataset_sec_ids:
+            d_times = "/".join(dict.fromkeys(m["day"] for m in s["meetings"])) + " " + f"{s['meetings'][0]['start']//60:02d}:{s['meetings'][0]['start']%60:02d}-{s['meetings'][0]['end']//60:02d}:{s['meetings'][0]['end']%60:02d}" if s.get('meetings') else 'TBA'
+            d_room = s['meetings'][0].get('room', 'TBA') if s.get('meetings') else 'TBA'
+            group_d.append({
+                'program': s['program'],
+                'code': s['courseCode'],
+                'title': s['title'],
+                'section': s['section'],
+                'schedule': f"{d_times} ({d_room})",
+                'faculty': ", ".join(s.get('faculty', []))
+            })
+
+    return {
+        'group_b': group_b,
+        'group_c': group_c,
+        'group_d': group_d
+    }
 
 def apply_overrides(data_dir: str = DEFAULT_DATA_DIR, overrides_path: str = DEFAULT_OVERRIDES_PATH, date_str: str = DEFAULT_DATE) -> Dict[str, Any]:
     sections_path = os.path.join(data_dir, "sections.json")
@@ -105,6 +271,12 @@ def apply_overrides(data_dir: str = DEFAULT_DATA_DIR, overrides_path: str = DEFA
         for f_name, f_id in zip(sec.get("faculty", []), sec.get("facultyIds", [])):
             if f_name != "TBA" and f_id:
                 known_faculty_ids[f_name] = f_id
+
+    # Reset existing updated flags on all sections so that only currently applied overrides are flagged
+    for sec in sections:
+        sec.pop("updated", None)
+        sec.pop("updatedOn", None)
+        sec.pop("updatedNote", None)
 
     applied_records = []
 
@@ -176,6 +348,7 @@ def apply_overrides(data_dir: str = DEFAULT_DATA_DIR, overrides_path: str = DEFA
             new_faculty_desc = new_fac
 
         target_sec["updated"] = True
+        target_sec["updatedOn"] = date_str
         target_sec["updatedNote"] = "Faculty updated in UCAM"
 
         applied_records.append({
@@ -224,6 +397,9 @@ def apply_overrides(data_dir: str = DEFAULT_DATA_DIR, overrides_path: str = DEFA
     for a in added_faculty:
         print(f"  + ADDED faculty: {a['name']} ({a['id']})")
 
+    # Generate CSV diff reports if faculty-timings.csv is present
+    diff_groups = generate_csv_diff_groups(sections, new_faculty)
+
     # Update docs/data-changes.md
     docs_dir = "docs"
     os.makedirs(docs_dir, exist_ok=True)
@@ -240,16 +416,60 @@ def apply_overrides(data_dir: str = DEFAULT_DATA_DIR, overrides_path: str = DEFA
             f"| {r['courseCode']} {r['title']} | {r['section']} | {day_str} {time_str} | {room_str} | {r['oldFaculty']} | {r['newFaculty']} | {date_str} |"
         )
 
-    changes_content = f"""# Data Changes Log
+    section_header = f"## Fall 2026 Faculty & Schedule Sync ({date_str})"
+    new_section_content = f"""
+{section_header}
+Synced with `faculty-timings.csv` (737 rows) against the dataset (791 sections).
 
-Audit trail of manual, portal, and UCAM overrides applied to the Fall 2026 course and faculty dataset.
-
-## Fall 2026 Faculty Updates ({date_str})
-Synced with the UIU UCAM portal updates following the official registrar routine publication.
+### Group a: Applied Faculty Changes ({len(applied_records)} sections)
+Faculty reassigned; meeting days, times, and rooms matched exactly.
 
 | Course | Section | Time | Room | Old Faculty | New Faculty | Date |
 |---|---|---|---|---|---|---|
-""" + "\n".join(table_rows) + f"""
+""" + "\n".join(table_rows)
+
+    if diff_groups:
+        gb = diff_groups['group_b']
+        gc = diff_groups['group_c']
+        gd = diff_groups['group_d']
+
+        new_section_content += f"""
+
+### Group b: Schedule / Room Differences ({len(gb)} sections, Report Only)
+Differences in room or timing between dataset and CSV; left untouched in dataset.
+
+| Course | Section | Dataset Time & Room | CSV Time & Room | Dataset Faculty | CSV Faculty |
+|---|---|---|---|---|---|
+""" + "\n".join([
+            f"| {b['code']} {b['title']} | {b['section']} | {b['dataset_schedule']} | {b['csv_schedule']} | {b['dataset_faculty']} | {b['csv_faculty']} |"
+            for b in gb
+        ])
+
+        new_section_content += f"""
+
+### Group c: In CSV but Not in Dataset ({len(gc)} rows, Report Only)
+Courses/sections present in `faculty-timings.csv` but not found by `(courseCode, section)` in `sections.json` (e.g. lab sections where registration used alternate suffixes).
+
+| Course Code | Title | Section | CSV Timing | CSV Room | CSV Faculty |
+|---|---|---|---|---|---|
+""" + "\n".join([
+            f"| {c['code']} | {c['title']} | {c['section']} | {c['timing']} | {c['room']} | {c['faculty']} |"
+            for c in gc
+        ])
+
+        new_section_content += f"""
+
+### Group d: In Dataset but Not in CSV ({len(gd)} sections, Report Only)
+Sections present in `sections.json` without matching entries in `faculty-timings.csv`.
+
+| Program | Course | Section | Schedule | Current Faculty |
+|---|---|---|---|---|
+""" + "\n".join([
+            f"| {d['program']} | {d['code']} {d['title']} | {d['section']} | {d['schedule']} | {d['faculty']} |"
+            for d in gd
+        ])
+
+    new_section_content += f"""
 
 ### Faculty Impact Summary
 - **Removed Faculty (0 sections remaining)**:
@@ -258,10 +478,29 @@ Synced with the UIU UCAM portal updates following the official registrar routine
   - Pre-update: {len(old_faculty_list)} faculty members
   - Post-update: {len(new_faculty)} faculty members ({len(removed_faculty)} removed)
 - **Sections Count**: Total {len(sections)} sections (invariant).
-- **TBA Sections**: Increased by {sum(1 for r in applied_records if r['newFaculty'] == 'TBA')}.
+- **TBA Sections**: {sum(1 for s in sections if 'TBA' in s.get('faculty', []))} ({sum(1 for r in applied_records if r['newFaculty'] == 'TBA')} newly set to TBA).
 """
+
+    existing_changes = ""
+    if os.path.exists(changes_md_path):
+        with open(changes_md_path, "r", encoding="utf-8") as f:
+            existing_changes = f.read()
+
+    if section_header in existing_changes:
+        # Replace existing section
+        parts = existing_changes.split(section_header)
+        prefix = parts[0]
+        rest = parts[1]
+        next_sec_idx = rest.find("\n## ")
+        suffix = rest[next_sec_idx:] if next_sec_idx != -1 else ""
+        updated_content = prefix.rstrip() + "\n" + new_section_content.strip() + "\n" + suffix.lstrip()
+    else:
+        if not existing_changes.strip():
+            existing_changes = "# Data Changes Log\n\nAudit trail of manual, portal, and UCAM overrides applied to the Fall 2026 course and faculty dataset.\n"
+        updated_content = existing_changes.rstrip() + "\n" + new_section_content
+
     with open(changes_md_path, "w", encoding="utf-8") as f:
-        f.write(changes_content)
+        f.write(updated_content)
     print(f"Updated audit log: {changes_md_path}")
 
     # Append to data/anomalies.md

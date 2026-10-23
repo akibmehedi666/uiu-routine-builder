@@ -1,0 +1,1382 @@
+[
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 1110",
+    "section": "N",
+    "expectedOldFaculty": "Ms. Sumaiya Ahmed Rani",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sat",
+        "start": 510,
+        "end": 660,
+        "room": "326 (Computer Lab)"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 1111",
+    "section": "S",
+    "expectedOldFaculty": "Anika Tasnim Rodela",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sun",
+        "start": 751,
+        "end": 830,
+        "room": "304"
+      },
+      {
+        "day": "Wed",
+        "start": 751,
+        "end": 830,
+        "room": "304"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 1115",
+    "section": "C",
+    "expectedOldFaculty": "Mr. Sheikh Tanvir Ahmed",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sat",
+        "start": 671,
+        "end": 750,
+        "room": "306"
+      },
+      {
+        "day": "Tue",
+        "start": 671,
+        "end": 750,
+        "room": "306"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 1115",
+    "section": "E",
+    "expectedOldFaculty": "Mr. Sheikh Tanvir Ahmed",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sun",
+        "start": 591,
+        "end": 670,
+        "room": "304"
+      },
+      {
+        "day": "Wed",
+        "start": 591,
+        "end": 670,
+        "room": "304"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 1116",
+    "section": "D",
+    "expectedOldFaculty": "Mr. Sheikh Tanvir Ahmed",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sun",
+        "start": 840,
+        "end": 990,
+        "room": "327 (Computer Lab)"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 1116",
+    "section": "H",
+    "expectedOldFaculty": "Mr. Sheikh Tanvir Ahmed",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Wed",
+        "start": 840,
+        "end": 990,
+        "room": "327 (Computer Lab)"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 1325",
+    "section": "A",
+    "expectedOldFaculty": "Mr. Kazi Abid Hasan",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sat",
+        "start": 510,
+        "end": 590,
+        "room": "306"
+      },
+      {
+        "day": "Tue",
+        "start": 510,
+        "end": 590,
+        "room": "306"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 1325",
+    "section": "E",
+    "expectedOldFaculty": "Mr. Angkon Deb",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sun",
+        "start": 510,
+        "end": 590,
+        "room": "306"
+      },
+      {
+        "day": "Wed",
+        "start": 510,
+        "end": 590,
+        "room": "306"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 1326",
+    "section": "C",
+    "expectedOldFaculty": "Mr. Angkon Deb",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sun",
+        "start": 671,
+        "end": 820,
+        "room": "511 (Digital Lab)"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 1326",
+    "section": "E",
+    "expectedOldFaculty": "Mr. Kazi Abid Hasan",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Tue",
+        "start": 840,
+        "end": 990,
+        "room": "511 (Digital Lab)"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 2213",
+    "section": "D",
+    "expectedOldFaculty": "Mr. Masnoon Muztahid",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sat",
+        "start": 751,
+        "end": 830,
+        "room": "309"
+      },
+      {
+        "day": "Tue",
+        "start": 751,
+        "end": 830,
+        "room": "309"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 2213",
+    "section": "J",
+    "expectedOldFaculty": "Mr. Masnoon Muztahid",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sun",
+        "start": 510,
+        "end": 590,
+        "room": "309"
+      },
+      {
+        "day": "Wed",
+        "start": 510,
+        "end": 590,
+        "room": "309"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 2213",
+    "section": "M",
+    "expectedOldFaculty": "Mr. Masnoon Muztahid",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sun",
+        "start": 751,
+        "end": 830,
+        "room": "307"
+      },
+      {
+        "day": "Wed",
+        "start": 751,
+        "end": 830,
+        "room": "307"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 2215",
+    "section": "E",
+    "expectedOldFaculty": "Mr. Mabsur Fatin Bin Hossain",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sat",
+        "start": 831,
+        "end": 910,
+        "room": "307"
+      },
+      {
+        "day": "Tue",
+        "start": 831,
+        "end": 910,
+        "room": "307"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 2215",
+    "section": "H",
+    "expectedOldFaculty": "Rubaiya Rahtin Khan",
+    "newFaculty": "Anika Tasnim Rodela",
+    "meetingsExpected": [
+      {
+        "day": "Sun",
+        "start": 671,
+        "end": 750,
+        "room": "329"
+      },
+      {
+        "day": "Wed",
+        "start": 671,
+        "end": 750,
+        "room": "329"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 2217",
+    "section": "C",
+    "expectedOldFaculty": "Ms. Mehreen Hossain Chowdhury",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sat",
+        "start": 671,
+        "end": 750,
+        "room": "303"
+      },
+      {
+        "day": "Tue",
+        "start": 671,
+        "end": 750,
+        "room": "303"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 2217",
+    "section": "E",
+    "expectedOldFaculty": "Ms. Sumaiya Ahmed Rani",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sat",
+        "start": 831,
+        "end": 910,
+        "room": "308"
+      },
+      {
+        "day": "Tue",
+        "start": 831,
+        "end": 910,
+        "room": "308"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 2217",
+    "section": "F",
+    "expectedOldFaculty": "Mr. Sheikh Tanvir Ahmed",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sat",
+        "start": 911,
+        "end": 990,
+        "room": "308"
+      },
+      {
+        "day": "Tue",
+        "start": 911,
+        "end": 990,
+        "room": "308"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 2217",
+    "section": "G",
+    "expectedOldFaculty": "Ms. Sumaiya Ahmed Rani",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sun",
+        "start": 510,
+        "end": 590,
+        "room": "324"
+      },
+      {
+        "day": "Wed",
+        "start": 510,
+        "end": 590,
+        "room": "324"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 2218",
+    "section": "H",
+    "expectedOldFaculty": "Ms. Sumaiya Ahmed Rani",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sun",
+        "start": 671,
+        "end": 820,
+        "room": "626 (Computer Lab)"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 2233",
+    "section": "F",
+    "expectedOldFaculty": "Ms. Mehreen Hossain Chowdhury",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sun",
+        "start": 751,
+        "end": 830,
+        "room": "323"
+      },
+      {
+        "day": "Wed",
+        "start": 751,
+        "end": 830,
+        "room": "323"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 2233",
+    "section": "G",
+    "expectedOldFaculty": "Ms. Mehreen Hossain Chowdhury",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sun",
+        "start": 911,
+        "end": 990,
+        "room": "323"
+      },
+      {
+        "day": "Wed",
+        "start": 911,
+        "end": 990,
+        "room": "323"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 3421",
+    "section": "C",
+    "expectedOldFaculty": "Mr. Sheikh Mostofa Amir Foisol",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sat",
+        "start": 751,
+        "end": 830,
+        "room": "330"
+      },
+      {
+        "day": "Tue",
+        "start": 751,
+        "end": 830,
+        "room": "330"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 3421",
+    "section": "K",
+    "expectedOldFaculty": "Mr. Sheikh Mostofa Amir Foisol",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sat",
+        "start": 591,
+        "end": 670,
+        "room": "329"
+      },
+      {
+        "day": "Tue",
+        "start": 591,
+        "end": 670,
+        "room": "329"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 3422",
+    "section": "M",
+    "expectedOldFaculty": "Mr. Sheikh Mostofa Amir Foisol",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Wed",
+        "start": 510,
+        "end": 660,
+        "room": "427 (Computer Lab)"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 3422",
+    "section": "O",
+    "expectedOldFaculty": "Mr. Sheikh Mostofa Amir Foisol",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Wed",
+        "start": 840,
+        "end": 990,
+        "room": "427 (Computer Lab)"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 3712",
+    "section": "D",
+    "expectedOldFaculty": "Mr. Abid Hasan Khondaker",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Tue",
+        "start": 671,
+        "end": 820,
+        "room": "528 (Computer Lab)"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 3712",
+    "section": "E",
+    "expectedOldFaculty": "Mr. Abid Hasan Khondaker",
+    "newFaculty": "Miftahul Sheikh",
+    "meetingsExpected": [
+      {
+        "day": "Tue",
+        "start": 510,
+        "end": 660,
+        "room": "528 (Computer Lab)"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 3712",
+    "section": "F",
+    "expectedOldFaculty": "Mr. Abid Hasan Khondaker",
+    "newFaculty": "Abu Bakar Fahad",
+    "meetingsExpected": [
+      {
+        "day": "Mon",
+        "start": 671,
+        "end": 820,
+        "room": "523 (Computer Lab)"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 3712",
+    "section": "G",
+    "expectedOldFaculty": "Mr. Abid Hasan Khondaker",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Mon",
+        "start": 840,
+        "end": 990,
+        "room": "427 (Computer Lab)"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 3811",
+    "section": "A",
+    "expectedOldFaculty": "Mr. Sheikh Mostofa Amir Foisol",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sat",
+        "start": 510,
+        "end": 590,
+        "room": "403"
+      },
+      {
+        "day": "Tue",
+        "start": 510,
+        "end": 590,
+        "room": "403"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 3811",
+    "section": "C",
+    "expectedOldFaculty": "Mr. Md. Tamim Iqbal",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sat",
+        "start": 671,
+        "end": 750,
+        "room": "404"
+      },
+      {
+        "day": "Tue",
+        "start": 671,
+        "end": 750,
+        "room": "404"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 3811",
+    "section": "E",
+    "expectedOldFaculty": "Mr. Md. Tamim Iqbal",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sat",
+        "start": 831,
+        "end": 910,
+        "room": "329"
+      },
+      {
+        "day": "Tue",
+        "start": 831,
+        "end": 910,
+        "room": "329"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 3812",
+    "section": "A",
+    "expectedOldFaculty": "Mr. Sheikh Mostofa Amir Foisol",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sun",
+        "start": 671,
+        "end": 820,
+        "room": "727 (Computer Lab)"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 3812",
+    "section": "E",
+    "expectedOldFaculty": "Mr. Mabsur Fatin Bin Hossain",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sun",
+        "start": 671,
+        "end": 820,
+        "room": "826 (Computer Lab)"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 3812",
+    "section": "F",
+    "expectedOldFaculty": "Mr. Md. Tamim Iqbal",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sun",
+        "start": 840,
+        "end": 990,
+        "room": "427 (Computer Lab)"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 3812",
+    "section": "I",
+    "expectedOldFaculty": "Mr. Masnoon Muztahid",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Tue",
+        "start": 840,
+        "end": 990,
+        "room": "530 (Computer Lab)"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 3812",
+    "section": "M",
+    "expectedOldFaculty": "Mr. Md. Tamim Iqbal",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Mon",
+        "start": 671,
+        "end": 820,
+        "room": "528 (Computer Lab)"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 4165",
+    "section": "E",
+    "expectedOldFaculty": "Mr. Abid Hasan Khondaker",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sun",
+        "start": 510,
+        "end": 660,
+        "room": "529 (Computer Lab)"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 4165",
+    "section": "K",
+    "expectedOldFaculty": "Mr. Md. Tamim Iqbal",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Mon",
+        "start": 840,
+        "end": 990,
+        "room": "528 (Computer Lab)"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 4326",
+    "section": "J",
+    "expectedOldFaculty": "Mr. Angkon Deb",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Wed",
+        "start": 671,
+        "end": 820,
+        "room": "508 (Digital Lab)"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 4889",
+    "section": "F",
+    "expectedOldFaculty": "Mr. Abid Hasan Khondaker",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sun",
+        "start": 831,
+        "end": 910,
+        "room": "407"
+      },
+      {
+        "day": "Wed",
+        "start": 831,
+        "end": 910,
+        "room": "407"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 4889",
+    "section": "G",
+    "expectedOldFaculty": "Mr. Abid Hasan Khondaker",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sun",
+        "start": 671,
+        "end": 750,
+        "room": "408"
+      },
+      {
+        "day": "Wed",
+        "start": 671,
+        "end": 750,
+        "room": "408"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 4891",
+    "section": "A",
+    "expectedOldFaculty": "Sayem Shahad",
+    "newFaculty": "Sadia Islam",
+    "meetingsExpected": [
+      {
+        "day": "Sat",
+        "start": 671,
+        "end": 750,
+        "room": "429"
+      },
+      {
+        "day": "Tue",
+        "start": 671,
+        "end": 750,
+        "room": "429"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 4891",
+    "section": "C",
+    "expectedOldFaculty": "Sadia Islam",
+    "newFaculty": "Sayem Shahad",
+    "meetingsExpected": [
+      {
+        "day": "Sat",
+        "start": 831,
+        "end": 910,
+        "room": "406"
+      },
+      {
+        "day": "Tue",
+        "start": 831,
+        "end": 910,
+        "room": "406"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "EEE 2113",
+    "section": "H",
+    "expectedOldFaculty": "Mr. Md. Nadeem Chowdhury",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sun",
+        "start": 671,
+        "end": 750,
+        "room": "425"
+      },
+      {
+        "day": "Wed",
+        "start": 671,
+        "end": 750,
+        "room": "425"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "EEE 2113",
+    "section": "J",
+    "expectedOldFaculty": "Mr. Kazi Abid Hasan",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sun",
+        "start": 831,
+        "end": 910,
+        "room": "409"
+      },
+      {
+        "day": "Wed",
+        "start": 831,
+        "end": 910,
+        "room": "409"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "EEE 2123",
+    "section": "H",
+    "expectedOldFaculty": "Mr. Md. Nadeem Chowdhury",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sun",
+        "start": 831,
+        "end": 910,
+        "room": "410"
+      },
+      {
+        "day": "Wed",
+        "start": 831,
+        "end": 910,
+        "room": "410"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "EEE 2124",
+    "section": "B",
+    "expectedOldFaculty": "Mr. Md. Nadeem Chowdhury",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sat",
+        "start": 671,
+        "end": 820,
+        "room": "825 (Digital Lab)"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "EEE 2124",
+    "section": "H",
+    "expectedOldFaculty": "Mr. Md. Nadeem Chowdhury",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Tue",
+        "start": 840,
+        "end": 990,
+        "room": "825 (Digital Lab)"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "EEE 2124",
+    "section": "I",
+    "expectedOldFaculty": "Mr. Kazi Abid Hasan",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Wed",
+        "start": 510,
+        "end": 660,
+        "room": "825 (Digital Lab)"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "ENG 1013",
+    "section": "AF",
+    "expectedOldFaculty": "TBA",
+    "newFaculty": "Muhammad Saiful Islam",
+    "meetingsExpected": [
+      {
+        "day": "Sun",
+        "start": 591,
+        "end": 670,
+        "room": "425"
+      },
+      {
+        "day": "Wed",
+        "start": 591,
+        "end": 670,
+        "room": "425"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "ENG 1013",
+    "section": "AS",
+    "expectedOldFaculty": "Muhammad Saiful Islam",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sun",
+        "start": 911,
+        "end": 990,
+        "room": "432"
+      },
+      {
+        "day": "Wed",
+        "start": 911,
+        "end": 990,
+        "room": "432"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "MATH 1151",
+    "section": "F",
+    "expectedOldFaculty": "Myesha",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sun",
+        "start": 911,
+        "end": 990,
+        "room": "601"
+      },
+      {
+        "day": "Wed",
+        "start": 911,
+        "end": 990,
+        "room": "601"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "MATH 1151",
+    "section": "J",
+    "expectedOldFaculty": "Myesha",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sat",
+        "start": 510,
+        "end": 590,
+        "room": "605"
+      },
+      {
+        "day": "Tue",
+        "start": 510,
+        "end": 590,
+        "room": "605"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "MATH 1151",
+    "section": "Q",
+    "expectedOldFaculty": "Myesha",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sat",
+        "start": 671,
+        "end": 750,
+        "room": "630"
+      },
+      {
+        "day": "Tue",
+        "start": 671,
+        "end": 750,
+        "room": "630"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "MATH 1151",
+    "section": "S",
+    "expectedOldFaculty": "Myesha",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sun",
+        "start": 751,
+        "end": 830,
+        "room": "603"
+      },
+      {
+        "day": "Wed",
+        "start": 751,
+        "end": 830,
+        "room": "603"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "PHY 2105",
+    "section": "A",
+    "expectedOldFaculty": "RaAN",
+    "newFaculty": "Rahil Afzal Nihal",
+    "meetingsExpected": [
+      {
+        "day": "Sat",
+        "start": 911,
+        "end": 990,
+        "room": "603"
+      },
+      {
+        "day": "Tue",
+        "start": 911,
+        "end": 990,
+        "room": "603"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "PHY 2105",
+    "section": "B",
+    "expectedOldFaculty": "Sagar Dutta",
+    "newFaculty": "Md. Asaduzzaman",
+    "meetingsExpected": [
+      {
+        "day": "Sat",
+        "start": 591,
+        "end": 670,
+        "room": "632"
+      },
+      {
+        "day": "Tue",
+        "start": 591,
+        "end": 670,
+        "room": "632"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "PHY 2105",
+    "section": "F",
+    "expectedOldFaculty": "S.M. Hasibul Hassan Rizvee",
+    "newFaculty": "Md. Asaduzzaman",
+    "meetingsExpected": [
+      {
+        "day": "Sat",
+        "start": 510,
+        "end": 590,
+        "room": "701"
+      },
+      {
+        "day": "Tue",
+        "start": 510,
+        "end": 590,
+        "room": "701"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "PHY 2105",
+    "section": "G",
+    "expectedOldFaculty": "Taherin",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sun",
+        "start": 831,
+        "end": 910,
+        "room": "631"
+      },
+      {
+        "day": "Wed",
+        "start": 831,
+        "end": 910,
+        "room": "631"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "PHY 2105",
+    "section": "H",
+    "expectedOldFaculty": "Badhan",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sun",
+        "start": 911,
+        "end": 990,
+        "room": "630"
+      },
+      {
+        "day": "Wed",
+        "start": 911,
+        "end": 990,
+        "room": "630"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "PHY 2105",
+    "section": "I",
+    "expectedOldFaculty": "Md. Asaduzzaman",
+    "newFaculty": "S.M. Hasibul Hassan Rizvee",
+    "meetingsExpected": [
+      {
+        "day": "Sun",
+        "start": 591,
+        "end": 670,
+        "room": "605"
+      },
+      {
+        "day": "Wed",
+        "start": 591,
+        "end": 670,
+        "room": "605"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "PHY 2105",
+    "section": "L",
+    "expectedOldFaculty": "Taherin",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sat",
+        "start": 591,
+        "end": 670,
+        "room": "701"
+      },
+      {
+        "day": "Tue",
+        "start": 591,
+        "end": 670,
+        "room": "701"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "PHY 2105",
+    "section": "M",
+    "expectedOldFaculty": "Badhan",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sat",
+        "start": 671,
+        "end": 750,
+        "room": "701"
+      },
+      {
+        "day": "Tue",
+        "start": 671,
+        "end": 750,
+        "room": "701"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "PHY 2105",
+    "section": "P",
+    "expectedOldFaculty": "Arafat",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sun",
+        "start": 591,
+        "end": 670,
+        "room": "630"
+      },
+      {
+        "day": "Wed",
+        "start": 591,
+        "end": 670,
+        "room": "630"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "PHY 2106",
+    "section": "A",
+    "expectedOldFaculty": "Arafat",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sat",
+        "start": 510,
+        "end": 660,
+        "room": "510 (Physics Lab)"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "PHY 2106",
+    "section": "C",
+    "expectedOldFaculty": "Taherin",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sat",
+        "start": 840,
+        "end": 990,
+        "room": "510 (Physics Lab)"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "PHY 2106",
+    "section": "D",
+    "expectedOldFaculty": "Badhan",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sat",
+        "start": 840,
+        "end": 990,
+        "room": "704 (Physics Lab)"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "PHY 2106",
+    "section": "F",
+    "expectedOldFaculty": "Arafat",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sun",
+        "start": 671,
+        "end": 820,
+        "room": "510 (Physics Lab)"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "PHY 2106",
+    "section": "J",
+    "expectedOldFaculty": "Taherin",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sun",
+        "start": 510,
+        "end": 660,
+        "room": "704 (Physics Lab)"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "PHY 2106",
+    "section": "K",
+    "expectedOldFaculty": "Badhan",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Tue",
+        "start": 510,
+        "end": 660,
+        "room": "510 (Physics Lab)"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "PMG 4101",
+    "section": "D",
+    "expectedOldFaculty": "Mr. Syed Tauhid Zuhori",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sat",
+        "start": 831,
+        "end": 910,
+        "room": "701"
+      },
+      {
+        "day": "Tue",
+        "start": 831,
+        "end": 910,
+        "room": "701"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "PMG 4101",
+    "section": "L",
+    "expectedOldFaculty": "Ms. Sumaiya Ahmed Rani",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sat",
+        "start": 911,
+        "end": 990,
+        "room": "630"
+      },
+      {
+        "day": "Tue",
+        "start": 911,
+        "end": 990,
+        "room": "630"
+      }
+    ]
+  }
+]
