@@ -26,6 +26,43 @@ import { DATA_UPDATED, DATA_NOTE } from '../config/site';
 // Live metadata numbers directly from extracted datasets
 const STATS = LANDING_STATS;
 
+// <!-- TEMP NOTICE START -->
+function TempNoticeBanner() {
+  const [isOpen, setIsOpen] = useState(true);
+
+  if (!isOpen) return null;
+
+  return (
+    <aside
+      role="alert"
+      aria-label="Temporary site notice"
+      className="temp-notice-banner w-full bg-amber-50 border-b border-amber-200/90 text-amber-950 text-xs sm:text-sm py-2.5 px-4 transition-colors relative z-20"
+    >
+      <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
+        <div className="temp-notice-content flex items-center gap-2.5 min-w-0 flex-1 text-left">
+          <span
+            className="temp-notice-indicator w-2 h-2 rounded-full bg-amber-500 shrink-0"
+            aria-hidden="true"
+          />
+          <p className="temp-notice-text font-medium leading-snug">
+            Please wait for some time. The faculty list has been updated, so we are making some changes to the site. Stay tuned! Sorry for the inconvenience.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setIsOpen(false)}
+          className="temp-notice-close-btn p-1 rounded-md text-amber-800 hover:text-amber-950 hover:bg-amber-100/80 transition-colors shrink-0 flex items-center justify-center min-w-[28px] min-h-[28px]"
+          aria-label="Close notice"
+          title="Dismiss notice"
+        >
+          <span className="text-lg font-bold leading-none select-none" aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    </aside>
+  );
+}
+// <!-- TEMP NOTICE END -->
+
 export function LandingContent() {
   const router = useRouter();
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
@@ -66,6 +103,9 @@ export function LandingContent() {
 
   return (
     <div className="min-h-screen bg-page text-text-primary selection:bg-orange-500 selection:text-white flex flex-col">
+      {/* <!-- TEMP NOTICE START --> */}
+      <TempNoticeBanner />
+      {/* <!-- TEMP NOTICE END --> */}
       {/* 1. Hero Section */}
       <section className="relative overflow-hidden pt-12 pb-16 md:pt-16 md:pb-24 bg-page">
         {/* Soft orange radial background glow */}
