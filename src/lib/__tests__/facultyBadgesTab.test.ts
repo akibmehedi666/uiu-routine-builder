@@ -4,6 +4,8 @@ import {
   computeBadgesOverview,
   sortBadgeSummaries,
   filterAndSortHolders,
+  computeHolderRanks,
+  sortHoldersByMetric,
   BadgeHolder,
 } from '../facultyBadges';
 import { getAllBadgeDefinitions } from '../../config/facultyBadges';
@@ -181,4 +183,135 @@ describe('Faculty Badges Tab - Data & Computations', () => {
     expect(busiest?.topHolder?.tieCount).toBe(1);
     expect(busiest?.topHolder?.label).toContain('+1 more');
   });
+
+  it('12. computeHolderRanks handles ties with "=" prefix and advances ranks correctly', () => {
+    const ranks = computeHolderRanks([
+      { metricValue: 12 },
+      { metricValue: 12 },
+      { metricValue: 9 },
+      { metricValue: 6 },
+      { metricValue: 6 },
+      { metricValue: 3 },
+    ]);
+    expect(ranks).toEqual(['=1', '=1', '3', '=4', '=4', '6']);
+  });
+
+  it('13. sortHoldersByMetric implements 3-factor tie-breaking: metric desc -> totalSections desc -> sortName A-Z', () => {
+    const makeHolder = (id: string, name: string, sortName: string, metricValue: number, totalSections: number): BadgeHolder => ({
+      faculty: {
+        id,
+        name,
+        sortName,
+        totalSections,
+        programs: ['BSCSE'],
+        avatarColor: 'bg-emerald-100 text-emerald-800',
+        badges: [],
+      } as unknown as FacultyStats,
+      metricValue,
+      metricLabel: `${metricValue}`,
+      metricUnit: 'units',
+      metricDetail: 'detail',
+      rank: '1',
+      relativeWidthPercent: 100,
+    });
+
+    const holders: BadgeHolder[] = [
+      makeHolder('1', 'Charlie', 'Charlie', 10, 5),
+      makeHolder('2', 'Alice', 'Alice', 10, 8),      // same metric, more sections -> comes first
+      makeHolder('3', 'Bob', 'Bob', 10, 5),          // same metric, same sections as Charlie -> alphabetical
+      makeHolder('4', 'David', 'David', 12, 2),      // highest metric -> first overall
+    ];
+
+    const sorted = sortHoldersByMetric(holders);
+    expect(sorted.map((h) => h.faculty.name)).toEqual(['David', 'Alice', 'Bob', 'Charlie']);
+  });
+
+  it('14. Relative bar widths: max is always 100% and relative widths are within [10, 100]', () => {
+    for (const summary of overview.badges) {
+      if (summary.holders.length > 0) {
+        expect(summary.holders[0].relativeWidthPercent).toBe(100);
+        for (const h of summary.holders) {
+          expect(h.relativeWidthPercent).toBeGreaterThanOrEqual(10);
+          expect(h.relativeWidthPercent).toBeLessThanOrEqual(100);
+        }
+      }
+    }
+  });
+
+  it('15. All 12 badge definitions have metricUnit and metricDetail defined', () => {
+    const definitions = getAllBadgeDefinitions();
+    expect(definitions.length).toBe(12);
+
+    const sampleFaculty = allFaculty[0] || ({
+      id: 'sample',
+      name: 'Sample Faculty',
+      sortName: 'Faculty, Sample',
+      programs: ['BSCSE', 'BSDS'],
+      totalSections: 6,
+      weeklyHours: 18,
+      uniqueCourses: 3,
+      theorySections: 4,
+      labSections: 2,
+      activeDaysCount: 4,
+      courses: [
+        {
+          code: 'CSE 2213',
+          title: 'Algorithms',
+          program: 'BSCSE',
+          sections: [
+            {
+              sectionName: 'A',
+              room: '530',
+              roomNumber: 530,
+              dayOfWeek: 'Saturday',
+              startTime: '08:30 AM',
+              endTime: '10:00 AM',
+              durationMinutes: 90,
+            },
+            {
+              sectionName: 'B',
+              room: '530',
+              roomNumber: 530,
+              dayOfWeek: 'Sunday',
+              startTime: '08:30 AM',
+              endTime: '10:00 AM',
+              durationMinutes: 90,
+            },
+          ],
+        },
+      ],
+      badges: [],
+      avatarColor: 'bg-indigo-100 text-indigo-800',
+    } as unknown as FacultyStats);
+
+    for (const badge of definitions) {
+      expect(typeof badge.metricUnit).toBe('string');
+      expect(badge.metricUnit.length).toBeGreaterThan(0);
+      const detail = badge.metricDetail(sampleFaculty);
+      expect(typeof detail).toBe('string');
+      expect(detail.length).toBeGreaterThan(0);
+    }
+  });
+
+  it('16. Static verification: no duplicate Badges header button, no black active chips', async () => {
+    const fs = await import('fs');
+    const path = await import('path');
+
+    const pagePath = path.resolve(process.cwd(), 'src/app/faculty-directory/page.tsx');
+    const pageSource = fs.readFileSync(pagePath, 'utf-8');
+
+    // Header must NOT contain separate Badges (12) button
+    expect(pageSource).not.toMatch(/Badges\s*\(\d+\)/);
+
+    const viewPath = path.resolve(process.cwd(), 'src/components/faculty/FacultyBadgesView.tsx');
+    const viewSource = fs.readFileSync(viewPath, 'utf-8');
+
+    // Filter chips must use orange active style, not bg-neutral-900 / bg-black
+    expect(viewSource).not.toContain('bg-neutral-900');
+    expect(viewSource).not.toContain('bg-black');
+
+    // Must have rarity label "Rarity #"
+    expect(viewSource).toContain('Rarity #');
+  });
 });
+

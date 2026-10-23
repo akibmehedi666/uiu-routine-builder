@@ -36,6 +36,7 @@ export interface FacultyCourseSection {
   timeRange: string;
   room: string | null;
   meetings: Meeting[];
+  program: 'BSCSE' | 'BSDS';
 }
 
 export interface FacultyCourseGroup {
@@ -513,6 +514,7 @@ export function getAllFacultyStats(): FacultyStats[] {
         timeRange,
         room,
         meetings: s.meetings,
+        program: s.program,
       });
       group.sectionCount++;
 

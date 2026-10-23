@@ -365,4 +365,12 @@ Key prompts and tasks executed during development:
     - Holders List Panel: Rule definition, `howToEarn` description, search box, program filter chips (`ALL`, `BSCSE`, `BSDS`), sort select (`By metric high-to-low` default, `A-Z`), holder rows with metric value chip, other badges, star pin button, compare checkbox, and 30-row "Load more" pagination.
     - Multi-Badge Achievers Showcase: Highlights top 5 instructors earning the most badges with podium ranks and direct links.
     - Responsive & Accessible: Mobile bottom/full-screen sheet with body scroll lock, Esc dismissal, keyboard radio arrow navigation, visible focus rings, and ARIA live regions.
+15. `faculty-badges-polish`: Badges tab polish & holders panel redesign:
+    - Removed duplicate "Badges (12)" header button; kept "How badges work" and "Surprise me" in tab; renamed badge card rarity to "Rarity #N" with tooltip "1 = fewest faculty hold this badge".
+    - Eye-catching category-tinted banner header: 48px icon tile, 20px bold badge title, category label, 3 mini stats (28px bold Holders, % of faculty, Rarity #N of 12), and single-line Rule + howToEarn info tooltip.
+    - Redesigned holder rows: rank numbers with gold/silver/bronze medals for top 3 and "=N" prefix for ties; stable pastel avatar; 14px semibold name with tooltip + single program tag group (removed duplicate teal chip); prominent metric block (18px tabular bold + unit label + relative orange bar + muted detail); max 3 other icon badges; 32px pin/open buttons; orange compare checkbox; light orange hover tint with row clickability.
+    - Extended `src/config/facultyBadges.ts` with `metricUnit` and `metricDetail(faculty)` across all 12 badges (Cross-Program: "BSCSE 5 · BSDS 3 sections", Course Hub: "CSE 2213 x4", Home Room: "78% in Room 530", Floor Hopper: "Floors 3, 4, 5, 6", Marathon: "5 in a row").
+    - 3-factor deterministic sorting (`metricValue` desc -> `totalSections` desc -> `sortName` A-Z) applied to both holders list and top holder tie-break calculation.
+    - Sticky pinned layout (`h-[calc(100vh-6.5rem)]`) with internal scrolling and zero bottom gap; orange active filter chips; main directory styled sort select; stronger selected card style with smooth scroll-into-view.
+
 

@@ -413,5 +413,34 @@ Following a session interruption audit:
   - 14 Vitest test files passing (164 tests total, 11 new tests in `facultyBadgesTab.test.ts`).
   - Next.js production build (`npm run build`) generates 234 static pages with 0 errors.
 
+## Decision 12: Badges Tab Polish & Holders Panel Redesign
+- **Remove Duplicate Control**:
+  - Removed duplicate "Badges (12)" header button in `src/app/faculty-directory/page.tsx` since the Badges tab is already present in the primary segment control.
+  - Kept "How badges work" and "Surprise me" intact.
+  - Renamed corner rarity label on badge cards from "#N" to "Rarity #N" with informative tooltip: "1 = fewest faculty hold this badge".
+- **Holders Panel Header Redesign**:
+  - Replaced the flat gray header with a soft category-tinted banner: 48px icon tile, 20px bold badge title, category label, and a stat strip with 3 mini stats (Holders 28px bold number, % of faculty, Rarity #N of 12).
+  - Merged Rule and "How to earn" into one line with an Info tooltip/popover containing the full criteria.
+- **Holder Rows Redesign**:
+  - Ranks at left: 1, 2, 3... with gold/silver/bronze soft badges for top 3; ties share ranks with standard "=" prefix (e.g. "=1", "=2").
+  - Stable pastel avatar from `faculty.avatarColor`.
+  - 14px semibold name with tooltip for long names, single program tag group (removed duplicate teal chip).
+  - Prominent METRIC BLOCK on right: 18px bold tabular number + small unit label (`metricUnit`), relative orange bar (max = 100%), and muted `metricDetail` line.
+  - Up to 3 icon-only other badge chips with tooltips under the name.
+  - 32px Pin (star) and open page buttons with `stopPropagation`; orange compare checkbox visible on hover/focus/checked/touch.
+  - Entire row clickable to view faculty detail page.
+- **Meta Per Badge & 3-Factor Tie-Breaking (`src/config/facultyBadges.ts` & `src/lib/facultyBadges.ts`)**:
+  - Extended all 12 badge definitions with `metricUnit` and `metricDetail(faculty)`.
+  - Deterministic 3-factor sorting: `metricValue` desc -> `totalSections` desc -> `sortName` A-Z.
+  - Applied the same tie-breakers to the `topHolder` calculation.
+- **Toolbar & Sticky Layout**:
+  - Pinned sticky panel layout (`sticky top-20 h-[calc(100vh-6.5rem)]`) with internal scrolling and zero bottom gap.
+  - Program filter chips use standard orange active styling (removed black "ALL"). Sort select matches main directory styling.
+  - Selected badge card uses stronger orange border/ring + checkmark and smooth scroll-into-view.
+  - Mobile (<768px): full-screen/bottom sheet with body scroll locked, 44px tap targets, 16px inputs.
+- **Verification**:
+  - 169 Vitest tests passing across 14 test suites (`facultyBadgesTab.test.ts` expanded to 16 comprehensive tests).
+  - Production build clean across 234 static pages.
+
 
 

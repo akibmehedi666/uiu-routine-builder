@@ -13,11 +13,9 @@ import {
   Info,
   SlidersHorizontal,
   Sparkles,
-  ChevronRight,
   ExternalLink,
-  Flame,
   ArrowUpDown,
-  UserCheck,
+  CheckCircle2,
 } from 'lucide-react';
 
 import {
@@ -116,7 +114,7 @@ export function FacultyBadgesView({
       url.searchParams.set('badge', badgeId);
       window.history.replaceState(null, '', url.toString());
     }
-    // On mobile, opening opens the sheet
+    // On mobile, selecting opens the sheet
     setIsMobileSheetOpen(true);
   };
 
@@ -179,8 +177,10 @@ export function FacultyBadgesView({
     }
   }, [isMobileSheetOpen]);
 
-  // Keyboard navigation between badge cards
+  // Card element refs for keyboard nav & scroll-into-view
   const cardRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  // Keyboard navigation between badge cards
   const handleCardKeyDown = (e: React.KeyboardEvent, index: number) => {
     if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
       e.preventDefault();
@@ -192,6 +192,21 @@ export function FacultyBadgesView({
       cardRefs.current[prev]?.focus();
     }
   };
+
+  // Scroll active card into view on mount or deep link change
+  useEffect(() => {
+    const idx = displayedBadges.findIndex((b) => b.badge.id === selectedBadgeId);
+    if (idx !== -1 && cardRefs.current[idx]) {
+      const prefersReducedMotion =
+        typeof window !== 'undefined' &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      cardRefs.current[idx]?.scrollIntoView({
+        behavior: prefersReducedMotion ? 'auto' : 'smooth',
+        block: 'nearest',
+        inline: 'nearest',
+      });
+    }
+  }, [selectedBadgeId, displayedBadges]);
 
   // Category counts
   const categoryCounts = useMemo(() => {
@@ -309,7 +324,7 @@ export function FacultyBadgesView({
                   onKeyDown={(e) => handleCardKeyDown(e, idx)}
                   className={`relative text-left p-3.5 rounded-2xl border transition-all flex flex-col justify-between min-h-[160px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 ${
                     isSelected
-                      ? 'bg-orange-50/30 border-orange-500 ring-2 ring-orange-200/60 shadow-xs'
+                      ? 'bg-orange-50/40 border-orange-500 ring-2 ring-orange-200/80 shadow-xs'
                       : 'bg-white border-stone-200/80 hover:border-orange-300 hover:shadow-2xs'
                   }`}
                 >
@@ -329,16 +344,24 @@ export function FacultyBadgesView({
                             <span>Rarest</span>
                           </span>
                         )}
-                        <span className="text-[11px] font-medium text-stone-400">
-                          #{summary.rarityRank}
+                        <span
+                          className="text-[11px] font-semibold text-stone-500 bg-stone-100/90 px-1.5 py-0.5 rounded-md border border-stone-200"
+                          title="1 = fewest faculty hold this badge"
+                        >
+                          Rarity #{summary.rarityRank}
                         </span>
                       </div>
                     </div>
 
                     <div className="space-y-1">
-                      <h3 className="text-sm font-bold text-text-primary tracking-tight">
-                        {b.name}
-                      </h3>
+                      <div className="flex items-center gap-1.5">
+                        <h3 className="text-sm font-bold text-text-primary tracking-tight">
+                          {b.name}
+                        </h3>
+                        {isSelected && (
+                          <CheckCircle2 className="w-3.5 h-3.5 text-orange-500 shrink-0" />
+                        )}
+                      </div>
                       <p className="text-[11px] text-text-secondary leading-snug line-clamp-2">
                         {b.description}
                       </p>
@@ -387,11 +410,6 @@ export function FacultyBadgesView({
                       </div>
                     )}
                   </div>
-
-                  {/* Selected Indicator Glow */}
-                  {isSelected && (
-                    <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-orange-500" />
-                  )}
                 </button>
               );
             })}
@@ -471,7 +489,7 @@ export function FacultyBadgesView({
         </div>
 
         {/* Right Pane: Selected Badge Faculty List Panel (Desktop Sticky 5 Columns) */}
-        <div className="hidden lg:block lg:col-span-5 sticky top-20">
+        <div className="hidden lg:block lg:col-span-5 sticky top-20 h-[calc(100vh-6.5rem)]">
           {selectedSummary && (
             <FacultyBadgeHoldersPanel
               summary={selectedSummary}
@@ -499,9 +517,9 @@ export function FacultyBadgesView({
       {/* Mobile Full-Screen / Bottom Sheet for Selected Badge */}
       {isMobileSheetOpen && selectedSummary && (
         <div className="fixed inset-0 z-50 bg-stone-900/50 backdrop-blur-xs flex flex-col justify-end lg:hidden animate-in fade-in duration-200">
-          <div className="bg-white rounded-t-3xl max-h-[85vh] flex flex-col overflow-hidden shadow-2xl border-t border-stone-200 animate-in slide-in-from-bottom duration-250">
+          <div className="bg-white rounded-t-3xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border-t border-stone-200 animate-in slide-in-from-bottom duration-250">
             {/* Sheet Header with Close Button */}
-            <div className="p-4 border-b border-stone-200 flex items-center justify-between bg-stone-50">
+            <div className="p-3.5 border-b border-stone-200 flex items-center justify-between bg-stone-50">
               <div className="flex items-center gap-2">
                 <div
                   className={`w-7 h-7 rounded-xl flex items-center justify-center border ${selectedSummary.badge.badgeStyle}`}
@@ -516,7 +534,7 @@ export function FacultyBadgesView({
               <button
                 type="button"
                 onClick={() => setIsMobileSheetOpen(false)}
-                className="w-8 h-8 rounded-xl bg-stone-200/80 hover:bg-stone-300 text-stone-700 flex items-center justify-center min-h-[44px] min-w-[44px]"
+                className="w-9 h-9 rounded-xl bg-stone-200/80 hover:bg-stone-300 text-stone-700 flex items-center justify-center min-h-[44px] min-w-[44px]"
                 aria-label="Close sheet"
               >
                 <X className="w-4 h-4" />
@@ -524,7 +542,7 @@ export function FacultyBadgesView({
             </div>
 
             {/* Sheet Body */}
-            <div className="p-4 overflow-y-auto flex-1">
+            <div className="p-3.5 overflow-hidden flex-1 flex flex-col min-h-0">
               <FacultyBadgeHoldersPanel
                 summary={selectedSummary}
                 searchQuery={searchQuery}
@@ -575,6 +593,13 @@ interface FacultyBadgeHoldersPanelProps {
   copiedLink: boolean;
 }
 
+const CATEGORY_BANNER_STYLES: Record<BadgeCategory, string> = {
+  Schedule: 'bg-amber-50/70 border-amber-200/80',
+  Courses: 'bg-orange-50/70 border-orange-200/80',
+  Rooms: 'bg-cyan-50/70 border-cyan-200/80',
+  Programs: 'bg-teal-50/70 border-teal-200/80',
+};
+
 function FacultyBadgeHoldersPanel({
   summary,
   searchQuery,
@@ -594,27 +619,31 @@ function FacultyBadgeHoldersPanel({
   onCopyLink,
   copiedLink,
 }: FacultyBadgeHoldersPanelProps) {
+  const router = useRouter();
   const b = summary.badge;
 
+  const bannerStyle = CATEGORY_BANNER_STYLES[b.category] || 'bg-stone-50/70 border-stone-200/80';
+
   return (
-    <div className="bg-white border border-stone-200/90 rounded-2xl shadow-xs overflow-hidden flex flex-col">
-      {/* Panel Header */}
-      <div className="p-4 sm:p-5 border-b border-stone-100 bg-stone-50/60 space-y-3">
+    <div className="bg-white border border-stone-200/90 rounded-2xl shadow-xs overflow-hidden flex flex-col h-full">
+      {/* 1. Eye-Catching Soft Tinted Banner Header */}
+      <div className={`p-4 sm:p-5 border-b border-stone-200/80 ${bannerStyle} space-y-3.5 shrink-0`}>
         <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-3">
+            {/* 48px Icon Tile */}
             <div
-              className={`w-9 h-9 rounded-xl flex items-center justify-center border shadow-2xs ${b.badgeStyle}`}
+              className={`w-12 h-12 rounded-2xl flex items-center justify-center border shadow-2xs shrink-0 ${b.badgeStyle}`}
             >
-              <BadgeIcon name={b.iconName} className="w-5 h-5" />
+              <BadgeIcon name={b.iconName} className="w-6 h-6" />
             </div>
+
             <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-base font-bold text-text-primary tracking-tight">{b.name}</h3>
-                <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-orange-100 text-orange-900 border border-orange-200">
-                  {summary.holdersCount} faculty
+              <div className="flex items-center gap-2 flex-wrap">
+                <h3 className="text-xl font-bold text-text-primary tracking-tight">{b.name}</h3>
+                <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-white/90 text-stone-700 border border-stone-200/80 shadow-2xs">
+                  {b.category}
                 </span>
               </div>
-              <p className="text-xs text-text-muted">{b.category} Badge</p>
             </div>
           </div>
 
@@ -622,7 +651,7 @@ function FacultyBadgeHoldersPanel({
           <button
             type="button"
             onClick={onCopyLink}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-stone-200 bg-white hover:bg-stone-100 text-stone-700 text-xs font-semibold shadow-2xs transition-colors min-h-[36px]"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-stone-200 bg-white hover:bg-stone-100 text-stone-700 text-xs font-semibold shadow-2xs transition-colors min-h-[36px]"
             title="Copy shareable link to this badge"
           >
             {copiedLink ? (
@@ -639,79 +668,110 @@ function FacultyBadgeHoldersPanel({
           </button>
         </div>
 
-        {/* Rule and How to Earn */}
-        <div className="space-y-1 bg-white p-3 rounded-xl border border-stone-200/80 text-xs">
-          <div className="text-stone-700 font-medium">
-            <span className="text-stone-400 font-normal">Rule: </span>
-            {b.description}
+        {/* 3 Mini Stats Strip */}
+        <div className="grid grid-cols-3 gap-2 bg-white/80 p-2.5 rounded-xl border border-stone-200/80 text-center shadow-2xs">
+          <div>
+            <div className="text-[28px] font-bold text-text-primary tracking-tight leading-none">
+              {summary.holdersCount}
+            </div>
+            <div className="text-[11px] text-text-muted font-medium mt-1">Holders</div>
           </div>
-          <div className="text-stone-500 text-[11px]">
-            <span className="text-stone-400 font-normal">How to earn: </span>
-            {b.howToEarn}
+          <div className="border-x border-stone-200/60">
+            <div className="text-[28px] font-bold text-text-primary tracking-tight leading-none">
+              {summary.sharePercent}%
+            </div>
+            <div className="text-[11px] text-text-muted font-medium mt-1">% of faculty</div>
+          </div>
+          <div>
+            <div className="text-[28px] font-bold text-text-primary tracking-tight leading-none">
+              #{summary.rarityRank}
+            </div>
+            <div className="text-[11px] text-text-muted font-medium mt-1">Rarity (of 12)</div>
           </div>
         </div>
 
-        {/* Filter Controls: Search & Program Chips & Sort */}
-        <div className="space-y-2 pt-1">
-          <div className="relative">
-            <Search className="w-3.5 h-3.5 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => onSearchChange(e.target.value)}
-              placeholder="Search holders by name, initials..."
-              className="w-full pl-8 pr-8 py-2 rounded-xl border border-stone-200 bg-white text-base sm:text-xs text-stone-800 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
-            />
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={() => onSearchChange('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 p-1"
-                aria-label="Clear search"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
-            )}
-          </div>
+        {/* Combined Single-Line Rule with Info Tooltip */}
+        <div
+          className="flex items-center gap-1.5 text-xs text-stone-700 bg-white/80 px-3 py-2 rounded-xl border border-stone-200/80 cursor-help shadow-2xs"
+          title={`How to earn: ${b.howToEarn}`}
+        >
+          <Info className="w-3.5 h-3.5 text-orange-500 shrink-0" />
+          <span className="truncate">
+            <strong className="font-semibold text-stone-900">Rule:</strong> {b.description}
+          </span>
+          <span className="text-[11px] text-stone-400 shrink-0 ml-auto hidden sm:inline">
+            Hover for earn rule
+          </span>
+        </div>
+      </div>
 
-          <div className="flex items-center justify-between gap-2 flex-wrap">
-            {/* Program Chips */}
-            <div className="flex items-center gap-1">
-              {(['ALL', 'BSCSE', 'BSDS'] as const).map((prog) => (
+      {/* 2. Pinned Toolbar: Search, Program Chips (Orange Active), & Sort */}
+      <div className="p-3 sm:px-4 sm:py-3 border-b border-stone-100 bg-stone-50/50 space-y-2 shrink-0">
+        <div className="relative">
+          <Search className="w-3.5 h-3.5 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+            placeholder="Search holders by name, initials..."
+            className="w-full pl-8 pr-8 py-2 rounded-xl border border-stone-200 bg-white text-base sm:text-xs text-stone-800 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => onSearchChange('')}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 p-1"
+              aria-label="Clear search"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          {/* Program Chips: Active uses App Orange Token (No Black ALL) */}
+          <div className="flex items-center gap-1">
+            {(['ALL', 'BSCSE', 'BSDS'] as const).map((prog) => {
+              const isSelected = programFilter === prog;
+              return (
                 <button
                   key={prog}
                   type="button"
                   onClick={() => onProgramChange(prog)}
                   className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold border transition-all ${
-                    programFilter === prog
-                      ? 'bg-stone-900 text-white border-stone-900'
+                    isSelected
+                      ? 'bg-orange-500 text-white border-orange-500 shadow-2xs'
                       : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50'
                   }`}
                 >
                   {prog}
                 </button>
-              ))}
-            </div>
+              );
+            })}
+          </div>
 
-            {/* Sort Order */}
-            <div className="flex items-center gap-1.5 text-xs text-stone-600">
-              <span className="text-[11px] text-text-muted">Sort:</span>
-              <button
-                type="button"
-                onClick={() => onHolderSortChange(holderSort === 'metric' ? 'az' : 'metric')}
-                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-stone-200 bg-white hover:bg-stone-50 text-[11px] font-semibold text-stone-700 transition-colors"
+          {/* Sort Dropdown Matching Main Directory Style */}
+          <div className="flex items-center gap-1.5 text-xs text-stone-600">
+            <span className="text-[11px] text-text-muted">Sort:</span>
+            <div className="relative">
+              <select
+                value={holderSort}
+                onChange={(e) => onHolderSortChange(e.target.value as 'metric' | 'az')}
+                className="h-8 pl-2.5 pr-7 rounded-lg border border-stone-200 bg-white text-[11px] font-semibold text-stone-700 hover:border-stone-300 focus:outline-none focus:ring-2 focus:ring-orange-500/20 appearance-none shadow-2xs cursor-pointer"
+                aria-label="Sort holders"
               >
-                <ArrowUpDown className="w-3 h-3 text-orange-500" />
-                <span>{holderSort === 'metric' ? 'By metric (high to low)' : 'A to Z'}</span>
-              </button>
+                <option value="metric">By metric (high to low)</option>
+                <option value="az">A to Z (alphabetical)</option>
+              </select>
+              <ArrowUpDown className="w-3 h-3 text-stone-400 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Showing X of Y Counter */}
+      {/* 3. Showing X of Y Counter */}
       <div
-        className="px-4 py-2 bg-stone-50/40 border-b border-stone-100 text-[11px] text-text-muted flex items-center justify-between"
+        className="px-4 py-1.5 bg-stone-50/80 border-b border-stone-100 text-[11px] text-text-muted flex items-center justify-between shrink-0"
         aria-live="polite"
       >
         <span>
@@ -724,46 +784,73 @@ function FacultyBadgeHoldersPanel({
         )}
       </div>
 
-      {/* Holders Rows List */}
-      <div className="divide-y divide-stone-100 max-h-[460px] overflow-y-auto">
+      {/* 4. Scrollable Holders Rows List */}
+      <div className="divide-y divide-stone-100 flex-1 overflow-y-auto min-h-0">
         {pagedHolders.length > 0 ? (
-          pagedHolders.map(({ faculty, metricLabel }) => {
+          pagedHolders.map((holder) => {
+            const { faculty, metricValue, metricUnit, metricDetail, rank, relativeWidthPercent } =
+              holder;
             const isFav = pinnedIds.includes(faculty.id);
             const isCompared = compareSelection.includes(faculty.id);
+
+            // Rank Badge Styling: Gold, Silver, Bronze soft circles for top 3
+            let rankStyle = 'bg-stone-100 text-stone-600 border-stone-200';
+            if (rank === '1' || rank === '=1') {
+              rankStyle = 'bg-amber-100 text-amber-900 border-amber-300 shadow-2xs font-bold';
+            } else if (rank === '2' || rank === '=2') {
+              rankStyle = 'bg-stone-200 text-stone-800 border-stone-300 shadow-2xs font-bold';
+            } else if (rank === '3' || rank === '=3') {
+              rankStyle = 'bg-amber-50 text-amber-800 border-amber-200 font-bold';
+            }
 
             return (
               <div
                 key={faculty.id}
-                className="p-3 sm:p-3.5 hover:bg-stone-50/80 transition-colors flex items-center justify-between gap-3 group"
+                onClick={() => router.push(`/faculty-directory/${faculty.id}`)}
+                className="p-3 sm:p-3.5 hover:bg-orange-50/40 transition-colors flex items-center justify-between gap-3 group cursor-pointer"
               >
-                {/* Faculty Info */}
-                <div className="flex items-center gap-3 min-w-0 flex-1">
-                  {/* Compare Checkbox */}
-                  <input
-                    type="checkbox"
-                    checked={isCompared}
-                    onChange={() => onToggleCompare(faculty.id)}
-                    className="w-4 h-4 rounded-sm border-stone-300 text-orange-500 focus:ring-orange-500 cursor-pointer"
-                    aria-label={`Select ${faculty.name} for comparison`}
-                  />
+                {/* Left Section: Rank + Compare + Avatar + Name & Tags */}
+                <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
+                  {/* Rank Soft Circle (With = prefix for ties) */}
+                  <div
+                    className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs shrink-0 border ${rankStyle}`}
+                    title={`Rank ${rank}`}
+                  >
+                    {rank}
+                  </div>
 
-                  {/* Avatar */}
+                  {/* Compare Checkbox */}
+                  <div
+                    className="shrink-0 flex items-center"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isCompared}
+                      onChange={() => onToggleCompare(faculty.id)}
+                      className="w-4 h-4 rounded-sm border-stone-300 text-orange-500 focus:ring-orange-500 cursor-pointer sm:opacity-0 group-hover:opacity-100 focus:opacity-100 checked:opacity-100 transition-opacity"
+                      aria-label={`Select ${faculty.name} for comparison`}
+                    />
+                  </div>
+
+                  {/* Pastel Stable-Color Avatar */}
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 border ${faculty.avatarColor.bg} ${faculty.avatarColor.text} ${faculty.avatarColor.border}`}
                   >
                     {faculty.initials}
                   </div>
 
-                  {/* Name + Programs + Other Badges */}
+                  {/* Name + ONE Program Tag Group + Other Badges */}
                   <div className="min-w-0 flex-1 space-y-1">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <Link
-                        href={`/faculty-directory/${faculty.id}`}
-                        className="text-xs font-bold text-text-primary hover:text-orange-600 transition-colors truncate"
-                        title={faculty.name}
-                      >
-                        {faculty.name}
-                      </Link>
+                    <h4
+                      className="text-sm font-semibold text-text-primary group-hover:text-orange-600 transition-colors truncate"
+                      title={faculty.name}
+                    >
+                      {faculty.name}
+                    </h4>
+
+                    {/* Single Program Tag Group + Other Badges */}
+                    <div className="flex items-center gap-1.5 flex-wrap">
                       {faculty.programs.map((p) => (
                         <span
                           key={p}
@@ -772,58 +859,83 @@ function FacultyBadgeHoldersPanel({
                           {p}
                         </span>
                       ))}
-                    </div>
 
-                    <div className="flex items-center gap-2 flex-wrap text-[11px] text-text-secondary">
-                      {/* Metric Chip Highlight */}
-                      <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold border ${b.badgeStyle}`}
-                      >
-                        {metricLabel}
-                      </span>
-
-                      {/* Other Badges (Max 2) */}
+                      {/* Other Badges of that person (max 3 icon-only chips) */}
                       {faculty.badges
                         .filter((ob) => ob.id !== b.id)
-                        .slice(0, 2)
+                        .slice(0, 3)
                         .map((ob) => (
                           <span
                             key={ob.id}
-                            className={`inline-flex items-center gap-1 px-1.5 py-0.2 rounded-md text-[11px] border ${ob.badgeStyle}`}
+                            className={`w-5 h-5 rounded-md flex items-center justify-center border text-[11px] shadow-2xs ${ob.badgeStyle}`}
                             title={`${ob.name}: ${ob.description}`}
                           >
-                            <BadgeIcon name={ob.iconName} className="w-2.5 h-2.5" />
-                            <span>{ob.name}</span>
+                            <BadgeIcon name={ob.iconName} className="w-3 h-3" />
                           </span>
                         ))}
                     </div>
                   </div>
                 </div>
 
-                {/* Right Action: Pin Star + Direct Profile Arrow */}
-                <div className="flex items-center gap-1.5 shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => onTogglePin(faculty.id)}
-                    className={`p-1.5 rounded-lg border transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center ${
-                      isFav
-                        ? 'bg-amber-50 text-amber-500 border-amber-200'
-                        : 'text-stone-400 hover:text-stone-600 border-transparent hover:border-stone-200'
-                    }`}
-                    title={isFav ? `Unpin ${faculty.name}` : `Pin ${faculty.name}`}
-                    aria-label={isFav ? `Unpin ${faculty.name}` : `Pin ${faculty.name}`}
-                  >
-                    <Star className={`w-3.5 h-3.5 ${isFav ? 'fill-amber-400' : ''}`} />
-                  </button>
+                {/* Right Section: Prominent Metric Block + Action Buttons */}
+                <div className="flex items-center gap-3 shrink-0">
+                  {/* Prominent Metric Block */}
+                  <div className="flex flex-col items-end text-right shrink-0 min-w-[90px] sm:min-w-[110px]">
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-[18px] font-bold tabular-nums text-text-primary leading-none">
+                        {metricValue}
+                      </span>
+                      <span className="text-[11px] font-medium text-text-muted">
+                        {metricUnit}
+                      </span>
+                    </div>
 
-                  <Link
-                    href={`/faculty-directory/${faculty.id}`}
-                    className="p-1.5 rounded-lg text-stone-400 hover:text-orange-600 hover:bg-orange-50 transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
-                    title={`View ${faculty.name}'s schedule`}
-                    aria-label={`View ${faculty.name}'s schedule`}
+                    {/* Thin Relative Orange Bar */}
+                    <div className="w-16 sm:w-20 h-1 bg-stone-100 rounded-full overflow-hidden my-1">
+                      <div
+                        className="h-full bg-orange-500 rounded-full transition-all duration-300"
+                        style={{ width: `${relativeWidthPercent}%` }}
+                      />
+                    </div>
+
+                    {/* Muted Second Line Detail */}
+                    <span
+                      className="text-[11px] text-stone-500 truncate max-w-[110px] sm:max-w-[150px]"
+                      title={metricDetail}
+                    >
+                      {metricDetail}
+                    </span>
+                  </div>
+
+                  {/* 32px Pin & Open Page Buttons */}
+                  <div
+                    className="flex items-center gap-1 shrink-0"
+                    onClick={(e) => e.stopPropagation()}
                   >
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </Link>
+                    <button
+                      type="button"
+                      onClick={() => onTogglePin(faculty.id)}
+                      className={`w-8 h-8 rounded-lg border flex items-center justify-center transition-colors min-h-[32px] min-w-[32px] ${
+                        isFav
+                          ? 'bg-amber-50 text-amber-500 border-amber-200'
+                          : 'text-stone-400 hover:text-stone-700 hover:bg-stone-100 border-stone-200/60'
+                      }`}
+                      title={isFav ? `Unpin ${faculty.name}` : `Pin ${faculty.name}`}
+                      aria-label={isFav ? `Unpin ${faculty.name}` : `Pin ${faculty.name}`}
+                    >
+                      <Star className={`w-3.5 h-3.5 ${isFav ? 'fill-amber-400' : ''}`} />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => router.push(`/faculty-directory/${faculty.id}`)}
+                      className="w-8 h-8 rounded-lg border border-stone-200/60 text-stone-400 hover:text-orange-600 hover:bg-orange-50 flex items-center justify-center transition-colors min-h-[32px] min-w-[32px]"
+                      title={`View ${faculty.name}'s schedule`}
+                      aria-label={`View ${faculty.name}'s schedule`}
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
               </div>
             );
@@ -851,13 +963,13 @@ function FacultyBadgeHoldersPanel({
         )}
       </div>
 
-      {/* Pagination Load More */}
+      {/* 5. Pagination Load More */}
       {filteredHolders.length > visibleCount && (
-        <div className="p-3 border-t border-stone-100 bg-stone-50/50 text-center">
+        <div className="p-2.5 border-t border-stone-100 bg-stone-50/50 text-center shrink-0">
           <button
             type="button"
             onClick={onLoadMore}
-            className="w-full py-2 rounded-xl border border-stone-200 bg-white hover:bg-stone-100 text-xs font-semibold text-stone-700 shadow-2xs transition-colors min-h-[40px]"
+            className="w-full py-2 rounded-xl border border-stone-200 bg-white hover:bg-stone-100 text-xs font-semibold text-stone-700 shadow-2xs transition-colors min-h-[38px]"
           >
             Load more ({filteredHolders.length - visibleCount} remaining)
           </button>

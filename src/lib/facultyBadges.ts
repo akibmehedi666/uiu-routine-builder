@@ -10,6 +10,10 @@ export interface BadgeHolder {
   faculty: FacultyStats;
   metricValue: number;
   metricLabel: string;
+  metricUnit: string;
+  metricDetail: string;
+  rank: string; // e.g. "=1", "=2", "3"
+  relativeWidthPercent: number; // 8% to 100% relative to max metric
 }
 
 export interface TopHolderSummary {
@@ -53,6 +57,41 @@ export interface HolderFilterCriteria {
 }
 
 /**
+ * Computes rank strings (with "=" prefix for ties, e.g. "=1", "=2", "3")
+ * for a list of holders pre-sorted by metricValue descending.
+ */
+export function computeHolderRanks(holders: { metricValue: number }[]): string[] {
+  const ranks: string[] = [];
+  for (let i = 0; i < holders.length; i++) {
+    const val = holders[i].metricValue;
+    const sameMetricCount = holders.filter((h) => h.metricValue === val).length;
+    const firstIdx = holders.findIndex((h) => h.metricValue === val);
+    const baseRank = firstIdx + 1;
+
+    ranks.push(sameMetricCount > 1 ? `=${baseRank}` : `${baseRank}`);
+  }
+  return ranks;
+}
+
+/**
+ * Sorts holders deterministically by:
+ * 1. metricValue (descending)
+ * 2. totalSections (descending)
+ * 3. faculty.sortName (A-Z)
+ */
+export function sortHoldersByMetric(holders: BadgeHolder[]): BadgeHolder[] {
+  return [...holders].sort((a, b) => {
+    if (b.metricValue !== a.metricValue) {
+      return b.metricValue - a.metricValue;
+    }
+    if (b.faculty.totalSections !== a.faculty.totalSections) {
+      return b.faculty.totalSections - a.faculty.totalSections;
+    }
+    return a.faculty.sortName.localeCompare(b.faculty.sortName);
+  });
+}
+
+/**
  * Computes the complete badges overview from a list of faculty.
  * Deterministic and pure; memoized when run without parameters.
  */
@@ -67,20 +106,32 @@ export function computeBadgesOverview(facultyList?: FacultyStats[]): FacultyBadg
     // Find all faculty who earned this badge
     const matchedFaculty = list.filter((f) => f.badges.some((b) => b.id === badge.id));
 
-    // Map each holder with their metric
-    const holders: BadgeHolder[] = matchedFaculty.map((f) => ({
+    // Map each holder with their raw metric
+    const rawHolders = matchedFaculty.map((f) => ({
       faculty: f,
       metricValue: badge.metricValue(f),
       metricLabel: badge.metricLabel(f),
+      metricUnit: badge.metricUnit,
+      metricDetail: badge.metricDetail(f),
+      rank: '1',
+      relativeWidthPercent: 100,
     }));
 
-    // Sort holders by metric high to low, tie breaking by alphabetical sortName
-    holders.sort((a, b) => {
-      if (b.metricValue !== a.metricValue) {
-        return b.metricValue - a.metricValue;
-      }
-      return a.faculty.sortName.localeCompare(b.faculty.sortName);
-    });
+    // Sort holders by: metricValue desc -> totalSections desc -> sortName A-Z
+    const holders = sortHoldersByMetric(rawHolders);
+
+    // Compute max metric value for relative bar widths
+    const maxMetric = holders.length > 0 ? Math.max(1, ...holders.map((h) => h.metricValue)) : 1;
+
+    // Compute sports ranks with ties
+    const ranks = computeHolderRanks(holders);
+    for (let i = 0; i < holders.length; i++) {
+      holders[i].rank = ranks[i];
+      holders[i].relativeWidthPercent = Math.min(
+        100,
+        Math.max(10, Math.round((holders[i].metricValue / maxMetric) * 100))
+      );
+    }
 
     const holdersCount = holders.length;
     const sharePercent =
@@ -237,11 +288,6 @@ export function filterAndSortHolders(
     return filtered.sort((a, b) => a.faculty.sortName.localeCompare(b.faculty.sortName));
   }
 
-  // Default: by metric high-to-low
-  return filtered.sort((a, b) => {
-    if (b.metricValue !== a.metricValue) {
-      return b.metricValue - a.metricValue;
-    }
-    return a.faculty.sortName.localeCompare(b.faculty.sortName);
-  });
+  // Default: by metricValue desc -> totalSections desc -> sortName A-Z
+  return sortHoldersByMetric(filtered);
 }
