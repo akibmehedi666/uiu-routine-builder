@@ -33,6 +33,7 @@ import {
 
 import { PAGE_MAX_W } from '../../config/layout';
 import { SiteFooter } from '../../components/SiteFooter';
+import { DATA_UPDATED } from '../../config/site';
 import {
   getAllFacultyStats,
   getTBASections,
@@ -1904,7 +1905,7 @@ function FacultyDirectoryContent() {
 
         {/* Footer Note */}
         <p className="text-[11px] text-text-muted text-center pt-2">
-          Based on the Fall 2026 offering PDF. Assignments may change.
+          Based on the Fall 2026 offering PDF, updated {DATA_UPDATED}. Assignments may change.
         </p>
       </main>
 

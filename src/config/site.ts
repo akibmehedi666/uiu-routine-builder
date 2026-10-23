@@ -35,6 +35,9 @@ export interface SiteConfig {
   };
 }
 
+export const DATA_UPDATED = '2026-10-23';
+export const DATA_NOTE = 'Faculty assignments synced with the UCAM portal.';
+
 export const siteConfig: SiteConfig = {
   name: 'UIU Routine Builder',
   creator: {
@@ -56,8 +59,7 @@ export const siteConfig: SiteConfig = {
     label: 'Report a wrong section / feedback',
     url: 'https://github.com/akibmehedi666/uiu-routine-builder/issues',
   },
-  disclaimer:
-    'Unofficial student project, not affiliated with UIU. Confirm sections in UCAM before registering.',
+  disclaimer: `Unofficial student project, not affiliated with UIU. Updated ${DATA_UPDATED} (${DATA_NOTE}). Confirm sections in UCAM before registering.`,
   copyright: '© 2026',
   links: {
     routineBuilder: '/builder',

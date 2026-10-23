@@ -221,7 +221,7 @@ export function CampusStatsView({ onSelectRoom }: CampusStatsViewProps) {
               Faculty by Section Count
             </h3>
             <p className="text-xs text-stone-500 mt-0.5">
-              Distribution of teaching workload across the 207 faculty members.
+              Distribution of teaching workload across the {stats.totalFaculty} faculty members.
             </p>
           </div>
 

@@ -20,15 +20,11 @@ import {
 import { PAGE_MAX_W } from '../config/layout';
 import { SiteFooter } from './SiteFooter';
 import { DAYS_LIST } from '../types';
-import { LANDING_COURSE_EXPLORER, LANDING_SCHEDULE_PREVIEW } from '../lib/landingData';
+import { LANDING_COURSE_EXPLORER, LANDING_SCHEDULE_PREVIEW, LANDING_STATS } from '../lib/landingData';
+import { DATA_UPDATED, DATA_NOTE } from '../config/site';
 
 // Live metadata numbers directly from extracted datasets
-const STATS = {
-  sections: 791,
-  courses: 107,
-  faculty: 207,
-  programs: 'BSCSE & BSDS',
-};
+const STATS = LANDING_STATS;
 
 export function LandingContent() {
   const router = useRouter();
@@ -64,7 +60,7 @@ export function LandingContent() {
     },
     {
       q: 'What is the data source and when was it updated?',
-      a: 'Data is extracted from the official Fall 2026 class routine and faculty assignment PDF published by the Dept. of CSE, United International University (791 sections across BSCSE and BSDS).',
+      a: `Data is extracted from the official Fall 2026 class routine and faculty assignment PDF published by the Dept. of CSE, United International University (${STATS.sections} sections across ${STATS.programs}), updated ${DATA_UPDATED} (${DATA_NOTE}).`,
     },
   ];
 

@@ -1,7 +1,15 @@
 import sectionsData from '../../data/sections.json';
 import coursesData from '../../data/courses.json';
+import facultyData from '../../data/faculty.json';
 import { solveSchedules } from '../solver';
 import { Day, DAYS_LIST, Section, SolveRequest } from '../types';
+
+export const LANDING_STATS = {
+  sections: (sectionsData as Section[]).length,
+  courses: (coursesData as unknown[]).length,
+  faculty: (facultyData as unknown[]).length,
+  programs: 'BSCSE & BSDS',
+};
 
 export interface LandingCourseSectionItem {
   section: string;
