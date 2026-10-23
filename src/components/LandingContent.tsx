@@ -36,22 +36,23 @@ function TempNoticeBanner() {
     <aside
       role="alert"
       aria-label="Temporary site notice"
-      className="temp-notice-banner w-full bg-amber-50 border-b border-amber-200/90 text-amber-950 text-xs sm:text-sm py-2.5 px-4 transition-colors relative z-20"
+      className="temp-notice-banner w-full bg-amber-50 border-b border-amber-200/90 text-amber-950 text-xs sm:text-sm py-2.5 px-10 sm:px-12 transition-colors relative z-20"
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
-        <div className="temp-notice-content flex items-center gap-2.5 min-w-0 flex-1 text-left">
+      <div className="max-w-7xl mx-auto flex items-center justify-center text-center">
+        <div className="temp-notice-content inline-flex items-center justify-center gap-2 min-w-0">
           <span
             className="temp-notice-indicator w-2 h-2 rounded-full bg-amber-500 shrink-0"
             aria-hidden="true"
           />
-          <p className="temp-notice-text font-medium leading-snug">
+          <p className="temp-notice-text font-medium leading-snug text-center">
             Please wait for some time. The faculty list has been updated, so we are making some changes to the site. Stay tuned! Sorry for the inconvenience.
           </p>
         </div>
+
         <button
           type="button"
           onClick={() => setIsOpen(false)}
-          className="temp-notice-close-btn p-1 rounded-md text-amber-800 hover:text-amber-950 hover:bg-amber-100/80 transition-colors shrink-0 flex items-center justify-center min-w-[28px] min-h-[28px]"
+          className="temp-notice-close-btn absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 p-1 rounded-md text-amber-800 hover:text-amber-950 hover:bg-amber-100/80 transition-colors shrink-0 flex items-center justify-center min-w-[28px] min-h-[28px]"
           aria-label="Close notice"
           title="Dismiss notice"
         >
