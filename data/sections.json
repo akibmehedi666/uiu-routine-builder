@@ -12719,12 +12719,10 @@
       }
     ],
     "faculty": [
-      "Mr. Syed Tauhid Zuhori"
+      "TBA"
     ],
-    "facultyIds": [
-      "mr-syed-tauhid-zuhori"
-    ],
-    "tentative": false
+    "facultyIds": [],
+    "tentative": true
   },
   {
     "id": "BSCSE-CSE 4509-F",
@@ -12893,12 +12891,10 @@
       }
     ],
     "faculty": [
-      "Ms. Mehreen Hossain Chowdhury"
+      "TBA"
     ],
-    "facultyIds": [
-      "ms-mehreen-hossain-chowdhury"
-    ],
-    "tentative": false
+    "facultyIds": [],
+    "tentative": true
   },
   {
     "id": "BSCSE-CSE 4510-C",
@@ -18900,12 +18896,10 @@
       }
     ],
     "faculty": [
-      "Rion"
+      "TBA"
     ],
-    "facultyIds": [
-      "rion"
-    ],
-    "tentative": false
+    "facultyIds": [],
+    "tentative": true
   },
   {
     "id": "BSCSE-MATH 2205-B",
@@ -18993,10 +18987,10 @@
       }
     ],
     "faculty": [
-      "Sobur"
+      "Nazmul Hasan"
     ],
     "facultyIds": [
-      "sobur"
+      "nazmul-hasan"
     ],
     "tentative": false
   },
@@ -19055,12 +19049,10 @@
       }
     ],
     "faculty": [
-      "Sobur"
+      "TBA"
     ],
-    "facultyIds": [
-      "sobur"
-    ],
-    "tentative": false
+    "facultyIds": [],
+    "tentative": true
   },
   {
     "id": "BSCSE-MATH 2205-N",
@@ -19117,12 +19109,10 @@
       }
     ],
     "faculty": [
-      "Rion"
+      "TBA"
     ],
-    "facultyIds": [
-      "rion"
-    ],
-    "tentative": false
+    "facultyIds": [],
+    "tentative": true
   },
   {
     "id": "BSCSE-MATH 2205-G",
@@ -19179,12 +19169,10 @@
       }
     ],
     "faculty": [
-      "Rion"
+      "TBA"
     ],
-    "facultyIds": [
-      "rion"
-    ],
-    "tentative": false
+    "facultyIds": [],
+    "tentative": true
   },
   {
     "id": "BSCSE-MATH 2205-I",
@@ -19210,12 +19198,10 @@
       }
     ],
     "faculty": [
-      "Rion"
+      "TBA"
     ],
-    "facultyIds": [
-      "rion"
-    ],
-    "tentative": false
+    "facultyIds": [],
+    "tentative": true
   },
   {
     "id": "BSCSE-MATH 2205-J",
@@ -19272,12 +19258,10 @@
       }
     ],
     "faculty": [
-      "Sobur"
+      "TBA"
     ],
-    "facultyIds": [
-      "sobur"
-    ],
-    "tentative": false
+    "facultyIds": [],
+    "tentative": true
   },
   {
     "id": "BSCSE-MATH 2205-M",

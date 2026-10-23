@@ -381,3 +381,20 @@ Total anomalies resolved during parsing: 377
 | Sl 770 | Recovered complete lab room from stream -> '827 (Computer Lab)' |
 | Sl 787 | Recovered complete lab room from stream -> '626 (Computer Lab)' |
 | Sl 788 | Recovered complete lab room from stream -> '926 (Computer Lab)' |
+
+
+## Post-Extraction Overrides (Fall 2026 UCAM Sync - 2026-10-23)
+Applied 9 faculty override assignments synced with the UIU UCAM portal:
+- BSCSE CSE 4509 E: Replaced 'Mr. Syed Tauhid Zuhori' with 'TBA'
+- BSCSE CSE 4510 B: Replaced 'Ms. Mehreen Hossain Chowdhury' with 'TBA'
+- BSCSE MATH 2205 A: Replaced 'Rion' with 'TBA'
+- BSCSE MATH 2205 D: Replaced 'Sobur' with 'Nazmul Hasan'
+- BSCSE MATH 2205 F: Replaced 'Sobur' with 'TBA'
+- BSCSE MATH 2205 H: Replaced 'Rion' with 'TBA'
+- BSCSE MATH 2205 I: Replaced 'Rion' with 'TBA'
+- BSCSE MATH 2205 K: Replaced 'Sobur' with 'TBA'
+- BSCSE MATH 2205 L: Replaced 'Rion' with 'TBA'
+
+Removed faculty with zero active teaching assignments (2 total):
+- Rion (id: rion) - 0 sections remaining
+- Sobur (id: sobur) - 0 sections remaining

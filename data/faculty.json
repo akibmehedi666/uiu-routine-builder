@@ -5685,18 +5685,6 @@
     "courses": [
       {
         "program": "BSCSE",
-        "code": "CSE 4509",
-        "title": "Operating Systems",
-        "section": "E",
-        "kind": "theory",
-        "days": [
-          "Sun",
-          "Wed"
-        ],
-        "time": "510..590"
-      },
-      {
-        "program": "BSCSE",
         "code": "PMG 4101",
         "title": "Project Management",
         "section": "D",
@@ -5781,17 +5769,6 @@
         "kind": "lab",
         "days": [
           "Sun"
-        ],
-        "time": "510..660"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 4510",
-        "title": "Operating Systems Laboratory",
-        "section": "B",
-        "kind": "lab",
-        "days": [
-          "Sat"
         ],
         "time": "510..660"
       }
@@ -6431,6 +6408,18 @@
           "Tue"
         ],
         "time": "911..990"
+      },
+      {
+        "program": "BSCSE",
+        "code": "MATH 2205",
+        "title": "Probability and Statistics",
+        "section": "D",
+        "kind": "theory",
+        "days": [
+          "Sat",
+          "Tue"
+        ],
+        "time": "751..830"
       }
     ]
   },
@@ -7116,60 +7105,6 @@
           "Wed"
         ],
         "time": "751..830"
-      }
-    ]
-  },
-  {
-    "id": "rion",
-    "name": "Rion",
-    "courses": [
-      {
-        "program": "BSCSE",
-        "code": "MATH 2205",
-        "title": "Probability and Statistics",
-        "section": "A",
-        "kind": "theory",
-        "days": [
-          "Sat",
-          "Tue"
-        ],
-        "time": "911..990"
-      },
-      {
-        "program": "BSCSE",
-        "code": "MATH 2205",
-        "title": "Probability and Statistics",
-        "section": "L",
-        "kind": "theory",
-        "days": [
-          "Sat",
-          "Tue"
-        ],
-        "time": "751..830"
-      },
-      {
-        "program": "BSCSE",
-        "code": "MATH 2205",
-        "title": "Probability and Statistics",
-        "section": "H",
-        "kind": "theory",
-        "days": [
-          "Sun",
-          "Wed"
-        ],
-        "time": "911..990"
-      },
-      {
-        "program": "BSCSE",
-        "code": "MATH 2205",
-        "title": "Probability and Statistics",
-        "section": "I",
-        "kind": "theory",
-        "days": [
-          "Sun",
-          "Wed"
-        ],
-        "time": "591..670"
       }
     ]
   },
@@ -8878,48 +8813,6 @@
           "Tue"
         ],
         "time": "831..910"
-      }
-    ]
-  },
-  {
-    "id": "sobur",
-    "name": "Sobur",
-    "courses": [
-      {
-        "program": "BSCSE",
-        "code": "MATH 2205",
-        "title": "Probability and Statistics",
-        "section": "D",
-        "kind": "theory",
-        "days": [
-          "Sat",
-          "Tue"
-        ],
-        "time": "751..830"
-      },
-      {
-        "program": "BSCSE",
-        "code": "MATH 2205",
-        "title": "Probability and Statistics",
-        "section": "F",
-        "kind": "theory",
-        "days": [
-          "Sat",
-          "Tue"
-        ],
-        "time": "911..990"
-      },
-      {
-        "program": "BSCSE",
-        "code": "MATH 2205",
-        "title": "Probability and Statistics",
-        "section": "K",
-        "kind": "theory",
-        "days": [
-          "Sat",
-          "Tue"
-        ],
-        "time": "510..590"
       }
     ]
   },

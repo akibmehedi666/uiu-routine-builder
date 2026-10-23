@@ -537,5 +537,12 @@ def main():
     print(f"  Detected Theory-Lab pairs: {pairs_count}")
     print("="*50 + "\n")
 
+    # Apply dataset overrides as the final step
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    from apply_overrides import apply_overrides, DEFAULT_OVERRIDES_PATH
+    if os.path.exists(DEFAULT_OVERRIDES_PATH):
+        print("Applying post-extraction overrides...")
+        apply_overrides(args.out_dir, DEFAULT_OVERRIDES_PATH)
+
 if __name__ == "__main__":
     main()

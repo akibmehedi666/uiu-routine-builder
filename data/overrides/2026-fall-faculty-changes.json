@@ -1,0 +1,185 @@
+[
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 4509",
+    "section": "E",
+    "expectedOldFaculty": "Mr. Syed Tauhid Zuhori",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sun",
+        "start": 510,
+        "end": 590,
+        "room": "406"
+      },
+      {
+        "day": "Wed",
+        "start": 510,
+        "end": 590,
+        "room": "406"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "CSE 4510",
+    "section": "B",
+    "expectedOldFaculty": "Ms. Mehreen Hossain Chowdhury",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sat",
+        "start": 510,
+        "end": 660,
+        "room": "926 (Computer Lab)"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "MATH 2205",
+    "section": "A",
+    "expectedOldFaculty": "Rion",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sat",
+        "start": 911,
+        "end": 990,
+        "room": "432"
+      },
+      {
+        "day": "Tue",
+        "start": 911,
+        "end": 990,
+        "room": "432"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "MATH 2205",
+    "section": "D",
+    "expectedOldFaculty": "Sobur",
+    "newFaculty": "Nazmul Hasan",
+    "meetingsExpected": [
+      {
+        "day": "Sat",
+        "start": 751,
+        "end": 830,
+        "room": "632"
+      },
+      {
+        "day": "Tue",
+        "start": 751,
+        "end": 830,
+        "room": "632"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "MATH 2205",
+    "section": "F",
+    "expectedOldFaculty": "Sobur",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sat",
+        "start": 911,
+        "end": 990,
+        "room": "602"
+      },
+      {
+        "day": "Tue",
+        "start": 911,
+        "end": 990,
+        "room": "602"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "MATH 2205",
+    "section": "H",
+    "expectedOldFaculty": "Rion",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sun",
+        "start": 911,
+        "end": 990,
+        "room": "605"
+      },
+      {
+        "day": "Wed",
+        "start": 911,
+        "end": 990,
+        "room": "605"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "MATH 2205",
+    "section": "I",
+    "expectedOldFaculty": "Rion",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sun",
+        "start": 591,
+        "end": 670,
+        "room": "603"
+      },
+      {
+        "day": "Wed",
+        "start": 591,
+        "end": 670,
+        "room": "603"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "MATH 2205",
+    "section": "K",
+    "expectedOldFaculty": "Sobur",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sat",
+        "start": 510,
+        "end": 590,
+        "room": "632"
+      },
+      {
+        "day": "Tue",
+        "start": 510,
+        "end": 590,
+        "room": "632"
+      }
+    ]
+  },
+  {
+    "program": "BSCSE",
+    "courseCode": "MATH 2205",
+    "section": "L",
+    "expectedOldFaculty": "Rion",
+    "newFaculty": "TBA",
+    "meetingsExpected": [
+      {
+        "day": "Sat",
+        "start": 751,
+        "end": 830,
+        "room": "701"
+      },
+      {
+        "day": "Tue",
+        "start": 751,
+        "end": 830,
+        "room": "701"
+      }
+    ]
+  }
+]
