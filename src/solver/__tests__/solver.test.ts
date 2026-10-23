@@ -216,11 +216,11 @@ describe('UIU Routine Builder Solver Core', () => {
 
   it('5. Scorer ordering: preferred faculty schedule ranks higher than non-preferred', () => {
     // For CSE 3811, sections have different faculty
-    // Let's prefer 'mr-sheikh-mostofa-amir-foisol'
+    // Let's prefer 'md-suzauddola' (assigned to sections B and F)
     const req: SolveRequest = {
       selectedCourses: ['CSE 3811'],
       preferredFaculty: {
-        'CSE 3811': ['mr-sheikh-mostofa-amir-foisol'],
+        'CSE 3811': ['md-suzauddola'],
       },
       avoidFaculty: {},
       lockedSections: {},
@@ -242,12 +242,12 @@ describe('UIU Routine Builder Solver Core', () => {
     // Top schedule should have the preferred faculty
     const topSchedule = res.schedules[0];
     const topSec = topSchedule.sections[0];
-    expect(topSec.facultyIds).toContain('mr-sheikh-mostofa-amir-foisol');
+    expect(topSec.facultyIds).toContain('md-suzauddola');
     expect(topSchedule.breakdown.facultyScore).toBe(100);
 
     // Later schedules with non-preferred faculty should have lower scores
     const nonPrefSchedule = res.schedules.find(
-      (s) => !s.sections[0].facultyIds.includes('mr-sheikh-mostofa-amir-foisol')
+      (s) => !s.sections[0].facultyIds.includes('md-suzauddola')
     );
     if (nonPrefSchedule) {
       expect(topSchedule.score).toBeGreaterThan(nonPrefSchedule.score);

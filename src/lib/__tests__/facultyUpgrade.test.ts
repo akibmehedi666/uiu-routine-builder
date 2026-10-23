@@ -36,8 +36,8 @@ describe('Phase 0: Faculty Name Fix & Backward Compatibility Tests', () => {
     expect(nameMap.get('sheikh-mohammed-al-hadi-elaf')).toBe('Sheikh Mohammed Al Hadi Elaf');
     // 5. Md. Mutasim Billah Kouser
     expect(nameMap.get('md-mutasim-billah-kouser')).toBe('Md. Mutasim Billah Kouser');
-    // 6. Mr. Abid Hasan Khondaker
-    expect(nameMap.get('mr-abid-hasan-khondaker')).toBe('Mr. Abid Hasan Khondaker');
+    // 6. Tanveer Ahmed Khan Fahim
+    expect(nameMap.get('tanveer-ahmed-khan-fahim')).toBe('Tanveer Ahmed Khan Fahim');
   });
 
   it('2. No faculty name is a strict prefix of another name in the dataset', () => {

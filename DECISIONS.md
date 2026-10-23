@@ -497,5 +497,29 @@ Following a session interruption audit:
   - All 196 tests passing across 16 test files.
   - Next.js production build (`npm run build`) generates 234 static pages with 0 errors.
 
+## Decision 15: Fall 2026 Faculty & Schedule Sync from CSV (2026-10-24)
+- **Context & Source of Truth**:
+  - Synced faculty assignments against `faculty-timings.csv` (737 rows) published by the department.
+  - Four diff groups categorized:
+    - **Group a** (74 sections): Faculty reassigned, schedule days/times/rooms matched exactly. Overrides applied via `data/overrides/2026-fall-faculty-changes-oct24.json`.
+    - **Group b** (7 sections): Room/timing differed between CSV and dataset (e.g. room shifts in CSE 3712 I, CSE 3422 K, CSE 4165 A/B/L/M, CSE 3812 D); kept untouched in dataset, reported only.
+    - **Group c** (58 rows): In CSV but not in dataset (e.g. lab sections where registrar PDF used alternate suffix letters); reported only.
+    - **Group d** (81 sections): In dataset but not in CSV; reported only.
+- **Data Invariants**:
+  - Total section count strictly maintained at 791 (zero sections added or deleted).
+  - Post-update faculty count updated from 205 to 193 (12 zero-section faculty pruned).
+  - TBA sections count updated to 95 (64 newly set to TBA).
+  - Unaffected courses such as ECO 4101 and CSE 4883 remain 100% untouched.
+  - Only Group a sections receive `updated: true`, `updatedOn: "2026-10-24"`, and `updatedNote: "Faculty updated in UCAM"`.
+- **UI & Badge Design**:
+  - Created shared component `src/components/UpdatedSectionBadge.tsx` with soft orange styling (`bg-orange-50 text-orange-700 border border-orange-200 text-[11px] font-semibold`) and tooltip "Faculty updated on 24 Oct 2026".
+  - Integrated badge next to faculty names and section headers across Course Directory, Faculty Profile, Directory, Comparison, and Routine Builder.
+- **Site Configuration**:
+  - Updated `DATA_UPDATED` to `'2026-10-24'` in `src/config/site.ts`.
+- **Verification**:
+  - All 199 Vitest tests passing across 16 test files.
+  - Next.js production build (`npm run build`) generates 220 static pages with 0 errors.
+
+
 
 

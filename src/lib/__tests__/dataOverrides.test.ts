@@ -6,6 +6,7 @@ import rawSections from '../../../data/sections.json';
 import rawCourses from '../../../data/courses.json';
 import rawFaculty from '../../../data/faculty.json';
 import overridesList from '../../../data/overrides/2026-fall-faculty-changes.json';
+import oct24Overrides from '../../../data/overrides/2026-fall-faculty-changes-oct24.json';
 import { Section, Course, SolveRequest } from '../../types';
 import { getAllFacultyStats, getFacultyStatsById, filterFaculty, getTBASections } from '../facultyStats';
 import { buildCourseDirectory } from '../courseDirectory';
@@ -17,16 +18,16 @@ describe('Fall 2026 Data Overrides & Catalog Rebuild Tests', () => {
   const allFaculty = getAllFacultyStats();
 
   describe('1. Overrides Application & Integrity', () => {
-    it('contains exactly 9 overrides in 2026-fall-faculty-changes.json', () => {
-      expect(overridesList.length).toBe(9);
+    it('contains exactly 74 overrides in 2026-fall-faculty-changes-oct24.json', () => {
+      expect(oct24Overrides.length).toBe(74);
     });
 
     it('total section count strictly remains 791', () => {
       expect(rawSections.length).toBe(791);
     });
 
-    it('applies all 9 overrides with exact new faculty and matching meetings', () => {
-      for (const ov of overridesList) {
+    it('applies all 74 overrides with exact new faculty, matching meetings, and updatedOn 2026-10-24', () => {
+      for (const ov of oct24Overrides) {
         const sec = rawSections.find(
           (s) =>
             s.program === ov.program &&
@@ -41,10 +42,11 @@ describe('Fall 2026 Data Overrides & Catalog Rebuild Tests', () => {
           expect(sec!.tentative).toBe(true);
         } else {
           expect(sec!.faculty).toEqual([ov.newFaculty]);
-          expect(sec!.facultyIds).toContain('nazmul-hasan');
+          expect(sec!.facultyIds.length).toBeGreaterThan(0);
         }
 
         expect(sec!.updated).toBe(true);
+        expect(sec!.updatedOn).toBe('2026-10-24');
         expect(sec!.updatedNote).toBe('Faculty updated in UCAM');
 
         // Verify meetings (day, start, end, room) exactly match expected
@@ -58,15 +60,38 @@ describe('Fall 2026 Data Overrides & Catalog Rebuild Tests', () => {
       }
     });
 
-    it('MATH 2205 D is assigned to Nazmul Hasan with id nazmul-hasan and marked updated', () => {
+    it('exactly 74 sections in the dataset have updated: true and updatedOn: 2026-10-24', () => {
+      const updatedSecs = rawSections.filter((s) => s.updated === true);
+      expect(updatedSecs.length).toBe(74);
+      for (const s of updatedSecs) {
+        expect(s.updatedOn).toBe('2026-10-24');
+      }
+    });
+
+    it('historical 9 overrides in 2026-fall-faculty-changes.json still retain their assigned faculty', () => {
+      for (const ov of overridesList) {
+        const sec = rawSections.find(
+          (s) =>
+            s.program === ov.program &&
+            s.courseCode === ov.courseCode &&
+            s.section === ov.section
+        );
+        expect(sec).toBeDefined();
+        if (ov.newFaculty === 'TBA') {
+          expect(sec!.faculty).toEqual(['TBA']);
+        } else {
+          expect(sec!.faculty).toEqual([ov.newFaculty]);
+        }
+      }
+    });
+
+    it('MATH 2205 D is assigned to Nazmul Hasan with id nazmul-hasan', () => {
       const sec = rawSections.find(
         (s) => s.courseCode === 'MATH 2205' && s.section === 'D' && s.program === 'BSCSE'
       );
       expect(sec).toBeDefined();
       expect(sec!.faculty).toEqual(['Nazmul Hasan']);
       expect(sec!.facultyIds).toEqual(['nazmul-hasan']);
-      expect(sec!.updated).toBe(true);
-      expect(sec!.updatedNote).toBe('Faculty updated in UCAM');
     });
 
     it('ECO 4101 and CSE 4883 sections remain completely untouched', () => {
@@ -120,40 +145,41 @@ describe('Fall 2026 Data Overrides & Catalog Rebuild Tests', () => {
       expect(soburSearch.length).toBe(0);
     });
 
-    it('Nazmul Hasan course count includes MATH 2205 D with updated flag', () => {
+    it('Nazmul Hasan course count includes MATH 2205 D', () => {
       const nazmul = getFacultyStatsById('nazmul-hasan');
       expect(nazmul).toBeDefined();
 
       const math2205 = nazmul!.courses.find((c) => c.courseCode === 'MATH 2205');
       expect(math2205).toBeDefined();
       expect(math2205!.sections.map((s) => s.section)).toContain('D');
-      const secD = math2205!.sections.find((s) => s.section === 'D');
-      expect(secD?.updated).toBe(true);
       expect(nazmul!.totalSections).toBe(6);
     });
 
     it('updated sections carry updated badge flags in TBA list and Course Directory', () => {
       const tbaGroups = getTBASections();
-      const math2205TBA = tbaGroups.find((g) => g.courseCode === 'MATH 2205');
-      expect(math2205TBA).toBeDefined();
-      const secA = math2205TBA!.sections.find((s) => s.section === 'A');
-      expect(secA?.updated).toBe(true);
+      const cse1110TBA = tbaGroups.find((g) => g.courseCode === 'CSE 1110');
+      expect(cse1110TBA).toBeDefined();
+      const secN = cse1110TBA!.sections.find((s) => s.section === 'N');
+      expect(secN?.updated).toBe(true);
+      expect(secN?.updatedOn).toBe('2026-10-24');
 
       const dir = buildCourseDirectory(rawCourses as Course[], rawSections as Section[]);
-      const dirMath2205 = dir.find((c) => c.code === 'MATH 2205');
-      expect(dirMath2205).toBeDefined();
-      const dirSecA = dirMath2205!.sections.find((s) => s.section === 'A');
-      expect(dirSecA?.updated).toBe(true);
-      expect(dirSecA?.updatedNote).toBe('Faculty updated in UCAM');
+      const dirCSE1110 = dir.find((c) => c.code === 'CSE 1110');
+      expect(dirCSE1110).toBeDefined();
+      const dirSecN = dirCSE1110!.sections.find((s) => s.section === 'N');
+      expect(dirSecN?.updated).toBe(true);
+      expect(dirSecN?.updatedOn).toBe('2026-10-24');
+      expect(dirSecN?.updatedNote).toBe('Faculty updated in UCAM');
     });
 
     it('sum of faculty sections plus TBA sections accounts for every section (+1 multi-faculty)', () => {
       const totalFacultyAssigned = allFaculty.reduce((sum, f) => sum + f.totalSections, 0);
       const tbaSections = rawSections.filter((s) => s.faculty.includes('TBA')).length;
 
-      // 760 assigned + 32 TBA = 792 = 791 sections + 1 (CSE 4399 A co-taught)
+      // 697 assigned + 95 TBA = 792 = 791 sections + 1 (CSE 4399 A co-taught)
       expect(totalFacultyAssigned + tbaSections).toBe(rawSections.length + 1);
-      expect(tbaSections).toBe(32);
+      expect(tbaSections).toBe(95);
+      expect(allFaculty.length).toBe(193);
     });
   });
 

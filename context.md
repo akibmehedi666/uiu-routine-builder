@@ -388,6 +388,11 @@ Key prompts and tasks executed during development:
     - Avatars: Replaced invalid Tailwind class interpolation with inline `style={{ backgroundColor, color, borderColor }}` using `faculty.avatarColor`, eliminating white circles and ensuring exact pastel avatar styling matching the main directory list.
     - Ties & Medals: When >3 holders share rank 1, suppressed medals in favor of neutral rank circles (`=1`) and rendered an informative toolbar note `"N faculty are tied at <value> <unit>"`; preserved medals when top 3 are distinct.
     - Marathon tie-breaker: Secondary sort key by total back-to-back pairs this week before total sections and name A-Z, displayed in the detail line as `"x pairs this week"`.
+17. `faculty-sync-oct24`: Fall 2026 faculty sync from `faculty-timings.csv`:
+    - Applied 74 faculty reassignments (Group a) with exact meeting match via `data/overrides/2026-fall-faculty-changes-oct24.json`.
+    - Total sections strictly invariant at 791; TBA count 95; faculty catalog updated to 193 (12 zero-section faculty pruned).
+    - Created shared `UpdatedSectionBadge` (`text-[11px]`, orange-soft styling, tooltip "Faculty updated on 24 Oct 2026") rendered across Course Directory, Faculty Profile, Directory, and Builder.
+
 
 
 
