@@ -214,14 +214,15 @@ function CompareContent() {
 
           <div className="flex flex-wrap gap-1.5 pt-1">
             {activeA.badges.map((b) => (
-              <span
+              <Link
                 key={b.id}
-                title={b.description}
-                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold border ${b.badgeStyle}`}
+                href={`/faculty-directory?tab=badges&badge=${b.id}`}
+                title={`${b.name}: ${b.description}`}
+                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold border hover:scale-105 transition-transform ${b.badgeStyle}`}
               >
                 <BadgeIcon name={b.iconName} className="w-3 h-3" />
                 {b.name}
-              </span>
+              </Link>
             ))}
           </div>
         </div>
@@ -274,14 +275,15 @@ function CompareContent() {
 
           <div className="flex flex-wrap gap-1.5 pt-1">
             {activeB.badges.map((b) => (
-              <span
+              <Link
                 key={b.id}
-                title={b.description}
-                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold border ${b.badgeStyle}`}
+                href={`/faculty-directory?tab=badges&badge=${b.id}`}
+                title={`${b.name}: ${b.description}`}
+                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold border hover:scale-105 transition-transform ${b.badgeStyle}`}
               >
                 <BadgeIcon name={b.iconName} className="w-3 h-3" />
                 {b.name}
-              </span>
+              </Link>
             ))}
           </div>
         </div>

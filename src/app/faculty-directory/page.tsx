@@ -51,6 +51,7 @@ import { usePinnedFaculty } from '../../hooks/usePinnedFaculty';
 import { BadgeIcon, BadgesLegendModal } from '../../components/faculty/BadgesLegendModal';
 import { CampusStatsView } from '../../components/faculty/CampusStatsView';
 import { RoomScheduleSheet } from '../../components/faculty/RoomScheduleSheet';
+import { FacultyBadgesView } from '../../components/faculty/FacultyBadgesView';
 
 function HighlightText({ text, query }: { text: string; query: string }) {
   if (!query || !query.trim()) return <>{text}</>;
@@ -94,8 +95,33 @@ function FacultyDirectoryContent() {
   const tbaGroups = useMemo(() => getTBASections(), []);
   const leaderboards = useMemo(() => getFacultyLeaderboards(allFaculty), [allFaculty]);
 
-  // Main view switcher: 'directory' | 'stats'
-  const [activeMainTab, setActiveMainTab] = useState<'directory' | 'stats'>('directory');
+  // Main view switcher: 'directory' | 'stats' | 'badges'
+  const initialUrlTab = searchParams.get('tab');
+  const [activeMainTab, setActiveMainTab] = useState<'directory' | 'stats' | 'badges'>(
+    initialUrlTab === 'stats' || initialUrlTab === 'badges' ? initialUrlTab : 'directory'
+  );
+
+  useEffect(() => {
+    const urlTab = searchParams.get('tab');
+    if (urlTab === 'badges' || urlTab === 'stats' || urlTab === 'directory') {
+      if (urlTab !== activeMainTab) {
+        setActiveMainTab(urlTab);
+      }
+    }
+  }, [searchParams, activeMainTab]);
+
+  const handleTabSwitch = (tab: 'directory' | 'stats' | 'badges') => {
+    setActiveMainTab(tab);
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      if (tab === 'directory') {
+        url.searchParams.delete('tab');
+      } else {
+        url.searchParams.set('tab', tab);
+      }
+      window.history.replaceState(null, '', url.toString());
+    }
+  };
 
   // Pinned faculty hook (localStorage + cross-tab sync)
   const { pinnedIds, isPinned, togglePin, unpinFaculty } = usePinnedFaculty();
@@ -306,7 +332,7 @@ function FacultyDirectoryContent() {
             <div className="p-1 bg-stone-100 rounded-xl border border-stone-200/80 flex items-center gap-1">
               <button
                 type="button"
-                onClick={() => setActiveMainTab('directory')}
+                onClick={() => handleTabSwitch('directory')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                   activeMainTab === 'directory'
                     ? 'bg-white text-stone-900 shadow-2xs'
@@ -317,7 +343,7 @@ function FacultyDirectoryContent() {
               </button>
               <button
                 type="button"
-                onClick={() => setActiveMainTab('stats')}
+                onClick={() => handleTabSwitch('stats')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
                   activeMainTab === 'stats'
                     ? 'bg-white text-stone-900 shadow-2xs'
@@ -327,14 +353,26 @@ function FacultyDirectoryContent() {
                 <BarChart3 className="w-3.5 h-3.5 text-orange-500" />
                 <span>Stats & Heatmap</span>
               </button>
+              <button
+                type="button"
+                onClick={() => handleTabSwitch('badges')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
+                  activeMainTab === 'badges'
+                    ? 'bg-white text-stone-900 shadow-2xs'
+                    : 'text-stone-600 hover:text-stone-900'
+                }`}
+              >
+                <Award className="w-3.5 h-3.5 text-orange-500" />
+                <span>Badges</span>
+              </button>
             </div>
 
-            {/* Badges Legend Button */}
+            {/* Badges Button */}
             <button
               type="button"
-              onClick={() => setIsBadgesModalOpen(true)}
+              onClick={() => handleTabSwitch('badges')}
               className="h-9 px-3 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 font-semibold text-xs inline-flex items-center gap-1.5 transition-colors shadow-2xs"
-              title="Learn about faculty achievement badges"
+              title="Explore faculty achievement badges"
             >
               <Award className="w-3.5 h-3.5 text-orange-500" />
               <span>Badges (12)</span>
@@ -360,9 +398,18 @@ function FacultyDirectoryContent() {
           </div>
         )}
 
-        {/* View Switcher: Stats View */}
+        {/* View Switcher: Stats View, Badges View, or Directory View */}
         {activeMainTab === 'stats' ? (
           <CampusStatsView onSelectRoom={(room) => setSelectedRoom(room)} />
+        ) : activeMainTab === 'badges' ? (
+          <FacultyBadgesView
+            initialBadgeId={searchParams.get('badge') || undefined}
+            pinnedIds={pinnedIds}
+            onTogglePin={togglePin}
+            compareSelection={compareSelection}
+            onToggleCompare={handleToggleCompare}
+            onOpenLegendModal={() => setIsBadgesModalOpen(true)}
+          />
         ) : (
           <>
             {/* 1. Spotlight Banner (Daily Highlight) */}
@@ -395,14 +442,15 @@ function FacultyDirectoryContent() {
                           </span>
                         ))}
                         {spotlightFaculty.badges.slice(0, 3).map((b) => (
-                          <span
+                          <Link
                             key={b.id}
-                            title={b.description}
-                            className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full border ${b.badgeStyle}`}
+                            href={`/faculty-directory?tab=badges&badge=${b.id}`}
+                            title={`${b.name}: ${b.description}`}
+                            className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full border hover:scale-105 transition-transform ${b.badgeStyle}`}
                           >
                             <BadgeIcon name={b.iconName} className="w-3 h-3" />
                             <span>{b.name}</span>
-                          </span>
+                          </Link>
                         ))}
                       </div>
                       <h3 className="text-base font-bold text-text-primary truncate" title={spotlightFaculty.name}>
@@ -1197,14 +1245,15 @@ function FacultyDirectoryContent() {
                           {f.badges.length > 0 && (
                             <div className="flex items-center gap-1 flex-wrap pt-0.5 pl-6">
                               {f.badges.slice(0, 3).map((b) => (
-                                <span
+                                <Link
                                   key={b.id}
-                                  title={b.description}
-                                  className={`inline-flex items-center gap-1 text-[11px] font-semibold px-1.5 py-0.2 rounded border ${b.badgeStyle}`}
+                                  href={`/faculty-directory?tab=badges&badge=${b.id}`}
+                                  title={`${b.name}: ${b.description}`}
+                                  className={`inline-flex items-center gap-1 text-[11px] font-semibold px-1.5 py-0.2 rounded border hover:scale-105 transition-transform ${b.badgeStyle}`}
                                 >
                                   <BadgeIcon name={b.iconName} className="w-3 h-3" />
                                   <span>{b.name}</span>
-                                </span>
+                                </Link>
                               ))}
                             </div>
                           )}
@@ -1301,14 +1350,15 @@ function FacultyDirectoryContent() {
                         {selectedFaculty.badges.length > 0 && (
                           <div className="flex items-center gap-1.5 flex-wrap pt-1 border-t border-app-border/60">
                             {selectedFaculty.badges.map((b) => (
-                              <span
+                              <Link
                                 key={b.id}
-                                title={b.description}
-                                className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full border shadow-2xs ${b.badgeStyle}`}
+                                href={`/faculty-directory?tab=badges&badge=${b.id}`}
+                                title={`${b.name}: ${b.description}`}
+                                className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full border shadow-2xs hover:scale-105 transition-transform ${b.badgeStyle}`}
                               >
                                 <BadgeIcon name={b.iconName} className="w-3.5 h-3.5" />
                                 <span>{b.name}</span>
-                              </span>
+                              </Link>
                             ))}
                           </div>
                         )}
@@ -1743,14 +1793,15 @@ function FacultyDirectoryContent() {
                         {/* Badges */}
                         <div className="flex items-center gap-1.5 flex-wrap">
                           {f.badges.map((b) => (
-                            <span
+                            <Link
                               key={b.id}
-                              title={b.description}
-                              className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full border ${b.badgeStyle}`}
+                              href={`/faculty-directory?tab=badges&badge=${b.id}`}
+                              title={`${b.name}: ${b.description}`}
+                              className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full border hover:scale-105 transition-transform ${b.badgeStyle}`}
                             >
                               <BadgeIcon name={b.iconName} className="w-3 h-3" />
                               <span>{b.name}</span>
-                            </span>
+                            </Link>
                           ))}
                         </div>
 

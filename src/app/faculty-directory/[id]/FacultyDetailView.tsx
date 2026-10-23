@@ -92,14 +92,15 @@ export function FacultyDetailView({ faculty }: { faculty: FacultyStats }) {
             {faculty.badges.length > 0 && (
               <div className="flex flex-wrap sm:justify-end gap-1.5 shrink-0 max-w-md">
                 {faculty.badges.map((b) => (
-                  <span
+                  <Link
                     key={b.id}
-                    title={b.description}
-                    className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border shadow-2xs ${b.badgeStyle}`}
+                    href={`/faculty-directory?tab=badges&badge=${b.id}`}
+                    title={`${b.name}: ${b.description}`}
+                    className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border shadow-2xs hover:scale-105 transition-transform ${b.badgeStyle}`}
                   >
                     <BadgeIcon name={b.iconName} className="w-3.5 h-3.5" />
                     <span>{b.name}</span>
-                  </span>
+                  </Link>
                 ))}
               </div>
             )}

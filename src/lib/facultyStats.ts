@@ -245,6 +245,17 @@ export function generateSearchAliases(name: string): string[] {
   return Array.from(aliases);
 }
 
+function toFacultyBadge(b: BadgeDefinition): FacultyBadge {
+  return {
+    id: b.id,
+    name: b.name,
+    description: b.description,
+    iconName: b.iconName,
+    badgeStyle: b.badgeStyle,
+    priority: b.priority,
+  };
+}
+
 /**
  * Evaluates faculty badges based on centralized thresholds.
  * Sorted by priority order (highest priority first).
@@ -268,37 +279,37 @@ export function computeFacultyBadges(stats: {
 
   // 1. Busiest: 6+ sections (top faculty load)
   if (stats.totalSections >= FACULTY_BADGE_THRESHOLDS.busiestMinSections) {
-    badges.push(BADGE_DEFINITIONS.busiest);
+    badges.push(toFacultyBadge(BADGE_DEFINITIONS.busiest));
   }
 
   // 2. Marathon: longest chain of back-to-back classes on one day (gap <= 15 min), >= 3 in a row
   if ((stats.maxMarathonChain ?? 0) >= FACULTY_BADGE_THRESHOLDS.marathonMinChain) {
-    badges.push(BADGE_DEFINITIONS.marathon);
+    badges.push(toFacultyBadge(BADGE_DEFINITIONS.marathon));
   }
 
   // 3. Cross-Program: has sections in both BSCSE and BSDS
   if (stats.programs?.includes('BSCSE') && stats.programs?.includes('BSDS')) {
-    badges.push(BADGE_DEFINITIONS.crossProgram);
+    badges.push(toFacultyBadge(BADGE_DEFINITIONS.crossProgram));
   }
 
   // 4. Multi-Course: 5+ distinct courses
   if (stats.distinctCourses >= FACULTY_BADGE_THRESHOLDS.multiCourseMinCount) {
-    badges.push(BADGE_DEFINITIONS.multiCourse);
+    badges.push(toFacultyBadge(BADGE_DEFINITIONS.multiCourse));
   }
 
   // 5. Course Hub: >= 3 sections of the same course
   if ((stats.maxSectionsPerCourse ?? 0) >= FACULTY_BADGE_THRESHOLDS.courseHubMinSections) {
-    badges.push(BADGE_DEFINITIONS.courseHub);
+    badges.push(toFacultyBadge(BADGE_DEFINITIONS.courseHub));
   }
 
   // 6. Lab Pro: 3+ lab sections
   if (stats.labSections >= FACULTY_BADGE_THRESHOLDS.labProMinSections) {
-    badges.push(BADGE_DEFINITIONS.labPro);
+    badges.push(toFacultyBadge(BADGE_DEFINITIONS.labPro));
   }
 
   // 7. Floor Hopper: teaches on >= 4 distinct floors
   if ((stats.distinctFloors ?? 0) >= FACULTY_BADGE_THRESHOLDS.floorHopperMinFloors) {
-    badges.push(BADGE_DEFINITIONS.floorHopper);
+    badges.push(toFacultyBadge(BADGE_DEFINITIONS.floorHopper));
   }
 
   // 8. Home Room: >= 70% of meetings in the same room and >= 4 meetings
@@ -308,17 +319,17 @@ export function computeFacultyBadges(stats: {
     totalMeetings >= FACULTY_BADGE_THRESHOLDS.homeRoomMinMeetings &&
     maxSingleRoom / totalMeetings >= FACULTY_BADGE_THRESHOLDS.homeRoomMinRatio
   ) {
-    badges.push(BADGE_DEFINITIONS.homeRoom);
+    badges.push(toFacultyBadge(BADGE_DEFINITIONS.homeRoom));
   }
 
   // 9. First Bell: 3+ sections starting at 08:30 AM
   if (stats.firstBellSections >= FACULTY_BADGE_THRESHOLDS.firstBellMinSections) {
-    badges.push(BADGE_DEFINITIONS.firstBell);
+    badges.push(toFacultyBadge(BADGE_DEFINITIONS.firstBell));
   }
 
   // 10. Late Shift: 3+ sections starting at 01:51 PM or later
   if (stats.lateShiftSections >= FACULTY_BADGE_THRESHOLDS.lateShiftMinSections) {
-    badges.push(BADGE_DEFINITIONS.lateShift);
+    badges.push(toFacultyBadge(BADGE_DEFINITIONS.lateShift));
   }
 
   // 11. Monday Special: >= 60% of sections on Monday and >= 2 sections
@@ -326,7 +337,7 @@ export function computeFacultyBadges(stats: {
     stats.totalSections >= FACULTY_BADGE_THRESHOLDS.mondaySpecialMinSections &&
     ((stats.mondaySections ?? 0) / stats.totalSections) >= FACULTY_BADGE_THRESHOLDS.mondaySpecialMinRatio
   ) {
-    badges.push(BADGE_DEFINITIONS.mondaySpecial);
+    badges.push(toFacultyBadge(BADGE_DEFINITIONS.mondaySpecial));
   }
 
   // 12. Weekend Starter: >= 70% sections on Sat/Tue with min 2 sections
@@ -334,7 +345,7 @@ export function computeFacultyBadges(stats: {
     stats.totalSections >= FACULTY_BADGE_THRESHOLDS.weekendStarterMinSections &&
     stats.satTueSections / stats.totalSections >= FACULTY_BADGE_THRESHOLDS.weekendStarterMinRatio
   ) {
-    badges.push(BADGE_DEFINITIONS.weekendStarter);
+    badges.push(toFacultyBadge(BADGE_DEFINITIONS.weekendStarter));
   }
 
   // Sort by priority order

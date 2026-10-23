@@ -386,8 +386,32 @@ Following a session interruption audit:
   - **Schedule Exports & Surprise Me**:
     - Client-side 2x retina Canvas PNG timetable card export and standard 12-week recurring `.ics` iCal export.
     - "Surprise me" random faculty selection button on click.
+## Decision 11: Phase 13 Dedicated Badges Tab in Faculty Directory
+- **Architecture & Pure Memoized Computations (`src/lib/facultyBadges.ts`)**:
+  - Computed once per session at module load without drift from `computeFacultyBadges()`.
+  - For each of the 12 badges in `src/config/facultyBadges.ts`:
+    - Evaluates all holders, their exact metric value and human-readable label (`metricLabel(faculty)`, e.g. "5 in a row", "6 floors", "78% in Room 530").
+    - Calculates total holders, campus share percentage, and rarity rank (1 = rarest to 12 = most common).
+    - Identifies the top 3 rarest badges (`isRarest: true`).
+    - Finds top holder with tie detection ("Highest: Dr. Alice (+1 more) (5 in a row)").
+    - Calculates top 5 instructors with the most badges ("Multi-Badge Achievers").
+  - Ensures clean RSC serialization: separated function properties (`metricValue`, `metricLabel`) on `BadgeDefinition` from runtime `FacultyBadge` instances on `FacultyStats` to prevent Next.js client-boundary serialization errors.
+- **Interactive UI (`src/components/faculty/FacultyBadgesView.tsx`)**:
+  - Main segmented view switcher updated with 3 tabs: `Directory`, `Stats & Heatmap`, and `Badges`.
+  - 3-column badge card grid (responsive down to 2-col tablet and 1-col mobile).
+  - Category filtering (`All`, `Schedule`, `Courses`, `Rooms`, `Programs`) and sorting (`Rarest first` default, `Most common`, `Priority`, `A-Z`).
+  - Selected Badge Faculty List Panel:
+    - Rule description, `howToEarn` guidance, live search input, program chips (`ALL`, `BSCSE`, `BSDS`), and sort select (`By metric high-to-low` default, `A-Z`).
+    - Row items with avatar initials, program tags, metric value badge chip, other badges (max 2), star (pin) button, compare checkbox, and 30-row "Load more" pagination.
+    - Deep linking & sharing: `?tab=badges&badge=<badgeId>` with shareable "Copy link" button.
+    - Clicking any badge chip throughout the application (faculty cards, detail profiles, spotlight, compare view) navigates directly to the Badges tab with that badge active.
+- **Responsive & Accessibility Safeguards**:
+  - Mobile (<768px): Opens selected badge holders in full-screen/bottom sheet with locked body scroll, visible close button, and Esc dismissibility.
+  - Keyboard navigation: Card buttons support arrow keys navigation (`ArrowRight`, `ArrowLeft`, `ArrowDown`, `ArrowUp`), Enter/Space selection, `aria-pressed`, and `aria-live` count regions.
+  - Strict compliance with UI typography scale (zero fonts below 11px) and `--page-max-w` (1440px) container.
 - **Verification**:
-  - 13 Vitest test files passing (153 tests total).
-  - Production build (`npm run build`) generates 234 static pages with 0 errors.
+  - 14 Vitest test files passing (164 tests total, 11 new tests in `facultyBadgesTab.test.ts`).
+  - Next.js production build (`npm run build`) generates 234 static pages with 0 errors.
+
 
 

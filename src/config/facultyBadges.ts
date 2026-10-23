@@ -1,12 +1,18 @@
+import type { FacultyStats } from '../lib/facultyStats';
+
 /**
  * Configuration for Faculty Directory Badges.
  * All thresholds and definitions are centralized here for easy tuning.
  */
 
+export type BadgeCategory = 'Schedule' | 'Courses' | 'Rooms' | 'Programs';
+
 export interface BadgeDefinition {
   id: string;
   name: string;
   description: string;
+  howToEarn: string;
+  category: BadgeCategory;
   iconName:
     | 'Bell'
     | 'Moon'
@@ -24,6 +30,10 @@ export interface BadgeDefinition {
   badgeStyle: string;
   // Priority order for display (lower number = higher priority; max 3 shown on cards)
   priority: number;
+  // Human-readable metric label (e.g. "5 in a row", "6 floors", "78% in Room 530")
+  metricLabel: (faculty: FacultyStats) => string;
+  // Numeric metric value used for high-to-low ranking and top-holder computation
+  metricValue: (faculty: FacultyStats) => number;
 }
 
 export const FACULTY_BADGE_THRESHOLDS = {
@@ -61,97 +71,284 @@ export const BADGE_DEFINITIONS: Record<string, BadgeDefinition> = {
     id: 'busiest',
     name: 'Busiest',
     description: 'Top teaching load with 6+ sections assigned',
+    howToEarn: 'Teach 6 or more total sections this trimester.',
+    category: 'Courses',
     iconName: 'Flame',
     badgeStyle: 'bg-orange-50 text-orange-900 border-orange-200/80',
     priority: 1,
+    metricValue: (f) => f.totalSections,
+    metricLabel: (f) => `${f.totalSections} sections`,
   },
   marathon: {
     id: 'marathon',
     name: 'Marathon',
     description: '3+ back-to-back classes in a single day (gap ≤ 15 min)',
+    howToEarn: 'Teach 3 or more back-to-back classes on a single day with ≤ 15 min break between them.',
+    category: 'Schedule',
     iconName: 'Zap',
     badgeStyle: 'bg-rose-50 text-rose-900 border-rose-200/80',
     priority: 2,
+    metricValue: (f) => f.maxMarathonChain,
+    metricLabel: (f) => `${f.maxMarathonChain} in a row`,
   },
   crossProgram: {
     id: 'crossProgram',
     name: 'Cross-Program',
     description: 'Teaches sections in both BSCSE and BSDS programs',
+    howToEarn: 'Teach sections in both BSCSE and BSDS degree programs.',
+    category: 'Programs',
     iconName: 'GitFork',
     badgeStyle: 'bg-teal-50 text-teal-900 border-teal-200/80',
     priority: 3,
+    metricValue: (f) => f.programs.length,
+    metricLabel: (f) => (f.programs.length > 1 ? f.programs.join(' & ') : 'BSCSE & BSDS'),
   },
   multiCourse: {
     id: 'multiCourse',
     name: 'Multi-Course',
     description: 'Teaches 5+ distinct courses this trimester',
+    howToEarn: 'Teach 5 or more distinct courses this trimester.',
+    category: 'Courses',
     iconName: 'BookOpen',
     badgeStyle: 'bg-purple-50 text-purple-900 border-purple-200/80',
     priority: 4,
+    metricValue: (f) => f.distinctCourseCount,
+    metricLabel: (f) => `${f.distinctCourseCount} courses`,
   },
   courseHub: {
     id: 'courseHub',
     name: 'Course Hub',
     description: 'Teaches 3+ sections of the same course',
+    howToEarn: 'Teach 3 or more sections of the same course.',
+    category: 'Courses',
     iconName: 'Boxes',
     badgeStyle: 'bg-blue-50 text-blue-900 border-blue-200/80',
     priority: 5,
+    metricValue: (f) => {
+      let max = 0;
+      for (const c of f.courses) {
+        if (c.sections.length > max) max = c.sections.length;
+      }
+      return max;
+    },
+    metricLabel: (f) => {
+      let max = 0;
+      let bestCode = '';
+      for (const c of f.courses) {
+        if (c.sections.length > max) {
+          max = c.sections.length;
+          bestCode = c.courseCode;
+        }
+      }
+      return max > 0 ? `${max} sections (${bestCode})` : '0 sections';
+    },
   },
   labPro: {
     id: 'labPro',
     name: 'Lab Pro',
     description: 'Teaches 3+ laboratory sections this trimester',
+    howToEarn: 'Teach 3 or more laboratory sections this trimester.',
+    category: 'Courses',
     iconName: 'FlaskConical',
     badgeStyle: 'bg-emerald-50 text-emerald-900 border-emerald-200/80',
     priority: 6,
+    metricValue: (f) =>
+      f.courses.reduce((acc, c) => acc + c.sections.filter((s) => s.kind === 'lab').length, 0),
+    metricLabel: (f) => {
+      const count = f.courses.reduce(
+        (acc, c) => acc + c.sections.filter((s) => s.kind === 'lab').length,
+        0
+      );
+      return `${count} lab section${count === 1 ? '' : 's'}`;
+    },
   },
   floorHopper: {
     id: 'floorHopper',
     name: 'Floor Hopper',
     description: 'Teaches across 4+ distinct campus floors',
+    howToEarn: 'Teach classes on 4 or more distinct campus floors.',
+    category: 'Rooms',
     iconName: 'Building2',
     badgeStyle: 'bg-violet-50 text-violet-900 border-violet-200/80',
     priority: 7,
+    metricValue: (f) => f.distinctFloors,
+    metricLabel: (f) => `${f.distinctFloors} floors`,
   },
   homeRoom: {
     id: 'homeRoom',
     name: 'Home Room',
     description: 'Majority (≥70%) of classes held in a single room (min 4 meetings)',
+    howToEarn: 'Hold 70% or more of your classes in the same room (with at least 4 meetings).',
+    category: 'Rooms',
     iconName: 'Home',
     badgeStyle: 'bg-cyan-50 text-cyan-900 border-cyan-200/80',
     priority: 8,
+    metricValue: (f) => {
+      const roomCounts = new Map<string, number>();
+      let totalMeetings = 0;
+      for (const c of f.courses) {
+        for (const s of c.sections) {
+          for (const m of s.meetings) {
+            const r = m.room?.trim();
+            if (r) {
+              totalMeetings++;
+              roomCounts.set(r, (roomCounts.get(r) || 0) + 1);
+            }
+          }
+        }
+      }
+      if (totalMeetings === 0) return 0;
+      let maxCount = 0;
+      for (const count of roomCounts.values()) {
+        if (count > maxCount) maxCount = count;
+      }
+      return Math.round((maxCount / totalMeetings) * 100);
+    },
+    metricLabel: (f) => {
+      const roomCounts = new Map<string, number>();
+      let totalMeetings = 0;
+      for (const c of f.courses) {
+        for (const s of c.sections) {
+          for (const m of s.meetings) {
+            const r = m.room?.trim();
+            if (r) {
+              totalMeetings++;
+              roomCounts.set(r, (roomCounts.get(r) || 0) + 1);
+            }
+          }
+        }
+      }
+      if (totalMeetings === 0) return '0%';
+      let maxCount = 0;
+      let maxRoom = '';
+      for (const [r, count] of roomCounts.entries()) {
+        if (count > maxCount) {
+          maxCount = count;
+          maxRoom = r;
+        }
+      }
+      const pct = Math.round((maxCount / totalMeetings) * 100);
+      const roomDisplay = maxRoom.toLowerCase().startsWith('room') ? maxRoom : `Room ${maxRoom}`;
+      return `${pct}% in ${roomDisplay}`;
+    },
   },
   firstBell: {
     id: 'firstBell',
     name: 'First Bell',
     description: 'Teaches 3+ early morning sections (starts at 08:30 AM)',
+    howToEarn: 'Teach 3 or more sections starting at 08:30 AM.',
+    category: 'Schedule',
     iconName: 'Bell',
     badgeStyle: 'bg-amber-50 text-amber-900 border-amber-200/80',
     priority: 9,
+    metricValue: (f) => {
+      let count = 0;
+      for (const c of f.courses) {
+        for (const s of c.sections) {
+          if (s.meetings.some((m) => m.start <= 510)) count++;
+        }
+      }
+      return count;
+    },
+    metricLabel: (f) => {
+      let count = 0;
+      for (const c of f.courses) {
+        for (const s of c.sections) {
+          if (s.meetings.some((m) => m.start <= 510)) count++;
+        }
+      }
+      return `${count} morning section${count === 1 ? '' : 's'} (08:30 AM)`;
+    },
   },
   lateShift: {
     id: 'lateShift',
     name: 'Late Shift',
     description: 'Teaches 3+ afternoon sections (starts at 01:51 PM or later)',
+    howToEarn: 'Teach 3 or more sections starting at 01:51 PM or later.',
+    category: 'Schedule',
     iconName: 'Moon',
     badgeStyle: 'bg-indigo-50 text-indigo-900 border-indigo-200/80',
     priority: 10,
+    metricValue: (f) => {
+      let count = 0;
+      for (const c of f.courses) {
+        for (const s of c.sections) {
+          if (s.meetings.some((m) => m.start >= 831)) count++;
+        }
+      }
+      return count;
+    },
+    metricLabel: (f) => {
+      let count = 0;
+      for (const c of f.courses) {
+        for (const s of c.sections) {
+          if (s.meetings.some((m) => m.start >= 831)) count++;
+        }
+      }
+      return `${count} late section${count === 1 ? '' : 's'} (01:51 PM+)`;
+    },
   },
   mondaySpecial: {
     id: 'mondaySpecial',
     name: 'Monday Special',
     description: 'Majority (≥60%) of sections taught on Mondays (min 2 sections)',
+    howToEarn: 'Hold 60% or more of your assigned sections on Mondays (with at least 2 sections).',
+    category: 'Schedule',
     iconName: 'Coffee',
     badgeStyle: 'bg-lime-50 text-lime-900 border-lime-200/80',
     priority: 11,
+    metricValue: (f) => {
+      if (f.totalSections === 0) return 0;
+      let monSecs = 0;
+      for (const c of f.courses) {
+        for (const s of c.sections) {
+          if (s.meetings.some((m) => m.day === 'Mon')) monSecs++;
+        }
+      }
+      return Math.round((monSecs / f.totalSections) * 100);
+    },
+    metricLabel: (f) => {
+      if (f.totalSections === 0) return '0%';
+      let monSecs = 0;
+      for (const c of f.courses) {
+        for (const s of c.sections) {
+          if (s.meetings.some((m) => m.day === 'Mon')) monSecs++;
+        }
+      }
+      const pct = Math.round((monSecs / f.totalSections) * 100);
+      return `${pct}% on Monday (${monSecs}/${f.totalSections})`;
+    },
   },
   weekendStarter: {
     id: 'weekendStarter',
     name: 'Weekend Starter',
     description: 'Majority (≥70%) of sections scheduled on Sat & Tue',
+    howToEarn: 'Hold 70% or more of your sections on Saturday and Tuesday (with at least 2 sections).',
+    category: 'Schedule',
     iconName: 'Calendar',
     badgeStyle: 'bg-sky-50 text-sky-900 border-sky-200/80',
     priority: 12,
+    metricValue: (f) => {
+      if (f.totalSections === 0) return 0;
+      let satTueSecs = 0;
+      for (const c of f.courses) {
+        for (const s of c.sections) {
+          if (s.meetings.some((m) => m.day === 'Sat' || m.day === 'Tue')) satTueSecs++;
+        }
+      }
+      return Math.round((satTueSecs / f.totalSections) * 100);
+    },
+    metricLabel: (f) => {
+      if (f.totalSections === 0) return '0%';
+      let satTueSecs = 0;
+      for (const c of f.courses) {
+        for (const s of c.sections) {
+          if (s.meetings.some((m) => m.day === 'Sat' || m.day === 'Tue')) satTueSecs++;
+        }
+      }
+      const pct = Math.round((satTueSecs / f.totalSections) * 100);
+      return `${pct}% on Sat/Tue (${satTueSecs}/${f.totalSections})`;
+    },
   },
 };
 
