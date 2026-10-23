@@ -35,7 +35,7 @@ export interface SiteConfig {
   };
 }
 
-export const DATA_UPDATED = '2026-10-23';
+export const DATA_UPDATED = '2026-10-24';
 export const DATA_NOTE = 'Faculty assignments synced with the UCAM portal.';
 
 export const siteConfig: SiteConfig = {

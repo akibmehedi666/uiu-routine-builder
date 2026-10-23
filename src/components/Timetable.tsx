@@ -6,6 +6,7 @@ import { getCourseColor } from '../utils/colors';
 import { formatTime24, exportToText, exportToICS, downloadFile } from '../utils/export';
 import { isFixedCourse } from '../lib/fixedCourses';
 import { DayListTimetable } from './DayListTimetable';
+import { UpdatedSectionBadge } from './UpdatedSectionBadge';
 import {
   ChevronLeft,
   ChevronRight,
@@ -739,11 +740,11 @@ export function Timetable({
               <span className="ml-2 px-2 py-0.5 rounded bg-orange-50 text-orange-600 border border-orange-200 font-bold">
                 Sec {hoveredSection.section.section}
               </span>
-              {hoveredSection.section.updated && (
-                <span className="ml-1.5 px-1.5 py-0.5 rounded bg-sky-50 text-sky-700 border border-sky-200 font-bold text-[11px]">
-                  Updated
-                </span>
-              )}
+              <UpdatedSectionBadge
+                updated={hoveredSection.section.updated}
+                updatedOn={hoveredSection.section.updatedOn}
+                className="ml-1.5"
+              />
             </div>
             <span className="px-2 py-0.5 rounded bg-subtle text-text-secondary border border-app-border font-semibold">
               {hoveredSection.section.credit} Credit(s)
@@ -803,11 +804,10 @@ export function Timetable({
                   <span className="px-2 py-0.5 rounded bg-orange-100 text-orange-800 font-bold text-xs border border-orange-200">
                     Sec {activeSheetSection.section.section}
                   </span>
-                  {activeSheetSection.section.updated && (
-                    <span className="px-2 py-0.5 rounded bg-sky-100 text-sky-800 font-bold text-xs border border-sky-200">
-                      Updated
-                    </span>
-                  )}
+                  <UpdatedSectionBadge
+                    updated={activeSheetSection.section.updated}
+                    updatedOn={activeSheetSection.section.updatedOn}
+                  />
                   <span className="text-xs text-text-muted font-medium">
                     ({activeSheetSection.section.credit} cr • {activeSheetSection.section.kind})
                   </span>

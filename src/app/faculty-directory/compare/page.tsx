@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { PAGE_MAX_W } from '../../../config/layout';
 import { SiteFooter } from '../../../components/SiteFooter';
+import { UpdatedSectionBadge } from '../../../components/UpdatedSectionBadge';
 import {
   getAllFacultyStats,
   getFacultyStatsById,
@@ -457,11 +458,7 @@ function CompareContent() {
                             className="px-2 py-0.5 rounded bg-stone-100 text-stone-800 font-medium border border-stone-200 inline-flex items-center gap-1.5"
                           >
                             <span>Sec {sec.section} ({sec.days.join(', ')} {sec.timeRange})</span>
-                            {sec.updated && (
-                              <span className="px-1 py-0.2 rounded text-[11px] font-bold bg-sky-100 text-sky-800 border border-sky-300">
-                                Updated
-                              </span>
-                            )}
+                            <UpdatedSectionBadge updated={sec.updated} updatedOn={sec.updatedOn} />
                           </span>
                         ))}
                       </div>
@@ -477,11 +474,7 @@ function CompareContent() {
                             className="px-2 py-0.5 rounded bg-stone-100 text-stone-800 font-medium border border-stone-200 inline-flex items-center gap-1.5"
                           >
                             <span>Sec {sec.section} ({sec.days.join(', ')} {sec.timeRange})</span>
-                            {sec.updated && (
-                              <span className="px-1 py-0.2 rounded text-[11px] font-bold bg-sky-100 text-sky-800 border border-sky-300">
-                                Updated
-                              </span>
-                            )}
+                            <UpdatedSectionBadge updated={sec.updated} updatedOn={sec.updatedOn} />
                           </span>
                         ))}
                       </div>

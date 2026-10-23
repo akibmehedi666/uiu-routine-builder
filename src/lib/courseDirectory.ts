@@ -32,6 +32,7 @@ export interface CourseDirectorySection {
   synthetic?: boolean;
   updated?: boolean;
   updatedNote?: string;
+  updatedOn?: string;
 }
 
 export interface CourseDirectoryItem {
@@ -274,6 +275,7 @@ export function buildCourseDirectory(
         synthetic: s.synthetic,
         updated: s.updated,
         updatedNote: s.updatedNote,
+        updatedOn: s.updatedOn,
       };
     });
 

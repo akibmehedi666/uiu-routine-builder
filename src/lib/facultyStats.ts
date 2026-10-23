@@ -39,6 +39,7 @@ export interface FacultyCourseSection {
   program: 'BSCSE' | 'BSDS';
   updated?: boolean;
   updatedNote?: string;
+  updatedOn?: string;
 }
 
 export interface FacultyCourseGroup {
@@ -125,6 +126,7 @@ export interface TBASection {
   tentative: boolean;
   updated?: boolean;
   updatedNote?: string;
+  updatedOn?: string;
 }
 
 export interface TBACourseGroup {
@@ -521,6 +523,7 @@ export function getAllFacultyStats(): FacultyStats[] {
         program: s.program,
         updated: s.updated,
         updatedNote: s.updatedNote,
+        updatedOn: s.updatedOn,
       });
       group.sectionCount++;
 
@@ -749,6 +752,7 @@ export function getTBASections(): TBACourseGroup[] {
         tentative: s.tentative,
         updated: s.updated,
         updatedNote: s.updatedNote,
+        updatedOn: s.updatedOn,
       });
     }
   }

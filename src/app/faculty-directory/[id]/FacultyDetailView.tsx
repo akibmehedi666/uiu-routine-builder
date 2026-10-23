@@ -19,6 +19,7 @@ import { DAYS_LIST } from '../../../types';
 import { FacultyDetailActions } from './FacultyDetailActions';
 import { BadgeIcon } from '../../../components/faculty/BadgesLegendModal';
 import { RoomScheduleSheet } from '../../../components/faculty/RoomScheduleSheet';
+import { UpdatedSectionBadge } from '../../../components/UpdatedSectionBadge';
 
 const TIMETABLE_SLOTS = [
   { label: '08:30', min: 510 },
@@ -364,14 +365,7 @@ export function FacultyDetailView({ faculty }: { faculty: FacultyStats }) {
                                 Tentative
                               </span>
                             )}
-                            {sec.updated && (
-                              <span
-                                className="text-[11px] font-semibold text-sky-800 bg-sky-100 px-1.5 py-0.2 rounded border border-sky-200"
-                                title={sec.updatedNote || "Faculty updated in UCAM"}
-                              >
-                                Updated
-                              </span>
-                            )}
+                            <UpdatedSectionBadge updated={sec.updated} updatedOn={sec.updatedOn} />
                           </div>
                           <div className="flex items-center gap-2 text-text-muted text-[11px]">
                             <span>Days: {sec.days.join(', ')}</span>

@@ -33,6 +33,7 @@ import {
 
 import { PAGE_MAX_W } from '../../config/layout';
 import { SiteFooter } from '../../components/SiteFooter';
+import { UpdatedSectionBadge } from '../../components/UpdatedSectionBadge';
 import { DATA_UPDATED } from '../../config/site';
 import {
   getAllFacultyStats,
@@ -1065,14 +1066,7 @@ function FacultyDirectoryContent() {
                           >
                             <div className="flex items-center gap-1.5">
                               <span className="font-semibold text-text-primary">Sec {sec.section}</span>
-                              {sec.updated && (
-                                <span
-                                  className="text-[11px] font-bold text-sky-800 bg-sky-100 px-1 py-0.2 rounded border border-sky-200"
-                                  title={sec.updatedNote || "Faculty updated in UCAM"}
-                                >
-                                  Updated
-                                </span>
-                              )}
+                              <UpdatedSectionBadge updated={sec.updated} updatedOn={sec.updatedOn} />
                             </div>
                             <span className="text-text-secondary font-mono">
                               {sec.days.join(', ')} · {sec.timeRange}
@@ -1625,14 +1619,7 @@ function FacultyDirectoryContent() {
                                               Tentative
                                             </span>
                                           )}
-                                          {sec.updated && (
-                                            <span
-                                              className="text-[11px] font-semibold text-sky-800 bg-sky-100 px-1.5 py-0.2 rounded border border-sky-200"
-                                              title={sec.updatedNote || "Faculty updated in UCAM"}
-                                            >
-                                              Updated
-                                            </span>
-                                          )}
+                                          <UpdatedSectionBadge updated={sec.updated} updatedOn={sec.updatedOn} />
                                         </div>
                                         <div className="flex items-center gap-2 text-text-muted text-[11px]">
                                           <span>Days: {sec.days.join(', ')}</span>

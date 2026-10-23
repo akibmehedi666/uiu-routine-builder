@@ -10,6 +10,7 @@ import {
   Section,
   SolveRequest,
 } from '../types';
+import { UpdatedSectionBadge } from './UpdatedSectionBadge';
 import {
   Search,
   Plus,
@@ -1376,17 +1377,23 @@ export function CourseSelector({
                         ))}
                       </select>
                       {lockedSecId && (
-                        <button
-                          type="button"
-                          data-testid={`unlock-course-${course.code}`}
-                          onClick={() => handleLockSection(course.code, '')}
-                          className="p-1 min-h-[44px] min-w-[44px] md:min-h-[28px] md:min-w-[28px] rounded-btn text-orange-600 hover:text-orange-800 hover:bg-orange-50 border border-orange-200 flex items-center justify-center shrink-0 transition-colors"
-                          title={`Unlock ${course.code}`}
-                          aria-label={`Unlock ${course.code}`}
-                        >
-                          <Unlock className="w-3.5 h-3.5" />
-                          <span className="sr-only">Unlock</span>
-                        </button>
+                        <>
+                          <UpdatedSectionBadge
+                            updated={courseSections.find((s) => s.id === lockedSecId)?.updated}
+                            updatedOn={courseSections.find((s) => s.id === lockedSecId)?.updatedOn}
+                          />
+                          <button
+                            type="button"
+                            data-testid={`unlock-course-${course.code}`}
+                            onClick={() => handleLockSection(course.code, '')}
+                            className="p-1 min-h-[44px] min-w-[44px] md:min-h-[28px] md:min-w-[28px] rounded-btn text-orange-600 hover:text-orange-800 hover:bg-orange-50 border border-orange-200 flex items-center justify-center shrink-0 transition-colors"
+                            title={`Unlock ${course.code}`}
+                            aria-label={`Unlock ${course.code}`}
+                          >
+                            <Unlock className="w-3.5 h-3.5" />
+                            <span className="sr-only">Unlock</span>
+                          </button>
+                        </>
                       )}
                     </div>
 

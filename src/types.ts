@@ -27,6 +27,7 @@ export interface Section {
   manual?: boolean;
   updated?: boolean;
   updatedNote?: string;
+  updatedOn?: string;
 }
 
 export interface Course {
@@ -49,6 +50,7 @@ export interface FacultyCourseOffering {
   time: string;
   updated?: boolean;
   updatedNote?: string;
+  updatedOn?: string;
 }
 
 export interface Faculty {

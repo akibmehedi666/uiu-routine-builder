@@ -29,6 +29,7 @@ import {
 
 import sectionsJson from '../../../data/sections.json';
 import coursesJson from '../../../data/courses.json';
+import { UpdatedSectionBadge } from '../../components/UpdatedSectionBadge';
 import { Course, Day, DAYS_LIST, Meeting, Section, SolveRequest } from '../../types';
 import {
   buildCourseDirectory,
@@ -1627,16 +1628,6 @@ function SectionRowItem({
               {section.section}
             </span>
 
-            {section.updated && (
-              <span
-                className="px-1.5 py-0.5 rounded text-[11px] font-bold bg-sky-50 text-sky-700 border border-sky-200 flex items-center gap-1"
-                title={section.updatedNote || "Faculty assignment updated in UCAM"}
-              >
-                <span className="w-1.5 h-1.5 rounded-full bg-sky-500 shrink-0" />
-                Updated
-              </span>
-            )}
-
             {(section.fixed || isFixedCourse(courseCode)) && (
               <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-300 flex items-center gap-1">
                 <Lock className="w-2.5 h-2.5 text-amber-600" />
@@ -1645,13 +1636,16 @@ function SectionRowItem({
             )}
 
             {/* Clickable Faculty Name opens cross-reference popover */}
-            <button
-              onClick={(e) => onOpenFacultyPopover(section.primaryFaculty, courseCode, e)}
-              className="font-bold text-xs text-text-primary hover:text-orange-600 hover:underline transition-colors text-left"
-              title="Click to see other courses taught by this faculty"
-            >
-              {section.primaryFaculty}
-            </button>
+            <div className="inline-flex items-center gap-1.5 flex-wrap">
+              <button
+                onClick={(e) => onOpenFacultyPopover(section.primaryFaculty, courseCode, e)}
+                className="font-bold text-xs text-text-primary hover:text-orange-600 hover:underline transition-colors text-left"
+                title="Click to see other courses taught by this faculty"
+              >
+                {section.primaryFaculty}
+              </button>
+              <UpdatedSectionBadge updated={section.updated} updatedOn={section.updatedOn} />
+            </div>
 
             {section.tentative && (
               <span className="px-1.5 py-0.2 rounded text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
