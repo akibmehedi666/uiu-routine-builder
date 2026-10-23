@@ -490,3 +490,12 @@ Removed faculty with zero active teaching assignments (12 total):
 - Myesha (id: myesha) - 0 sections remaining
 - RaAN (id: raan) - 0 sections remaining
 - Taherin (id: taherin) - 0 sections remaining
+
+
+## Post-Extraction Overrides (Fall 2026 UCAM Sync - Groups B & C-D - 2026-10-24)
+Applied remaining Fall 2026 timetable sync from `faculty-timings.csv`:
+- Group b applied: 7 room updates (CSE 3712-I, CSE 3422-K, CSE 4165-A/B/L/M, CSE 3812-D).
+- Group c-d paired applied: 50 section letter and schedule updates (BDS 1201 AE; SOC 2101 A-D, F-J; CSE 1112 A-C, E-K, M-X; CSE 3522 A-F, M-P, G-L, BA-BB).
+- Pruned 1 faculty with 0 active teaching assignments: Ms. Mehreen Hossain Chowdhury (id: ms-mehreen-hossain-chowdhury).
+- Section total invariant: 791 sections. Total faculty: 192. TBA sections: 96.
+- Backward compatibility: mapped legacy section IDs in `data/section-id-aliases.json`.

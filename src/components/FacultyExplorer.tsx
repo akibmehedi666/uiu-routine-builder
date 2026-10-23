@@ -502,7 +502,7 @@ export function FacultyExplorer({
                             <span className="font-extrabold text-xs text-text-primary px-1.5 py-0.5 rounded bg-surface border border-app-border">
                               Sec {sec.section}
                             </span>
-                            <UpdatedSectionBadge updated={sec.updated} updatedOn={sec.updatedOn} />
+                            <UpdatedSectionBadge updated={sec.updated} updatedOn={sec.updatedOn} updatedKind={sec.updatedKind} />
 
                             <div className="text-[11px] text-text-secondary">
                               <span className="font-semibold text-text-primary">

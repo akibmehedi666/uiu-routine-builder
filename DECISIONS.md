@@ -520,6 +520,11 @@ Following a session interruption audit:
   - All 199 Vitest tests passing across 16 test files.
   - Next.js production build (`npm run build`) generates 220 static pages with 0 errors.
 
+## Decision 16: Final Sync for Groups B, C, D & Notice Update (2026-10-24)
+- Applied Group b (7 room updates) and Group c-d paired (50 section letter/schedule updates), keeping 791 sections strictly invariant and pruning 1 zero-section faculty (total 192 faculty, 96 TBA sections).
+- Added `updatedKind` ("faculty" | "schedule" | "both" | "new") with contextual tooltips on `UpdatedSectionBadge` and mapped legacy section IDs in `data/section-id-aliases.json`.
+- Updated landing notice banner with naturally sorted course lists (showing 10 inline with an accessible +N more toggle).
+
 
 
 

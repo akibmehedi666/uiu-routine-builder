@@ -7,12 +7,16 @@
         "program": "BSCSE",
         "code": "CSE 1112",
         "title": "Structured Programming Language Laboratory",
-        "section": "L",
+        "section": "B",
         "kind": "lab",
         "days": [
           "Sat"
         ],
-        "time": "671..820"
+        "time": "671..820",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
       },
       {
         "program": "BSCSE",
@@ -181,12 +185,46 @@
         "program": "BSCSE",
         "code": "CSE 3522",
         "title": "Database Management Systems Laboratory",
-        "section": "S",
+        "section": "O",
         "kind": "lab",
         "days": [
           "Wed"
         ],
-        "time": "510..660"
+        "time": "510..660",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
+      },
+      {
+        "program": "BSCSE",
+        "code": "CSE 3522",
+        "title": "Database Management Systems Laboratory",
+        "section": "P",
+        "kind": "lab",
+        "days": [
+          "Mon"
+        ],
+        "time": "840..990",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
+      },
+      {
+        "program": "BSCSE",
+        "code": "CSE 3522",
+        "title": "Database Management Systems Laboratory",
+        "section": "H",
+        "kind": "lab",
+        "days": [
+          "Sun"
+        ],
+        "time": "671..820",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
       },
       {
         "program": "BSCSE",
@@ -211,7 +249,8 @@
         "time": "671..820",
         "updated": true,
         "updatedOn": "2026-10-24",
-        "updatedNote": "Faculty updated in UCAM"
+        "updatedNote": "Faculty updated in UCAM",
+        "updatedKind": "faculty"
       },
       {
         "program": "BSCSE",
@@ -222,7 +261,11 @@
         "days": [
           "Tue"
         ],
-        "time": "510..660"
+        "time": "510..660",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Schedule updated in UCAM",
+        "updatedKind": "schedule"
       }
     ]
   },
@@ -503,7 +546,8 @@
         "time": "671..750",
         "updated": true,
         "updatedOn": "2026-10-24",
-        "updatedNote": "Faculty updated in UCAM"
+        "updatedNote": "Faculty updated in UCAM",
+        "updatedKind": "faculty"
       }
     ]
   },
@@ -751,12 +795,16 @@
         "program": "BSCSE",
         "code": "CSE 1112",
         "title": "Structured Programming Language Laboratory",
-        "section": "L",
+        "section": "C",
         "kind": "lab",
         "days": [
           "Sat"
         ],
-        "time": "840..990"
+        "time": "840..990",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
       },
       {
         "program": "BSCSE",
@@ -803,7 +851,11 @@
         "days": [
           "Tue"
         ],
-        "time": "840..990"
+        "time": "840..990",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Schedule updated in UCAM",
+        "updatedKind": "schedule"
       },
       {
         "program": "BSCSE",
@@ -979,12 +1031,31 @@
         "program": "BSCSE",
         "code": "CSE 1112",
         "title": "Structured Programming Language Laboratory",
-        "section": "L",
+        "section": "V",
         "kind": "lab",
         "days": [
           "Wed"
         ],
-        "time": "510..660"
+        "time": "510..660",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
+      },
+      {
+        "program": "BSCSE",
+        "code": "CSE 1112",
+        "title": "Structured Programming Language Laboratory",
+        "section": "G",
+        "kind": "lab",
+        "days": [
+          "Sun"
+        ],
+        "time": "510..660",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
       },
       {
         "program": "BSCSE",
@@ -1310,12 +1381,31 @@
         "program": "BSDS",
         "code": "CSE 3522",
         "title": "Database Management Systems Laboratory",
-        "section": "S",
+        "section": "BA",
         "kind": "lab",
         "days": [
           "Sat"
         ],
-        "time": "671..820"
+        "time": "671..820",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
+      },
+      {
+        "program": "BSDS",
+        "code": "CSE 3522",
+        "title": "Database Management Systems Laboratory",
+        "section": "BB",
+        "kind": "lab",
+        "days": [
+          "Tue"
+        ],
+        "time": "671..820",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
       }
     ]
   },
@@ -1545,7 +1635,11 @@
         "days": [
           "Sat"
         ],
-        "time": "510..660"
+        "time": "510..660",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Schedule updated in UCAM",
+        "updatedKind": "schedule"
       },
       {
         "program": "BSCSE",
@@ -1556,7 +1650,11 @@
         "days": [
           "Sat"
         ],
-        "time": "671..820"
+        "time": "671..820",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Schedule updated in UCAM",
+        "updatedKind": "schedule"
       },
       {
         "program": "BSCSE",
@@ -1567,7 +1665,11 @@
         "days": [
           "Tue"
         ],
-        "time": "671..820"
+        "time": "671..820",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Schedule updated in UCAM",
+        "updatedKind": "schedule"
       },
       {
         "program": "BSCSE",
@@ -1578,7 +1680,11 @@
         "days": [
           "Tue"
         ],
-        "time": "510..660"
+        "time": "510..660",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Schedule updated in UCAM",
+        "updatedKind": "schedule"
       }
     ]
   },
@@ -1742,12 +1848,31 @@
         "program": "BSCSE",
         "code": "CSE 1112",
         "title": "Structured Programming Language Laboratory",
-        "section": "L",
+        "section": "F",
         "kind": "lab",
         "days": [
           "Mon"
         ],
-        "time": "510..660"
+        "time": "510..660",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
+      },
+      {
+        "program": "BSCSE",
+        "code": "CSE 1112",
+        "title": "Structured Programming Language Laboratory",
+        "section": "O",
+        "kind": "lab",
+        "days": [
+          "Tue"
+        ],
+        "time": "840..990",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
       }
     ]
   },
@@ -2170,12 +2295,31 @@
         "program": "BSCSE",
         "code": "CSE 3522",
         "title": "Database Management Systems Laboratory",
-        "section": "S",
+        "section": "M",
         "kind": "lab",
         "days": [
           "Tue"
         ],
-        "time": "840..990"
+        "time": "840..990",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
+      },
+      {
+        "program": "BSCSE",
+        "code": "CSE 3522",
+        "title": "Database Management Systems Laboratory",
+        "section": "I",
+        "kind": "lab",
+        "days": [
+          "Wed"
+        ],
+        "time": "840..990",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
       },
       {
         "program": "BSCSE",
@@ -2934,7 +3078,8 @@
         "time": "591..670",
         "updated": true,
         "updatedOn": "2026-10-24",
-        "updatedNote": "Faculty updated in UCAM"
+        "updatedNote": "Faculty updated in UCAM",
+        "updatedKind": "faculty"
       },
       {
         "program": "BSCSE",
@@ -2949,7 +3094,8 @@
         "time": "510..590",
         "updated": true,
         "updatedOn": "2026-10-24",
-        "updatedNote": "Faculty updated in UCAM"
+        "updatedNote": "Faculty updated in UCAM",
+        "updatedKind": "faculty"
       },
       {
         "program": "BSCSE",
@@ -3054,12 +3200,46 @@
         "program": "BSCSE",
         "code": "CSE 3522",
         "title": "Database Management Systems Laboratory",
-        "section": "S",
+        "section": "N",
         "kind": "lab",
         "days": [
           "Mon"
         ],
-        "time": "671..820"
+        "time": "671..820",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
+      },
+      {
+        "program": "BSCSE",
+        "code": "CSE 3522",
+        "title": "Database Management Systems Laboratory",
+        "section": "J",
+        "kind": "lab",
+        "days": [
+          "Mon"
+        ],
+        "time": "510..660",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
+      },
+      {
+        "program": "BSCSE",
+        "code": "CSE 3522",
+        "title": "Database Management Systems Laboratory",
+        "section": "K",
+        "kind": "lab",
+        "days": [
+          "Tue"
+        ],
+        "time": "510..660",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
       },
       {
         "program": "BSCSE",
@@ -3144,12 +3324,31 @@
         "program": "BSCSE",
         "code": "CSE 3522",
         "title": "Database Management Systems Laboratory",
-        "section": "S",
+        "section": "C",
         "kind": "lab",
         "days": [
           "Sat"
         ],
-        "time": "840..990"
+        "time": "840..990",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
+      },
+      {
+        "program": "BSCSE",
+        "code": "CSE 3522",
+        "title": "Database Management Systems Laboratory",
+        "section": "E",
+        "kind": "lab",
+        "days": [
+          "Sat"
+        ],
+        "time": "671..820",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
       }
     ]
   },
@@ -3299,13 +3498,33 @@
         "program": "BSCSE",
         "code": "SOC 2101",
         "title": "Society, Environment and Engineering Ethics",
-        "section": "E",
+        "section": "I",
         "kind": "theory",
         "days": [
           "Sun",
           "Wed"
         ],
-        "time": "911..990"
+        "time": "911..990",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
+      },
+      {
+        "program": "BSCSE",
+        "code": "SOC 2101",
+        "title": "Society, Environment and Engineering Ethics",
+        "section": "J",
+        "kind": "theory",
+        "days": [
+          "Sun",
+          "Wed"
+        ],
+        "time": "831..910",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
       }
     ]
   },
@@ -4212,12 +4431,16 @@
         "program": "BSCSE",
         "code": "CSE 1112",
         "title": "Structured Programming Language Laboratory",
-        "section": "L",
+        "section": "A",
         "kind": "lab",
         "days": [
           "Sat"
         ],
-        "time": "510..660"
+        "time": "510..660",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
       },
       {
         "program": "BSCSE",
@@ -4529,12 +4752,42 @@
         "program": "BSCSE",
         "code": "CSE 1112",
         "title": "Structured Programming Language Laboratory",
-        "section": "L",
+        "section": "X",
         "kind": "lab",
         "days": [
           "Wed"
         ],
-        "time": "840..990"
+        "time": "840..990",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
+      },
+      {
+        "program": "BSCSE",
+        "code": "CSE 1112",
+        "title": "Structured Programming Language Laboratory",
+        "section": "P",
+        "kind": "lab",
+        "days": [
+          "Mon"
+        ],
+        "time": "510..660",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
+      },
+      {
+        "program": "BSCSE",
+        "code": "CSE 1112",
+        "title": "Structured Programming Language Laboratory",
+        "section": "L",
+        "kind": "lab",
+        "days": [
+          "Mon"
+        ],
+        "time": "671..820"
       },
       {
         "program": "BSCSE",
@@ -4562,12 +4815,16 @@
         "program": "BSCSE",
         "code": "CSE 3522",
         "title": "Database Management Systems Laboratory",
-        "section": "S",
+        "section": "L",
         "kind": "lab",
         "days": [
           "Tue"
         ],
-        "time": "671..820"
+        "time": "671..820",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
       },
       {
         "program": "BSCSE",
@@ -4581,7 +4838,8 @@
         "time": "510..660",
         "updated": true,
         "updatedOn": "2026-10-24",
-        "updatedNote": "Faculty updated in UCAM"
+        "updatedNote": "Faculty updated in UCAM",
+        "updatedKind": "faculty"
       }
     ]
   },
@@ -4680,12 +4938,16 @@
         "program": "BSCSE",
         "code": "CSE 1112",
         "title": "Structured Programming Language Laboratory",
-        "section": "L",
+        "section": "S",
         "kind": "lab",
         "days": [
           "Wed"
         ],
-        "time": "510..660"
+        "time": "510..660",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
       },
       {
         "program": "BSCSE",
@@ -4814,12 +5076,16 @@
         "program": "BSCSE",
         "code": "CSE 3522",
         "title": "Database Management Systems Laboratory",
-        "section": "S",
+        "section": "A",
         "kind": "lab",
         "days": [
           "Sat"
         ],
-        "time": "510..660"
+        "time": "510..660",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
       }
     ]
   },
@@ -4996,12 +5262,31 @@
         "program": "BSCSE",
         "code": "CSE 1112",
         "title": "Structured Programming Language Laboratory",
-        "section": "L",
+        "section": "E",
         "kind": "lab",
         "days": [
           "Mon"
         ],
-        "time": "671..820"
+        "time": "671..820",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
+      },
+      {
+        "program": "BSCSE",
+        "code": "CSE 1112",
+        "title": "Structured Programming Language Laboratory",
+        "section": "R",
+        "kind": "lab",
+        "days": [
+          "Mon"
+        ],
+        "time": "840..990",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
       }
     ]
   },
@@ -5172,23 +5457,6 @@
     ]
   },
   {
-    "id": "ms-mehreen-hossain-chowdhury",
-    "name": "Ms. Mehreen Hossain Chowdhury",
-    "courses": [
-      {
-        "program": "BSCSE",
-        "code": "CSE 3522",
-        "title": "Database Management Systems Laboratory",
-        "section": "S",
-        "kind": "lab",
-        "days": [
-          "Sun"
-        ],
-        "time": "510..660"
-      }
-    ]
-  },
-  {
     "id": "muhaiminul-islam-adnan",
     "name": "Muhaiminul Islam Adnan",
     "courses": [
@@ -5342,7 +5610,8 @@
         "time": "591..670",
         "updated": true,
         "updatedOn": "2026-10-24",
-        "updatedNote": "Faculty updated in UCAM"
+        "updatedNote": "Faculty updated in UCAM",
+        "updatedKind": "faculty"
       }
     ]
   },
@@ -5438,25 +5707,33 @@
         "program": "BSCSE",
         "code": "BDS 1201",
         "title": "History of the Emergence of Bangladesh",
-        "section": "DS",
+        "section": "AE",
         "kind": "theory",
         "days": [
           "Sun",
           "Wed"
         ],
-        "time": "831..910"
+        "time": "831..910",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
       },
       {
         "program": "BSCSE",
         "code": "SOC 2101",
         "title": "Society, Environment and Engineering Ethics",
-        "section": "E",
+        "section": "G",
         "kind": "theory",
         "days": [
           "Sun",
           "Wed"
         ],
-        "time": "591..670"
+        "time": "591..670",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
       }
     ]
   },
@@ -5730,13 +6007,17 @@
         "program": "BSCSE",
         "code": "SOC 2101",
         "title": "Society, Environment and Engineering Ethics",
-        "section": "E",
+        "section": "B",
         "kind": "theory",
         "days": [
           "Sat",
           "Tue"
         ],
-        "time": "591..670"
+        "time": "591..670",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
       }
     ]
   },
@@ -6187,7 +6468,8 @@
         "time": "911..990",
         "updated": true,
         "updatedOn": "2026-10-24",
-        "updatedNote": "Faculty updated in UCAM"
+        "updatedNote": "Faculty updated in UCAM",
+        "updatedKind": "faculty"
       },
       {
         "program": "BSCSE",
@@ -6248,7 +6530,11 @@
         "days": [
           "Tue"
         ],
-        "time": "671..820"
+        "time": "671..820",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Schedule updated in UCAM",
+        "updatedKind": "schedule"
       },
       {
         "program": "BSCSE",
@@ -6530,13 +6816,17 @@
         "program": "BSCSE",
         "code": "SOC 2101",
         "title": "Society, Environment and Engineering Ethics",
-        "section": "E",
+        "section": "H",
         "kind": "theory",
         "days": [
           "Sun",
           "Wed"
         ],
-        "time": "671..750"
+        "time": "671..750",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
       }
     ]
   },
@@ -6581,7 +6871,8 @@
         "time": "591..670",
         "updated": true,
         "updatedOn": "2026-10-24",
-        "updatedNote": "Faculty updated in UCAM"
+        "updatedNote": "Faculty updated in UCAM",
+        "updatedKind": "faculty"
       },
       {
         "program": "BSCSE",
@@ -6628,12 +6919,16 @@
         "program": "BSCSE",
         "code": "CSE 1112",
         "title": "Structured Programming Language Laboratory",
-        "section": "L",
+        "section": "N",
         "kind": "lab",
         "days": [
           "Tue"
         ],
-        "time": "671..820"
+        "time": "671..820",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
       },
       {
         "program": "BSCSE",
@@ -6779,7 +7074,8 @@
         "time": "671..750",
         "updated": true,
         "updatedOn": "2026-10-24",
-        "updatedNote": "Faculty updated in UCAM"
+        "updatedNote": "Faculty updated in UCAM",
+        "updatedKind": "faculty"
       },
       {
         "program": "BSCSE",
@@ -6827,13 +7123,17 @@
         "program": "BSCSE",
         "code": "SOC 2101",
         "title": "Society, Environment and Engineering Ethics",
-        "section": "E",
+        "section": "A",
         "kind": "theory",
         "days": [
           "Sat",
           "Tue"
         ],
-        "time": "911..990"
+        "time": "911..990",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
       }
     ]
   },
@@ -6904,12 +7204,16 @@
         "program": "BSCSE",
         "code": "CSE 3522",
         "title": "Database Management Systems Laboratory",
-        "section": "S",
+        "section": "F",
         "kind": "lab",
         "days": [
           "Sat"
         ],
-        "time": "840..990"
+        "time": "840..990",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
       }
     ]
   },
@@ -6933,12 +7237,16 @@
         "program": "BSCSE",
         "code": "CSE 1112",
         "title": "Structured Programming Language Laboratory",
-        "section": "L",
+        "section": "M",
         "kind": "lab",
         "days": [
           "Tue"
         ],
-        "time": "510..660"
+        "time": "510..660",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
       },
       {
         "program": "BSCSE",
@@ -7127,12 +7435,16 @@
         "program": "BSCSE",
         "code": "CSE 1112",
         "title": "Structured Programming Language Laboratory",
-        "section": "L",
+        "section": "J",
         "kind": "lab",
         "days": [
           "Sun"
         ],
-        "time": "510..660"
+        "time": "510..660",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
       },
       {
         "program": "BSCSE",
@@ -7232,12 +7544,31 @@
         "program": "BSCSE",
         "code": "CSE 1112",
         "title": "Structured Programming Language Laboratory",
-        "section": "L",
+        "section": "U",
         "kind": "lab",
         "days": [
           "Wed"
         ],
-        "time": "840..990"
+        "time": "840..990",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
+      },
+      {
+        "program": "BSCSE",
+        "code": "CSE 1112",
+        "title": "Structured Programming Language Laboratory",
+        "section": "W",
+        "kind": "lab",
+        "days": [
+          "Wed"
+        ],
+        "time": "671..820",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
       },
       {
         "program": "BSCSE",
@@ -7369,7 +7700,8 @@
         "time": "831..910",
         "updated": true,
         "updatedOn": "2026-10-24",
-        "updatedNote": "Faculty updated in UCAM"
+        "updatedNote": "Faculty updated in UCAM",
+        "updatedKind": "faculty"
       }
     ]
   },
@@ -7658,12 +7990,16 @@
         "program": "BSCSE",
         "code": "CSE 1112",
         "title": "Structured Programming Language Laboratory",
-        "section": "L",
+        "section": "Q",
         "kind": "lab",
         "days": [
           "Tue"
         ],
-        "time": "671..820"
+        "time": "671..820",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
       },
       {
         "program": "BSCSE",
@@ -8040,12 +8376,31 @@
         "program": "BSCSE",
         "code": "CSE 1112",
         "title": "Structured Programming Language Laboratory",
-        "section": "L",
+        "section": "T",
         "kind": "lab",
         "days": [
           "Wed"
         ],
-        "time": "671..820"
+        "time": "671..820",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
+      },
+      {
+        "program": "BSCSE",
+        "code": "CSE 1112",
+        "title": "Structured Programming Language Laboratory",
+        "section": "K",
+        "kind": "lab",
+        "days": [
+          "Sun"
+        ],
+        "time": "671..820",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
       },
       {
         "program": "BSCSE",
@@ -8455,13 +8810,33 @@
         "program": "BSCSE",
         "code": "SOC 2101",
         "title": "Society, Environment and Engineering Ethics",
-        "section": "E",
+        "section": "C",
         "kind": "theory",
         "days": [
           "Sat",
           "Tue"
         ],
-        "time": "671..750"
+        "time": "671..750",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
+      },
+      {
+        "program": "BSCSE",
+        "code": "SOC 2101",
+        "title": "Society, Environment and Engineering Ethics",
+        "section": "F",
+        "kind": "theory",
+        "days": [
+          "Sun",
+          "Wed"
+        ],
+        "time": "510..590",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
       }
     ]
   },
@@ -8587,12 +8962,16 @@
         "program": "BSCSE",
         "code": "CSE 1112",
         "title": "Structured Programming Language Laboratory",
-        "section": "L",
+        "section": "I",
         "kind": "lab",
         "days": [
           "Sun"
         ],
-        "time": "840..990"
+        "time": "840..990",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
       },
       {
         "program": "BSCSE",
@@ -8777,12 +9156,16 @@
         "program": "BSCSE",
         "code": "CSE 1112",
         "title": "Structured Programming Language Laboratory",
-        "section": "L",
+        "section": "H",
         "kind": "lab",
         "days": [
           "Sun"
         ],
-        "time": "671..820"
+        "time": "671..820",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
       },
       {
         "program": "BSCSE",
@@ -9032,12 +9415,31 @@
         "program": "BSCSE",
         "code": "CSE 3522",
         "title": "Database Management Systems Laboratory",
-        "section": "S",
+        "section": "B",
         "kind": "lab",
         "days": [
           "Sat"
         ],
-        "time": "671..820"
+        "time": "671..820",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
+      },
+      {
+        "program": "BSCSE",
+        "code": "CSE 3522",
+        "title": "Database Management Systems Laboratory",
+        "section": "D",
+        "kind": "lab",
+        "days": [
+          "Sat"
+        ],
+        "time": "840..990",
+        "updated": true,
+        "updatedOn": "2026-10-24",
+        "updatedNote": "Section/schedule updated in UCAM",
+        "updatedKind": "schedule"
       }
     ]
   },

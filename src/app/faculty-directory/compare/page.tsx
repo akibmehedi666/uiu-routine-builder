@@ -458,7 +458,7 @@ function CompareContent() {
                             className="px-2 py-0.5 rounded bg-stone-100 text-stone-800 font-medium border border-stone-200 inline-flex items-center gap-1.5"
                           >
                             <span>Sec {sec.section} ({sec.days.join(', ')} {sec.timeRange})</span>
-                            <UpdatedSectionBadge updated={sec.updated} updatedOn={sec.updatedOn} />
+                            <UpdatedSectionBadge updated={sec.updated} updatedOn={sec.updatedOn} updatedKind={sec.updatedKind} />
                           </span>
                         ))}
                       </div>
@@ -474,7 +474,7 @@ function CompareContent() {
                             className="px-2 py-0.5 rounded bg-stone-100 text-stone-800 font-medium border border-stone-200 inline-flex items-center gap-1.5"
                           >
                             <span>Sec {sec.section} ({sec.days.join(', ')} {sec.timeRange})</span>
-                            <UpdatedSectionBadge updated={sec.updated} updatedOn={sec.updatedOn} />
+                            <UpdatedSectionBadge updated={sec.updated} updatedOn={sec.updatedOn} updatedKind={sec.updatedKind} />
                           </span>
                         ))}
                       </div>

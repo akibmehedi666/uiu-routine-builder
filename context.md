@@ -391,7 +391,11 @@ Key prompts and tasks executed during development:
 17. `faculty-sync-oct24`: Fall 2026 faculty sync from `faculty-timings.csv`:
     - Applied 74 faculty reassignments (Group a) with exact meeting match via `data/overrides/2026-fall-faculty-changes-oct24.json`.
     - Total sections strictly invariant at 791; TBA count 95; faculty catalog updated to 193 (12 zero-section faculty pruned).
-    - Created shared `UpdatedSectionBadge` (`text-[11px]`, orange-soft styling, tooltip "Faculty updated on 24 Oct 2026") rendered across Course Directory, Faculty Profile, Directory, and Builder.
+18. `faculty-sync-groups-bcd`: Timetable sync completion for remaining groups:
+    - Applied Group b (7 room updates) and Group c-d paired (50 section letter/schedule updates), keeping 791 sections invariant and pruning 1 zero-section faculty (total 192 faculty, 96 TBA sections).
+    - Added `updatedKind` ("faculty" | "schedule" | "both" | "new") with contextual tooltips on `UpdatedSectionBadge` and mapped legacy section IDs in `data/section-id-aliases.json`.
+    - Updated landing notice banner with naturally sorted course lists (showing 10 inline with an accessible +N more toggle).
+
 
 
 

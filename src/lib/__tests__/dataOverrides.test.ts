@@ -7,12 +7,15 @@ import rawCourses from '../../../data/courses.json';
 import rawFaculty from '../../../data/faculty.json';
 import overridesList from '../../../data/overrides/2026-fall-faculty-changes.json';
 import oct24Overrides from '../../../data/overrides/2026-fall-faculty-changes-oct24.json';
+import oct24Remaining from '../../../data/overrides/2026-fall-sync-remaining-oct24.json';
 import { Section, Course, SolveRequest } from '../../types';
 import { getAllFacultyStats, getFacultyStatsById, filterFaculty, getTBASections } from '../facultyStats';
 import { buildCourseDirectory } from '../courseDirectory';
 import { solveSchedules } from '../../solver';
 import { validateSavedRoutine, buildSavedRoutineObject } from '../../utils/savedRoutinesStorage';
 import { migrateFacultyIdArray } from '../facultyAliases';
+import { resolveSectionId } from '../sectionAliases';
+import { getUpdatedCourseLists } from '../noticeCourses';
 
 describe('Fall 2026 Data Overrides & Catalog Rebuild Tests', () => {
   const allFaculty = getAllFacultyStats();
@@ -60,9 +63,9 @@ describe('Fall 2026 Data Overrides & Catalog Rebuild Tests', () => {
       }
     });
 
-    it('exactly 74 sections in the dataset have updated: true and updatedOn: 2026-10-24', () => {
+    it('exactly 131 sections in the dataset have updated: true and updatedOn: 2026-10-24', () => {
       const updatedSecs = rawSections.filter((s) => s.updated === true);
-      expect(updatedSecs.length).toBe(74);
+      expect(updatedSecs.length).toBe(131);
       for (const s of updatedSecs) {
         expect(s.updatedOn).toBe('2026-10-24');
       }
@@ -176,10 +179,10 @@ describe('Fall 2026 Data Overrides & Catalog Rebuild Tests', () => {
       const totalFacultyAssigned = allFaculty.reduce((sum, f) => sum + f.totalSections, 0);
       const tbaSections = rawSections.filter((s) => s.faculty.includes('TBA')).length;
 
-      // 697 assigned + 95 TBA = 792 = 791 sections + 1 (CSE 4399 A co-taught)
+      // 696 assigned + 96 TBA = 792 = 791 sections + 1 (CSE 4399 A co-taught)
       expect(totalFacultyAssigned + tbaSections).toBe(rawSections.length + 1);
-      expect(tbaSections).toBe(95);
-      expect(allFaculty.length).toBe(193);
+      expect(tbaSections).toBe(96);
+      expect(allFaculty.length).toBe(192);
     });
   });
 
@@ -379,6 +382,159 @@ describe('Fall 2026 Data Overrides & Catalog Rebuild Tests', () => {
       }).toThrow();
 
       fs.rmSync(tempDir, { recursive: true, force: true });
+    });
+  });
+
+  describe('5. Group B & Group C-D Timetable Sync & Invariants', () => {
+    it('applies all 7 Group B room updates with matching schedule and updatedKind="schedule"', () => {
+      for (const b of oct24Remaining.group_b) {
+        const sec = rawSections.find((s) => s.sl === b.sl);
+        expect(sec).toBeDefined();
+        expect(sec!.courseCode).toBe(b.courseCode);
+        expect(sec!.section).toBe(b.section);
+        expect(sec!.faculty).toEqual(b.newFaculty);
+        expect(sec!.meetings).toEqual(b.newMeetings);
+        expect(sec!.updated).toBe(true);
+        expect(sec!.updatedOn).toBe('2026-10-24');
+        expect(sec!.updatedKind).toBe('schedule');
+      }
+    });
+
+    it('applies all 50 Group C-D paired section updates in place', () => {
+      for (const cd of oct24Remaining.group_cd_paired) {
+        const sec = rawSections.find((s) => s.sl === cd.sl);
+        expect(sec).toBeDefined();
+        expect(sec!.courseCode).toBe(cd.courseCode);
+        expect(sec!.section).toBe(cd.newSection);
+        expect(sec!.id).toBe(`${cd.program}-${cd.courseCode}-${cd.newSection}`);
+        expect(sec!.faculty).toEqual(cd.newFaculty);
+        expect(sec!.meetings).toEqual(cd.newMeetings);
+        expect(sec!.updated).toBe(true);
+        expect(sec!.updatedOn).toBe('2026-10-24');
+        expect(sec!.updatedKind).toBe(cd.updatedKind);
+      }
+    });
+
+    it('every updated section exists and exactly 131 sections have updated: true', () => {
+      const updatedSecs = rawSections.filter((s) => s.updated === true);
+      expect(updatedSecs.length).toBe(131); // 74 Group a + 7 Group b + 50 Group c-d
+      for (const s of updatedSecs) {
+        expect(s.updatedOn).toBe('2026-10-24');
+        expect(['faculty', 'schedule', 'both', 'new']).toContain(s.updatedKind);
+      }
+    });
+
+    it('no section outside the diff lists has updated: true', () => {
+      const groupASls = new Set(
+        oct24Overrides.map((ov) => {
+          const s = rawSections.find(
+            (sec) =>
+              sec.program === ov.program &&
+              sec.courseCode === ov.courseCode &&
+              sec.section === ov.section
+          );
+          return s?.sl;
+        }).filter(Boolean)
+      );
+      const groupBSls = new Set(oct24Remaining.group_b.map((b) => b.sl));
+      const groupCDSls = new Set(oct24Remaining.group_cd_paired.map((cd) => cd.sl));
+
+      const expectedUpdatedSls = new Set([...groupASls, ...groupBSls, ...groupCDSls]);
+      expect(expectedUpdatedSls.size).toBe(131);
+
+      for (const sec of rawSections) {
+        if (sec.updated) {
+          expect(expectedUpdatedSls.has(sec.sl)).toBe(true);
+        } else {
+          expect(expectedUpdatedSls.has(sec.sl)).toBe(false);
+        }
+      }
+    });
+
+    it('no duplicate (program, courseCode, section) keys among updated sections', () => {
+      const updatedSecs = rawSections.filter((s) => s.updated === true);
+      const keys = updatedSecs.map((s) => `${s.program}-${s.courseCode}-${s.section}`);
+      const uniqueKeys = new Set(keys);
+      expect(keys.length).toBe(uniqueKeys.size);
+    });
+
+    it('no two updated sections share the same id', () => {
+      const updatedSecs = rawSections.filter((s) => s.updated === true);
+      const ids = updatedSecs.map((s) => s.id);
+      const uniqueIds = new Set(ids);
+      expect(ids.length).toBe(uniqueIds.size);
+    });
+
+    it('CSE 1112 (23 sections), CSE 3522 (18 sections), and SOC 2101 (10 sections) have completely unique section letters and IDs', () => {
+      for (const code of ['CSE 1112', 'CSE 3522', 'SOC 2101']) {
+        const secs = rawSections.filter((s) => s.courseCode === code);
+        const secLetters = secs.map((s) => `${s.program}-${s.section}`);
+        const secIds = secs.map((s) => s.id);
+        expect(secLetters.length).toBe(new Set(secLetters).size);
+        expect(secIds.length).toBe(new Set(secIds).size);
+      }
+    });
+
+    it('no new faculty overlapping conflicts were introduced (exactly 5 baseline conflicts exist)', () => {
+      const facultyMeetings: Record<string, { id: string; day: string; start: number; end: number }[]> = {};
+      for (const s of rawSections) {
+        for (const f of s.faculty) {
+          if (f === 'TBA') continue;
+          for (const m of s.meetings) {
+            if (!facultyMeetings[f]) facultyMeetings[f] = [];
+            facultyMeetings[f].push({ id: s.id, day: m.day, start: m.start, end: m.end });
+          }
+        }
+      }
+
+      let overlapCount = 0;
+      for (const [, ms] of Object.entries(facultyMeetings)) {
+        for (let i = 0; i < ms.length; i++) {
+          for (let j = i + 1; j < ms.length; j++) {
+            if (ms[i].id === ms[j].id) continue;
+            if (ms[i].day === ms[j].day) {
+              if (Math.max(ms[i].start, ms[j].start) < Math.min(ms[i].end, ms[j].end)) {
+                overlapCount++;
+              }
+            }
+          }
+        }
+      }
+
+      // Exactly the 5 pre-existing faculty overlaps in registrar data
+      expect(overlapCount).toBe(5);
+    });
+
+    it('landing notice course lists match unique course codes of updated sections', () => {
+      const { facultyCourses, scheduleCourses } = getUpdatedCourseLists(rawSections as Section[]);
+
+      const expectedFacCourses = Array.from(
+        new Set(
+          rawSections
+            .filter((s) => s.updated && (s.updatedKind === 'faculty' || s.updatedKind === 'both'))
+            .map((s) => s.courseCode)
+        )
+      ).sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+
+      const expectedSchedCourses = Array.from(
+        new Set(
+          rawSections
+            .filter((s) => s.updated && (s.updatedKind === 'schedule' || s.updatedKind === 'both' || s.updatedKind === 'new'))
+            .map((s) => s.courseCode)
+        )
+      ).sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+
+      expect(facultyCourses).toEqual(expectedFacCourses);
+      expect(scheduleCourses).toEqual(expectedSchedCourses);
+      expect(facultyCourses.length).toBe(29);
+      expect(scheduleCourses.length).toBe(8);
+    });
+
+    it('legacy section IDs resolve seamlessly via resolveSectionId', () => {
+      expect(resolveSectionId('BSCSE-BDS 1201-DS')).toBe('BSCSE-BDS 1201-AE');
+      expect(resolveSectionId('BSCSE-CSE 3522-S')).toBe('BSCSE-CSE 3522-A');
+      expect(resolveSectionId('BSDS-CSE 3522-S')).toBe('BSDS-CSE 3522-BA');
+      expect(resolveSectionId('BSCSE-CSE 1111-A')).toBe('BSCSE-CSE 1111-A'); // Unchanged
     });
   });
 });

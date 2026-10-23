@@ -1,4 +1,4 @@
-import { Course, Day, DAYS_LIST, Meeting, Section, SolveRequest } from '../types';
+import { Course, Day, DAYS_LIST, Meeting, Section, SolveRequest, UpdatedKind } from '../types';
 import { normalizeForSearch, slugifyFacultyName } from './facultyIndex';
 import {
   buildSearchIndexFromDirectory,
@@ -33,6 +33,7 @@ export interface CourseDirectorySection {
   updated?: boolean;
   updatedNote?: string;
   updatedOn?: string;
+  updatedKind?: UpdatedKind;
 }
 
 export interface CourseDirectoryItem {
@@ -276,6 +277,7 @@ export function buildCourseDirectory(
         updated: s.updated,
         updatedNote: s.updatedNote,
         updatedOn: s.updatedOn,
+        updatedKind: s.updatedKind,
       };
     });
 

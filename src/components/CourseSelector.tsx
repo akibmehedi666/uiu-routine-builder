@@ -1381,6 +1381,7 @@ export function CourseSelector({
                           <UpdatedSectionBadge
                             updated={courseSections.find((s) => s.id === lockedSecId)?.updated}
                             updatedOn={courseSections.find((s) => s.id === lockedSecId)?.updatedOn}
+                            updatedKind={courseSections.find((s) => s.id === lockedSecId)?.updatedKind}
                           />
                           <button
                             type="button"

@@ -9,6 +9,8 @@ export interface Meeting {
   room: string | null;
 }
 
+export type UpdatedKind = 'faculty' | 'schedule' | 'both' | 'new';
+
 export interface Section {
   id: string; // `${program}-${code}-${section}`
   sl: number;
@@ -28,6 +30,7 @@ export interface Section {
   updated?: boolean;
   updatedNote?: string;
   updatedOn?: string;
+  updatedKind?: UpdatedKind;
 }
 
 export interface Course {
@@ -51,6 +54,7 @@ export interface FacultyCourseOffering {
   updated?: boolean;
   updatedNote?: string;
   updatedOn?: string;
+  updatedKind?: UpdatedKind;
 }
 
 export interface Faculty {

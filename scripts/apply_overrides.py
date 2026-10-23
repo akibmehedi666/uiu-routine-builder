@@ -77,6 +77,8 @@ def rebuild_courses_and_faculty(sections: List[Dict[str, Any]]) -> Tuple[List[Di
                         c_data["updatedOn"] = sec["updatedOn"]
                     if sec.get("updatedNote"):
                         c_data["updatedNote"] = sec["updatedNote"]
+                    if sec.get("updatedKind"):
+                        c_data["updatedKind"] = sec["updatedKind"]
                 faculty_map[f_id]["courses"].append(c_data)
 
     faculty_list = sorted(faculty_map.values(), key=lambda f: f["name"])

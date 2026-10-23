@@ -743,6 +743,7 @@ export function Timetable({
               <UpdatedSectionBadge
                 updated={hoveredSection.section.updated}
                 updatedOn={hoveredSection.section.updatedOn}
+                updatedKind={hoveredSection.section.updatedKind}
                 className="ml-1.5"
               />
             </div>
@@ -807,6 +808,7 @@ export function Timetable({
                   <UpdatedSectionBadge
                     updated={activeSheetSection.section.updated}
                     updatedOn={activeSheetSection.section.updatedOn}
+                    updatedKind={activeSheetSection.section.updatedKind}
                   />
                   <span className="text-xs text-text-muted font-medium">
                     ({activeSheetSection.section.credit} cr • {activeSheetSection.section.kind})

@@ -293,3 +293,88 @@ Sections present in `sections.json` without matching entries in `faculty-timings
   - Post-update: 193 faculty members (12 removed)
 - **Sections Count**: Total 791 sections (invariant).
 - **TBA Sections**: 95 (64 newly set to TBA).
+
+
+### Group b & c-d Final Sync (24 Oct 2026)
+Completed synchronization of Group b (7 room updates) and Group c-d paired sections (50 section letter / schedule updates). Total updated sections: 131 (74 Group a + 7 Group b + 50 Group c-d). Total sections strictly invariant at 791.
+
+#### Group b Applied (7 sections)
+| Course | Section | Pre-Sync Time & Room | Synced Time & Room | Faculty | Status |
+|---|---|---|---|---|---|
+| CSE 3712 Computer Networks Laboratory | I | Tue 08:30-11:00 (529 (Computer Lab)) | Tue 08:30-11:00 (826 (Computer Lab)) | Abu Bakar Fahad | Applied (schedule) |
+| CSE 3422 Software Engineering Laboratory | K | Tue 14:00-16:30 (523 (Computer Lab)) | Tue 14:00-16:30 (422 (Computer Lab)) | Ashraful Islam Paran | Applied (schedule) |
+| CSE 4165 Web Programming | A | Sat 08:30-11:00 (826 (Computer Lab)) | Sat 08:30-11:00 (529 (Computer Lab)) | Farhan Anan Himu | Applied (schedule) |
+| CSE 4165 Web Programming | B | Sat 11:11-13:40 (727 (Computer Lab)) | Sat 11:11-13:40 (529 (Computer Lab)) | Farhan Anan Himu | Applied (schedule) |
+| CSE 4165 Web Programming | L | Tue 08:30-11:00 (826 (Computer Lab)) | Tue 08:30-11:00 (529 (Computer Lab)) | Farhan Anan Himu | Applied (schedule) |
+| CSE 4165 Web Programming | M | Tue 11:11-13:40 (727 (Computer Lab)) | Tue 11:11-13:40 (529 (Computer Lab)) | Farhan Anan Himu | Applied (schedule) |
+| CSE 3812 Artificial Intelligence Laboratory | D | Tue 11:11-13:40 (529 (Computer Lab)) | Tue 11:11-13:40 (727 (Computer Lab)) | Raiyan Janik Monir | Applied (schedule) |
+
+#### Group c <-> d Pairing Table (50 sections)
+| Sl | Course | Old Section | New Section | Schedule | Old Faculty | New Faculty | Status |
+|---|---|---|---|---|---|---|---|
+| Sl 16 | BSCSE BDS 1201 | DS | AE | Sun 13:51-15:10 (302) | Nabila Sultana | Nabila Sultana | Applied (schedule) |
+| Sl 713 | BSCSE SOC 2101 | E | A | Sat 15:11-16:30 (631) | Sadia Zaman | Sadia Zaman | Applied (schedule) |
+| Sl 714 | BSCSE SOC 2101 | E | B | Sat 09:51-11:10 (702) | Nazmun Nahar Showmi | Nazmun Nahar Showmi | Applied (schedule) |
+| Sl 715 | BSCSE SOC 2101 | E | C | Sat 11:11-12:30 (703) | Taniah Mahmuda Tinni | Taniah Mahmuda Tinni | Applied (schedule) |
+| Sl 716 | BSCSE SOC 2101 | E | D | Sat 12:31-13:50 (706) | TBA | TBA | Applied (schedule) |
+| Sl 718 | BSCSE SOC 2101 | E | F | Sun 08:30-09:50 (701) | Taniah Mahmuda Tinni | Taniah Mahmuda Tinni | Applied (schedule) |
+| Sl 719 | BSCSE SOC 2101 | E | G | Sun 09:51-11:10 (632) | Nabila Sultana | Nabila Sultana | Applied (schedule) |
+| Sl 720 | BSCSE SOC 2101 | E | H | Sun 11:11-12:30 (631) | Rusafa Islam Aurchi | Rusafa Islam Aurchi | Applied (schedule) |
+| Sl 721 | BSCSE SOC 2101 | E | I | Sun 15:11-16:30 (701) | Md. Minhajul Islam | Md. Minhajul Islam | Applied (schedule) |
+| Sl 722 | BSCSE SOC 2101 | E | J | Sun 13:51-15:10 (701) | Md. Minhajul Islam | Md. Minhajul Islam | Applied (schedule) |
+| Sl 72 | BSCSE CSE 1112 | L | A | Sat 08:30-11:00 (422 (Computer Lab)) | Md. Taky Shaharair | Md. Taky Shaharair | Applied (schedule) |
+| Sl 73 | BSCSE CSE 1112 | L | B | Sat 11:11-13:40 (326 (Computer Lab)) | Abdullah Ibne Masud Mahi | Abdullah Ibne Masud Mahi | Applied (schedule) |
+| Sl 74 | BSCSE CSE 1112 | L | C | Sat 14:00-16:30 (627 (Computer Lab)) | Ashraful Islam Paran | Ashraful Islam Paran | Applied (schedule) |
+| Sl 75 | BSCSE CSE 1112 | L | E | Mon 11:11-13:40 (627 (Computer Lab)) | Mohmmad Ali | Mohmmad Ali | Applied (schedule) |
+| Sl 76 | BSCSE CSE 1112 | L | F | Mon 08:30-11:00 (522 (Computer Lab)) | Hamudi Hasan Sonet | Hamudi Hasan Sonet | Applied (schedule) |
+| Sl 77 | BSCSE CSE 1112 | L | H | Sun 11:11-13:40 (326 (Computer Lab)) | Tasriad Ahmed Tias | Tasriad Ahmed Tias | Applied (schedule) |
+| Sl 78 | BSCSE CSE 1112 | L | T | Wed 11:11-13:40 (327 (Computer Lab)) | Sidratul Tanzila Tasmi | Sidratul Tanzila Tasmi | Applied (schedule) |
+| Sl 79 | BSCSE CSE 1112 | L | U | Wed 14:00-16:30 (522 (Computer Lab)) | Sayeem Been Zaman | Sayeem Been Zaman | Applied (schedule) |
+| Sl 80 | BSCSE CSE 1112 | L | V | Wed 08:30-11:00 (422 (Computer Lab)) | Asnuva Tanvin | Asnuva Tanvin | Applied (schedule) |
+| Sl 81 | BSCSE CSE 1112 | L | X | Wed 14:00-16:30 (326 (Computer Lab)) | Miftahul Sheikh | Miftahul Sheikh | Applied (schedule) |
+| Sl 82 | BSCSE CSE 1112 | L | S | Wed 08:30-11:00 (327 (Computer Lab)) | Mobaswirul Islam | Mobaswirul Islam | Applied (schedule) |
+| Sl 83 | BSCSE CSE 1112 | L | N | Tue 11:11-13:40 (326 (Computer Lab)) | S.M. Kausar Parvej | S.M. Kausar Parvej | Applied (schedule) |
+| Sl 84 | BSCSE CSE 1112 | L | O | Tue 14:00-16:30 (523 (Computer Lab)) | Hamudi Hasan Sonet | Hamudi Hasan Sonet | Applied (schedule) |
+| Sl 85 | BSCSE CSE 1112 | L | P | Mon 08:30-11:00 (326 (Computer Lab)) | Miftahul Sheikh | Miftahul Sheikh | Applied (schedule) |
+| Sl 86 | BSCSE CSE 1112 | L | Q | Tue 11:11-13:40 (327 (Computer Lab)) | Sheikh Mohammed Al Hadi Elaf | Sheikh Mohammed Al Hadi Elaf | Applied (schedule) |
+| Sl 87 | BSCSE CSE 1112 | L | R | Mon 14:00-16:30 (327 (Computer Lab)) | Mohmmad Ali | Mohmmad Ali | Applied (schedule) |
+| Sl 88 | BSCSE CSE 1112 | L | W | Wed 11:11-13:40 (422 (Computer Lab)) | Sayeem Been Zaman | Sayeem Been Zaman | Applied (schedule) |
+| Sl 89 | BSCSE CSE 1112 | L | I | Sun 14:00-16:30 (326 (Computer Lab)) | Tasmia Binte Sogir | Tasmia Binte Sogir | Applied (schedule) |
+| Sl 90 | BSCSE CSE 1112 | L | J | Sun 08:30-11:00 (423 (Computer Lab)) | Saqif Kaisar | Saqif Kaisar | Applied (schedule) |
+| Sl 91 | BSCSE CSE 1112 | L | K | Sun 11:11-13:40 (327 (Computer Lab)) | Sidratul Tanzila Tasmi | Sidratul Tanzila Tasmi | Applied (schedule) |
+| Sl 92 | BSCSE CSE 1112 | L | G | Sun 08:30-11:00 (422 (Computer Lab)) | Asnuva Tanvin | Asnuva Tanvin | Applied (schedule) |
+| Sl 94 | BSCSE CSE 1112 | L | M | Tue 08:30-11:00 (326 (Computer Lab)) | Sajid Ahmed Chowdhury | Sajid Ahmed Chowdhury | Applied (schedule) |
+| Sl 314 | BSCSE CSE 3522 | S | A | Sat 08:30-11:00 (826 (Computer Lab)) | Mohammad Johirul Islam | Mohammad Johirul Islam | Applied (schedule) |
+| Sl 315 | BSCSE CSE 3522 | S | B | Sat 11:11-13:40 (727 (Computer Lab)) | Zobaer Ibn Razzaque | Zobaer Ibn Razzaque | Applied (schedule) |
+| Sl 316 | BSCSE CSE 3522 | S | C | Sat 14:00-16:30 (529 (Computer Lab)) | Md. Golam Hossain | Md. Golam Hossain | Applied (schedule) |
+| Sl 317 | BSCSE CSE 3522 | S | D | Sat 14:00-16:30 (530 (Computer Lab)) | Zobaer Ibn Razzaque | Zobaer Ibn Razzaque | Applied (schedule) |
+| Sl 318 | BSCSE CSE 3522 | S | E | Sat 11:11-13:40 (530 (Computer Lab)) | Md. Golam Hossain | Md. Golam Hossain | Applied (schedule) |
+| Sl 319 | BSCSE CSE 3522 | S | F | Sat 14:00-16:30 (727 (Computer Lab)) | Saifullah Mahbub | Saifullah Mahbub | Applied (schedule) |
+| Sl 320 | BSCSE CSE 3522 | S | M | Tue 14:00-16:30 (528 (Computer Lab)) | Jerin Hasan Priya | Jerin Hasan Priya | Applied (schedule) |
+| Sl 321 | BSCSE CSE 3522 | S | N | Mon 11:11-13:40 (427 (Computer Lab)) | Md. Enamul Haque | Md. Enamul Haque | Applied (schedule) |
+| Sl 322 | BSCSE CSE 3522 | S | O | Wed 08:30-11:00 (523 (Computer Lab)) | Abu Bakar Fahad | Abu Bakar Fahad | Applied (schedule) |
+| Sl 323 | BSCSE CSE 3522 | S | P | Mon 14:00-16:30 (426 (Computer Lab)) | Abu Bakar Fahad | Abu Bakar Fahad | Applied (schedule) |
+| Sl 324 | BSCSE CSE 3522 | S | G | Sun 08:30-11:00 (523 (Computer Lab)) | Ms. Mehreen Hossain Chowdhury | TBA | Applied (both) |
+| Sl 325 | BSCSE CSE 3522 | S | H | Sun 11:11-13:40 (529 (Computer Lab)) | Abu Bakar Fahad | Abu Bakar Fahad | Applied (schedule) |
+| Sl 326 | BSCSE CSE 3522 | S | I | Wed 14:00-16:30 (523 (Computer Lab)) | Jerin Hasan Priya | Jerin Hasan Priya | Applied (schedule) |
+| Sl 327 | BSCSE CSE 3522 | S | J | Mon 08:30-11:00 (424 (Computer Lab)) | Md. Enamul Haque | Md. Enamul Haque | Applied (schedule) |
+| Sl 328 | BSCSE CSE 3522 | S | K | Tue 08:30-11:00 (523 (Computer Lab)) | Md. Enamul Haque | Md. Enamul Haque | Applied (schedule) |
+| Sl 329 | BSCSE CSE 3522 | S | L | Tue 11:11-13:40 (523 (Computer Lab)) | Miftahul Sheikh | Miftahul Sheikh | Applied (schedule) |
+| Sl 736 | BSDS CSE 3522 | S | BA | Sat 11:11-13:40 (826 (Computer Lab)) | Didarul Islam Didar | Didarul Islam Didar | Applied (schedule) |
+| Sl 737 | BSDS CSE 3522 | S | BB | Tue 11:11-13:40 (926 (Computer Lab)) | Didarul Islam Didar | Didarul Islam Didar | Applied (schedule) |
+
+#### Group c Unpaired / Skipped Rows (3 rows)
+| Course | Section | Title | Reason for Skipping |
+|---|---|---|---|
+| CSE 4000B | X | Final Year Design Project - II | No class timing or room in CSV (administrative registration placeholder, 400 seats free) |
+| CSE 4000C | Y | Final Year Design Project - III | No class timing or room in CSV (administrative registration placeholder, 400 seats free) |
+| DS 4000A | BB (Dropped) | Final Year Design Project - I | Explicitly marked as dropped section in CSV with 0 seats |
+
+#### Group d Untouched Sections (61 sections)
+61 dataset sections without corresponding rows in `faculty-timings.csv` (principally BSDS / Data Science courses including DS 1101, DS 1115, DS 1116, DS 1501, DS 1502, DS 2251, DS 3101, DS 3120, DS 3521, DS 3881, DS 3885, DS 4115, etc.). In accordance with project rules, these sections remain untouched in the dataset as the CSV is partial for non-CSE courses.
+
+#### Conflict Audit
+- **Faculty Conflicts**: Exactly 5 overlapping assignments detected campus-wide; 0 new conflicts introduced (all 5 pre-dated this synchronization in baseline data).
+- **Room Double-Booking Conflicts**: Exactly 7 double-bookings detected; 0 new double-bookings introduced (all 7 pre-dated this synchronization in baseline data).
+- **Pruned Faculty**: Ms. Mehreen Hossain Chowdhury pruned (0 active teaching sections remaining after CSE 3522 Sec G reassigned to TBA). Total faculty in directory: 192.
+- **TBA Sections**: 96 sections (1 newly set to TBA: CSE 3522 Sec G).

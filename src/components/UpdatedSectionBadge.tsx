@@ -1,30 +1,39 @@
 import React from 'react';
+import { UpdatedKind } from '../types';
 
 interface UpdatedSectionBadgeProps {
   updated?: boolean;
   updatedOn?: string;
+  updatedKind?: UpdatedKind;
   tooltip?: string;
   className?: string;
 }
 
 /**
- * Shared tiny badge indicating a section whose faculty assignment was updated.
+ * Shared tiny badge indicating a section whose faculty assignment or schedule was updated.
  * Follows UIU orange-soft tokens with 11px text and informative tooltip.
  */
 export function UpdatedSectionBadge({
   updated,
   updatedOn = '2026-10-24',
+  updatedKind = 'faculty',
   tooltip,
   className = '',
 }: UpdatedSectionBadgeProps) {
   if (!updated) return null;
 
-  const defaultTooltip =
-    updatedOn === '2026-10-24'
-      ? 'Faculty updated on 24 Oct 2026'
-      : updatedOn
-      ? `Faculty updated on ${updatedOn}`
-      : 'Faculty assignment updated';
+  let defaultTooltip = 'Faculty updated on 24 Oct 2026';
+  if (updatedKind === 'schedule') {
+    defaultTooltip = 'Schedule updated on 24 Oct 2026';
+  } else if (updatedKind === 'both') {
+    defaultTooltip = 'Faculty & schedule updated on 24 Oct 2026';
+  } else if (updatedKind === 'new') {
+    defaultTooltip = 'New section added on 24 Oct 2026';
+  } else if (updatedKind === 'faculty') {
+    defaultTooltip = 'Faculty updated on 24 Oct 2026';
+  } else if (updatedOn) {
+    defaultTooltip = `Updated on ${updatedOn}`;
+  }
 
   return (
     <span

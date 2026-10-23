@@ -1644,7 +1644,7 @@ function SectionRowItem({
               >
                 {section.primaryFaculty}
               </button>
-              <UpdatedSectionBadge updated={section.updated} updatedOn={section.updatedOn} />
+              <UpdatedSectionBadge updated={section.updated} updatedOn={section.updatedOn} updatedKind={section.updatedKind} />
             </div>
 
             {section.tentative && (

@@ -365,7 +365,7 @@ export function FacultyDetailView({ faculty }: { faculty: FacultyStats }) {
                                 Tentative
                               </span>
                             )}
-                            <UpdatedSectionBadge updated={sec.updated} updatedOn={sec.updatedOn} />
+                            <UpdatedSectionBadge updated={sec.updated} updatedOn={sec.updatedOn} updatedKind={sec.updatedKind} />
                           </div>
                           <div className="flex items-center gap-2 text-text-muted text-[11px]">
                             <span>Days: {sec.days.join(', ')}</span>

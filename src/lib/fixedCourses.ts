@@ -1,4 +1,5 @@
 import { Course, Day, Meeting, Section } from '../types';
+import { resolveSectionId } from './sectionAliases';
 import { computeIntervalMask, computeSectionMask, hasOverlap, ScheduleBitmask } from '../solver/bitmask';
 import { formatTime24 } from '../utils/export';
 import {
@@ -437,7 +438,8 @@ export function computeFixedFYDPClashes(
   const fixedSections: Section[] = [];
   for (const code of selectedCourses) {
     if (isFixedCourse(code) && lockedSections?.[code]) {
-      const sec = allSections.find((s) => s.id === lockedSections[code]);
+      const targetId = resolveSectionId(lockedSections[code]);
+      const sec = allSections.find((s) => s.id === targetId || s.id === lockedSections[code]);
       if (sec) fixedSections.push(sec);
     }
   }
@@ -460,7 +462,8 @@ export const computeFYDPClashes = (
   if (lockedSections) {
     for (const code of selectedCourses) {
       if (isFixedCourse(code) && lockedSections[code]) {
-        const sec = allSections.find((s) => s.id === lockedSections[code]);
+        const targetId = resolveSectionId(lockedSections[code]);
+        const sec = allSections.find((s) => s.id === targetId || s.id === lockedSections[code]);
         if (sec) activeSections.push(sec);
       }
     }

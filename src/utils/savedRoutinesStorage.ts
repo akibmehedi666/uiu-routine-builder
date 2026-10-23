@@ -1,4 +1,5 @@
 import { Day, Meeting, Section, ScheduleResult, SolveRequest } from '../types';
+import { resolveSectionId } from '../lib/sectionAliases';
 import {
   SavedRoutine,
   SavedRoutinesStorage,
@@ -237,7 +238,9 @@ export function validateSavedRoutine(
 
   // 1. Check each saved section against live catalog
   for (const savedSec of routine.sections) {
-    const liveSec = liveSectionMap.get(savedSec.sectionId);
+    const liveSec =
+      liveSectionMap.get(savedSec.sectionId) ||
+      liveSectionMap.get(resolveSectionId(savedSec.sectionId));
 
     if (savedSec.tentative) {
       tentativeCount++;

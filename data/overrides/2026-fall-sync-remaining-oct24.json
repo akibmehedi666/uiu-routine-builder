@@ -1,0 +1,1906 @@
+{
+  "group_b": [
+    {
+      "sl": 349,
+      "courseCode": "CSE 3712",
+      "title": "Computer Networks Laboratory",
+      "program": "BSCSE",
+      "section": "I",
+      "expectedOldFaculty": [
+        "Abu Bakar Fahad"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Tue",
+          "start": 510,
+          "end": 660,
+          "room": "529 (Computer Lab)"
+        }
+      ],
+      "newFaculty": [
+        "Abu Bakar Fahad"
+      ],
+      "newMeetings": [
+        {
+          "day": "Tue",
+          "start": 510,
+          "end": 660,
+          "room": "826 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 300,
+      "courseCode": "CSE 3422",
+      "title": "Software Engineering Laboratory",
+      "program": "BSCSE",
+      "section": "K",
+      "expectedOldFaculty": [
+        "Ashraful Islam Paran"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Tue",
+          "start": 840,
+          "end": 990,
+          "room": "523 (Computer Lab)"
+        }
+      ],
+      "newFaculty": [
+        "Ashraful Islam Paran"
+      ],
+      "newMeetings": [
+        {
+          "day": "Tue",
+          "start": 840,
+          "end": 990,
+          "room": "422 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 392,
+      "courseCode": "CSE 4165",
+      "title": "Web Programming",
+      "program": "BSCSE",
+      "section": "A",
+      "expectedOldFaculty": [
+        "Farhan Anan Himu"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Sat",
+          "start": 510,
+          "end": 660,
+          "room": "826 (Computer Lab)"
+        }
+      ],
+      "newFaculty": [
+        "Farhan Anan Himu"
+      ],
+      "newMeetings": [
+        {
+          "day": "Sat",
+          "start": 510,
+          "end": 660,
+          "room": "529 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 393,
+      "courseCode": "CSE 4165",
+      "title": "Web Programming",
+      "program": "BSCSE",
+      "section": "B",
+      "expectedOldFaculty": [
+        "Farhan Anan Himu"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Sat",
+          "start": 671,
+          "end": 820,
+          "room": "727 (Computer Lab)"
+        }
+      ],
+      "newFaculty": [
+        "Farhan Anan Himu"
+      ],
+      "newMeetings": [
+        {
+          "day": "Sat",
+          "start": 671,
+          "end": 820,
+          "room": "529 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 409,
+      "courseCode": "CSE 4165",
+      "title": "Web Programming",
+      "program": "BSCSE",
+      "section": "L",
+      "expectedOldFaculty": [
+        "Farhan Anan Himu"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Tue",
+          "start": 510,
+          "end": 660,
+          "room": "826 (Computer Lab)"
+        }
+      ],
+      "newFaculty": [
+        "Farhan Anan Himu"
+      ],
+      "newMeetings": [
+        {
+          "day": "Tue",
+          "start": 510,
+          "end": 660,
+          "room": "529 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 398,
+      "courseCode": "CSE 4165",
+      "title": "Web Programming",
+      "program": "BSCSE",
+      "section": "M",
+      "expectedOldFaculty": [
+        "Farhan Anan Himu"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Tue",
+          "start": 671,
+          "end": 820,
+          "room": "727 (Computer Lab)"
+        }
+      ],
+      "newFaculty": [
+        "Farhan Anan Himu"
+      ],
+      "newMeetings": [
+        {
+          "day": "Tue",
+          "start": 671,
+          "end": 820,
+          "room": "529 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 369,
+      "courseCode": "CSE 3812",
+      "title": "Artificial Intelligence Laboratory",
+      "program": "BSCSE",
+      "section": "D",
+      "expectedOldFaculty": [
+        "Raiyan Janik Monir"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Tue",
+          "start": 671,
+          "end": 820,
+          "room": "529 (Computer Lab)"
+        }
+      ],
+      "newFaculty": [
+        "Raiyan Janik Monir"
+      ],
+      "newMeetings": [
+        {
+          "day": "Tue",
+          "start": 671,
+          "end": 820,
+          "room": "727 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    }
+  ],
+  "group_cd_paired": [
+    {
+      "sl": 16,
+      "program": "BSCSE",
+      "courseCode": "BDS 1201",
+      "title": "History of the Emergence of Bangladesh",
+      "expectedOldSection": "DS",
+      "expectedOldFaculty": [
+        "Nabila Sultana"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Sun",
+          "start": 831,
+          "end": 910,
+          "room": "302"
+        },
+        {
+          "day": "Wed",
+          "start": 831,
+          "end": 910,
+          "room": "302"
+        }
+      ],
+      "newSection": "AE",
+      "newFaculty": [
+        "Nabila Sultana"
+      ],
+      "newMeetings": [
+        {
+          "day": "Sun",
+          "start": 831,
+          "end": 910,
+          "room": "302"
+        },
+        {
+          "day": "Wed",
+          "start": 831,
+          "end": 910,
+          "room": "302"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 713,
+      "program": "BSCSE",
+      "courseCode": "SOC 2101",
+      "title": "Society, Environment and Engineering Ethics",
+      "expectedOldSection": "E",
+      "expectedOldFaculty": [
+        "Sadia Zaman"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Sat",
+          "start": 911,
+          "end": 990,
+          "room": "631"
+        },
+        {
+          "day": "Tue",
+          "start": 911,
+          "end": 990,
+          "room": "631"
+        }
+      ],
+      "newSection": "A",
+      "newFaculty": [
+        "Sadia Zaman"
+      ],
+      "newMeetings": [
+        {
+          "day": "Sat",
+          "start": 911,
+          "end": 990,
+          "room": "631"
+        },
+        {
+          "day": "Tue",
+          "start": 911,
+          "end": 990,
+          "room": "631"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 714,
+      "program": "BSCSE",
+      "courseCode": "SOC 2101",
+      "title": "Society, Environment and Engineering Ethics",
+      "expectedOldSection": "E",
+      "expectedOldFaculty": [
+        "Nazmun Nahar Showmi"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Sat",
+          "start": 591,
+          "end": 670,
+          "room": "702"
+        },
+        {
+          "day": "Tue",
+          "start": 591,
+          "end": 670,
+          "room": "702"
+        }
+      ],
+      "newSection": "B",
+      "newFaculty": [
+        "Nazmun Nahar Showmi"
+      ],
+      "newMeetings": [
+        {
+          "day": "Sat",
+          "start": 591,
+          "end": 670,
+          "room": "702"
+        },
+        {
+          "day": "Tue",
+          "start": 591,
+          "end": 670,
+          "room": "702"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 715,
+      "program": "BSCSE",
+      "courseCode": "SOC 2101",
+      "title": "Society, Environment and Engineering Ethics",
+      "expectedOldSection": "E",
+      "expectedOldFaculty": [
+        "Taniah Mahmuda Tinni"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Sat",
+          "start": 671,
+          "end": 750,
+          "room": "703"
+        },
+        {
+          "day": "Tue",
+          "start": 671,
+          "end": 750,
+          "room": "703"
+        }
+      ],
+      "newSection": "C",
+      "newFaculty": [
+        "Taniah Mahmuda Tinni"
+      ],
+      "newMeetings": [
+        {
+          "day": "Sat",
+          "start": 671,
+          "end": 750,
+          "room": "703"
+        },
+        {
+          "day": "Tue",
+          "start": 671,
+          "end": 750,
+          "room": "703"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 716,
+      "program": "BSCSE",
+      "courseCode": "SOC 2101",
+      "title": "Society, Environment and Engineering Ethics",
+      "expectedOldSection": "E",
+      "expectedOldFaculty": [
+        "TBA"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Sat",
+          "start": 751,
+          "end": 830,
+          "room": "706"
+        },
+        {
+          "day": "Tue",
+          "start": 751,
+          "end": 830,
+          "room": "706"
+        }
+      ],
+      "newSection": "D",
+      "newFaculty": [
+        "TBA"
+      ],
+      "newMeetings": [
+        {
+          "day": "Sat",
+          "start": 751,
+          "end": 830,
+          "room": "706"
+        },
+        {
+          "day": "Tue",
+          "start": 751,
+          "end": 830,
+          "room": "706"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 718,
+      "program": "BSCSE",
+      "courseCode": "SOC 2101",
+      "title": "Society, Environment and Engineering Ethics",
+      "expectedOldSection": "E",
+      "expectedOldFaculty": [
+        "Taniah Mahmuda Tinni"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Sun",
+          "start": 510,
+          "end": 590,
+          "room": "701"
+        },
+        {
+          "day": "Wed",
+          "start": 510,
+          "end": 590,
+          "room": "701"
+        }
+      ],
+      "newSection": "F",
+      "newFaculty": [
+        "Taniah Mahmuda Tinni"
+      ],
+      "newMeetings": [
+        {
+          "day": "Sun",
+          "start": 510,
+          "end": 590,
+          "room": "701"
+        },
+        {
+          "day": "Wed",
+          "start": 510,
+          "end": 590,
+          "room": "701"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 719,
+      "program": "BSCSE",
+      "courseCode": "SOC 2101",
+      "title": "Society, Environment and Engineering Ethics",
+      "expectedOldSection": "E",
+      "expectedOldFaculty": [
+        "Nabila Sultana"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Sun",
+          "start": 591,
+          "end": 670,
+          "room": "632"
+        },
+        {
+          "day": "Wed",
+          "start": 591,
+          "end": 670,
+          "room": "632"
+        }
+      ],
+      "newSection": "G",
+      "newFaculty": [
+        "Nabila Sultana"
+      ],
+      "newMeetings": [
+        {
+          "day": "Sun",
+          "start": 591,
+          "end": 670,
+          "room": "632"
+        },
+        {
+          "day": "Wed",
+          "start": 591,
+          "end": 670,
+          "room": "632"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 720,
+      "program": "BSCSE",
+      "courseCode": "SOC 2101",
+      "title": "Society, Environment and Engineering Ethics",
+      "expectedOldSection": "E",
+      "expectedOldFaculty": [
+        "Rusafa Islam Aurchi"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Sun",
+          "start": 671,
+          "end": 750,
+          "room": "631"
+        },
+        {
+          "day": "Wed",
+          "start": 671,
+          "end": 750,
+          "room": "631"
+        }
+      ],
+      "newSection": "H",
+      "newFaculty": [
+        "Rusafa Islam Aurchi"
+      ],
+      "newMeetings": [
+        {
+          "day": "Sun",
+          "start": 671,
+          "end": 750,
+          "room": "631"
+        },
+        {
+          "day": "Wed",
+          "start": 671,
+          "end": 750,
+          "room": "631"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 721,
+      "program": "BSCSE",
+      "courseCode": "SOC 2101",
+      "title": "Society, Environment and Engineering Ethics",
+      "expectedOldSection": "E",
+      "expectedOldFaculty": [
+        "Md. Minhajul Islam"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Sun",
+          "start": 911,
+          "end": 990,
+          "room": "701"
+        },
+        {
+          "day": "Wed",
+          "start": 911,
+          "end": 990,
+          "room": "701"
+        }
+      ],
+      "newSection": "I",
+      "newFaculty": [
+        "Md. Minhajul Islam"
+      ],
+      "newMeetings": [
+        {
+          "day": "Sun",
+          "start": 911,
+          "end": 990,
+          "room": "701"
+        },
+        {
+          "day": "Wed",
+          "start": 911,
+          "end": 990,
+          "room": "701"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 722,
+      "program": "BSCSE",
+      "courseCode": "SOC 2101",
+      "title": "Society, Environment and Engineering Ethics",
+      "expectedOldSection": "E",
+      "expectedOldFaculty": [
+        "Md. Minhajul Islam"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Sun",
+          "start": 831,
+          "end": 910,
+          "room": "701"
+        },
+        {
+          "day": "Wed",
+          "start": 831,
+          "end": 910,
+          "room": "701"
+        }
+      ],
+      "newSection": "J",
+      "newFaculty": [
+        "Md. Minhajul Islam"
+      ],
+      "newMeetings": [
+        {
+          "day": "Sun",
+          "start": 831,
+          "end": 910,
+          "room": "701"
+        },
+        {
+          "day": "Wed",
+          "start": 831,
+          "end": 910,
+          "room": "701"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 72,
+      "program": "BSCSE",
+      "courseCode": "CSE 1112",
+      "title": "Structured Programming Language Laboratory",
+      "expectedOldSection": "L",
+      "expectedOldFaculty": [
+        "Md. Taky Shaharair"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Sat",
+          "start": 510,
+          "end": 660,
+          "room": "422 (Computer Lab)"
+        }
+      ],
+      "newSection": "A",
+      "newFaculty": [
+        "Md. Taky Shaharair"
+      ],
+      "newMeetings": [
+        {
+          "day": "Sat",
+          "start": 510,
+          "end": 660,
+          "room": "422 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 73,
+      "program": "BSCSE",
+      "courseCode": "CSE 1112",
+      "title": "Structured Programming Language Laboratory",
+      "expectedOldSection": "L",
+      "expectedOldFaculty": [
+        "Abdullah Ibne Masud Mahi"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Sat",
+          "start": 671,
+          "end": 820,
+          "room": "326 (Computer Lab)"
+        }
+      ],
+      "newSection": "B",
+      "newFaculty": [
+        "Abdullah Ibne Masud Mahi"
+      ],
+      "newMeetings": [
+        {
+          "day": "Sat",
+          "start": 671,
+          "end": 820,
+          "room": "326 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 74,
+      "program": "BSCSE",
+      "courseCode": "CSE 1112",
+      "title": "Structured Programming Language Laboratory",
+      "expectedOldSection": "L",
+      "expectedOldFaculty": [
+        "Ashraful Islam Paran"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Sat",
+          "start": 840,
+          "end": 990,
+          "room": "627 (Computer Lab)"
+        }
+      ],
+      "newSection": "C",
+      "newFaculty": [
+        "Ashraful Islam Paran"
+      ],
+      "newMeetings": [
+        {
+          "day": "Sat",
+          "start": 840,
+          "end": 990,
+          "room": "627 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 75,
+      "program": "BSCSE",
+      "courseCode": "CSE 1112",
+      "title": "Structured Programming Language Laboratory",
+      "expectedOldSection": "L",
+      "expectedOldFaculty": [
+        "Mohmmad Ali"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Mon",
+          "start": 671,
+          "end": 820,
+          "room": "627 (Computer Lab)"
+        }
+      ],
+      "newSection": "E",
+      "newFaculty": [
+        "Mohmmad Ali"
+      ],
+      "newMeetings": [
+        {
+          "day": "Mon",
+          "start": 671,
+          "end": 820,
+          "room": "627 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 76,
+      "program": "BSCSE",
+      "courseCode": "CSE 1112",
+      "title": "Structured Programming Language Laboratory",
+      "expectedOldSection": "L",
+      "expectedOldFaculty": [
+        "Hamudi Hasan Sonet"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Mon",
+          "start": 510,
+          "end": 660,
+          "room": "627 (Computer Lab)"
+        }
+      ],
+      "newSection": "F",
+      "newFaculty": [
+        "Hamudi Hasan Sonet"
+      ],
+      "newMeetings": [
+        {
+          "day": "Mon",
+          "start": 510,
+          "end": 660,
+          "room": "522 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 77,
+      "program": "BSCSE",
+      "courseCode": "CSE 1112",
+      "title": "Structured Programming Language Laboratory",
+      "expectedOldSection": "L",
+      "expectedOldFaculty": [
+        "Tasriad Ahmed Tias"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Sun",
+          "start": 671,
+          "end": 820,
+          "room": "326 (Computer Lab)"
+        }
+      ],
+      "newSection": "H",
+      "newFaculty": [
+        "Tasriad Ahmed Tias"
+      ],
+      "newMeetings": [
+        {
+          "day": "Sun",
+          "start": 671,
+          "end": 820,
+          "room": "326 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 78,
+      "program": "BSCSE",
+      "courseCode": "CSE 1112",
+      "title": "Structured Programming Language Laboratory",
+      "expectedOldSection": "L",
+      "expectedOldFaculty": [
+        "Sidratul Tanzila Tasmi"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Wed",
+          "start": 671,
+          "end": 820,
+          "room": "327 (Computer Lab)"
+        }
+      ],
+      "newSection": "T",
+      "newFaculty": [
+        "Sidratul Tanzila Tasmi"
+      ],
+      "newMeetings": [
+        {
+          "day": "Wed",
+          "start": 671,
+          "end": 820,
+          "room": "327 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 79,
+      "program": "BSCSE",
+      "courseCode": "CSE 1112",
+      "title": "Structured Programming Language Laboratory",
+      "expectedOldSection": "L",
+      "expectedOldFaculty": [
+        "Sayeem Been Zaman"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Wed",
+          "start": 840,
+          "end": 990,
+          "room": "522 (Computer Lab)"
+        }
+      ],
+      "newSection": "U",
+      "newFaculty": [
+        "Sayeem Been Zaman"
+      ],
+      "newMeetings": [
+        {
+          "day": "Wed",
+          "start": 840,
+          "end": 990,
+          "room": "522 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 80,
+      "program": "BSCSE",
+      "courseCode": "CSE 1112",
+      "title": "Structured Programming Language Laboratory",
+      "expectedOldSection": "L",
+      "expectedOldFaculty": [
+        "Asnuva Tanvin"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Wed",
+          "start": 510,
+          "end": 660,
+          "room": "422 (Computer Lab)"
+        }
+      ],
+      "newSection": "V",
+      "newFaculty": [
+        "Asnuva Tanvin"
+      ],
+      "newMeetings": [
+        {
+          "day": "Wed",
+          "start": 510,
+          "end": 660,
+          "room": "422 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 81,
+      "program": "BSCSE",
+      "courseCode": "CSE 1112",
+      "title": "Structured Programming Language Laboratory",
+      "expectedOldSection": "L",
+      "expectedOldFaculty": [
+        "Miftahul Sheikh"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Wed",
+          "start": 840,
+          "end": 990,
+          "room": "326 (Computer Lab)"
+        }
+      ],
+      "newSection": "X",
+      "newFaculty": [
+        "Miftahul Sheikh"
+      ],
+      "newMeetings": [
+        {
+          "day": "Wed",
+          "start": 840,
+          "end": 990,
+          "room": "326 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 82,
+      "program": "BSCSE",
+      "courseCode": "CSE 1112",
+      "title": "Structured Programming Language Laboratory",
+      "expectedOldSection": "L",
+      "expectedOldFaculty": [
+        "Mobaswirul Islam"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Wed",
+          "start": 510,
+          "end": 660,
+          "room": "327 (Computer Lab)"
+        }
+      ],
+      "newSection": "S",
+      "newFaculty": [
+        "Mobaswirul Islam"
+      ],
+      "newMeetings": [
+        {
+          "day": "Wed",
+          "start": 510,
+          "end": 660,
+          "room": "327 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 83,
+      "program": "BSCSE",
+      "courseCode": "CSE 1112",
+      "title": "Structured Programming Language Laboratory",
+      "expectedOldSection": "L",
+      "expectedOldFaculty": [
+        "S.M. Kausar Parvej"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Tue",
+          "start": 671,
+          "end": 820,
+          "room": "326 (Computer Lab)"
+        }
+      ],
+      "newSection": "N",
+      "newFaculty": [
+        "S.M. Kausar Parvej"
+      ],
+      "newMeetings": [
+        {
+          "day": "Tue",
+          "start": 671,
+          "end": 820,
+          "room": "326 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 84,
+      "program": "BSCSE",
+      "courseCode": "CSE 1112",
+      "title": "Structured Programming Language Laboratory",
+      "expectedOldSection": "L",
+      "expectedOldFaculty": [
+        "Hamudi Hasan Sonet"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Tue",
+          "start": 840,
+          "end": 990,
+          "room": "422 (Computer Lab)"
+        }
+      ],
+      "newSection": "O",
+      "newFaculty": [
+        "Hamudi Hasan Sonet"
+      ],
+      "newMeetings": [
+        {
+          "day": "Tue",
+          "start": 840,
+          "end": 990,
+          "room": "523 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 85,
+      "program": "BSCSE",
+      "courseCode": "CSE 1112",
+      "title": "Structured Programming Language Laboratory",
+      "expectedOldSection": "L",
+      "expectedOldFaculty": [
+        "Miftahul Sheikh"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Mon",
+          "start": 510,
+          "end": 660,
+          "room": "326 (Computer Lab)"
+        }
+      ],
+      "newSection": "P",
+      "newFaculty": [
+        "Miftahul Sheikh"
+      ],
+      "newMeetings": [
+        {
+          "day": "Mon",
+          "start": 510,
+          "end": 660,
+          "room": "326 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 86,
+      "program": "BSCSE",
+      "courseCode": "CSE 1112",
+      "title": "Structured Programming Language Laboratory",
+      "expectedOldSection": "L",
+      "expectedOldFaculty": [
+        "Sheikh Mohammed Al Hadi Elaf"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Tue",
+          "start": 671,
+          "end": 820,
+          "room": "327 (Computer Lab)"
+        }
+      ],
+      "newSection": "Q",
+      "newFaculty": [
+        "Sheikh Mohammed Al Hadi Elaf"
+      ],
+      "newMeetings": [
+        {
+          "day": "Tue",
+          "start": 671,
+          "end": 820,
+          "room": "327 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 87,
+      "program": "BSCSE",
+      "courseCode": "CSE 1112",
+      "title": "Structured Programming Language Laboratory",
+      "expectedOldSection": "L",
+      "expectedOldFaculty": [
+        "Mohmmad Ali"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Mon",
+          "start": 840,
+          "end": 990,
+          "room": "327 (Computer Lab)"
+        }
+      ],
+      "newSection": "R",
+      "newFaculty": [
+        "Mohmmad Ali"
+      ],
+      "newMeetings": [
+        {
+          "day": "Mon",
+          "start": 840,
+          "end": 990,
+          "room": "327 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 88,
+      "program": "BSCSE",
+      "courseCode": "CSE 1112",
+      "title": "Structured Programming Language Laboratory",
+      "expectedOldSection": "L",
+      "expectedOldFaculty": [
+        "Sayeem Been Zaman"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Wed",
+          "start": 671,
+          "end": 820,
+          "room": "422 (Computer Lab)"
+        }
+      ],
+      "newSection": "W",
+      "newFaculty": [
+        "Sayeem Been Zaman"
+      ],
+      "newMeetings": [
+        {
+          "day": "Wed",
+          "start": 671,
+          "end": 820,
+          "room": "422 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 89,
+      "program": "BSCSE",
+      "courseCode": "CSE 1112",
+      "title": "Structured Programming Language Laboratory",
+      "expectedOldSection": "L",
+      "expectedOldFaculty": [
+        "Tasmia Binte Sogir"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Sun",
+          "start": 840,
+          "end": 990,
+          "room": "326 (Computer Lab)"
+        }
+      ],
+      "newSection": "I",
+      "newFaculty": [
+        "Tasmia Binte Sogir"
+      ],
+      "newMeetings": [
+        {
+          "day": "Sun",
+          "start": 840,
+          "end": 990,
+          "room": "326 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 90,
+      "program": "BSCSE",
+      "courseCode": "CSE 1112",
+      "title": "Structured Programming Language Laboratory",
+      "expectedOldSection": "L",
+      "expectedOldFaculty": [
+        "Saqif Kaisar"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Sun",
+          "start": 510,
+          "end": 660,
+          "room": "423 (Computer Lab)"
+        }
+      ],
+      "newSection": "J",
+      "newFaculty": [
+        "Saqif Kaisar"
+      ],
+      "newMeetings": [
+        {
+          "day": "Sun",
+          "start": 510,
+          "end": 660,
+          "room": "423 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 91,
+      "program": "BSCSE",
+      "courseCode": "CSE 1112",
+      "title": "Structured Programming Language Laboratory",
+      "expectedOldSection": "L",
+      "expectedOldFaculty": [
+        "Sidratul Tanzila Tasmi"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Sun",
+          "start": 671,
+          "end": 820,
+          "room": "327 (Computer Lab)"
+        }
+      ],
+      "newSection": "K",
+      "newFaculty": [
+        "Sidratul Tanzila Tasmi"
+      ],
+      "newMeetings": [
+        {
+          "day": "Sun",
+          "start": 671,
+          "end": 820,
+          "room": "327 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 92,
+      "program": "BSCSE",
+      "courseCode": "CSE 1112",
+      "title": "Structured Programming Language Laboratory",
+      "expectedOldSection": "L",
+      "expectedOldFaculty": [
+        "Asnuva Tanvin"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Sun",
+          "start": 510,
+          "end": 660,
+          "room": "422 (Computer Lab)"
+        }
+      ],
+      "newSection": "G",
+      "newFaculty": [
+        "Asnuva Tanvin"
+      ],
+      "newMeetings": [
+        {
+          "day": "Sun",
+          "start": 510,
+          "end": 660,
+          "room": "422 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 94,
+      "program": "BSCSE",
+      "courseCode": "CSE 1112",
+      "title": "Structured Programming Language Laboratory",
+      "expectedOldSection": "L",
+      "expectedOldFaculty": [
+        "Sajid Ahmed Chowdhury"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Tue",
+          "start": 510,
+          "end": 660,
+          "room": "326 (Computer Lab)"
+        }
+      ],
+      "newSection": "M",
+      "newFaculty": [
+        "Sajid Ahmed Chowdhury"
+      ],
+      "newMeetings": [
+        {
+          "day": "Tue",
+          "start": 510,
+          "end": 660,
+          "room": "326 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 314,
+      "program": "BSCSE",
+      "courseCode": "CSE 3522",
+      "title": "Database Management Systems Laboratory",
+      "expectedOldSection": "S",
+      "expectedOldFaculty": [
+        "Mohammad Johirul Islam"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Sat",
+          "start": 510,
+          "end": 660,
+          "room": "529 (Computer Lab)"
+        }
+      ],
+      "newSection": "A",
+      "newFaculty": [
+        "Mohammad Johirul Islam"
+      ],
+      "newMeetings": [
+        {
+          "day": "Sat",
+          "start": 510,
+          "end": 660,
+          "room": "826 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 315,
+      "program": "BSCSE",
+      "courseCode": "CSE 3522",
+      "title": "Database Management Systems Laboratory",
+      "expectedOldSection": "S",
+      "expectedOldFaculty": [
+        "Zobaer Ibn Razzaque"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Sat",
+          "start": 671,
+          "end": 820,
+          "room": "529 (Computer Lab)"
+        }
+      ],
+      "newSection": "B",
+      "newFaculty": [
+        "Zobaer Ibn Razzaque"
+      ],
+      "newMeetings": [
+        {
+          "day": "Sat",
+          "start": 671,
+          "end": 820,
+          "room": "727 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 316,
+      "program": "BSCSE",
+      "courseCode": "CSE 3522",
+      "title": "Database Management Systems Laboratory",
+      "expectedOldSection": "S",
+      "expectedOldFaculty": [
+        "Md. Golam Hossain"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Sat",
+          "start": 840,
+          "end": 990,
+          "room": "529 (Computer Lab)"
+        }
+      ],
+      "newSection": "C",
+      "newFaculty": [
+        "Md. Golam Hossain"
+      ],
+      "newMeetings": [
+        {
+          "day": "Sat",
+          "start": 840,
+          "end": 990,
+          "room": "529 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 317,
+      "program": "BSCSE",
+      "courseCode": "CSE 3522",
+      "title": "Database Management Systems Laboratory",
+      "expectedOldSection": "S",
+      "expectedOldFaculty": [
+        "Zobaer Ibn Razzaque"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Sat",
+          "start": 840,
+          "end": 990,
+          "room": "530 (Computer Lab)"
+        }
+      ],
+      "newSection": "D",
+      "newFaculty": [
+        "Zobaer Ibn Razzaque"
+      ],
+      "newMeetings": [
+        {
+          "day": "Sat",
+          "start": 840,
+          "end": 990,
+          "room": "530 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 318,
+      "program": "BSCSE",
+      "courseCode": "CSE 3522",
+      "title": "Database Management Systems Laboratory",
+      "expectedOldSection": "S",
+      "expectedOldFaculty": [
+        "Md. Golam Hossain"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Sat",
+          "start": 671,
+          "end": 820,
+          "room": "530 (Computer Lab)"
+        }
+      ],
+      "newSection": "E",
+      "newFaculty": [
+        "Md. Golam Hossain"
+      ],
+      "newMeetings": [
+        {
+          "day": "Sat",
+          "start": 671,
+          "end": 820,
+          "room": "530 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 319,
+      "program": "BSCSE",
+      "courseCode": "CSE 3522",
+      "title": "Database Management Systems Laboratory",
+      "expectedOldSection": "S",
+      "expectedOldFaculty": [
+        "Saifullah Mahbub"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Sat",
+          "start": 840,
+          "end": 990,
+          "room": "727 (Computer Lab)"
+        }
+      ],
+      "newSection": "F",
+      "newFaculty": [
+        "Saifullah Mahbub"
+      ],
+      "newMeetings": [
+        {
+          "day": "Sat",
+          "start": 840,
+          "end": 990,
+          "room": "727 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 320,
+      "program": "BSCSE",
+      "courseCode": "CSE 3522",
+      "title": "Database Management Systems Laboratory",
+      "expectedOldSection": "S",
+      "expectedOldFaculty": [
+        "Jerin Hasan Priya"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Tue",
+          "start": 840,
+          "end": 990,
+          "room": "528 (Computer Lab)"
+        }
+      ],
+      "newSection": "M",
+      "newFaculty": [
+        "Jerin Hasan Priya"
+      ],
+      "newMeetings": [
+        {
+          "day": "Tue",
+          "start": 840,
+          "end": 990,
+          "room": "528 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 321,
+      "program": "BSCSE",
+      "courseCode": "CSE 3522",
+      "title": "Database Management Systems Laboratory",
+      "expectedOldSection": "S",
+      "expectedOldFaculty": [
+        "Md. Enamul Haque"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Mon",
+          "start": 671,
+          "end": 820,
+          "room": "427 (Computer Lab)"
+        }
+      ],
+      "newSection": "N",
+      "newFaculty": [
+        "Md. Enamul Haque"
+      ],
+      "newMeetings": [
+        {
+          "day": "Mon",
+          "start": 671,
+          "end": 820,
+          "room": "427 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 322,
+      "program": "BSCSE",
+      "courseCode": "CSE 3522",
+      "title": "Database Management Systems Laboratory",
+      "expectedOldSection": "S",
+      "expectedOldFaculty": [
+        "Abu Bakar Fahad"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Wed",
+          "start": 510,
+          "end": 660,
+          "room": "523 (Computer Lab)"
+        }
+      ],
+      "newSection": "O",
+      "newFaculty": [
+        "Abu Bakar Fahad"
+      ],
+      "newMeetings": [
+        {
+          "day": "Wed",
+          "start": 510,
+          "end": 660,
+          "room": "523 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 323,
+      "program": "BSCSE",
+      "courseCode": "CSE 3522",
+      "title": "Database Management Systems Laboratory",
+      "expectedOldSection": "S",
+      "expectedOldFaculty": [
+        "Abu Bakar Fahad"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Mon",
+          "start": 840,
+          "end": 990,
+          "room": "426 (Computer Lab)"
+        }
+      ],
+      "newSection": "P",
+      "newFaculty": [
+        "Abu Bakar Fahad"
+      ],
+      "newMeetings": [
+        {
+          "day": "Mon",
+          "start": 840,
+          "end": 990,
+          "room": "426 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 324,
+      "program": "BSCSE",
+      "courseCode": "CSE 3522",
+      "title": "Database Management Systems Laboratory",
+      "expectedOldSection": "S",
+      "expectedOldFaculty": [
+        "Ms. Mehreen Hossain Chowdhury"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Sun",
+          "start": 510,
+          "end": 660,
+          "room": "523 (Computer Lab)"
+        }
+      ],
+      "newSection": "G",
+      "newFaculty": [
+        "TBA"
+      ],
+      "newMeetings": [
+        {
+          "day": "Sun",
+          "start": 510,
+          "end": 660,
+          "room": "523 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "both"
+    },
+    {
+      "sl": 325,
+      "program": "BSCSE",
+      "courseCode": "CSE 3522",
+      "title": "Database Management Systems Laboratory",
+      "expectedOldSection": "S",
+      "expectedOldFaculty": [
+        "Abu Bakar Fahad"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Sun",
+          "start": 671,
+          "end": 820,
+          "room": "529 (Computer Lab)"
+        }
+      ],
+      "newSection": "H",
+      "newFaculty": [
+        "Abu Bakar Fahad"
+      ],
+      "newMeetings": [
+        {
+          "day": "Sun",
+          "start": 671,
+          "end": 820,
+          "room": "529 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 326,
+      "program": "BSCSE",
+      "courseCode": "CSE 3522",
+      "title": "Database Management Systems Laboratory",
+      "expectedOldSection": "S",
+      "expectedOldFaculty": [
+        "Jerin Hasan Priya"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Wed",
+          "start": 840,
+          "end": 990,
+          "room": "523 (Computer Lab)"
+        }
+      ],
+      "newSection": "I",
+      "newFaculty": [
+        "Jerin Hasan Priya"
+      ],
+      "newMeetings": [
+        {
+          "day": "Wed",
+          "start": 840,
+          "end": 990,
+          "room": "523 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 327,
+      "program": "BSCSE",
+      "courseCode": "CSE 3522",
+      "title": "Database Management Systems Laboratory",
+      "expectedOldSection": "S",
+      "expectedOldFaculty": [
+        "Md. Enamul Haque"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Mon",
+          "start": 510,
+          "end": 660,
+          "room": "424 (Computer Lab)"
+        }
+      ],
+      "newSection": "J",
+      "newFaculty": [
+        "Md. Enamul Haque"
+      ],
+      "newMeetings": [
+        {
+          "day": "Mon",
+          "start": 510,
+          "end": 660,
+          "room": "424 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 328,
+      "program": "BSCSE",
+      "courseCode": "CSE 3522",
+      "title": "Database Management Systems Laboratory",
+      "expectedOldSection": "S",
+      "expectedOldFaculty": [
+        "Md. Enamul Haque"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Tue",
+          "start": 510,
+          "end": 660,
+          "room": "523 (Computer Lab)"
+        }
+      ],
+      "newSection": "K",
+      "newFaculty": [
+        "Md. Enamul Haque"
+      ],
+      "newMeetings": [
+        {
+          "day": "Tue",
+          "start": 510,
+          "end": 660,
+          "room": "523 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 329,
+      "program": "BSCSE",
+      "courseCode": "CSE 3522",
+      "title": "Database Management Systems Laboratory",
+      "expectedOldSection": "S",
+      "expectedOldFaculty": [
+        "Miftahul Sheikh"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Tue",
+          "start": 671,
+          "end": 820,
+          "room": "523 (Computer Lab)"
+        }
+      ],
+      "newSection": "L",
+      "newFaculty": [
+        "Miftahul Sheikh"
+      ],
+      "newMeetings": [
+        {
+          "day": "Tue",
+          "start": 671,
+          "end": 820,
+          "room": "523 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 736,
+      "program": "BSDS",
+      "courseCode": "CSE 3522",
+      "title": "Database Management Systems Laboratory",
+      "expectedOldSection": "S",
+      "expectedOldFaculty": [
+        "Didarul Islam Didar"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Sat",
+          "start": 671,
+          "end": 820,
+          "room": "826 (Computer Lab)"
+        }
+      ],
+      "newSection": "BA",
+      "newFaculty": [
+        "Didarul Islam Didar"
+      ],
+      "newMeetings": [
+        {
+          "day": "Sat",
+          "start": 671,
+          "end": 820,
+          "room": "826 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    },
+    {
+      "sl": 737,
+      "program": "BSDS",
+      "courseCode": "CSE 3522",
+      "title": "Database Management Systems Laboratory",
+      "expectedOldSection": "S",
+      "expectedOldFaculty": [
+        "Didarul Islam Didar"
+      ],
+      "expectedOldMeetings": [
+        {
+          "day": "Tue",
+          "start": 671,
+          "end": 820,
+          "room": "926 (Computer Lab)"
+        }
+      ],
+      "newSection": "BB",
+      "newFaculty": [
+        "Didarul Islam Didar"
+      ],
+      "newMeetings": [
+        {
+          "day": "Tue",
+          "start": 671,
+          "end": 820,
+          "room": "926 (Computer Lab)"
+        }
+      ],
+      "updatedKind": "schedule"
+    }
+  ],
+  "group_c_skipped": [
+    {
+      "courseCode": "CSE 4000B",
+      "title": "Final Year Design Project - II",
+      "section": "X",
+      "reason": "No class timing or room in CSV (administrative registration placeholder, 400 seats free)"
+    },
+    {
+      "courseCode": "CSE 4000C",
+      "title": "Final Year Design Project - III",
+      "section": "Y",
+      "reason": "No class timing or room in CSV (administrative registration placeholder, 400 seats free)"
+    },
+    {
+      "courseCode": "DS 4000A",
+      "title": "Final Year Design Project - I",
+      "section": "BB (Dropped)",
+      "reason": "Explicitly marked as dropped section in CSV with 0 seats"
+    }
+  ]
+}

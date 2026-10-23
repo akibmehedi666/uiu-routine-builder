@@ -1,4 +1,4 @@
-import { Day, DAYS_LIST, Meeting, Section } from '../types';
+import { Day, DAYS_LIST, Meeting, Section, UpdatedKind } from '../types';
 import rawSections from '../../data/sections.json';
 import rawFaculty from '../../data/faculty.json';
 import {
@@ -40,6 +40,7 @@ export interface FacultyCourseSection {
   updated?: boolean;
   updatedNote?: string;
   updatedOn?: string;
+  updatedKind?: UpdatedKind;
 }
 
 export interface FacultyCourseGroup {
@@ -127,6 +128,7 @@ export interface TBASection {
   updated?: boolean;
   updatedNote?: string;
   updatedOn?: string;
+  updatedKind?: UpdatedKind;
 }
 
 export interface TBACourseGroup {
@@ -524,6 +526,7 @@ export function getAllFacultyStats(): FacultyStats[] {
         updated: s.updated,
         updatedNote: s.updatedNote,
         updatedOn: s.updatedOn,
+        updatedKind: s.updatedKind,
       });
       group.sectionCount++;
 
@@ -753,6 +756,7 @@ export function getTBASections(): TBACourseGroup[] {
         updated: s.updated,
         updatedNote: s.updatedNote,
         updatedOn: s.updatedOn,
+        updatedKind: s.updatedKind,
       });
     }
   }

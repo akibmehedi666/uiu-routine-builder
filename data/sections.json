@@ -465,12 +465,12 @@
     "tentative": false
   },
   {
-    "id": "BSCSE-BDS 1201-DS",
+    "id": "BSCSE-BDS 1201-AE",
     "sl": 16,
     "program": "BSCSE",
     "courseCode": "BDS 1201",
     "title": "History of the Emergence of Bangladesh",
-    "section": "DS",
+    "section": "AE",
     "credit": 2,
     "kind": "theory",
     "meetings": [
@@ -493,7 +493,11 @@
     "facultyIds": [
       "nabila-sultana"
     ],
-    "tentative": true
+    "tentative": true,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
     "id": "BSCSE-BIO 3105-A",
@@ -1178,7 +1182,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 1110-O",
@@ -1644,7 +1649,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 1111-T",
@@ -2081,12 +2087,12 @@
     "tentative": false
   },
   {
-    "id": "BSCSE-CSE 1112-L",
+    "id": "BSCSE-CSE 1112-A",
     "sl": 72,
     "program": "BSCSE",
     "courseCode": "CSE 1112",
     "title": "Structured Programming Language Laboratory",
-    "section": "L",
+    "section": "A",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -2103,15 +2109,19 @@
     "facultyIds": [
       "md-taky-shaharair"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-CSE 1112-L",
+    "id": "BSCSE-CSE 1112-B",
     "sl": 73,
     "program": "BSCSE",
     "courseCode": "CSE 1112",
     "title": "Structured Programming Language Laboratory",
-    "section": "L",
+    "section": "B",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -2128,15 +2138,19 @@
     "facultyIds": [
       "abdullah-ibne-masud-mahi"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-CSE 1112-L",
+    "id": "BSCSE-CSE 1112-C",
     "sl": 74,
     "program": "BSCSE",
     "courseCode": "CSE 1112",
     "title": "Structured Programming Language Laboratory",
-    "section": "L",
+    "section": "C",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -2153,15 +2167,19 @@
     "facultyIds": [
       "ashraful-islam-paran"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-CSE 1112-L",
+    "id": "BSCSE-CSE 1112-E",
     "sl": 75,
     "program": "BSCSE",
     "courseCode": "CSE 1112",
     "title": "Structured Programming Language Laboratory",
-    "section": "L",
+    "section": "E",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -2178,15 +2196,19 @@
     "facultyIds": [
       "mohmmad-ali"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-CSE 1112-L",
+    "id": "BSCSE-CSE 1112-F",
     "sl": 76,
     "program": "BSCSE",
     "courseCode": "CSE 1112",
     "title": "Structured Programming Language Laboratory",
-    "section": "L",
+    "section": "F",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -2194,7 +2216,7 @@
         "day": "Mon",
         "start": 510,
         "end": 660,
-        "room": "627 (Computer Lab)"
+        "room": "522 (Computer Lab)"
       }
     ],
     "faculty": [
@@ -2203,15 +2225,19 @@
     "facultyIds": [
       "hamudi-hasan-sonet"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-CSE 1112-L",
+    "id": "BSCSE-CSE 1112-H",
     "sl": 77,
     "program": "BSCSE",
     "courseCode": "CSE 1112",
     "title": "Structured Programming Language Laboratory",
-    "section": "L",
+    "section": "H",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -2228,15 +2254,19 @@
     "facultyIds": [
       "tasriad-ahmed-tias"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-CSE 1112-L",
+    "id": "BSCSE-CSE 1112-T",
     "sl": 78,
     "program": "BSCSE",
     "courseCode": "CSE 1112",
     "title": "Structured Programming Language Laboratory",
-    "section": "L",
+    "section": "T",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -2253,15 +2283,19 @@
     "facultyIds": [
       "sidratul-tanzila-tasmi"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-CSE 1112-L",
+    "id": "BSCSE-CSE 1112-U",
     "sl": 79,
     "program": "BSCSE",
     "courseCode": "CSE 1112",
     "title": "Structured Programming Language Laboratory",
-    "section": "L",
+    "section": "U",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -2278,15 +2312,19 @@
     "facultyIds": [
       "sayeem-been-zaman"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-CSE 1112-L",
+    "id": "BSCSE-CSE 1112-V",
     "sl": 80,
     "program": "BSCSE",
     "courseCode": "CSE 1112",
     "title": "Structured Programming Language Laboratory",
-    "section": "L",
+    "section": "V",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -2303,15 +2341,19 @@
     "facultyIds": [
       "asnuva-tanvin"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-CSE 1112-L",
+    "id": "BSCSE-CSE 1112-X",
     "sl": 81,
     "program": "BSCSE",
     "courseCode": "CSE 1112",
     "title": "Structured Programming Language Laboratory",
-    "section": "L",
+    "section": "X",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -2328,15 +2370,19 @@
     "facultyIds": [
       "miftahul-sheikh"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-CSE 1112-L",
+    "id": "BSCSE-CSE 1112-S",
     "sl": 82,
     "program": "BSCSE",
     "courseCode": "CSE 1112",
     "title": "Structured Programming Language Laboratory",
-    "section": "L",
+    "section": "S",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -2353,15 +2399,19 @@
     "facultyIds": [
       "mobaswirul-islam"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-CSE 1112-L",
+    "id": "BSCSE-CSE 1112-N",
     "sl": 83,
     "program": "BSCSE",
     "courseCode": "CSE 1112",
     "title": "Structured Programming Language Laboratory",
-    "section": "L",
+    "section": "N",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -2378,15 +2428,19 @@
     "facultyIds": [
       "s-m-kausar-parvej"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-CSE 1112-L",
+    "id": "BSCSE-CSE 1112-O",
     "sl": 84,
     "program": "BSCSE",
     "courseCode": "CSE 1112",
     "title": "Structured Programming Language Laboratory",
-    "section": "L",
+    "section": "O",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -2394,7 +2448,7 @@
         "day": "Tue",
         "start": 840,
         "end": 990,
-        "room": "422 (Computer Lab)"
+        "room": "523 (Computer Lab)"
       }
     ],
     "faculty": [
@@ -2403,15 +2457,19 @@
     "facultyIds": [
       "hamudi-hasan-sonet"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-CSE 1112-L",
+    "id": "BSCSE-CSE 1112-P",
     "sl": 85,
     "program": "BSCSE",
     "courseCode": "CSE 1112",
     "title": "Structured Programming Language Laboratory",
-    "section": "L",
+    "section": "P",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -2428,15 +2486,19 @@
     "facultyIds": [
       "miftahul-sheikh"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-CSE 1112-L",
+    "id": "BSCSE-CSE 1112-Q",
     "sl": 86,
     "program": "BSCSE",
     "courseCode": "CSE 1112",
     "title": "Structured Programming Language Laboratory",
-    "section": "L",
+    "section": "Q",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -2453,15 +2515,19 @@
     "facultyIds": [
       "sheikh-mohammed-al-hadi-elaf"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-CSE 1112-L",
+    "id": "BSCSE-CSE 1112-R",
     "sl": 87,
     "program": "BSCSE",
     "courseCode": "CSE 1112",
     "title": "Structured Programming Language Laboratory",
-    "section": "L",
+    "section": "R",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -2478,15 +2544,19 @@
     "facultyIds": [
       "mohmmad-ali"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-CSE 1112-L",
+    "id": "BSCSE-CSE 1112-W",
     "sl": 88,
     "program": "BSCSE",
     "courseCode": "CSE 1112",
     "title": "Structured Programming Language Laboratory",
-    "section": "L",
+    "section": "W",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -2503,15 +2573,19 @@
     "facultyIds": [
       "sayeem-been-zaman"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-CSE 1112-L",
+    "id": "BSCSE-CSE 1112-I",
     "sl": 89,
     "program": "BSCSE",
     "courseCode": "CSE 1112",
     "title": "Structured Programming Language Laboratory",
-    "section": "L",
+    "section": "I",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -2528,15 +2602,19 @@
     "facultyIds": [
       "tasmia-binte-sogir"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-CSE 1112-L",
+    "id": "BSCSE-CSE 1112-J",
     "sl": 90,
     "program": "BSCSE",
     "courseCode": "CSE 1112",
     "title": "Structured Programming Language Laboratory",
-    "section": "L",
+    "section": "J",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -2553,15 +2631,19 @@
     "facultyIds": [
       "saqif-kaisar"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-CSE 1112-L",
+    "id": "BSCSE-CSE 1112-K",
     "sl": 91,
     "program": "BSCSE",
     "courseCode": "CSE 1112",
     "title": "Structured Programming Language Laboratory",
-    "section": "L",
+    "section": "K",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -2578,15 +2660,19 @@
     "facultyIds": [
       "sidratul-tanzila-tasmi"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-CSE 1112-L",
+    "id": "BSCSE-CSE 1112-G",
     "sl": 92,
     "program": "BSCSE",
     "courseCode": "CSE 1112",
     "title": "Structured Programming Language Laboratory",
-    "section": "L",
+    "section": "G",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -2603,7 +2689,11 @@
     "facultyIds": [
       "asnuva-tanvin"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
     "id": "BSCSE-CSE 1112-L",
@@ -2631,12 +2721,12 @@
     "tentative": false
   },
   {
-    "id": "BSCSE-CSE 1112-L",
+    "id": "BSCSE-CSE 1112-M",
     "sl": 94,
     "program": "BSCSE",
     "courseCode": "CSE 1112",
     "title": "Structured Programming Language Laboratory",
-    "section": "L",
+    "section": "M",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -2653,7 +2743,11 @@
     "facultyIds": [
       "sajid-ahmed-chowdhury"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
     "id": "BSCSE-CSE 1115-A",
@@ -2747,7 +2841,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 1115-D",
@@ -2810,7 +2905,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 1115-F",
@@ -3004,7 +3100,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 1116-E",
@@ -3105,7 +3202,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 1325-A",
@@ -3137,7 +3235,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 1325-B",
@@ -3262,7 +3361,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 1325-F",
@@ -3400,7 +3500,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 1326-D",
@@ -3451,7 +3552,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 1326-F",
@@ -3926,7 +4028,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 2213-E",
@@ -4632,7 +4735,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 2213-N",
@@ -4910,7 +5014,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 2213-K",
@@ -5128,7 +5233,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 2215-F",
@@ -5224,7 +5330,8 @@
     "tentative": false,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 2215-I",
@@ -5711,7 +5818,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 2217-D",
@@ -5774,7 +5882,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 2217-F",
@@ -5806,7 +5915,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 2217-I",
@@ -5962,7 +6072,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 2217-H",
@@ -6344,7 +6455,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 2218-I",
@@ -6606,7 +6718,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 2233-G",
@@ -6638,7 +6751,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 3313-A",
@@ -7905,7 +8019,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 3421-D",
@@ -8154,7 +8269,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 3421-L",
@@ -8359,7 +8475,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 3422-N",
@@ -8410,7 +8527,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 3422-G",
@@ -8526,7 +8644,7 @@
         "day": "Tue",
         "start": 840,
         "end": 990,
-        "room": "523 (Computer Lab)"
+        "room": "422 (Computer Lab)"
       }
     ],
     "faculty": [
@@ -8535,7 +8653,11 @@
     "facultyIds": [
       "ashraful-islam-paran"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Schedule updated in UCAM"
   },
   {
     "id": "BSCSE-CSE 3422-L",
@@ -8935,12 +9057,12 @@
     "tentative": false
   },
   {
-    "id": "BSCSE-CSE 3522-S",
+    "id": "BSCSE-CSE 3522-A",
     "sl": 314,
     "program": "BSCSE",
     "courseCode": "CSE 3522",
     "title": "Database Management Systems Laboratory",
-    "section": "S",
+    "section": "A",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -8948,7 +9070,7 @@
         "day": "Sat",
         "start": 510,
         "end": 660,
-        "room": "529 (Computer Lab)"
+        "room": "826 (Computer Lab)"
       }
     ],
     "faculty": [
@@ -8957,15 +9079,19 @@
     "facultyIds": [
       "mohammad-johirul-islam"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-CSE 3522-S",
+    "id": "BSCSE-CSE 3522-B",
     "sl": 315,
     "program": "BSCSE",
     "courseCode": "CSE 3522",
     "title": "Database Management Systems Laboratory",
-    "section": "S",
+    "section": "B",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -8973,7 +9099,7 @@
         "day": "Sat",
         "start": 671,
         "end": 820,
-        "room": "529 (Computer Lab)"
+        "room": "727 (Computer Lab)"
       }
     ],
     "faculty": [
@@ -8982,15 +9108,19 @@
     "facultyIds": [
       "zobaer-ibn-razzaque"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-CSE 3522-S",
+    "id": "BSCSE-CSE 3522-C",
     "sl": 316,
     "program": "BSCSE",
     "courseCode": "CSE 3522",
     "title": "Database Management Systems Laboratory",
-    "section": "S",
+    "section": "C",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -9007,15 +9137,19 @@
     "facultyIds": [
       "md-golam-hossain"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-CSE 3522-S",
+    "id": "BSCSE-CSE 3522-D",
     "sl": 317,
     "program": "BSCSE",
     "courseCode": "CSE 3522",
     "title": "Database Management Systems Laboratory",
-    "section": "S",
+    "section": "D",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -9032,15 +9166,19 @@
     "facultyIds": [
       "zobaer-ibn-razzaque"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-CSE 3522-S",
+    "id": "BSCSE-CSE 3522-E",
     "sl": 318,
     "program": "BSCSE",
     "courseCode": "CSE 3522",
     "title": "Database Management Systems Laboratory",
-    "section": "S",
+    "section": "E",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -9057,15 +9195,19 @@
     "facultyIds": [
       "md-golam-hossain"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-CSE 3522-S",
+    "id": "BSCSE-CSE 3522-F",
     "sl": 319,
     "program": "BSCSE",
     "courseCode": "CSE 3522",
     "title": "Database Management Systems Laboratory",
-    "section": "S",
+    "section": "F",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -9082,15 +9224,19 @@
     "facultyIds": [
       "saifullah-mahbub"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-CSE 3522-S",
+    "id": "BSCSE-CSE 3522-M",
     "sl": 320,
     "program": "BSCSE",
     "courseCode": "CSE 3522",
     "title": "Database Management Systems Laboratory",
-    "section": "S",
+    "section": "M",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -9107,15 +9253,19 @@
     "facultyIds": [
       "jerin-hasan-priya"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-CSE 3522-S",
+    "id": "BSCSE-CSE 3522-N",
     "sl": 321,
     "program": "BSCSE",
     "courseCode": "CSE 3522",
     "title": "Database Management Systems Laboratory",
-    "section": "S",
+    "section": "N",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -9132,15 +9282,19 @@
     "facultyIds": [
       "md-enamul-haque"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-CSE 3522-S",
+    "id": "BSCSE-CSE 3522-O",
     "sl": 322,
     "program": "BSCSE",
     "courseCode": "CSE 3522",
     "title": "Database Management Systems Laboratory",
-    "section": "S",
+    "section": "O",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -9157,15 +9311,19 @@
     "facultyIds": [
       "abu-bakar-fahad"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-CSE 3522-S",
+    "id": "BSCSE-CSE 3522-P",
     "sl": 323,
     "program": "BSCSE",
     "courseCode": "CSE 3522",
     "title": "Database Management Systems Laboratory",
-    "section": "S",
+    "section": "P",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -9182,15 +9340,19 @@
     "facultyIds": [
       "abu-bakar-fahad"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-CSE 3522-S",
+    "id": "BSCSE-CSE 3522-G",
     "sl": 324,
     "program": "BSCSE",
     "courseCode": "CSE 3522",
     "title": "Database Management Systems Laboratory",
-    "section": "S",
+    "section": "G",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -9202,20 +9364,22 @@
       }
     ],
     "faculty": [
-      "Ms. Mehreen Hossain Chowdhury"
+      "TBA"
     ],
-    "facultyIds": [
-      "ms-mehreen-hossain-chowdhury"
-    ],
-    "tentative": false
+    "facultyIds": [],
+    "tentative": true,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "both",
+    "updatedNote": "Faculty and section updated in UCAM"
   },
   {
-    "id": "BSCSE-CSE 3522-S",
+    "id": "BSCSE-CSE 3522-H",
     "sl": 325,
     "program": "BSCSE",
     "courseCode": "CSE 3522",
     "title": "Database Management Systems Laboratory",
-    "section": "S",
+    "section": "H",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -9232,15 +9396,19 @@
     "facultyIds": [
       "abu-bakar-fahad"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-CSE 3522-S",
+    "id": "BSCSE-CSE 3522-I",
     "sl": 326,
     "program": "BSCSE",
     "courseCode": "CSE 3522",
     "title": "Database Management Systems Laboratory",
-    "section": "S",
+    "section": "I",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -9257,15 +9425,19 @@
     "facultyIds": [
       "jerin-hasan-priya"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-CSE 3522-S",
+    "id": "BSCSE-CSE 3522-J",
     "sl": 327,
     "program": "BSCSE",
     "courseCode": "CSE 3522",
     "title": "Database Management Systems Laboratory",
-    "section": "S",
+    "section": "J",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -9282,15 +9454,19 @@
     "facultyIds": [
       "md-enamul-haque"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-CSE 3522-S",
+    "id": "BSCSE-CSE 3522-K",
     "sl": 328,
     "program": "BSCSE",
     "courseCode": "CSE 3522",
     "title": "Database Management Systems Laboratory",
-    "section": "S",
+    "section": "K",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -9307,15 +9483,19 @@
     "facultyIds": [
       "md-enamul-haque"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-CSE 3522-S",
+    "id": "BSCSE-CSE 3522-L",
     "sl": 329,
     "program": "BSCSE",
     "courseCode": "CSE 3522",
     "title": "Database Management Systems Laboratory",
-    "section": "S",
+    "section": "L",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -9332,7 +9512,11 @@
     "facultyIds": [
       "miftahul-sheikh"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
     "id": "BSCSE-CSE 3711-A",
@@ -9774,7 +9958,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 3712-E",
@@ -9802,7 +9987,8 @@
     "tentative": false,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 3712-F",
@@ -9830,7 +10016,8 @@
     "tentative": false,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 3712-G",
@@ -9856,7 +10043,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 3712-H",
@@ -9897,7 +10085,7 @@
         "day": "Tue",
         "start": 510,
         "end": 660,
-        "room": "529 (Computer Lab)"
+        "room": "826 (Computer Lab)"
       }
     ],
     "faculty": [
@@ -9906,7 +10094,11 @@
     "facultyIds": [
       "abu-bakar-fahad"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Schedule updated in UCAM"
   },
   {
     "id": "BSCSE-CSE 3712-J",
@@ -10044,7 +10236,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 3811-B",
@@ -10107,7 +10300,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 3811-D",
@@ -10170,7 +10364,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 3811-F",
@@ -10413,7 +10608,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 3812-B",
@@ -10479,7 +10675,7 @@
         "day": "Tue",
         "start": 671,
         "end": 820,
-        "room": "529 (Computer Lab)"
+        "room": "727 (Computer Lab)"
       }
     ],
     "faculty": [
@@ -10488,7 +10684,11 @@
     "facultyIds": [
       "raiyan-janik-monir"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Schedule updated in UCAM"
   },
   {
     "id": "BSCSE-CSE 3812-E",
@@ -10514,7 +10714,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 3812-F",
@@ -10540,7 +10741,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 3812-M",
@@ -10566,7 +10768,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 3812-N",
@@ -10667,7 +10870,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 3812-J",
@@ -11064,7 +11268,7 @@
         "day": "Sat",
         "start": 510,
         "end": 660,
-        "room": "826 (Computer Lab)"
+        "room": "529 (Computer Lab)"
       }
     ],
     "faculty": [
@@ -11073,7 +11277,11 @@
     "facultyIds": [
       "farhan-anan-himu"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Schedule updated in UCAM"
   },
   {
     "id": "BSCSE-CSE 4165-B",
@@ -11089,7 +11297,7 @@
         "day": "Sat",
         "start": 671,
         "end": 820,
-        "room": "727 (Computer Lab)"
+        "room": "529 (Computer Lab)"
       }
     ],
     "faculty": [
@@ -11098,7 +11306,11 @@
     "facultyIds": [
       "farhan-anan-himu"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Schedule updated in UCAM"
   },
   {
     "id": "BSCSE-CSE 4165-C",
@@ -11174,7 +11386,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 4165-F",
@@ -11215,7 +11428,7 @@
         "day": "Tue",
         "start": 671,
         "end": 820,
-        "room": "727 (Computer Lab)"
+        "room": "529 (Computer Lab)"
       }
     ],
     "faculty": [
@@ -11224,7 +11437,11 @@
     "facultyIds": [
       "farhan-anan-himu"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Schedule updated in UCAM"
   },
   {
     "id": "BSCSE-CSE 4165-N",
@@ -11475,7 +11692,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 4165-L",
@@ -11491,7 +11709,7 @@
         "day": "Tue",
         "start": 510,
         "end": 660,
-        "room": "826 (Computer Lab)"
+        "room": "529 (Computer Lab)"
       }
     ],
     "faculty": [
@@ -11500,7 +11718,11 @@
     "facultyIds": [
       "farhan-anan-himu"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Schedule updated in UCAM"
   },
   {
     "id": "BSCSE-CSE 4181-A",
@@ -12136,7 +12358,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 4326-K",
@@ -14079,7 +14302,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 4889-G",
@@ -14111,7 +14335,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 4889-H",
@@ -14176,7 +14401,8 @@
     "tentative": false,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 4891-B",
@@ -14241,7 +14467,8 @@
     "tentative": false,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-CSE 4891-D",
@@ -14937,7 +15164,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-EEE 2113-I",
@@ -15000,7 +15228,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-EEE 2113-K",
@@ -15278,7 +15507,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-EEE 2123-I",
@@ -15360,7 +15590,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-EEE 2124-C",
@@ -15511,7 +15742,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-EEE 2124-I",
@@ -15537,7 +15769,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-EEE 2124-J",
@@ -16760,7 +16993,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-ENG 1013-AS",
@@ -16792,7 +17026,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-ENG 1013-AM",
@@ -17698,7 +17933,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-MATH 1151-T",
@@ -17854,7 +18090,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-MATH 1151-M",
@@ -18010,7 +18247,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-MATH 1151-R",
@@ -18166,7 +18404,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-MATH 1151-K",
@@ -19397,7 +19636,8 @@
     "tentative": false,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-PHY 2105-B",
@@ -19431,7 +19671,8 @@
     "tentative": false,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-PHY 2105-C",
@@ -19527,7 +19768,8 @@
     "tentative": false,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-PHY 2105-G",
@@ -19559,7 +19801,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-PHY 2105-N",
@@ -19653,7 +19896,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-PHY 2105-D",
@@ -19716,7 +19960,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-PHY 2105-I",
@@ -19750,7 +19995,8 @@
     "tentative": false,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-PHY 2105-J",
@@ -19844,7 +20090,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-PHY 2105-M",
@@ -19876,7 +20123,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-PHY 2106-A",
@@ -19902,7 +20150,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-PHY 2106-B",
@@ -19953,7 +20202,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-PHY 2106-D",
@@ -19979,7 +20229,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-PHY 2106-E",
@@ -20030,7 +20281,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-PHY 2106-H",
@@ -20106,7 +20358,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-PHY 2106-K",
@@ -20132,7 +20385,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-PHY 2106-G",
@@ -20282,7 +20536,8 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
     "id": "BSCSE-PMG 4101-E",
@@ -20531,15 +20786,16 @@
     "tentative": true,
     "updated": true,
     "updatedOn": "2026-10-24",
-    "updatedNote": "Faculty updated in UCAM"
+    "updatedNote": "Faculty updated in UCAM",
+    "updatedKind": "faculty"
   },
   {
-    "id": "BSCSE-SOC 2101-E",
+    "id": "BSCSE-SOC 2101-A",
     "sl": 713,
     "program": "BSCSE",
     "courseCode": "SOC 2101",
     "title": "Society, Environment and Engineering Ethics",
-    "section": "E",
+    "section": "A",
     "credit": 3,
     "kind": "theory",
     "meetings": [
@@ -20562,15 +20818,19 @@
     "facultyIds": [
       "sadia-zaman"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-SOC 2101-E",
+    "id": "BSCSE-SOC 2101-B",
     "sl": 714,
     "program": "BSCSE",
     "courseCode": "SOC 2101",
     "title": "Society, Environment and Engineering Ethics",
-    "section": "E",
+    "section": "B",
     "credit": 3,
     "kind": "theory",
     "meetings": [
@@ -20593,15 +20853,19 @@
     "facultyIds": [
       "nazmun-nahar-showmi"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-SOC 2101-E",
+    "id": "BSCSE-SOC 2101-C",
     "sl": 715,
     "program": "BSCSE",
     "courseCode": "SOC 2101",
     "title": "Society, Environment and Engineering Ethics",
-    "section": "E",
+    "section": "C",
     "credit": 3,
     "kind": "theory",
     "meetings": [
@@ -20624,15 +20888,19 @@
     "facultyIds": [
       "taniah-mahmuda-tinni"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-SOC 2101-E",
+    "id": "BSCSE-SOC 2101-D",
     "sl": 716,
     "program": "BSCSE",
     "courseCode": "SOC 2101",
     "title": "Society, Environment and Engineering Ethics",
-    "section": "E",
+    "section": "D",
     "credit": 3,
     "kind": "theory",
     "meetings": [
@@ -20653,7 +20921,11 @@
       "TBA"
     ],
     "facultyIds": [],
-    "tentative": true
+    "tentative": true,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
     "id": "BSCSE-SOC 2101-E",
@@ -20685,12 +20957,12 @@
     "tentative": true
   },
   {
-    "id": "BSCSE-SOC 2101-E",
+    "id": "BSCSE-SOC 2101-F",
     "sl": 718,
     "program": "BSCSE",
     "courseCode": "SOC 2101",
     "title": "Society, Environment and Engineering Ethics",
-    "section": "E",
+    "section": "F",
     "credit": 3,
     "kind": "theory",
     "meetings": [
@@ -20713,15 +20985,19 @@
     "facultyIds": [
       "taniah-mahmuda-tinni"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-SOC 2101-E",
+    "id": "BSCSE-SOC 2101-G",
     "sl": 719,
     "program": "BSCSE",
     "courseCode": "SOC 2101",
     "title": "Society, Environment and Engineering Ethics",
-    "section": "E",
+    "section": "G",
     "credit": 3,
     "kind": "theory",
     "meetings": [
@@ -20744,15 +21020,19 @@
     "facultyIds": [
       "nabila-sultana"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-SOC 2101-E",
+    "id": "BSCSE-SOC 2101-H",
     "sl": 720,
     "program": "BSCSE",
     "courseCode": "SOC 2101",
     "title": "Society, Environment and Engineering Ethics",
-    "section": "E",
+    "section": "H",
     "credit": 3,
     "kind": "theory",
     "meetings": [
@@ -20775,15 +21055,19 @@
     "facultyIds": [
       "rusafa-islam-aurchi"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-SOC 2101-E",
+    "id": "BSCSE-SOC 2101-I",
     "sl": 721,
     "program": "BSCSE",
     "courseCode": "SOC 2101",
     "title": "Society, Environment and Engineering Ethics",
-    "section": "E",
+    "section": "I",
     "credit": 3,
     "kind": "theory",
     "meetings": [
@@ -20806,15 +21090,19 @@
     "facultyIds": [
       "md-minhajul-islam"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSCSE-SOC 2101-E",
+    "id": "BSCSE-SOC 2101-J",
     "sl": 722,
     "program": "BSCSE",
     "courseCode": "SOC 2101",
     "title": "Society, Environment and Engineering Ethics",
-    "section": "E",
+    "section": "J",
     "credit": 3,
     "kind": "theory",
     "meetings": [
@@ -20837,7 +21125,11 @@
     "facultyIds": [
       "md-minhajul-islam"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
     "id": "BSCSE-TEC 2499-A",
@@ -21219,12 +21511,12 @@
     "tentative": false
   },
   {
-    "id": "BSDS-CSE 3522-S",
+    "id": "BSDS-CSE 3522-BA",
     "sl": 736,
     "program": "BSDS",
     "courseCode": "CSE 3522",
     "title": "Database Management Systems Laboratory",
-    "section": "S",
+    "section": "BA",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -21241,15 +21533,19 @@
     "facultyIds": [
       "didarul-islam-didar"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
-    "id": "BSDS-CSE 3522-S",
+    "id": "BSDS-CSE 3522-BB",
     "sl": 737,
     "program": "BSDS",
     "courseCode": "CSE 3522",
     "title": "Database Management Systems Laboratory",
-    "section": "S",
+    "section": "BB",
     "credit": 1,
     "kind": "lab",
     "meetings": [
@@ -21266,7 +21562,11 @@
     "facultyIds": [
       "didarul-islam-didar"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedOn": "2026-10-24",
+    "updatedKind": "schedule",
+    "updatedNote": "Section/schedule updated in UCAM"
   },
   {
     "id": "BSDS-DS 1101-BA",

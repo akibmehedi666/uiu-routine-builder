@@ -1,4 +1,5 @@
 import { Day, SolveRequest } from '../types';
+import { resolveSectionId } from '../lib/sectionAliases';
 
 export function serializeToParams(request: Partial<SolveRequest>): string {
   const params = new URLSearchParams();
@@ -92,7 +93,7 @@ export function parseFromParams(search: string): Partial<SolveRequest> {
     for (const part of lock.split('|')) {
       const [code, secId] = part.split(':');
       if (code && secId) {
-        req.lockedSections[code] = secId;
+        req.lockedSections[code] = resolveSectionId(secId);
       }
     }
   }
