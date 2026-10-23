@@ -464,5 +464,38 @@ Following a session interruption audit:
   - 174 Vitest tests passing across 14 test suites (`facultyBadgesTab.test.ts` expanded to 21 tests).
   - Production build clean across 234 static pages.
 
+## Decision 14: Fall 2026 Faculty Updates & Reproducible Overrides Pipeline
+- **Context & Problem**:
+  - Following the registrar's initial routine PDF release, UIU published updated faculty section assignments on the official UCAM portal.
+  - 9 course sections in BSCSE were updated: 8 reassignments to `TBA` (CSE 4509 E, CSE 4510 B, MATH 2205 A, F, H, I, K, L) and 1 reassignment to `Nazmul Hasan` (MATH 2205 D, formerly Sobur).
+  - Two instructors (Rion and Sobur) had all their course assignments transferred to TBA / Nazmul Hasan, leaving them with 0 active teaching assignments.
+- **Reproducible Overrides Architecture (`scripts/apply_overrides.py` & `data/overrides/`)**:
+  - Avoided manual edits to generated JSON. Created `data/overrides/2026-fall-faculty-changes.json` containing exact matching criteria: `program`, `courseCode`, `section`, `expectedOldFaculty`, `newFaculty`, and `meetingsExpected` (days, start/end minutes, room).
+  - `scripts/apply_overrides.py` runs standalone or as the last step of `scripts/extract.py`, ensuring re-extraction from raw PDF never loses portal overrides.
+  - **Fail-Loudly Drift Protection**:
+    - Aborts with non-zero exit code if a section is missing.
+    - Aborts if `expectedOldFaculty` does not match the active section's faculty.
+    - Aborts if `meetingsExpected` (day, time, room) does not match the active section.
+  - Automatically rebuilds `courses.json` and `faculty.json`, recomputing sections and removing faculty who end up with zero sections (Rion and Sobur).
+  - Reuses existing faculty ID `nazmul-hasan` for Nazmul Hasan; sets `faculty: ["TBA"]`, `facultyIds: []`, and `tentative: true` for TBA sections.
+  - Logs all applied changes to `data/anomalies.md` and generates structured audit document `docs/data-changes.md`.
+- **Consumer Safeguards & Stale User State**:
+  - Pinned faculty hook (`usePinnedFaculty`) validates against `rawFaculty`, cleanly filtering out stale IDs (`rion`, `sobur`) without runtime errors.
+  - Solver and Builder gracefully ignore stale preferred or avoided faculty IDs without crashing or skewing scores.
+  - Saved routines: `validateSavedRoutine` checks live section faculty against saved snapshots; snapshots containing pre-update sections (e.g. CSE 4509 E with old faculty) trigger `hasChangedSections: true` and flag a `faculty_changed` diff informing the user that faculty has been reassigned to TBA.
+  - Derived stats: `LandingContent.tsx` derives stats from live JSON (`LANDING_STATS`) rather than hardcoded 207/791 constants.
+- **Data Version Note**:
+  - Exported `DATA_UPDATED` ('2026-10-23') and `DATA_NOTE` ('Faculty assignments synced with the UCAM portal.') in `src/config/site.ts`.
+  - Displayed in the landing page FAQ, site footer disclaimer, and Faculty Directory footer note.
+- **How to add the next data update**:
+  1. Add a new overrides JSON file under `data/overrides/` (e.g. `YYYY-term-faculty-changes.json`).
+  2. Run `python3 scripts/apply_overrides.py --overrides data/overrides/<file>.json`.
+  3. The script validates expected faculty and meetings, applies updates, rebuilds `courses.json` and `faculty.json`, prunes zero-section faculty, and logs changes.
+  4. Run `npm test && npm run build` to verify tests catch any drift or regressions.
+- **Verification**:
+  - 16 new comprehensive tests in `src/lib/__tests__/dataOverrides.test.ts`.
+  - All 196 tests passing across 16 test files.
+  - Next.js production build (`npm run build`) generates 234 static pages with 0 errors.
+
 
 

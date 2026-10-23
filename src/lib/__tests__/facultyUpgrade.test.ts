@@ -353,13 +353,13 @@ describe('Phase 1.E: Fall 2026 by the Numbers (Campus Stats) Integrity Tests', (
     expect(labTotal).toBe(206);
   });
 
-  it('2. Histogram sums exactly to total faculty count (207)', () => {
+  it('2. Histogram sums exactly to total faculty count', () => {
     const totalInHistogram = stats.facultySectionHistogram.reduce(
       (sum, bucket) => sum + bucket.count,
       0
     );
-    expect(totalInHistogram).toBe(207);
-    expect(stats.totalFaculty).toBe(207);
+    expect(totalInHistogram).toBe(stats.totalFaculty);
+    expect(stats.totalFaculty).toBe(rawFaculty.length);
   });
 
   it('3. Section kind shares sum exactly to total sections (791)', () => {

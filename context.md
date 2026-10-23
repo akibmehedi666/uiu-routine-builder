@@ -146,7 +146,19 @@ uiu-routine-builder/
   - Column overflow: Text like `(if required)` spilled across bounding boxes, mangling room numbers (e.g. `e3d0)2` for `302`). Repaired by extracting raw unclipped character streams or matching Room 2.
   - Lab room truncation: Wide titles clipped `(Computer Lab)` to `(Comp`. Recovered from character coordinates.
   - Corrupted faculty initials: Initials in the registrar PDF are frequently truncated or missing. Faculty identity is derived by slugifying normalized clean full names (`facultyId`).
-  - 25 TBA faculty sections, 26 tentative sections.
+  - 32 TBA faculty sections (initially 24 in PDF + 8 portal reassignments), 34 tentative sections.
+- **Reproducible Dataset Overrides Pipeline (`scripts/apply_overrides.py`)**:
+  - Keeps dataset in sync with UIU UCAM portal updates without manual editing of generated JSON.
+  - Reads `data/overrides/2026-fall-faculty-changes.json` and strictly asserts `expectedOldFaculty` and `meetingsExpected` before applying updates.
+  - Runs automatically as the final step of `python scripts/extract.py` and can also run standalone (`python scripts/apply_overrides.py`).
+  - Recomputes `data/courses.json` and `data/faculty.json`, pruning faculty who end up with 0 active teaching sections (e.g. Rion and Sobur).
+  - Appends audit trail to `data/anomalies.md` and maintains `docs/data-changes.md`.
+  - Data updated date: `2026-10-23` (`DATA_UPDATED` in `src/config/site.ts`).
+- **How to Add the Next Data Update**:
+  1. Add a new overrides JSON file under `data/overrides/` (e.g. `YYYY-term-faculty-changes.json`) with keys: `{ program, courseCode, section, expectedOldFaculty, newFaculty, meetingsExpected }`.
+  2. Run `python3 scripts/apply_overrides.py --overrides data/overrides/<file>.json`.
+  3. The script validates against current data, applies changes, recomputes derived catalogs, removes zero-section faculty, and logs the change.
+  4. Run `npm test && npm run build` to verify that all integrity and UI safety tests pass.
 - **Updating for a Future Trimester**:
   1. Place the new routine PDF in the project root.
   2. Update filename in `scripts/extract.py`.
