@@ -12722,7 +12722,9 @@
       "TBA"
     ],
     "facultyIds": [],
-    "tentative": true
+    "tentative": true,
+    "updated": true,
+    "updatedNote": "Faculty updated in UCAM"
   },
   {
     "id": "BSCSE-CSE 4509-F",
@@ -12894,7 +12896,9 @@
       "TBA"
     ],
     "facultyIds": [],
-    "tentative": true
+    "tentative": true,
+    "updated": true,
+    "updatedNote": "Faculty updated in UCAM"
   },
   {
     "id": "BSCSE-CSE 4510-C",
@@ -18899,7 +18903,9 @@
       "TBA"
     ],
     "facultyIds": [],
-    "tentative": true
+    "tentative": true,
+    "updated": true,
+    "updatedNote": "Faculty updated in UCAM"
   },
   {
     "id": "BSCSE-MATH 2205-B",
@@ -18992,7 +18998,9 @@
     "facultyIds": [
       "nazmul-hasan"
     ],
-    "tentative": false
+    "tentative": false,
+    "updated": true,
+    "updatedNote": "Faculty updated in UCAM"
   },
   {
     "id": "BSCSE-MATH 2205-E",
@@ -19052,7 +19060,9 @@
       "TBA"
     ],
     "facultyIds": [],
-    "tentative": true
+    "tentative": true,
+    "updated": true,
+    "updatedNote": "Faculty updated in UCAM"
   },
   {
     "id": "BSCSE-MATH 2205-N",
@@ -19112,7 +19122,9 @@
       "TBA"
     ],
     "facultyIds": [],
-    "tentative": true
+    "tentative": true,
+    "updated": true,
+    "updatedNote": "Faculty updated in UCAM"
   },
   {
     "id": "BSCSE-MATH 2205-G",
@@ -19172,7 +19184,9 @@
       "TBA"
     ],
     "facultyIds": [],
-    "tentative": true
+    "tentative": true,
+    "updated": true,
+    "updatedNote": "Faculty updated in UCAM"
   },
   {
     "id": "BSCSE-MATH 2205-I",
@@ -19201,7 +19215,9 @@
       "TBA"
     ],
     "facultyIds": [],
-    "tentative": true
+    "tentative": true,
+    "updated": true,
+    "updatedNote": "Faculty updated in UCAM"
   },
   {
     "id": "BSCSE-MATH 2205-J",
@@ -19261,7 +19277,9 @@
       "TBA"
     ],
     "facultyIds": [],
-    "tentative": true
+    "tentative": true,
+    "updated": true,
+    "updatedNote": "Faculty updated in UCAM"
   },
   {
     "id": "BSCSE-MATH 2205-M",

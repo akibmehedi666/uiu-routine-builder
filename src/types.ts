@@ -25,6 +25,8 @@ export interface Section {
   fixed?: boolean;
   synthetic?: boolean;
   manual?: boolean;
+  updated?: boolean;
+  updatedNote?: string;
 }
 
 export interface Course {
@@ -45,6 +47,8 @@ export interface FacultyCourseOffering {
   kind: string;
   days: Day[];
   time: string;
+  updated?: boolean;
+  updatedNote?: string;
 }
 
 export interface Faculty {

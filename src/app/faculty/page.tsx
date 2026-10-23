@@ -1596,7 +1596,8 @@ function SectionRowItem({
     )
     .join(' and ');
   const roomSpeech = section.meetings[0]?.room ? `, Room ${section.meetings[0].room}` : '';
-  const accessibleLabel = `Section ${section.section}, ${section.primaryFaculty}, ${meetingSpeech}${roomSpeech}`;
+  const updatedSpeech = section.updated ? ', Updated in UCAM' : '';
+  const accessibleLabel = `Section ${section.section}, ${section.primaryFaculty}, ${meetingSpeech}${roomSpeech}${updatedSpeech}`;
 
   return (
     <div
@@ -1625,6 +1626,16 @@ function SectionRowItem({
             <span className="font-black text-sm text-text-primary px-1.5 py-0.5 rounded bg-subtle border border-app-border">
               {section.section}
             </span>
+
+            {section.updated && (
+              <span
+                className="px-1.5 py-0.5 rounded text-[11px] font-bold bg-sky-50 text-sky-700 border border-sky-200 flex items-center gap-1"
+                title={section.updatedNote || "Faculty assignment updated in UCAM"}
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-sky-500 shrink-0" />
+                Updated
+              </span>
+            )}
 
             {(section.fixed || isFixedCourse(courseCode)) && (
               <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-300 flex items-center gap-1">

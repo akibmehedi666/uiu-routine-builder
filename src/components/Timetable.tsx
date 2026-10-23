@@ -670,6 +670,8 @@ export function Timetable({
                                   ? 'Manual • '
                                   : section.fixed || isFixedCourse(section.courseCode)
                                   ? 'Fixed • '
+                                  : section.updated
+                                  ? 'Updated • '
                                   : ''}Sec {section.section}
                               </span>
                             </span>
@@ -737,6 +739,11 @@ export function Timetable({
               <span className="ml-2 px-2 py-0.5 rounded bg-orange-50 text-orange-600 border border-orange-200 font-bold">
                 Sec {hoveredSection.section.section}
               </span>
+              {hoveredSection.section.updated && (
+                <span className="ml-1.5 px-1.5 py-0.5 rounded bg-sky-50 text-sky-700 border border-sky-200 font-bold text-[11px]">
+                  Updated
+                </span>
+              )}
             </div>
             <span className="px-2 py-0.5 rounded bg-subtle text-text-secondary border border-app-border font-semibold">
               {hoveredSection.section.credit} Credit(s)
@@ -796,6 +803,11 @@ export function Timetable({
                   <span className="px-2 py-0.5 rounded bg-orange-100 text-orange-800 font-bold text-xs border border-orange-200">
                     Sec {activeSheetSection.section.section}
                   </span>
+                  {activeSheetSection.section.updated && (
+                    <span className="px-2 py-0.5 rounded bg-sky-100 text-sky-800 font-bold text-xs border border-sky-200">
+                      Updated
+                    </span>
+                  )}
                   <span className="text-xs text-text-muted font-medium">
                     ({activeSheetSection.section.credit} cr • {activeSheetSection.section.kind})
                   </span>
@@ -852,6 +864,16 @@ export function Timetable({
                 <div className="p-3 rounded-btn bg-amber-50 border border-amber-300 text-amber-800 text-xs flex items-start gap-2">
                   <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                   <span>Note: This is a tentative section that may be adjusted depending on student enrollment.</span>
+                </div>
+              )}
+
+              {activeSheetSection.section.updated && (
+                <div className="p-3 rounded-btn bg-sky-50 border border-sky-300 text-sky-800 text-xs flex items-start gap-2">
+                  <Info className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
+                  <span>
+                    <strong>Updated section:</strong>{' '}
+                    {activeSheetSection.section.updatedNote || 'Faculty assignment was updated in the UIU UCAM portal.'}
+                  </span>
                 </div>
               )}
             </div>

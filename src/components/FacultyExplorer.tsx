@@ -501,6 +501,14 @@ export function FacultyExplorer({
                             <span className="font-extrabold text-xs text-text-primary px-1.5 py-0.5 rounded bg-surface border border-app-border">
                               Sec {sec.section}
                             </span>
+                            {sec.updated && (
+                              <span
+                                className="px-1.5 py-0.2 rounded text-[11px] font-bold bg-sky-50 text-sky-700 border border-sky-200"
+                                title={sec.updatedNote || "Faculty updated in UCAM"}
+                              >
+                                Updated
+                              </span>
+                            )}
 
                             <div className="text-[11px] text-text-secondary">
                               <span className="font-semibold text-text-primary">

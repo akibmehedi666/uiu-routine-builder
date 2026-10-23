@@ -364,6 +364,14 @@ export function FacultyDetailView({ faculty }: { faculty: FacultyStats }) {
                                 Tentative
                               </span>
                             )}
+                            {sec.updated && (
+                              <span
+                                className="text-[11px] font-semibold text-sky-800 bg-sky-100 px-1.5 py-0.2 rounded border border-sky-200"
+                                title={sec.updatedNote || "Faculty updated in UCAM"}
+                              >
+                                Updated
+                              </span>
+                            )}
                           </div>
                           <div className="flex items-center gap-2 text-text-muted text-[11px]">
                             <span>Days: {sec.days.join(', ')}</span>

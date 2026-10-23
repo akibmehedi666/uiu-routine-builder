@@ -1063,7 +1063,17 @@ function FacultyDirectoryContent() {
                             key={sec.id}
                             className="py-1 flex items-center justify-between text-[11px]"
                           >
-                            <span className="font-semibold text-text-primary">Sec {sec.section}</span>
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-semibold text-text-primary">Sec {sec.section}</span>
+                              {sec.updated && (
+                                <span
+                                  className="text-[11px] font-bold text-sky-800 bg-sky-100 px-1 py-0.2 rounded border border-sky-200"
+                                  title={sec.updatedNote || "Faculty updated in UCAM"}
+                                >
+                                  Updated
+                                </span>
+                              )}
+                            </div>
                             <span className="text-text-secondary font-mono">
                               {sec.days.join(', ')} · {sec.timeRange}
                             </span>
@@ -1613,6 +1623,14 @@ function FacultyDirectoryContent() {
                                           {sec.tentative && (
                                             <span className="text-[11px] font-semibold text-amber-800 bg-amber-100 px-1.5 py-0.2 rounded border border-amber-200">
                                               Tentative
+                                            </span>
+                                          )}
+                                          {sec.updated && (
+                                            <span
+                                              className="text-[11px] font-semibold text-sky-800 bg-sky-100 px-1.5 py-0.2 rounded border border-sky-200"
+                                              title={sec.updatedNote || "Faculty updated in UCAM"}
+                                            >
+                                              Updated
                                             </span>
                                           )}
                                         </div>

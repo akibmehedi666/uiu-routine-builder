@@ -1371,7 +1371,7 @@ export function CourseSelector({
                         <option value="">Any Section ({courseSections.length} available)</option>
                         {courseSections.map((s) => (
                           <option key={s.id} value={s.id}>
-                            Sec {s.section} — {s.meetings.map((m) => `${m.day} ${formatTime24(m.start)}`).join(', ')} ({s.faculty.join(', ')})
+                            Sec {s.section}{s.updated ? ' [Updated]' : ''} — {s.meetings.map((m) => `${m.day} ${formatTime24(m.start)}`).join(', ')} ({s.faculty.join(', ')})
                           </option>
                         ))}
                       </select>

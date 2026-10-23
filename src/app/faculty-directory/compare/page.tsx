@@ -454,9 +454,14 @@ function CompareContent() {
                         {groupA?.sections.map((sec) => (
                           <span
                             key={sec.id}
-                            className="px-2 py-0.5 rounded bg-stone-100 text-stone-800 font-medium border border-stone-200"
+                            className="px-2 py-0.5 rounded bg-stone-100 text-stone-800 font-medium border border-stone-200 inline-flex items-center gap-1.5"
                           >
-                            Sec {sec.section} ({sec.days.join(', ')} {sec.timeRange})
+                            <span>Sec {sec.section} ({sec.days.join(', ')} {sec.timeRange})</span>
+                            {sec.updated && (
+                              <span className="px-1 py-0.2 rounded text-[11px] font-bold bg-sky-100 text-sky-800 border border-sky-300">
+                                Updated
+                              </span>
+                            )}
                           </span>
                         ))}
                       </div>
@@ -469,9 +474,14 @@ function CompareContent() {
                         {groupB?.sections.map((sec) => (
                           <span
                             key={sec.id}
-                            className="px-2 py-0.5 rounded bg-stone-100 text-stone-800 font-medium border border-stone-200"
+                            className="px-2 py-0.5 rounded bg-stone-100 text-stone-800 font-medium border border-stone-200 inline-flex items-center gap-1.5"
                           >
-                            Sec {sec.section} ({sec.days.join(', ')} {sec.timeRange})
+                            <span>Sec {sec.section} ({sec.days.join(', ')} {sec.timeRange})</span>
+                            {sec.updated && (
+                              <span className="px-1 py-0.2 rounded text-[11px] font-bold bg-sky-100 text-sky-800 border border-sky-300">
+                                Updated
+                              </span>
+                            )}
                           </span>
                         ))}
                       </div>

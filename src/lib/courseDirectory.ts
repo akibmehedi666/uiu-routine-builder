@@ -30,6 +30,8 @@ export interface CourseDirectorySection {
   fixed?: boolean;
   manual?: boolean;
   synthetic?: boolean;
+  updated?: boolean;
+  updatedNote?: string;
 }
 
 export interface CourseDirectoryItem {
@@ -270,6 +272,8 @@ export function buildCourseDirectory(
         fixed: s.fixed,
         manual: s.manual,
         synthetic: s.synthetic,
+        updated: s.updated,
+        updatedNote: s.updatedNote,
       };
     });
 

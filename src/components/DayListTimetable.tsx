@@ -148,7 +148,13 @@ export function DayListTimetable({
                                   <Lock className="w-2.5 h-2.5 text-amber-700 shrink-0" />
                                 ) : null}
                                 <span>
-                                  {isManual ? 'Manual • ' : isFixed ? 'Fixed • ' : ''}Sec {item.section.section}
+                                  {isManual
+                                    ? 'Manual • '
+                                    : isFixed
+                                    ? 'Fixed • '
+                                    : item.section.updated
+                                    ? 'Updated • '
+                                    : ''}Sec {item.section.section}
                                 </span>
                               </span>
                             </div>

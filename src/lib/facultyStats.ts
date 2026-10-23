@@ -37,6 +37,8 @@ export interface FacultyCourseSection {
   room: string | null;
   meetings: Meeting[];
   program: 'BSCSE' | 'BSDS';
+  updated?: boolean;
+  updatedNote?: string;
 }
 
 export interface FacultyCourseGroup {
@@ -121,6 +123,8 @@ export interface TBASection {
   days: Day[];
   room: string | null;
   tentative: boolean;
+  updated?: boolean;
+  updatedNote?: string;
 }
 
 export interface TBACourseGroup {
@@ -515,6 +519,8 @@ export function getAllFacultyStats(): FacultyStats[] {
         room,
         meetings: s.meetings,
         program: s.program,
+        updated: s.updated,
+        updatedNote: s.updatedNote,
       });
       group.sectionCount++;
 
@@ -741,6 +747,8 @@ export function getTBASections(): TBACourseGroup[] {
         days,
         room: s.meetings[0]?.room || null,
         tentative: s.tentative,
+        updated: s.updated,
+        updatedNote: s.updatedNote,
       });
     }
   }

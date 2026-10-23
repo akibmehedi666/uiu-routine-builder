@@ -62,7 +62,7 @@ def rebuild_courses_and_faculty(sections: List[Dict[str, Any]]) -> Tuple[List[Di
                 }
             existing_c = [c for c in faculty_map[f_id]["courses"] if c["code"] == sec["courseCode"] and c["section"] == sec["section"] and c["program"] == sec["program"]]
             if not existing_c:
-                faculty_map[f_id]["courses"].append({
+                c_data = {
                     "program": sec["program"],
                     "code": sec["courseCode"],
                     "title": sec["title"],
@@ -70,7 +70,10 @@ def rebuild_courses_and_faculty(sections: List[Dict[str, Any]]) -> Tuple[List[Di
                     "kind": sec["kind"],
                     "days": [m["day"] for m in sec["meetings"]],
                     "time": f"{sec['meetings'][0]['start']}..{sec['meetings'][0]['end']}"
-                })
+                }
+                if sec.get("updated"):
+                    c_data["updated"] = True
+                faculty_map[f_id]["courses"].append(c_data)
 
     faculty_list = sorted(faculty_map.values(), key=lambda f: f["name"])
     return courses_list, faculty_list
@@ -171,6 +174,9 @@ def apply_overrides(data_dir: str = DEFAULT_DATA_DIR, overrides_path: str = DEFA
                 known_faculty_ids[new_fac] = f_id
             target_sec["facultyIds"] = [f_id]
             new_faculty_desc = new_fac
+
+        target_sec["updated"] = True
+        target_sec["updatedNote"] = "Faculty updated in UCAM"
 
         applied_records.append({
             "courseCode": code,
