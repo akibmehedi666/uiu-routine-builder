@@ -22,6 +22,7 @@ import {
   getFacultyBadgesOverview,
   sortBadgeSummaries,
   filterAndSortHolders,
+  isMetricDetailRedundant,
   BadgeSortOption,
   BadgeSummary,
   BadgeHolder,
@@ -134,11 +135,15 @@ export function FacultyBadgesView({
   // Filtered and sorted holders
   const filteredHolders = useMemo(() => {
     if (!selectedSummary) return [];
-    return filterAndSortHolders(selectedSummary.holders, {
-      search: searchQuery,
-      program: programFilter,
-      sort: holderSort,
-    });
+    return filterAndSortHolders(
+      selectedSummary.holders,
+      {
+        search: searchQuery,
+        program: programFilter,
+        sort: holderSort,
+      },
+      selectedSummary.badge.id
+    );
   }, [selectedSummary, searchQuery, programFilter, holderSort]);
 
   const pagedHolders = useMemo(() => {
@@ -622,6 +627,12 @@ function FacultyBadgeHoldersPanel({
   const router = useRouter();
   const b = summary.badge;
 
+  // Detect when more than 3 holders share rank 1 (everyone tied at top)
+  const rank1Holders = useMemo(() => {
+    return summary.holders.filter((h) => h.rank === '1' || h.rank === '=1');
+  }, [summary.holders]);
+  const isEveryoneTiedAtTop = rank1Holders.length > 3;
+
   const bannerStyle = CATEGORY_BANNER_STYLES[b.category] || 'bg-stone-50/70 border-stone-200/80';
 
   return (
@@ -769,6 +780,17 @@ function FacultyBadgeHoldersPanel({
         </div>
       </div>
 
+      {/* Tie Note: shown when >3 holders share rank 1 */}
+      {isEveryoneTiedAtTop && (
+        <div className="px-4 py-2 bg-stone-50 border-b border-stone-200/80 text-xs font-medium text-stone-600 flex items-center gap-1.5 shrink-0">
+          <Info className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+          <span>
+            {rank1Holders.length} faculty are tied at {summary.holders[0]?.metricValue}{' '}
+            {summary.badge.metricUnit}
+          </span>
+        </div>
+      )}
+
       {/* 3. Showing X of Y Counter */}
       <div
         className="px-4 py-1.5 bg-stone-50/80 border-b border-stone-100 text-[11px] text-text-muted flex items-center justify-between shrink-0"
@@ -793,9 +815,11 @@ function FacultyBadgeHoldersPanel({
             const isFav = pinnedIds.includes(faculty.id);
             const isCompared = compareSelection.includes(faculty.id);
 
-            // Rank Badge Styling: Gold, Silver, Bronze soft circles for top 3
-            let rankStyle = 'bg-stone-100 text-stone-600 border-stone-200';
-            if (rank === '1' || rank === '=1') {
+            // Rank Badge Styling: Gold, Silver, Bronze soft circles for top 3 (suppressed when everyone tied at top)
+            let rankStyle = 'bg-stone-50 text-stone-500 border-stone-200';
+            if (isEveryoneTiedAtTop && (rank === '1' || rank === '=1')) {
+              rankStyle = 'bg-stone-100 text-stone-600 border-stone-200 font-medium';
+            } else if (rank === '1' || rank === '=1') {
               rankStyle = 'bg-amber-100 text-amber-900 border-amber-300 shadow-2xs font-bold';
             } else if (rank === '2' || rank === '=2') {
               rankStyle = 'bg-stone-200 text-stone-800 border-stone-300 shadow-2xs font-bold';
@@ -835,7 +859,12 @@ function FacultyBadgeHoldersPanel({
 
                   {/* Pastel Stable-Color Avatar */}
                   <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 border ${faculty.avatarColor.bg} ${faculty.avatarColor.text} ${faculty.avatarColor.border}`}
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 border"
+                    style={{
+                      backgroundColor: faculty.avatarColor.bg,
+                      color: faculty.avatarColor.text,
+                      borderColor: faculty.avatarColor.border,
+                    }}
                   >
                     {faculty.initials}
                   </div>
@@ -898,13 +927,15 @@ function FacultyBadgeHoldersPanel({
                       />
                     </div>
 
-                    {/* Muted Second Line Detail */}
-                    <span
-                      className="text-[11px] text-stone-500 truncate max-w-[110px] sm:max-w-[150px]"
-                      title={metricDetail}
-                    >
-                      {metricDetail}
-                    </span>
+                    {/* Muted Second Line Detail (hidden if repeats value+unit or empty) */}
+                    {!isMetricDetailRedundant(metricDetail, metricValue, metricUnit) && (
+                      <span
+                        className="text-[11px] text-stone-500 truncate max-w-[110px] sm:max-w-[150px]"
+                        title={metricDetail}
+                      >
+                        {metricDetail}
+                      </span>
+                    )}
                   </div>
 
                   {/* 32px Pin & Open Page Buttons */}

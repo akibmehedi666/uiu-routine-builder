@@ -371,6 +371,11 @@ Key prompts and tasks executed during development:
     - Redesigned holder rows: rank numbers with gold/silver/bronze medals for top 3 and "=N" prefix for ties; stable pastel avatar; 14px semibold name with tooltip + single program tag group (removed duplicate teal chip); prominent metric block (18px tabular bold + unit label + relative orange bar + muted detail); max 3 other icon badges; 32px pin/open buttons; orange compare checkbox; light orange hover tint with row clickability.
     - Extended `src/config/facultyBadges.ts` with `metricUnit` and `metricDetail(faculty)` across all 12 badges (Cross-Program: "BSCSE 5 · BSDS 3 sections", Course Hub: "CSE 2213 x4", Home Room: "78% in Room 530", Floor Hopper: "Floors 3, 4, 5, 6", Marathon: "5 in a row").
     - 3-factor deterministic sorting (`metricValue` desc -> `totalSections` desc -> `sortName` A-Z) applied to both holders list and top holder tie-break calculation.
-    - Sticky pinned layout (`h-[calc(100vh-6.5rem)]`) with internal scrolling and zero bottom gap; orange active filter chips; main directory styled sort select; stronger selected card style with smooth scroll-into-view.
+16. `faculty-badges-holders-fixes`: 3 holders panel fixes:
+    - Redundant metric suppression: `isMetricDetailRedundant` hides the detail line if it merely repeats value+unit; enriched badge details with course codes (Multi-Course, Lab Pro), meeting counts & rooms (Home Room), days (First Bell, Late Shift), and Marathon chain times + pairs.
+    - Avatars: Replaced invalid Tailwind class interpolation with inline `style={{ backgroundColor, color, borderColor }}` using `faculty.avatarColor`, eliminating white circles and ensuring exact pastel avatar styling matching the main directory list.
+    - Ties & Medals: When >3 holders share rank 1, suppressed medals in favor of neutral rank circles (`=1`) and rendered an informative toolbar note `"N faculty are tied at <value> <unit>"`; preserved medals when top 3 are distinct.
+    - Marathon tie-breaker: Secondary sort key by total back-to-back pairs this week before total sections and name A-Z, displayed in the detail line as `"x pairs this week"`.
+
 
 

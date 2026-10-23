@@ -1,4 +1,5 @@
 import type { FacultyStats } from '../lib/facultyStats';
+import { Day, DAYS_LIST } from '../types';
 
 /**
  * Configuration for Faculty Directory Badges.
@@ -70,6 +71,98 @@ export const FACULTY_BADGE_THRESHOLDS = {
   weekendStarterMinSections: 2,
 } as const;
 
+function formatMinutes(mins: number): string {
+  const h24 = Math.floor(mins / 60);
+  const m = mins % 60;
+  const period = h24 >= 12 ? 'PM' : 'AM';
+  const h12 = h24 % 12 === 0 ? 12 : h24 % 12;
+  const hStr = h12 < 10 ? `0${h12}` : `${h12}`;
+  const mStr = m < 10 ? `0${m}` : `${m}`;
+  return `${hStr}:${mStr} ${period}`;
+}
+
+/**
+ * Counts total back-to-back meeting pairs (gap <= 15 min) for a faculty member in the week.
+ */
+export function countBackToBackPairs(f: FacultyStats): number {
+  if (!f.weeklyPattern) return 0;
+  let pairs = 0;
+  for (const day of DAYS_LIST) {
+    const ms = f.weeklyPattern[day]?.meetings || [];
+    for (let i = 0; i < ms.length - 1; i++) {
+      const gap = ms[i + 1].start - ms[i].end;
+      if (gap >= 0 && gap <= FACULTY_BADGE_THRESHOLDS.marathonMaxGapMinutes) {
+        pairs++;
+      }
+    }
+  }
+  return pairs;
+}
+
+/**
+ * Computes Marathon badge detail: day + start of first to end of last class in longest chain
+ * (e.g. "Sun 09:51-01:40 PM"), plus "+1 more day" if chains exist across multiple days,
+ * and muted total pairs this week (e.g. "2 pairs this week").
+ */
+export function computeMarathonDetail(f: FacultyStats): string {
+  if (!f.weeklyPattern) return '';
+
+  interface DayChain {
+    day: Day;
+    count: number;
+    start: number;
+    end: number;
+  }
+
+  const allChains: DayChain[] = [];
+
+  for (const day of DAYS_LIST) {
+    const ms = f.weeklyPattern[day]?.meetings || [];
+    if (ms.length === 0) continue;
+
+    let chainStart = ms[0].start;
+    let chainEnd = ms[0].end;
+    let currentCount = 1;
+
+    for (let i = 0; i < ms.length - 1; i++) {
+      const gap = ms[i + 1].start - ms[i].end;
+      if (gap >= 0 && gap <= FACULTY_BADGE_THRESHOLDS.marathonMaxGapMinutes) {
+        currentCount++;
+        chainEnd = ms[i + 1].end;
+      } else {
+        if (currentCount > 1) {
+          allChains.push({ day, count: currentCount, start: chainStart, end: chainEnd });
+        }
+        currentCount = 1;
+        chainStart = ms[i + 1].start;
+        chainEnd = ms[i + 1].end;
+      }
+    }
+    if (currentCount > 1) {
+      allChains.push({ day, count: currentCount, start: chainStart, end: chainEnd });
+    }
+  }
+
+  if (allChains.length === 0) return '';
+
+  // Max chain length
+  const maxCount = Math.max(...allChains.map((c) => c.count));
+  const bestChain = allChains.find((c) => c.count === maxCount) || allChains[0];
+
+  // Days with chains
+  const daysWithChains = Array.from(new Set(allChains.map((c) => c.day)));
+  const extraDays = daysWithChains.length > 1 ? daysWithChains.length - 1 : 0;
+  const extraDaysStr = extraDays > 0 ? ` (+${extraDays} more day${extraDays === 1 ? '' : 's'})` : '';
+
+  const startStr = formatMinutes(bestChain.start).replace(/\s+(AM|PM)$/, '');
+  const endStr = formatMinutes(bestChain.end);
+
+  const pairs = countBackToBackPairs(f);
+  const pairsStr = `${pairs} pair${pairs === 1 ? '' : 's'} this week`;
+
+  return `${bestChain.day} ${startStr}-${endStr}${extraDaysStr} · ${pairsStr}`;
+}
+
 export const BADGE_DEFINITIONS: Record<string, BadgeDefinition> = {
   busiest: {
     id: 'busiest',
@@ -83,7 +176,7 @@ export const BADGE_DEFINITIONS: Record<string, BadgeDefinition> = {
     metricUnit: 'sections',
     metricValue: (f) => f.totalSections,
     metricLabel: (f) => `${f.totalSections} sections`,
-    metricDetail: (f) => `${f.totalSections} sections (${f.theoryCourseCount} theory, ${f.labCourseCount} lab)`,
+    metricDetail: (f) => `${f.theoryCourseCount} theory · ${f.labCourseCount} lab`,
   },
   marathon: {
     id: 'marathon',
@@ -97,7 +190,7 @@ export const BADGE_DEFINITIONS: Record<string, BadgeDefinition> = {
     metricUnit: 'in a row',
     metricValue: (f) => f.maxMarathonChain,
     metricLabel: (f) => `${f.maxMarathonChain} in a row`,
-    metricDetail: (f) => `${f.maxMarathonChain} in a row`,
+    metricDetail: (f) => computeMarathonDetail(f),
   },
   crossProgram: {
     id: 'crossProgram',
@@ -129,7 +222,12 @@ export const BADGE_DEFINITIONS: Record<string, BadgeDefinition> = {
     metricUnit: 'courses',
     metricValue: (f) => f.distinctCourseCount,
     metricLabel: (f) => `${f.distinctCourseCount} courses`,
-    metricDetail: (f) => `${f.distinctCourseCount} distinct courses`,
+    metricDetail: (f) => {
+      const codes = f.courses.map((c) => c.courseCode);
+      if (codes.length === 0) return '';
+      const top = codes.slice(0, 3).join(', ');
+      return codes.length > 3 ? `${top} +${codes.length - 3}` : top;
+    },
   },
   courseHub: {
     id: 'courseHub',
@@ -191,11 +289,12 @@ export const BADGE_DEFINITIONS: Record<string, BadgeDefinition> = {
       return `${count} lab section${count === 1 ? '' : 's'}`;
     },
     metricDetail: (f) => {
-      const count = f.courses.reduce(
-        (acc, c) => acc + c.sections.filter((s) => s.kind === 'lab').length,
-        0
-      );
-      return `${count} laboratory sections`;
+      const labCodes = f.courses
+        .filter((c) => c.sections.some((s) => s.kind === 'lab'))
+        .map((c) => c.courseCode);
+      if (labCodes.length === 0) return '';
+      const top = labCodes.slice(0, 3).join(', ');
+      return labCodes.length > 3 ? `${top} +${labCodes.length - 3}` : top;
     },
   },
   floorHopper: {
@@ -287,7 +386,7 @@ export const BADGE_DEFINITIONS: Record<string, BadgeDefinition> = {
           }
         }
       }
-      if (totalMeetings === 0) return '0%';
+      if (totalMeetings === 0) return '';
       let maxCount = 0;
       let maxRoom = '';
       for (const [r, count] of roomCounts.entries()) {
@@ -296,9 +395,8 @@ export const BADGE_DEFINITIONS: Record<string, BadgeDefinition> = {
           maxRoom = r;
         }
       }
-      const pct = Math.round((maxCount / totalMeetings) * 100);
       const roomDisplay = maxRoom.toLowerCase().startsWith('room') ? maxRoom : `Room ${maxRoom}`;
-      return `${pct}% in ${roomDisplay}`;
+      return `${roomDisplay} (${maxCount} meetings)`;
     },
   },
   firstBell: {
@@ -330,13 +428,15 @@ export const BADGE_DEFINITIONS: Record<string, BadgeDefinition> = {
       return `${count} morning section${count === 1 ? '' : 's'} (08:30 AM)`;
     },
     metricDetail: (f) => {
-      let count = 0;
-      for (const c of f.courses) {
-        for (const s of c.sections) {
-          if (s.meetings.some((m) => m.start <= 510)) count++;
-        }
-      }
-      return `${count} sections starting at 08:30 AM`;
+      const days = Array.from(
+        new Set(
+          f.courses
+            .flatMap((c) => c.sections)
+            .filter((s) => s.meetings.some((m) => m.start <= 510))
+            .flatMap((s) => s.days)
+        )
+      );
+      return days.length > 0 ? `${days.join(', ')} at 08:30 AM` : '08:30 AM';
     },
   },
   lateShift: {
@@ -368,13 +468,15 @@ export const BADGE_DEFINITIONS: Record<string, BadgeDefinition> = {
       return `${count} late section${count === 1 ? '' : 's'} (01:51 PM+)`;
     },
     metricDetail: (f) => {
-      let count = 0;
-      for (const c of f.courses) {
-        for (const s of c.sections) {
-          if (s.meetings.some((m) => m.start >= 831)) count++;
-        }
-      }
-      return `${count} sections starting at 01:51 PM or later`;
+      const days = Array.from(
+        new Set(
+          f.courses
+            .flatMap((c) => c.sections)
+            .filter((s) => s.meetings.some((m) => m.start >= 831))
+            .flatMap((s) => s.days)
+        )
+      );
+      return days.length > 0 ? `${days.join(', ')} at 01:51 PM+` : '01:51 PM+';
     },
   },
   mondaySpecial: {

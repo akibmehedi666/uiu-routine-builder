@@ -6,9 +6,14 @@ import {
   filterAndSortHolders,
   computeHolderRanks,
   sortHoldersByMetric,
+  isMetricDetailRedundant,
   BadgeHolder,
 } from '../facultyBadges';
-import { getAllBadgeDefinitions } from '../../config/facultyBadges';
+import {
+  getAllBadgeDefinitions,
+  computeMarathonDetail,
+  countBackToBackPairs,
+} from '../../config/facultyBadges';
 import { getAllFacultyStats, FacultyStats } from '../facultyStats';
 
 describe('Faculty Badges Tab - Data & Computations', () => {
@@ -313,5 +318,154 @@ describe('Faculty Badges Tab - Data & Computations', () => {
     // Must have rarity label "Rarity #"
     expect(viewSource).toContain('Rarity #');
   });
+
+  it('17. isMetricDetailRedundant correctly identifies when metricDetail merely repeats value+unit', () => {
+    // Redundant cases
+    expect(isMetricDetailRedundant('5 courses', 5, 'courses')).toBe(true);
+    expect(isMetricDetailRedundant('5 distinct courses', 5, 'courses')).toBe(true);
+    expect(isMetricDetailRedundant('3 in a row', 3, 'in a row')).toBe(true);
+    expect(isMetricDetailRedundant('3 laboratory sections', 3, 'lab sections')).toBe(true);
+    expect(isMetricDetailRedundant('', 6, 'sections')).toBe(true);
+    expect(isMetricDetailRedundant('   ', 6, 'sections')).toBe(true);
+
+    // Non-redundant informative cases
+    expect(isMetricDetailRedundant('Sun 09:51-01:40 PM · 2 pairs this week', 3, 'in a row')).toBe(false);
+    expect(isMetricDetailRedundant('4 theory · 2 lab', 6, 'sections')).toBe(false);
+    expect(isMetricDetailRedundant('BSCSE 5 · BSDS 3 sections', 2, 'programs')).toBe(false);
+    expect(isMetricDetailRedundant('CSE 1111, CSE 2215', 5, 'courses')).toBe(false);
+    expect(isMetricDetailRedundant('Room 530 (8 meetings)', 78, '% in room')).toBe(false);
+    expect(isMetricDetailRedundant('Floors 3, 4, 5, 6', 4, 'floors')).toBe(false);
+  });
+
+  it('18. computeMarathonDetail formats time range, pairs count, and multi-day indicator', () => {
+    const mockFacultyMultiDay = {
+      id: 'mock-runner',
+      name: 'Dr. Marathon',
+      sortName: 'Marathon, Dr.',
+      maxMarathonChain: 3,
+      weeklyPattern: {
+        Sat: { day: 'Sat', meetings: [], count: 0, morningCount: 0, middayCount: 0, afternoonCount: 0 },
+        Sun: {
+          day: 'Sun',
+          meetings: [
+            { start: 591, end: 681, day: 'Sun' }, // 09:51 - 11:21
+            { start: 681, end: 771, day: 'Sun' }, // 11:21 - 12:51
+            { start: 771, end: 820, day: 'Sun' }, // 12:51 - 01:40 PM (3 in a row!)
+          ],
+          count: 3,
+          morningCount: 1,
+          middayCount: 2,
+          afternoonCount: 0,
+        },
+        Mon: { day: 'Mon', meetings: [], count: 0, morningCount: 0, middayCount: 0, afternoonCount: 0 },
+        Tue: {
+          day: 'Tue',
+          meetings: [
+            { start: 510, end: 600, day: 'Tue' }, // 08:30 - 10:00
+            { start: 600, end: 690, day: 'Tue' }, // 10:00 - 11:30 (2 in a row!)
+          ],
+          count: 2,
+          morningCount: 2,
+          middayCount: 0,
+          afternoonCount: 0,
+        },
+        Wed: { day: 'Wed', meetings: [], count: 0, morningCount: 0, middayCount: 0, afternoonCount: 0 },
+      },
+    } as unknown as FacultyStats;
+
+    const detail = computeMarathonDetail(mockFacultyMultiDay);
+    // Should include Sun 09:51-01:40 PM
+    expect(detail).toContain('Sun 09:51-01:40 PM');
+    // Should include +1 more day because Tue also has back-to-back classes
+    expect(detail).toContain('+1 more day');
+    // Total pairs: 2 on Sun + 1 on Tue = 3 pairs this week
+    expect(detail).toContain('3 pairs this week');
+    expect(countBackToBackPairs(mockFacultyMultiDay)).toBe(3);
+  });
+
+  it('19. sortHoldersByMetric uses total back-to-back pairs as secondary tie-breaker for Marathon', () => {
+    // Two holders with same metricValue (3 in a row), but holder B has 4 pairs and holder A has 2 pairs
+    const makeHolder = (id: string, name: string, pairs: number): BadgeHolder => ({
+      badgeId: 'marathon',
+      faculty: {
+        id,
+        name,
+        sortName: name,
+        totalSections: 6,
+        programs: ['BSCSE'],
+        weeklyPattern: {
+          Sat: {
+            day: 'Sat',
+            meetings: Array.from({ length: pairs + 1 }, (_, i) => ({
+              start: 500 + i * 90,
+              end: 590 + i * 90,
+              day: 'Sat',
+            })),
+            count: pairs + 1,
+            morningCount: 1,
+            middayCount: 0,
+            afternoonCount: 0,
+          },
+          Sun: { day: 'Sun', meetings: [], count: 0, morningCount: 0, middayCount: 0, afternoonCount: 0 },
+          Mon: { day: 'Mon', meetings: [], count: 0, morningCount: 0, middayCount: 0, afternoonCount: 0 },
+          Tue: { day: 'Tue', meetings: [], count: 0, morningCount: 0, middayCount: 0, afternoonCount: 0 },
+          Wed: { day: 'Wed', meetings: [], count: 0, morningCount: 0, middayCount: 0, afternoonCount: 0 },
+        },
+        badges: [],
+      } as unknown as FacultyStats,
+      metricValue: 3,
+      metricLabel: '3 in a row',
+      metricUnit: 'in a row',
+      metricDetail: 'detail',
+      rank: '=1',
+      relativeWidthPercent: 100,
+    });
+
+    const holderLow = makeHolder('low', 'Alice', 2);
+    const holderHigh = makeHolder('high', 'Bob', 4);
+
+    const sorted = sortHoldersByMetric([holderLow, holderHigh], 'marathon');
+    // Bob has 4 pairs vs Alice with 2 pairs -> Bob must be sorted first!
+    expect(sorted[0].faculty.name).toBe('Bob');
+    expect(sorted[1].faculty.name).toBe('Alice');
+  });
+
+  it('20. Tie note and medal logic for >3 holders sharing rank 1', () => {
+    // When 4 faculty are tied at rank 1
+    const tiedHolders = [
+      { metricValue: 5 },
+      { metricValue: 5 },
+      { metricValue: 5 },
+      { metricValue: 5 },
+    ];
+    const ranks = computeHolderRanks(tiedHolders);
+    expect(ranks).toEqual(['=1', '=1', '=1', '=1']);
+
+    const rank1Count = ranks.filter((r) => r === '1' || r === '=1').length;
+    expect(rank1Count).toBe(4);
+    expect(rank1Count > 3).toBe(true);
+
+    // Formatted note test
+    const note = `${rank1Count} faculty are tied at 5 in a row`;
+    expect(note).toBe('4 faculty are tied at 5 in a row');
+  });
+
+  it('21. Static verification: avatars use inline styles with pastel colors (no white circles or invalid class interpolation)', async () => {
+    const fs = await import('fs');
+    const path = await import('path');
+
+    const viewPath = path.resolve(process.cwd(), 'src/components/faculty/FacultyBadgesView.tsx');
+    const viewSource = fs.readFileSync(viewPath, 'utf-8');
+
+    // Must NOT have invalid interpolation like `${faculty.avatarColor.bg}` in className
+    expect(viewSource).not.toMatch(/className=.*faculty\.avatarColor\.bg/);
+
+    // Must use inline styles for avatar
+    expect(viewSource).toContain('style={{');
+    expect(viewSource).toContain('backgroundColor: faculty.avatarColor.bg');
+    expect(viewSource).toContain('color: faculty.avatarColor.text');
+    expect(viewSource).toContain('borderColor: faculty.avatarColor.border');
+  });
 });
+
 

@@ -442,5 +442,27 @@ Following a session interruption audit:
   - 169 Vitest tests passing across 14 test suites (`facultyBadgesTab.test.ts` expanded to 16 comprehensive tests).
   - Production build clean across 234 static pages.
 
+## Decision 13: Holders Panel Bug Fixes (Duplicate Metric, Pastel Avatars, Tie Notes & Marathon Tie-Breaker)
+- **Duplicate Metric Suppression & Enriched Details**:
+  - Implemented `isMetricDetailRedundant(detail, value, unit)` in `src/lib/facultyBadges.ts` to hide the second detail line whenever it merely repeats the value and unit without providing new info (e.g. "5 courses", "3 laboratory sections", "3 in a row").
+  - Enriched all 12 badge definitions in `src/config/facultyBadges.ts` to provide new informative detail lines:
+    - Marathon: `computeMarathonDetail` formats the day and exact time window of the longest back-to-back chain (e.g. `"Sun 09:51-01:40 PM"`), appends `"(+1 more day)"` if chains exist across multiple days, and includes `"x pairs this week"`.
+    - Multi-Course & Lab Pro: lists distinct course codes taught (e.g. `"CSE 1111, CSE 2215 +2"`).
+    - First Bell & Late Shift: lists days taught (e.g. `"Sat, Sun, Tue at 08:30 AM"`).
+    - Home Room: lists room name and meetings count (e.g. `"Room 530 (8 meetings)"`).
+- **Pastel Stable-Color Avatars**:
+  - Replaced invalid Tailwind class interpolation (`${faculty.avatarColor.bg}`) in `FacultyBadgesView.tsx` with proper React inline `style={{ backgroundColor: faculty.avatarColor.bg, color: faculty.avatarColor.text, borderColor: faculty.avatarColor.border }}`.
+  - Fixes white circle regression and restores deterministic pastel avatar colors matching the main directory list 1:1.
+- **Tie Notes & Medal Suppression**:
+  - When more than 3 holders share rank 1 (`rank1Holders.length > 3`), gold/silver/bronze medals are suppressed in favor of neutral rank circles with `"="` prefix (`=1`), avoiding arbitrary medals when everyone is tied.
+  - Renders an informative one-line banner under the toolbar: `"N faculty are tied at <value> <unit>"`.
+  - When the top 3 are distinct (or rank 1 ties are <= 3), standard gold, silver, and bronze medals are retained.
+- **Marathon Secondary Tie-Breaker**:
+  - Added `countBackToBackPairs(f)` calculating total back-to-back pairs across all days in the week.
+  - Integrated into `sortHoldersByMetric`: when `badgeId === 'marathon'`, holders tied in `maxMarathonChain` are sorted by total back-to-back pairs (higher first) before total sections and name A-Z.
+- **Verification**:
+  - 174 Vitest tests passing across 14 test suites (`facultyBadgesTab.test.ts` expanded to 21 tests).
+  - Production build clean across 234 static pages.
+
 
 

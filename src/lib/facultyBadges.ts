@@ -3,10 +3,12 @@ import {
   BadgeDefinition,
   BadgeCategory,
   getAllBadgeDefinitions,
+  countBackToBackPairs,
 } from '../config/facultyBadges';
 import { getAllFacultyStats, FacultyStats, FacultyBadge } from './facultyStats';
 
 export interface BadgeHolder {
+  badgeId?: string;
   faculty: FacultyStats;
   metricValue: number;
   metricLabel: string;
@@ -57,6 +59,39 @@ export interface HolderFilterCriteria {
 }
 
 /**
+ * Checks if metricDetail is redundant with metricValue and metricUnit
+ * (i.e. merely repeats the value and unit without providing new info).
+ */
+export function isMetricDetailRedundant(
+  detail: string,
+  value: number,
+  unit: string
+): boolean {
+  if (!detail || !detail.trim()) return true;
+
+  const clean = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+  const cleanDetail = clean(detail);
+  const cleanValueUnit = clean(`${value}${unit}`);
+
+  // Exact match (e.g. "5 courses" vs "5 courses")
+  if (cleanDetail === cleanValueUnit) return true;
+
+  // Stripping common filler words like "distinct", "total", "classes", "sections", "courses", "inarow", "laboratory", "labs"
+  const strip = (s: string) =>
+    s
+      .replace(/laboratory/g, 'lab')
+      .replace(/distinct|total|classes|sections|courses|inarow|labs?/g, '');
+
+  const strippedDetail = strip(cleanDetail);
+  const strippedValueUnit = strip(cleanValueUnit);
+
+  if (strippedDetail === strippedValueUnit) return true;
+
+  return false;
+}
+
+/**
  * Computes rank strings (with "=" prefix for ties, e.g. "=1", "=2", "3")
  * for a list of holders pre-sorted by metricValue descending.
  */
@@ -76,13 +111,22 @@ export function computeHolderRanks(holders: { metricValue: number }[]): string[]
 /**
  * Sorts holders deterministically by:
  * 1. metricValue (descending)
- * 2. totalSections (descending)
- * 3. faculty.sortName (A-Z)
+ * 2. for Marathon: back-to-back pairs this week (descending)
+ * 3. totalSections (descending)
+ * 4. faculty.sortName (A-Z)
  */
-export function sortHoldersByMetric(holders: BadgeHolder[]): BadgeHolder[] {
+export function sortHoldersByMetric(holders: BadgeHolder[], badgeId?: string): BadgeHolder[] {
+  const activeBadgeId = badgeId ?? holders[0]?.badgeId;
   return [...holders].sort((a, b) => {
     if (b.metricValue !== a.metricValue) {
       return b.metricValue - a.metricValue;
+    }
+    if (activeBadgeId === 'marathon') {
+      const pairsB = countBackToBackPairs(b.faculty);
+      const pairsA = countBackToBackPairs(a.faculty);
+      if (pairsB !== pairsA) {
+        return pairsB - pairsA;
+      }
     }
     if (b.faculty.totalSections !== a.faculty.totalSections) {
       return b.faculty.totalSections - a.faculty.totalSections;
@@ -107,7 +151,8 @@ export function computeBadgesOverview(facultyList?: FacultyStats[]): FacultyBadg
     const matchedFaculty = list.filter((f) => f.badges.some((b) => b.id === badge.id));
 
     // Map each holder with their raw metric
-    const rawHolders = matchedFaculty.map((f) => ({
+    const rawHolders: BadgeHolder[] = matchedFaculty.map((f) => ({
+      badgeId: badge.id,
       faculty: f,
       metricValue: badge.metricValue(f),
       metricLabel: badge.metricLabel(f),
@@ -117,8 +162,8 @@ export function computeBadgesOverview(facultyList?: FacultyStats[]): FacultyBadg
       relativeWidthPercent: 100,
     }));
 
-    // Sort holders by: metricValue desc -> totalSections desc -> sortName A-Z
-    const holders = sortHoldersByMetric(rawHolders);
+    // Sort holders by: metricValue desc -> (pairs desc if marathon) -> totalSections desc -> sortName A-Z
+    const holders = sortHoldersByMetric(rawHolders, badge.id);
 
     // Compute max metric value for relative bar widths
     const maxMetric = holders.length > 0 ? Math.max(1, ...holders.map((h) => h.metricValue)) : 1;
@@ -256,7 +301,8 @@ export function sortBadgeSummaries(
  */
 export function filterAndSortHolders(
   holders: BadgeHolder[],
-  criteria: HolderFilterCriteria
+  criteria: HolderFilterCriteria,
+  badgeId?: string
 ): BadgeHolder[] {
   const { search, program = 'ALL', sort = 'metric' } = criteria;
   const q = search?.trim().toLowerCase();
@@ -288,6 +334,6 @@ export function filterAndSortHolders(
     return filtered.sort((a, b) => a.faculty.sortName.localeCompare(b.faculty.sortName));
   }
 
-  // Default: by metricValue desc -> totalSections desc -> sortName A-Z
-  return sortHoldersByMetric(filtered);
+  // Default: by metricValue desc -> (pairs desc if marathon) -> totalSections desc -> sortName A-Z
+  return sortHoldersByMetric(filtered, badgeId);
 }
