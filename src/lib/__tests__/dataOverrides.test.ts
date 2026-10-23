@@ -15,7 +15,7 @@ import { solveSchedules } from '../../solver';
 import { validateSavedRoutine, buildSavedRoutineObject } from '../../utils/savedRoutinesStorage';
 import { migrateFacultyIdArray } from '../facultyAliases';
 import { resolveSectionId } from '../sectionAliases';
-import { getUpdatedCourseLists } from '../noticeCourses';
+import { getUpdatedCourseLists, getNoticeData } from '../noticeCourses';
 
 describe('Fall 2026 Data Overrides & Catalog Rebuild Tests', () => {
   const allFaculty = getAllFacultyStats();
@@ -528,6 +528,36 @@ describe('Fall 2026 Data Overrides & Catalog Rebuild Tests', () => {
       expect(scheduleCourses).toEqual(expectedSchedCourses);
       expect(facultyCourses.length).toBe(29);
       expect(scheduleCourses.length).toBe(8);
+    });
+
+    it('every code in the notice exists in courses.json with a title, and the notice list equals the unique course codes of updated sections', () => {
+      const noticeData = getNoticeData();
+      const rawCoursesMap = new Map(rawCourses.map((c) => [c.code, c.title]));
+      const updatedCodes = new Set(rawSections.filter((s) => s.updated).map((s) => s.courseCode));
+
+      // The notice expanded list equals the unique course codes of updated sections
+      expect(noticeData.allChangedCourses.length).toBe(updatedCodes.size);
+      const noticeCodes = new Set(noticeData.allChangedCourses.map((c) => c.code));
+      expect(noticeCodes).toEqual(updatedCodes);
+
+      // Every code in allChangedCourses exists in courses.json with a non-empty title
+      for (const item of noticeData.allChangedCourses) {
+        expect(rawCoursesMap.has(item.code)).toBe(true);
+        expect(item.title).toBe(rawCoursesMap.get(item.code));
+        expect(item.title.length).toBeGreaterThan(0);
+      }
+
+      // Every code in inline facultyChangedCodes and scheduleChangedCodes exists in courses.json with a title
+      for (const item of noticeData.facultyChangedCodes) {
+        expect(rawCoursesMap.has(item.code)).toBe(true);
+        expect(item.title).toBe(rawCoursesMap.get(item.code));
+        expect(item.title.length).toBeGreaterThan(0);
+      }
+      for (const item of noticeData.scheduleChangedCodes) {
+        expect(rawCoursesMap.has(item.code)).toBe(true);
+        expect(item.title).toBe(rawCoursesMap.get(item.code));
+        expect(item.title.length).toBeGreaterThan(0);
+      }
     });
 
     it('legacy section IDs resolve seamlessly via resolveSectionId', () => {

@@ -23,62 +23,17 @@ import { DAYS_LIST } from '../types';
 import { LANDING_COURSE_EXPLORER, LANDING_SCHEDULE_PREVIEW, LANDING_STATS } from '../lib/landingData';
 import { DATA_UPDATED, DATA_NOTE } from '../config/site';
 
-import { NoticeCourseList } from './NoticeCourseList';
-import { getUpdatedCourseLists } from '../lib/noticeCourses';
+import { NoticeBanner } from './NoticeBanner';
+import type { NoticeData } from '../lib/noticeCourses';
 
 // Live metadata numbers directly from extracted datasets
 const STATS = LANDING_STATS;
 
-// <!-- TEMP NOTICE START -->
-function TempNoticeBanner() {
-  const [isOpen, setIsOpen] = useState(true);
-  const { facultyCourses, scheduleCourses } = getUpdatedCourseLists();
-
-  if (!isOpen) return null;
-
-  return (
-    <aside
-      role="alert"
-      aria-label="Temporary site notice"
-      className="temp-notice-banner w-full bg-amber-50 border-b border-amber-200/90 text-amber-950 text-xs sm:text-sm py-2 px-10 sm:px-12 transition-colors relative z-20"
-    >
-      <div className="max-w-7xl mx-auto flex flex-col items-center justify-center text-center">
-        <div className="temp-notice-content inline-flex items-center justify-center gap-2 min-w-0">
-          <span
-            className="temp-notice-indicator w-2 h-2 rounded-full bg-amber-500 shrink-0"
-            aria-hidden="true"
-          />
-          <p className="temp-notice-text font-medium leading-snug text-center">
-            Please wait for some time. The faculty list has been updated, so we are making some changes to the site. Stay tuned! Sorry for the inconvenience.
-          </p>
-        </div>
-
-        <div className="temp-notice-courses mt-1 text-[12px] text-amber-900/80 leading-relaxed text-center max-w-4xl">
-          <NoticeCourseList label="Faculty changed in" courses={facultyCourses} />
-          {scheduleCourses.length > 0 && (
-            <>
-              <span className="mx-2 text-amber-400 select-none" aria-hidden="true">&bull;</span>
-              <NoticeCourseList label="Schedule changed in" courses={scheduleCourses} />
-            </>
-          )}
-        </div>
-
-        <button
-          type="button"
-          onClick={() => setIsOpen(false)}
-          className="temp-notice-close-btn absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 p-1 rounded-md text-amber-800 hover:text-amber-950 hover:bg-amber-100/80 transition-colors shrink-0 flex items-center justify-center min-w-[28px] min-h-[28px]"
-          aria-label="Close notice"
-          title="Dismiss notice"
-        >
-          <span className="text-lg font-bold leading-none select-none" aria-hidden="true">&times;</span>
-        </button>
-      </div>
-    </aside>
-  );
+interface LandingContentProps {
+  noticeData?: NoticeData;
 }
-// <!-- TEMP NOTICE END -->
 
-export function LandingContent() {
+export function LandingContent({ noticeData }: LandingContentProps = {}) {
   const router = useRouter();
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
 
@@ -119,7 +74,7 @@ export function LandingContent() {
   return (
     <div className="min-h-screen bg-page text-text-primary selection:bg-orange-500 selection:text-white flex flex-col">
       {/* <!-- TEMP NOTICE START --> */}
-      <TempNoticeBanner />
+      <NoticeBanner noticeData={noticeData} />
       {/* <!-- TEMP NOTICE END --> */}
       {/* 1. Hero Section */}
       <section className="relative overflow-hidden pt-12 pb-16 md:pt-16 md:pb-24 bg-page">

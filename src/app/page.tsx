@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { LandingContent } from '../components/LandingContent';
+import { getNoticeData } from '../lib/noticeCourses';
 
 export const metadata: Metadata = {
   title: {
@@ -10,5 +11,6 @@ export const metadata: Metadata = {
 };
 
 export default function LandingPage() {
-  return <LandingContent />;
+  const noticeData = getNoticeData();
+  return <LandingContent noticeData={noticeData} />;
 }
