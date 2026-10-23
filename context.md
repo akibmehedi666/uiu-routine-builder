@@ -43,9 +43,11 @@ uiu-routine-builder/
 ├── data/
 │   ├── sections.json        # 791 parsed section records (canonical data)
 │   ├── courses.json         # 107 course catalog entries
-│   ├── faculty.json         # 207 faculty records with teaching assignments
+│   ├── faculty.json         # 207 faculty records with teaching assignments (full untruncated names)
+│   ├── faculty-id-aliases.json # 14 legacy-to-canonical faculty ID alias mappings
 │   └── anomalies.md         # Extraction audit trail (377 auto-resolved PDF anomalies)
 ├── docs/                    # Architecture logs, audit reports, user guide, investigation docs
+│   ├── name-fix.md          # Complete audit of 14 restored faculty names & 48 long name reviews
 │   ├── consistency-audit.md # Nav alignment, typography scale, BrandLogo audit
 │   ├── solver-design.md     # Backtracking algorithm, bitmasks, scoring model
 │   ├── user-guide.md        # Comprehensive student usage manual
@@ -57,7 +59,7 @@ uiu-routine-builder/
 │   ├── icon-192.png         # PWA maskable icon (192x192)
 │   └── icon-512.png         # PWA maskable icon (512x512)
 ├── scripts/
-│   ├── extract.py           # pdfplumber parsing pipeline
+│   ├── extract.py           # MCID stream grouping PDF parser (preserves full faculty names)
 │   └── generate-icons.js    # Sharp script to build favicon.ico, apple-icon, and PWA PNGs
 ├── src/
 │   ├── app/                 # Next.js App Router
@@ -66,7 +68,10 @@ uiu-routine-builder/
 │   │   ├── page.tsx         # Landing page (Server Component)
 │   │   ├── builder/         # /builder route (Routine Builder page)
 │   │   ├── faculty/         # /faculty route (Course Directory page)
-│   │   ├── faculty-directory/ # /faculty-directory route (Faculty Directory & [id] detail)
+│   │   ├── faculty-directory/ # /faculty-directory route (Faculty Directory & Stats view)
+│   │   │   ├── page.tsx     # Directory + Fall 2026 Stats view switcher
+│   │   │   ├── [id]/        # Profile view with static generation for canonical + legacy IDs
+│   │   │   └── compare/     # /faculty-directory/compare?a=...&b=... side-by-side comparison
 │   │   ├── courses/         # /courses route (Redirects to /faculty)
 │   │   ├── icon.svg         # Clean timetable blocks vector favicon
 │   │   ├── favicon.ico      # Multi-resolution ICO (16, 32, 48)
@@ -76,6 +81,10 @@ uiu-routine-builder/
 │   │   ├── SiteNav.tsx      # Invariant 3-column grid nav bar
 │   │   ├── SiteFooter.tsx   # Standardized footer with creator credit
 │   │   ├── BrandLogo.tsx    # Unified logo component
+│   │   ├── faculty/         # Faculty directory components
+│   │   │   ├── BadgesLegendModal.tsx # Accessible modal documenting all 12 badges
+│   │   │   ├── CampusStatsView.tsx   # "Fall 2026 by the Numbers" interactive view
+│   │   │   └── RoomScheduleSheet.tsx # Slide sheet / bottom sheet for weekly room timetable
 │   │   ├── CourseSelector.tsx # Left-panel course picker and mobile search sheet
 │   │   ├── Timetable.tsx    # 5-day desktop timetable view
 │   │   ├── DayListTimetable.tsx # Mobile Day-by-Day view
@@ -91,17 +100,21 @@ uiu-routine-builder/
 │   │   ├── layout.ts        # PAGE_MAX_W shared constant
 │   │   ├── nav.ts           # Route-driven navigation configuration
 │   │   ├── fixedCourses.ts  # Fixed courses configuration (FYDP)
-│   │   └── facultyBadges.ts # Centralized faculty badge thresholds
+│   │   └── facultyBadges.ts # 12 faculty badge thresholds and definitions
 │   ├── hooks/
+│   │   ├── usePinnedFaculty.ts # "uiu-rb:pinned-faculty:v1" localStorage hook with cross-tab sync
 │   │   └── useSolver.ts     # Web Worker management, state machine, and cache
 │   ├── lib/
-│   │   ├── facultyStats.ts  # Pure faculty stats, badges, leaderboards, filters
+│   │   ├── campusStats.ts   # Campus-wide section & meeting stats, heatmap data, histograms
+│   │   ├── roomSchedule.ts  # Room schedule indexing and floor parser
+│   │   ├── facultyAliases.ts # Legacy faculty ID backward compatibility resolution
+│   │   ├── facultyStats.ts  # Pure faculty stats, badges, leaderboards, filters, search aliases
 │   │   ├── courseSearch.ts  # Pure, tokenized course search index with alias support
 │   │   ├── courseDirectory.ts # Course directory filtering, grouping, and natural sorting
 │   │   ├── fixedCourses.ts  # FYDP overlay and conflict bitmask checks
 │   │   ├── facultyIndex.ts  # Faculty normalization and deterministic slugs
 │   │   ├── storage.ts       # LocalStorage safe helpers
-│   │   └── __tests__/       # Vitest test suites (12 files, 130 tests)
+│   │   └── __tests__/       # Vitest test suites (13 files, 153 tests)
 │   ├── solver/              # Client-side solver engine
 │   │   ├── bitmask.ts       # 5-day x 288-cell bitmask math (BigInt)
 │   │   ├── solver.ts        # Backtracking search with MRV and branch-and-bound
@@ -112,6 +125,7 @@ uiu-routine-builder/
 │   │   ├── colors.ts        # 12 distinct pastel course card tints (WCAG AA)
 │   │   ├── time.ts          # Minute-to-time converters and UIU slot helpers
 │   │   ├── export.ts        # UCAM copy string generator, iCal (.ics), print view
+│   │   ├── exportFacultySchedule.ts # Faculty ics generator & HTML5 Canvas PNG card export
 │   │   └── savedRoutines.ts # Saved routine serialization and storage
 │   └── workers/
 │       └── solver.worker.ts # Web Worker background execution thread
@@ -342,3 +356,13 @@ Key prompts and tasks executed during development:
 10. `favicon-redesign`: Clean letter-free timetable blocks vector icon, multi-resolution ICO, Apple icon, and PWA manifest.
 11. `lock-unlock-toggle`: "Lock All" / "Unlock All" toggle state machine with badges and undo feedback.
 12. `faculty-directory`: Faculty Directory page (`/faculty-directory`) with two-pane layout, weekly timetable, prominent multi-category leaderboards (theory courses, lab courses, sections, hours, early starts), daily faculty spotlight, strict natural A–Z alphabetical sorting with sticky letter dividers, and individual SSG faculty profiles (`/faculty-directory/[id]`).
+13. `faculty-directory-upgrade`: Faculty Directory upgrade and data fix:
+    - **Phase 0 (Name Bug Fix & Backward Compatibility)**: Re-extracted faculty names via MCID character stream grouping in `scripts/extract.py`. Restored 14 truncated faculty names (e.g. Abdullah Ibne Masud Mahi, Abu Shafin Mohammad Mahdee Jameel, Ahmed Abdullah Bin Farooqi Rayhan, Sheikh Mohammed Al Hadi Elaf, Md. Mutasim Billah Kouser, Mr. Abid Hasan Khondaker). Zero prefix collisions verified. Generated `data/faculty-id-aliases.json` (14 legacy-to-canonical aliases) and `src/lib/facultyAliases.ts` for backward-compatible routing/bookmarks. Full review documented in `docs/name-fix.md`.
+    - **Initials Search**: Search box matches name, course code/title, and auto-generated initials `searchAliases` (all words, without titles, without Md./Mohammad prefix, first-two-letters).
+    - **Pinned Faculty ("My faculty")**: Star pin button on cards and detail header. Stored in localStorage key `"uiu-rb:pinned-faculty:v1"` with cross-tab `window.addEventListener('storage')` sync, max 30 limit, stale ID migration, pinned strip, and "Pinned only" filter chip.
+    - **Compare 2 Faculty**: Card checkboxes (max 2), sticky bottom bar, and dedicated `/faculty-directory/compare?a=<id>&b=<id>` view featuring side-by-side metric comparison (subtle tint for higher value, no red/green/winner), shared courses with section breakdown, and dual weekly timetables.
+    - **12 Badge System**: Centralized in `src/config/facultyBadges.ts`. Added 6 new badges: Marathon (>= 3 back-to-back classes, gap <= 15 min), Floor Hopper (>= 4 floors), Home Room (>= 70% in 1 room & >= 4 meetings), Course Hub (>= 3 sections of 1 course), Cross-Program (teaches both BSCSE and BSDS), and Monday Special (>= 60% sections on Mon & >= 2 sections). Cards show top 3 badges by priority; full legend accessible via `BadgesLegendModal.tsx`.
+    - **"Fall 2026 by the Numbers" Campus Stats**: Interactive view switcher on `/faculty-directory` with campus heatmap (Sat–Wed x theory/lab time slots with All/Theory/Lab filter and ARIA labels), faculty load histogram, curriculum stacked bar, busiest/quietest days, top 10 courses, and top 10 rooms.
+    - **Room View Sheet**: Slide drawer on desktop / bottom sheet on mobile displaying full weekly schedule for any room with direct instructor profile links.
+    - **Surprise Me & Schedule Export**: "Surprise me" random instructor generator on click; export schedule menu with 2x retina Canvas PNG card and standard 12-week recurring .ics iCal download.
+

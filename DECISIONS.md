@@ -361,3 +361,33 @@ Following a session interruption audit:
   - 12 Vitest test files passing (130 tests total, including 19 new facultyStats tests).
   - Next.js production build (`npm run build`) generates 219 static pages (all 207 faculty SSG pages + directory) with zero errors.
 
+## Decision 10: Phase 12 Faculty Directory Upgrade (Full Names & Enhanced Features)
+- **Phase 0: Truncated Faculty Names Extraction Bug Fix & Backward Compatibility**:
+  - Root cause: Column boundary splitting and character stream chunking in `scripts/extract.py` truncated instructor names ending near column boundaries (e.g. "Abdullah Ibne Masud Ma" for "Abdullah Ibne Masud Mahi").
+  - Solution: Switched to MCID character stream grouping in `scripts/extract.py`, which gathers all glyph characters within the Faculty Name column with a safe right margin before separating attached initial tokens.
+  - Result: All 207 faculty members now have their full, un-truncated legal names. Zero names are strict prefixes of another name.
+  - Legacy ID Backward Compatibility: Created `data/faculty-id-aliases.json` mapping 14 legacy IDs to canonical IDs (e.g. `abdullah-ibne-masud-ma` -> `abdullah-ibne-masud-mahi`). Implemented `src/lib/facultyAliases.ts` (`resolveFacultyId`, `migrateFacultyIdArray`, `migrateFacultyIdRecord`) so old URLs, bookmarks, and local storage keys continue resolving transparently. Static generation in `generateStaticParams()` includes both canonical IDs and legacy alias paths.
+- **Phase 1: Feature Additions (Independent from Builder)**:
+  - **Search by Initials**: Generated initials per faculty stored in `searchAliases` (all words, without titles, without Md./Mohammad prefix, first-two-letters). Instant search matches name, course code/title, or initials with helper tip.
+  - **Pinned Faculty ("My faculty")**: Stored in LocalStorage key `"uiu-rb:pinned-faculty:v1"` with cross-tab sync via `window.addEventListener('storage')`. Capped at 30 pins. Filter chip "Pinned only", pinned avatars strip, and star buttons on cards/detail views.
+  - **Faculty Comparison (`/faculty-directory/compare?a=...&b=...`)**:
+    - Select up to 2 instructors with checkbox selection and sticky bottom bar.
+    - Side-by-side metrics table with subtle neutral tint on the higher value (no red/green, no winner text).
+    - Highlights shared courses and provides side-by-side weekly timetables.
+  - **Extended Badge System (`src/config/facultyBadges.ts`)**:
+    - Added 6 new badges (Marathon, Floor Hopper, Home Room, Course Hub, Cross-Program, Monday Special) for 12 total badges.
+    - Priority-sorted with max 3 on cards and all on profile details.
+    - Accessible Badge Legend Modal (`BadgesLegendModal.tsx`) with plain-English definitions.
+  - **Campus Stats ("Fall 2026 by the Numbers")**:
+    - Interactive campus heatmap (Sat–Wed x standard theory, single-day theory, and lab time slots) with All/Theory/Lab filter and ARIA labels.
+    - Faculty section load histogram (1, 2, 3, ... 8+ sections), curriculum stacked bar, busiest/quietest day summaries, top 10 courses, and top 10 rooms.
+  - **Room Schedule Sheet (`RoomScheduleSheet.tsx`)**:
+    - Accessible desktop drawer / mobile bottom sheet showing complete weekly timetable for any classroom or lab with direct links to instructor profiles.
+  - **Schedule Exports & Surprise Me**:
+    - Client-side 2x retina Canvas PNG timetable card export and standard 12-week recurring `.ics` iCal export.
+    - "Surprise me" random faculty selection button on click.
+- **Verification**:
+  - 13 Vitest test files passing (153 tests total).
+  - Production build (`npm run build`) generates 234 static pages with 0 errors.
+
+

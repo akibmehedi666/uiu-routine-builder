@@ -7,6 +7,10 @@ import {
   BadgeDefinition,
 } from '../config/facultyBadges';
 import { getFacultyAvatarColor, getFacultyInitials } from './courseDirectory';
+import { resolveFacultyId } from './facultyAliases';
+import { parseFloorFromRoom } from './roomSchedule';
+
+export { parseFloorFromRoom };
 
 export type TimeSlot = 'Morning' | 'Midday' | 'Afternoon';
 
@@ -58,6 +62,7 @@ export interface FacultyBadge {
   description: string;
   iconName: BadgeDefinition['iconName'];
   badgeStyle: string;
+  priority: number;
 }
 
 export interface FacultyStats {
@@ -66,6 +71,7 @@ export interface FacultyStats {
   sortName: string; // display name stripped of titles for alphabetical sorting
   programs: ('BSCSE' | 'BSDS')[];
   initials: string;
+  searchAliases: string[]; // generated initials variants for instant search
   avatarColor: { bg: string; text: string; border: string };
   distinctCourseCount: number; // total distinct courses
   theoryCourseCount: number; // distinct theory courses
@@ -88,6 +94,10 @@ export interface FacultyStats {
     midday: number;
     afternoon: number;
   };
+  distinctFloors: number;
+  floors: number[];
+  rooms: string[];
+  maxMarathonChain: number;
   badges: FacultyBadge[];
   teachesWith: {
     facultyId: string;
@@ -175,7 +185,69 @@ export function formatMeetingTimeRange(meetings: Meeting[]): string {
 }
 
 /**
+ * Generates search alias initials variants from cleaned faculty name.
+ * Variants:
+ * 1. All words (e.g. "Abdullah Ibne Masud Mahi" -> "AIMM")
+ * 2. Without titles Mr./Ms./Dr. (e.g. "Mr. Abid Hasan Khondaker" -> "AHK")
+ * 3. Without "Md."/"Mohammad"/"Mohammed" prefix words (e.g. "Md. Iqbal Bahar Chowdhury" -> "IBC")
+ * 4. First letters of first two words (e.g. "Abdullah Ibne" -> "AI")
+ */
+export function generateSearchAliases(name: string): string[] {
+  if (!name || typeof name !== 'string') return [];
+
+  const rawWords = name
+    .trim()
+    .split(/\s+/)
+    .map((w) => w.replace(/[.,()]/g, ''))
+    .filter((w) => w.length > 0);
+
+  if (rawWords.length === 0) return [];
+
+  const aliases = new Set<string>();
+
+  // 1. All words
+  const allInitials = rawWords.map((w) => w[0].toUpperCase()).join('');
+  if (allInitials) aliases.add(allInitials);
+
+  // 2. Without titles: Mr, Ms, Mrs, Dr, Prof
+  const titleWords = new Set(['MR', 'MS', 'MRS', 'DR', 'PROF']);
+  const nonTitleWords = rawWords.filter((w) => !titleWords.has(w.toUpperCase()));
+  if (nonTitleWords.length > 0) {
+    const noTitleInitials = nonTitleWords.map((w) => w[0].toUpperCase()).join('');
+    if (noTitleInitials) aliases.add(noTitleInitials);
+  }
+
+  // 3. Without "Md", "Mohammad", "Mohammed" (and without titles as well)
+  const prefixWords = new Set(['MD', 'MOHAMMAD', 'MOHAMMED']);
+  const noPrefixWords = (nonTitleWords.length > 0 ? nonTitleWords : rawWords).filter(
+    (w) => !prefixWords.has(w.toUpperCase())
+  );
+  if (noPrefixWords.length > 0) {
+    const noPrefixInitials = noPrefixWords.map((w) => w[0].toUpperCase()).join('');
+    if (noPrefixInitials) aliases.add(noPrefixInitials);
+  }
+
+  // Also check rawWords without prefix words directly
+  const rawNoPrefixWords = rawWords.filter((w) => !prefixWords.has(w.toUpperCase()));
+  if (rawNoPrefixWords.length > 0) {
+    const rawNoPrefixInitials = rawNoPrefixWords.map((w) => w[0].toUpperCase()).join('');
+    if (rawNoPrefixInitials) aliases.add(rawNoPrefixInitials);
+  }
+
+  // 4. First letters of first two words
+  if (rawWords.length >= 2) {
+    aliases.add((rawWords[0][0] + rawWords[1][0]).toUpperCase());
+  }
+  if (nonTitleWords.length >= 2) {
+    aliases.add((nonTitleWords[0][0] + nonTitleWords[1][0]).toUpperCase());
+  }
+
+  return Array.from(aliases);
+}
+
+/**
  * Evaluates faculty badges based on centralized thresholds.
+ * Sorted by priority order (highest priority first).
  */
 export function computeFacultyBadges(stats: {
   firstBellSections: number;
@@ -184,41 +256,89 @@ export function computeFacultyBadges(stats: {
   distinctCourses: number;
   totalSections: number;
   satTueSections: number;
+  maxMarathonChain?: number;
+  distinctFloors?: number;
+  totalMeetings?: number;
+  maxSingleRoomMeetings?: number;
+  maxSectionsPerCourse?: number;
+  programs?: ('BSCSE' | 'BSDS')[];
+  mondaySections?: number;
 }): FacultyBadge[] {
   const badges: FacultyBadge[] = [];
 
-  // Busiest: 6+ sections (top ~10 faculty)
+  // 1. Busiest: 6+ sections (top faculty load)
   if (stats.totalSections >= FACULTY_BADGE_THRESHOLDS.busiestMinSections) {
     badges.push(BADGE_DEFINITIONS.busiest);
   }
 
-  // Multi-Course: 5+ distinct courses
+  // 2. Marathon: longest chain of back-to-back classes on one day (gap <= 15 min), >= 3 in a row
+  if ((stats.maxMarathonChain ?? 0) >= FACULTY_BADGE_THRESHOLDS.marathonMinChain) {
+    badges.push(BADGE_DEFINITIONS.marathon);
+  }
+
+  // 3. Cross-Program: has sections in both BSCSE and BSDS
+  if (stats.programs?.includes('BSCSE') && stats.programs?.includes('BSDS')) {
+    badges.push(BADGE_DEFINITIONS.crossProgram);
+  }
+
+  // 4. Multi-Course: 5+ distinct courses
   if (stats.distinctCourses >= FACULTY_BADGE_THRESHOLDS.multiCourseMinCount) {
     badges.push(BADGE_DEFINITIONS.multiCourse);
   }
 
-  // Lab Pro: 3+ lab sections
+  // 5. Course Hub: >= 3 sections of the same course
+  if ((stats.maxSectionsPerCourse ?? 0) >= FACULTY_BADGE_THRESHOLDS.courseHubMinSections) {
+    badges.push(BADGE_DEFINITIONS.courseHub);
+  }
+
+  // 6. Lab Pro: 3+ lab sections
   if (stats.labSections >= FACULTY_BADGE_THRESHOLDS.labProMinSections) {
     badges.push(BADGE_DEFINITIONS.labPro);
   }
 
-  // First Bell: 3+ sections starting at 08:30 AM
+  // 7. Floor Hopper: teaches on >= 4 distinct floors
+  if ((stats.distinctFloors ?? 0) >= FACULTY_BADGE_THRESHOLDS.floorHopperMinFloors) {
+    badges.push(BADGE_DEFINITIONS.floorHopper);
+  }
+
+  // 8. Home Room: >= 70% of meetings in the same room and >= 4 meetings
+  const totalMeetings = stats.totalMeetings ?? 0;
+  const maxSingleRoom = stats.maxSingleRoomMeetings ?? 0;
+  if (
+    totalMeetings >= FACULTY_BADGE_THRESHOLDS.homeRoomMinMeetings &&
+    maxSingleRoom / totalMeetings >= FACULTY_BADGE_THRESHOLDS.homeRoomMinRatio
+  ) {
+    badges.push(BADGE_DEFINITIONS.homeRoom);
+  }
+
+  // 9. First Bell: 3+ sections starting at 08:30 AM
   if (stats.firstBellSections >= FACULTY_BADGE_THRESHOLDS.firstBellMinSections) {
     badges.push(BADGE_DEFINITIONS.firstBell);
   }
 
-  // Late Shift: 3+ sections starting at 01:51 PM or later
+  // 10. Late Shift: 3+ sections starting at 01:51 PM or later
   if (stats.lateShiftSections >= FACULTY_BADGE_THRESHOLDS.lateShiftMinSections) {
     badges.push(BADGE_DEFINITIONS.lateShift);
   }
 
-  // Weekend Starter: >= 70% sections on Sat/Tue with min 2 sections
+  // 11. Monday Special: >= 60% of sections on Monday and >= 2 sections
+  if (
+    stats.totalSections >= FACULTY_BADGE_THRESHOLDS.mondaySpecialMinSections &&
+    ((stats.mondaySections ?? 0) / stats.totalSections) >= FACULTY_BADGE_THRESHOLDS.mondaySpecialMinRatio
+  ) {
+    badges.push(BADGE_DEFINITIONS.mondaySpecial);
+  }
+
+  // 12. Weekend Starter: >= 70% sections on Sat/Tue with min 2 sections
   if (
     stats.totalSections >= FACULTY_BADGE_THRESHOLDS.weekendStarterMinSections &&
     stats.satTueSections / stats.totalSections >= FACULTY_BADGE_THRESHOLDS.weekendStarterMinRatio
   ) {
     badges.push(BADGE_DEFINITIONS.weekendStarter);
   }
+
+  // Sort by priority order
+  badges.sort((a, b) => (a.priority ?? 99) - (b.priority ?? 99));
 
   return badges;
 }
@@ -294,6 +414,11 @@ export function getAllFacultyStats(): FacultyStats[] {
     let lateShiftSections = 0;
     let labSections = 0;
     let satTueSections = 0;
+    let mondaySections = 0;
+
+    const floorSet = new Set<number>();
+    const roomsSet = new Set<string>();
+    const roomMap = new Map<string, number>();
 
     let earliestStart: number | null = null;
     let latestEnd: number | null = null;
@@ -332,10 +457,28 @@ export function getAllFacultyStats(): FacultyStats[] {
       const isSatTue = s.meetings.some((m) => m.day === 'Sat' || m.day === 'Tue');
       if (isSatTue) satTueSections++;
 
+      const isMon = s.meetings.some((m) => m.day === 'Mon');
+      if (isMon) mondaySections++;
+
       // Section days
       const days = Array.from(new Set(s.meetings.map((m) => m.day)));
       const room = s.meetings[0]?.room || null;
       const timeRange = formatMeetingTimeRange(s.meetings);
+
+      // Track rooms and floors
+      for (const m of s.meetings) {
+        if (m.room) {
+          const r = m.room.trim();
+          if (r) {
+            roomsSet.add(r);
+            roomMap.set(r, (roomMap.get(r) || 0) + 1);
+            const fl = parseFloorFromRoom(r);
+            if (fl !== null) {
+              floorSet.add(fl);
+            }
+          }
+        }
+      }
 
       // Course grouping
       if (!courseGroupMap.has(s.courseCode)) {
@@ -428,6 +571,36 @@ export function getAllFacultyStats(): FacultyStats[] {
       }
     }
 
+    // Calculate longest back-to-back marathon chain
+    let maxMarathonChain = 0;
+    for (const day of DAYS_LIST) {
+      const ms = weeklyPattern[day].meetings;
+      if (ms.length === 0) continue;
+      let currentChain = 1;
+      let dayMax = 1;
+      for (let i = 0; i < ms.length - 1; i++) {
+        const gap = ms[i + 1].start - ms[i].end;
+        if (gap >= 0 && gap <= FACULTY_BADGE_THRESHOLDS.marathonMaxGapMinutes) {
+          currentChain++;
+          if (currentChain > dayMax) dayMax = currentChain;
+        } else {
+          currentChain = 1;
+        }
+      }
+      if (dayMax > maxMarathonChain) {
+        maxMarathonChain = dayMax;
+      }
+    }
+
+    const programs = Array.from(programsSet).sort();
+    const initials = getFacultyInitials(name);
+    const searchAliases = generateSearchAliases(name);
+    const avatarColor = getFacultyAvatarColor(fid);
+    const totalMeetings = secList.reduce((sum, s) => sum + s.meetings.length, 0);
+    const maxSingleRoomMeetings = roomMap.size > 0 ? Math.max(...roomMap.values()) : 0;
+    const maxSectionsPerCourse =
+      courses.length > 0 ? Math.max(...courses.map((c) => c.sections.length)) : 0;
+
     // Badges
     const badges = computeFacultyBadges({
       firstBellSections,
@@ -436,6 +609,13 @@ export function getAllFacultyStats(): FacultyStats[] {
       distinctCourses: distinctCourseCodes.size,
       totalSections: secList.length,
       satTueSections,
+      maxMarathonChain,
+      distinctFloors: floorSet.size,
+      totalMeetings,
+      maxSingleRoomMeetings,
+      maxSectionsPerCourse,
+      programs,
+      mondaySections,
     });
 
     // "Teaches with": other faculty teaching any of the same courses
@@ -466,16 +646,13 @@ export function getAllFacultyStats(): FacultyStats[] {
       })
       .slice(0, 6);
 
-    const programs = Array.from(programsSet).sort();
-    const initials = getFacultyInitials(name);
-    const avatarColor = getFacultyAvatarColor(fid);
-
     result.push({
       id: fid,
       name,
       sortName,
       programs,
       initials,
+      searchAliases,
       avatarColor,
       distinctCourseCount: distinctCourseCodes.size,
       theoryCourseCount: theoryCourseCodes.size,
@@ -494,6 +671,10 @@ export function getAllFacultyStats(): FacultyStats[] {
       earliestStartTimeStr: earliestStart !== null ? formatMinutesToTime(earliestStart) : 'None',
       latestEndTimeStr: latestEnd !== null ? formatMinutesToTime(latestEnd) : 'None',
       slotCounts,
+      distinctFloors: floorSet.size,
+      floors: Array.from(floorSet).sort((a, b) => a - b),
+      rooms: Array.from(roomsSet).sort(),
+      maxMarathonChain,
       badges,
       teachesWith,
     });
@@ -507,11 +688,12 @@ export function getAllFacultyStats(): FacultyStats[] {
 }
 
 /**
- * Returns statistics for a specific faculty by ID.
+ * Returns statistics for a specific faculty by ID (supports legacy ID aliases).
  */
 export function getFacultyStatsById(id: string): FacultyStats | undefined {
+  const canonicalId = resolveFacultyId(id);
   const all = getAllFacultyStats();
-  return all.find((f) => f.id === id);
+  return all.find((f) => f.id === canonicalId);
 }
 
 /**
@@ -586,8 +768,9 @@ export function filterFaculty(
   const q = search?.trim().toLowerCase();
 
   return facultyList.filter((f) => {
-    // 1. Text search: matches name, course code, or course title
+    // 1. Text search: matches name, course code, course title, or initials/aliases
     if (q) {
+      const qUpper = q.toUpperCase();
       const matchName = f.name.toLowerCase().includes(q) || f.sortName.toLowerCase().includes(q);
       const matchCourse = f.courses.some(
         (c) =>
@@ -595,7 +778,11 @@ export function filterFaculty(
           c.courseCode.toLowerCase().replace(/\s+/g, '').includes(q.replace(/\s+/g, '')) ||
           c.title.toLowerCase().includes(q)
       );
-      if (!matchName && !matchCourse) return false;
+      const matchInitials =
+        f.initials.toUpperCase().startsWith(qUpper) ||
+        f.searchAliases.some((alias) => alias.toUpperCase().startsWith(qUpper));
+
+      if (!matchName && !matchCourse && !matchInitials) return false;
     }
 
     // 2. Program filter
