@@ -50,6 +50,7 @@ import { getCourseColor } from '../../utils/colors';
 import { formatTime24 } from '../../utils/export';
 import { applyFixedCourseOverlay, isFixedCourse, isManualScheduleCourse } from '../../lib/fixedCourses';
 import { PAGE_MAX_W } from '../../config/layout';
+import { DroppedSectionsPanel } from '../../components/DroppedSectionsPanel';
 
 /**
  * Highlights matching search query substrings in text with a subtle orange mark
@@ -116,6 +117,13 @@ function CourseDirectoryContent() {
   const courseDirectory = useMemo(
     () => buildCourseDirectory(effectiveCourses, effectiveSections),
     [effectiveCourses, effectiveSections]
+  );
+
+  const [showDroppedView, setShowDroppedView] = useState(false);
+
+  const totalDroppedSectionsCount = useMemo(
+    () => effectiveSections.filter((s) => s.status === 'dropped').length,
+    [effectiveSections]
   );
 
   // 2. Global Toolbar filter state
@@ -219,8 +227,13 @@ function CourseDirectoryContent() {
     setTimeout(() => setToastMessage(null), 3000);
   };
 
-  // Sync selected course and query filters from URL parameter (?c=..., ?f=..., ?q=...)
+  // Sync selected course and query filters from URL parameter (?c=..., ?f=..., ?q=..., ?view=dropped)
   useEffect(() => {
+    const viewParam = searchParams.get('view');
+    if (viewParam === 'dropped') {
+      setShowDroppedView(true);
+    }
+
     const qParam = searchParams.get('q');
     if (qParam) {
       setSearchInput(qParam);
@@ -281,6 +294,7 @@ function CourseDirectoryContent() {
   // Handle selecting a course on desktop
   const handleSelectCourse = (code: string) => {
     setSelectedCourseCode(code);
+    setShowCourseDropped(false);
     const newParams = new URLSearchParams(window.location.search);
     newParams.set('c', code);
     window.history.pushState(null, '', `?${newParams.toString()}`);
@@ -346,16 +360,26 @@ function CourseDirectoryContent() {
     return filteredCourses.some((c) => c.code === selectedCourse.code);
   }, [selectedCourse, filteredCourses]);
 
+  const [showCourseDropped, setShowCourseDropped] = useState(false);
+  const [mobileDroppedExpanded, setMobileDroppedExpanded] = useState<Set<string>>(new Set());
+
+  // Effective sections for selected course (dropped sections hidden by default)
+  const effectiveCourseSections = useMemo(() => {
+    if (!selectedCourse) return [];
+    if (showCourseDropped) return selectedCourse.sections;
+    return selectedCourse.sections.filter((s) => s.status !== 'dropped');
+  }, [selectedCourse, showCourseDropped]);
+
   // Filtered sections for selected course
   const filteredSections = useMemo(() => {
     if (!selectedCourse) return [];
-    return filterCourseSections(selectedCourse.sections, {
+    return filterCourseSections(effectiveCourseSections, {
       facultySearch,
       days: dayFilter,
       timeSlots: timeFilter,
       sortBy: sectionSortBy,
     });
-  }, [selectedCourse, facultySearch, dayFilter, timeFilter, sectionSortBy]);
+  }, [selectedCourse, effectiveCourseSections, facultySearch, dayFilter, timeFilter, sectionSortBy]);
 
   // Grouped sections if group-by-faculty is active
   const facultyGroups = useMemo(() => {
@@ -558,6 +582,20 @@ function CourseDirectoryContent() {
               <span className="px-2.5 py-0.5 rounded-full bg-orange-50 text-orange-600 border border-orange-200 text-xs font-bold">
                 {courseDirectory.length} courses
               </span>
+              {totalDroppedSectionsCount > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setShowDroppedView(!showDroppedView)}
+                  aria-expanded={showDroppedView}
+                  className={`px-2.5 py-0.5 rounded-full text-xs font-bold border transition-colors flex items-center gap-1 cursor-pointer ${
+                    showDroppedView
+                      ? 'bg-rose-500 text-white border-rose-600 shadow-2xs'
+                      : 'bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100'
+                  }`}
+                >
+                  <span>{totalDroppedSectionsCount} sections dropped</span>
+                </button>
+              )}
             </div>
             <p className="text-xs text-text-muted mt-0.5">
               Pick a course to see which faculty teach which section, and when.
@@ -565,6 +603,17 @@ function CourseDirectoryContent() {
           </div>
         </div>
       </div>
+
+      {/* 2A. Dropped Sections Collapsible View (3A) */}
+      {showDroppedView && (
+        <div className={`${PAGE_MAX_W} mx-auto px-4 sm:px-6 w-full pt-4`}>
+          <DroppedSectionsPanel
+            sections={effectiveSections}
+            courses={effectiveCourses}
+            onClose={() => setShowDroppedView(false)}
+          />
+        </div>
+      )}
 
       {/* 3. Global Filter Toolbar */}
       <div className="border-b border-app-border bg-surface/60 backdrop-blur-sm sticky top-[52px] md:top-16 z-20">
@@ -749,7 +798,7 @@ function CourseDirectoryContent() {
                 const isSelected = selectedCourse?.code === c.code;
                 const hasSections = c.sectionCount > 0;
                 const isManualCourse = c.isManual || isManualScheduleCourse(c.code);
-                const canSelect = hasSections || isManualCourse;
+                const canSelect = hasSections || isManualCourse || !!c.allDropped || c.sections.length > 0;
 
                 return (
                   <button
@@ -808,6 +857,17 @@ function CourseDirectoryContent() {
                           <span className="text-[11px] text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-300 font-semibold flex items-center gap-0.5">
                             <Pencil className="w-2.5 h-2.5 text-amber-600" />
                             Manual
+                          </span>
+                          <ChevronRight
+                            className={`w-3.5 h-3.5 transition-transform ${
+                              isSelected ? 'text-orange-600 translate-x-0.5' : 'text-text-muted'
+                            }`}
+                          />
+                        </div>
+                      ) : c.allDropped ? (
+                        <div className="flex items-center gap-1 text-[11px]">
+                          <span className="px-1.5 py-0.2 rounded text-[10.5px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                            All sections dropped
                           </span>
                           <ChevronRight
                             className={`w-3.5 h-3.5 transition-transform ${
@@ -902,6 +962,8 @@ function CourseDirectoryContent() {
                 onGroupByFacultyChange={setGroupByFaculty}
                 activeFiltersCount={activeSectionFiltersCount}
                 onClearFilters={clearSectionFilters}
+                showDropped={showCourseDropped}
+                onToggleShowDropped={() => setShowCourseDropped(!showCourseDropped)}
               />
             ) : (
               <div className="p-12 text-center rounded-card bg-surface border border-app-border text-text-muted">
@@ -962,7 +1024,11 @@ function CourseDirectoryContent() {
               const isExpanded = expandedMobileCodes.has(c.code);
               const hasSections = c.sectionCount > 0;
               const isManualCourse = c.isManual || isManualScheduleCourse(c.code);
-              const canExpand = hasSections || isManualCourse;
+              const canExpand = hasSections || isManualCourse || !!c.allDropped || c.sections.length > 0;
+              const isMobileDropped = mobileDroppedExpanded.has(c.code);
+              const mobileSecs = isMobileDropped
+                ? c.sections
+                : c.sections.filter((s) => s.status !== 'dropped');
 
               return (
                 <div
@@ -1036,6 +1102,17 @@ function CourseDirectoryContent() {
                             }`}
                           />
                         </>
+                      ) : c.allDropped ? (
+                        <>
+                          <span className="px-1.5 py-0.2 rounded text-[10.5px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                            All sections dropped
+                          </span>
+                          <ChevronDown
+                            className={`w-4 h-4 text-text-muted transition-transform duration-200 ${
+                              isExpanded ? 'rotate-180 text-orange-600' : ''
+                            }`}
+                          />
+                        </>
                       ) : (
                         <span className="text-[11px] text-text-muted italic">No sections</span>
                       )}
@@ -1047,14 +1124,14 @@ function CourseDirectoryContent() {
                     <div className="p-3 border-t border-app-border bg-page space-y-4">
                       <SelectedCourseSectionView
                         course={c}
-                        sections={filterCourseSections(c.sections, {
+                        sections={filterCourseSections(mobileSecs, {
                           facultySearch,
                           days: dayFilter,
                           timeSlots: timeFilter,
                           sortBy: sectionSortBy,
                         })}
                         facultyGroups={groupSectionsByFaculty(
-                          filterCourseSections(c.sections, {
+                          filterCourseSections(mobileSecs, {
                             facultySearch,
                             days: dayFilter,
                             timeSlots: timeFilter,
@@ -1080,6 +1157,15 @@ function CourseDirectoryContent() {
                         onGroupByFacultyChange={setGroupByFaculty}
                         activeFiltersCount={activeSectionFiltersCount}
                         onClearFilters={clearSectionFilters}
+                        showDropped={isMobileDropped}
+                        onToggleShowDropped={() => {
+                          setMobileDroppedExpanded((prev) => {
+                            const next = new Set(prev);
+                            if (next.has(c.code)) next.delete(c.code);
+                            else next.add(c.code);
+                            return next;
+                          });
+                        }}
                       />
                     </div>
                   )}
@@ -1217,6 +1303,8 @@ interface SelectedCourseSectionViewProps {
   onGroupByFacultyChange: (val: boolean) => void;
   activeFiltersCount: number;
   onClearFilters: () => void;
+  showDropped: boolean;
+  onToggleShowDropped: () => void;
 }
 
 function SelectedCourseSectionView({
@@ -1241,6 +1329,8 @@ function SelectedCourseSectionView({
   onGroupByFacultyChange,
   activeFiltersCount,
   onClearFilters,
+  showDropped,
+  onToggleShowDropped,
 }: SelectedCourseSectionViewProps) {
   const isSelectedInBuilder = builderRequest.selectedCourses?.includes(course.code);
 
@@ -1260,6 +1350,11 @@ function SelectedCourseSectionView({
               <span className="px-2 py-0.5 rounded text-xs font-bold bg-orange-50 text-orange-600 border border-orange-200">
                 {course.program}
               </span>
+              {course.allDropped && (
+                <span className="px-2 py-0.5 rounded text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                  All sections dropped
+                </span>
+              )}
             </div>
             <p className="text-sm font-semibold text-text-secondary mt-0.5">
               {course.title}
@@ -1482,6 +1577,25 @@ function SelectedCourseSectionView({
             <Users className="w-3.5 h-3.5" />
             <span>Group by Faculty</span>
           </button>
+
+          {/* Toggle Show Dropped Sections */}
+          {course.droppedSectionCount !== undefined && course.droppedSectionCount > 0 && (
+            <button
+              type="button"
+              onClick={onToggleShowDropped}
+              className={`px-2.5 py-1 rounded text-xs font-semibold flex items-center gap-1.5 transition-all ${
+                showDropped
+                  ? 'bg-rose-100 text-rose-800 border border-rose-300'
+                  : 'bg-page text-text-secondary hover:bg-subtle border border-app-border'
+              }`}
+            >
+              <span>
+                {showDropped
+                  ? `Hide dropped (${course.droppedSectionCount})`
+                  : `Show dropped (${course.droppedSectionCount})`}
+              </span>
+            </button>
+          )}
         </div>
 
         {activeFiltersCount > 0 && (
@@ -1598,12 +1712,17 @@ function SectionRowItem({
     .join(' and ');
   const roomSpeech = section.meetings[0]?.room ? `, Room ${section.meetings[0].room}` : '';
   const updatedSpeech = section.updated ? ', Updated in UCAM' : '';
-  const accessibleLabel = `Section ${section.section}, ${section.primaryFaculty}, ${meetingSpeech}${roomSpeech}${updatedSpeech}`;
+  const isDropped = section.status === 'dropped';
+  const accessibleLabel = `Section ${section.section}, ${section.primaryFaculty}, ${meetingSpeech}${roomSpeech}${updatedSpeech}${isDropped ? ', Dropped' : ''}`;
 
   return (
     <div
       aria-label={accessibleLabel}
-      className="p-3 sm:p-3.5 rounded-card bg-surface border border-app-border shadow-2xs hover:border-orange-300 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
+      className={`p-3 sm:p-3.5 rounded-card border shadow-2xs transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs ${
+        isDropped
+          ? 'bg-subtle/50 border-rose-200/60 opacity-75'
+          : 'bg-surface border-app-border hover:border-orange-300'
+      }`}
     >
       {/* Left side: Avatar, Section label, Faculty name, Meeting times, Room */}
       <div className="flex items-start sm:items-center gap-3 min-w-0 flex-1">
@@ -1624,22 +1743,34 @@ function SectionRowItem({
         <div className="space-y-1 min-w-0 flex-1">
           {/* Section badge + Faculty Name */}
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-black text-sm text-text-primary px-1.5 py-0.5 rounded bg-subtle border border-app-border">
+            <span
+              className={`font-black text-sm px-1.5 py-0.5 rounded bg-subtle border border-app-border ${
+                isDropped ? 'line-through text-text-muted' : 'text-text-primary'
+              }`}
+            >
               {section.section}
             </span>
 
-            {(section.fixed || isFixedCourse(courseCode)) && (
-              <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-300 flex items-center gap-1">
-                <Lock className="w-2.5 h-2.5 text-amber-600" />
-                Fixed schedule
+            {isDropped ? (
+              <span className="px-1.5 py-0.2 rounded text-[11px] font-bold bg-rose-100 text-rose-800 border border-rose-300">
+                Dropped
               </span>
+            ) : (
+              (section.fixed || isFixedCourse(courseCode)) && (
+                <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-300 flex items-center gap-1">
+                  <Lock className="w-2.5 h-2.5 text-amber-600" />
+                  Fixed schedule
+                </span>
+              )
             )}
 
             {/* Clickable Faculty Name opens cross-reference popover */}
             <div className="inline-flex items-center gap-1.5 flex-wrap">
               <button
                 onClick={(e) => onOpenFacultyPopover(section.primaryFaculty, courseCode, e)}
-                className="font-bold text-xs text-text-primary hover:text-orange-600 hover:underline transition-colors text-left"
+                className={`font-bold text-xs hover:text-orange-600 hover:underline transition-colors text-left ${
+                  isDropped ? 'text-text-muted line-through' : 'text-text-primary'
+                }`}
                 title="Click to see other courses taught by this faculty"
               >
                 {section.primaryFaculty}
@@ -1708,7 +1839,11 @@ function SectionRowItem({
         </div>
 
         {/* Prefer & Avoid Action Buttons */}
-        {section.fixed || isFixedCourse(courseCode) ? (
+        {isDropped ? (
+          <span className="px-2 py-1 rounded text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+            Section dropped
+          </span>
+        ) : section.fixed || isFixedCourse(courseCode) ? (
           <span className="text-[11px] text-text-muted italic px-2 py-1 bg-subtle rounded border border-app-border">
             Fixed schedule
           </span>

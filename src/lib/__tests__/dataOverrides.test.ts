@@ -180,9 +180,9 @@ describe('Fall 2026 Data Overrides & Catalog Rebuild Tests', () => {
       const tbaSections = rawSections.filter((s) => s.faculty.includes('TBA')).length;
 
       // 696 assigned + 96 TBA = 792 = 791 sections + 1 (CSE 4399 A co-taught)
-      expect(totalFacultyAssigned + tbaSections).toBe(rawSections.length + 1);
-      expect(tbaSections).toBe(96);
-      expect(allFaculty.length).toBe(192);
+      const activeSecs = rawSections.filter(s => s.status !== 'dropped'); const activeTBA = activeSecs.filter(s => s.faculty.includes('TBA')).length; expect(totalFacultyAssigned + activeTBA).toBe(activeSecs.length);
+      expect(activeTBA).toBe(85);
+      expect(allFaculty.length).toBe(186);
     });
   });
 

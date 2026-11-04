@@ -399,6 +399,51 @@ export function FacultyDetailView({ faculty }: { faculty: FacultyStats }) {
           </div>
         </div>
 
+        {/* Dropped Sections Collapsible List (only if N > 0) */}
+        {faculty.droppedSections && faculty.droppedSections.length > 0 && (
+          <details className="group bg-surface rounded-2xl border border-app-border p-4 sm:p-5 shadow-xs text-xs">
+            <summary className="font-bold text-text-primary cursor-pointer select-none flex items-center justify-between list-none">
+              <div className="flex items-center gap-2">
+                <span className="text-rose-600 font-bold text-sm">
+                  Dropped sections ({faculty.droppedSections.length})
+                </span>
+                <span className="text-[11px] font-normal text-text-muted">
+                  Removed in Fall 2026 portal update
+                </span>
+              </div>
+              <span className="text-text-muted group-open:rotate-180 transition-transform text-xs">
+                ▼
+              </span>
+            </summary>
+            <div className="mt-3 divide-y divide-app-border/60 border-t border-app-border/60 pt-2 space-y-2">
+              {faculty.droppedSections.map((sec) => (
+                <div
+                  key={sec.id}
+                  className="py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-text-muted opacity-80"
+                >
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="line-through font-bold text-text-primary text-xs">
+                      {sec.courseCode} Sec {sec.section}
+                    </span>
+                    <span className="px-1.5 py-0.2 rounded text-[11px] font-bold bg-rose-100 text-rose-800 border border-rose-300">
+                      Dropped
+                    </span>
+                    <span className="text-[11px] text-text-muted">
+                      ({sec.program})
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-[11px] font-mono">
+                    <span>
+                      {sec.days.join(', ')} {sec.timeRange}
+                    </span>
+                    {sec.room && <span>• Room {sec.room}</span>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </details>
+        )}
+
         {/* Teaches With Strip */}
         {faculty.teachesWith.length > 0 && (
           <div className="bg-surface rounded-2xl border border-app-border p-5 shadow-xs space-y-3">

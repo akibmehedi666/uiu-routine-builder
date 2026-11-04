@@ -11,8 +11,10 @@ import argparse
 from typing import Dict, List, Any, Tuple
 
 DEFAULT_OVERRIDES_PATH = os.path.join("data", "overrides", "2026-fall-faculty-changes-oct24.json")
+DEFAULT_DROPPED_PATH = os.path.join("data", "overrides", "2026-fall-dropped-sections.json")
 DEFAULT_DATA_DIR = "data"
 DEFAULT_DATE = "2026-10-24"
+DEFAULT_DROPPED_DATE = "2026-11-05"
 
 def slugify(text: str) -> str:
     import re
@@ -47,10 +49,18 @@ def rebuild_courses_and_faculty(sections: List[Dict[str, Any]]) -> Tuple[List[Di
                 c2_info["theoryCode"] = code
                 break
 
+    # Calculate activeSectionCount and allDropped
+    for (prog, code), c_info in courses_map.items():
+        c_sections = [s for s in sections if s["program"] == prog and s["courseCode"] == code]
+        active_secs = [s for s in c_sections if s.get("status", "active") == "active"]
+        c_info["activeSectionCount"] = len(active_secs)
+        c_info["allDropped"] = (len(c_sections) > 0 and len(active_secs) == 0)
+
     courses_list = sorted(courses_map.values(), key=lambda c: (c["program"], c["code"]))
 
     faculty_map: Dict[str, Dict[str, Any]] = {}
     for sec in sections:
+        is_dropped = (sec.get("status") == "dropped")
         for f_name, f_id in zip(sec["faculty"], sec["facultyIds"]):
             if f_name == "TBA" or not f_id:
                 continue
@@ -58,30 +68,42 @@ def rebuild_courses_and_faculty(sections: List[Dict[str, Any]]) -> Tuple[List[Di
                 faculty_map[f_id] = {
                     "id": f_id,
                     "name": f_name,
-                    "courses": []
+                    "courses": [],
+                    "droppedSections": []
                 }
-            existing_c = [c for c in faculty_map[f_id]["courses"] if c["code"] == sec["courseCode"] and c["section"] == sec["section"] and c["program"] == sec["program"]]
-            if not existing_c:
-                c_data = {
-                    "program": sec["program"],
-                    "code": sec["courseCode"],
-                    "title": sec["title"],
-                    "section": sec["section"],
-                    "kind": sec["kind"],
-                    "days": [m["day"] for m in sec["meetings"]],
-                    "time": f"{sec['meetings'][0]['start']}..{sec['meetings'][0]['end']}"
-                }
-                if sec.get("updated"):
-                    c_data["updated"] = True
-                    if sec.get("updatedOn"):
-                        c_data["updatedOn"] = sec["updatedOn"]
-                    if sec.get("updatedNote"):
-                        c_data["updatedNote"] = sec["updatedNote"]
-                    if sec.get("updatedKind"):
-                        c_data["updatedKind"] = sec["updatedKind"]
-                faculty_map[f_id]["courses"].append(c_data)
+            
+            c_data = {
+                "program": sec["program"],
+                "code": sec["courseCode"],
+                "title": sec["title"],
+                "section": sec["section"],
+                "kind": sec["kind"],
+                "days": [m["day"] for m in sec["meetings"]],
+                "time": f"{sec['meetings'][0]['start']}..{sec['meetings'][0]['end']}" if sec.get("meetings") else ""
+            }
 
-    faculty_list = sorted(faculty_map.values(), key=lambda f: f["name"])
+            if is_dropped:
+                existing_d = [c for c in faculty_map[f_id]["droppedSections"] if c["code"] == sec["courseCode"] and c["section"] == sec["section"] and c["program"] == sec["program"]]
+                if not existing_d:
+                    if sec.get("droppedAt"):
+                        c_data["droppedAt"] = sec["droppedAt"]
+                    faculty_map[f_id]["droppedSections"].append(c_data)
+            else:
+                existing_c = [c for c in faculty_map[f_id]["courses"] if c["code"] == sec["courseCode"] and c["section"] == sec["section"] and c["program"] == sec["program"]]
+                if not existing_c:
+                    if sec.get("updated"):
+                        c_data["updated"] = True
+                        if sec.get("updatedOn"):
+                            c_data["updatedOn"] = sec["updatedOn"]
+                        if sec.get("updatedNote"):
+                            c_data["updatedNote"] = sec["updatedNote"]
+                        if sec.get("updatedKind"):
+                            c_data["updatedKind"] = sec["updatedKind"]
+                    faculty_map[f_id]["courses"].append(c_data)
+
+    # Keep only faculty with at least one active course section
+    active_faculty = [f for f in faculty_map.values() if len(f["courses"]) > 0]
+    faculty_list = sorted(active_faculty, key=lambda f: f["name"])
     return courses_list, faculty_list
 
 def generate_csv_diff_groups(sections: List[Dict[str, Any]], faculty_list: List[Dict[str, Any]], csv_path: str = "faculty-timings.csv"):
@@ -246,6 +268,57 @@ def generate_csv_diff_groups(sections: List[Dict[str, Any]], faculty_list: List[
         'group_d': group_d
     }
 
+def apply_dropped_sections(
+    sections: List[Dict[str, Any]],
+    dropped_path: str = DEFAULT_DROPPED_PATH,
+    date_str: str = DEFAULT_DROPPED_DATE
+) -> Dict[str, Any]:
+    """Marks dropped sections from portal updates as status='dropped' with droppedAt date."""
+    if not os.path.exists(dropped_path):
+        return {"applied": [], "not_found": [], "skipped_title": []}
+
+    with open(dropped_path, "r", encoding="utf-8") as f:
+        dropped_list: List[Dict[str, Any]] = json.load(f)
+
+    # Ensure every section defaults to status="active"
+    for s in sections:
+        if "status" not in s:
+            s["status"] = "active"
+
+    section_map = {
+        (s["program"], s["courseCode"], s["section"]): s for s in sections
+    }
+
+    applied = []
+    not_found = []
+    skipped_title = []
+
+    for item in dropped_list:
+        prog = item["program"]
+        code = item["courseCode"]
+        sec_letter = item["section"]
+        key = (prog, code, sec_letter)
+
+        if key not in section_map:
+            not_found.append(item)
+            continue
+
+        target = section_map[key]
+        expected_title = item.get("title")
+        if expected_title and target.get("title") != expected_title:
+            skipped_title.append(item)
+            continue
+
+        target["status"] = "dropped"
+        target["droppedAt"] = date_str
+        applied.append(target)
+
+    return {
+        "applied": applied,
+        "not_found": not_found,
+        "skipped_title": skipped_title
+    }
+
 def apply_overrides(data_dir: str = DEFAULT_DATA_DIR, overrides_path: str = DEFAULT_OVERRIDES_PATH, date_str: str = DEFAULT_DATE) -> Dict[str, Any]:
     sections_path = os.path.join(data_dir, "sections.json")
     courses_path = os.path.join(data_dir, "courses.json")
@@ -274,11 +347,7 @@ def apply_overrides(data_dir: str = DEFAULT_DATA_DIR, overrides_path: str = DEFA
             if f_name != "TBA" and f_id:
                 known_faculty_ids[f_name] = f_id
 
-    # Reset existing updated flags on all sections so that only currently applied overrides are flagged
-    for sec in sections:
-        sec.pop("updated", None)
-        sec.pop("updatedOn", None)
-        sec.pop("updatedNote", None)
+    # Note: Keep existing updated flags on sections
 
     applied_records = []
 
@@ -303,9 +372,11 @@ def apply_overrides(data_dir: str = DEFAULT_DATA_DIR, overrides_path: str = DEFA
 
         target_sec = section_map[key]
 
-        # 1. Strict validation of old faculty
+        # 1. Strict validation of old faculty (allow if already applied for idempotency)
         expected_old_list = [expected_old_fac] if isinstance(expected_old_fac, str) else list(expected_old_fac)
-        if target_sec["faculty"] != expected_old_list:
+        expected_new_list = [new_fac] if isinstance(new_fac, str) else list(new_fac)
+        already_applied = (target_sec["faculty"] == expected_new_list)
+        if target_sec["faculty"] != expected_old_list and not already_applied:
             raise ValueError(
                 f"[OVERRIDE MISMATCH] Faculty mismatch for {prog} {code} Sec {sec_letter}:\n"
                 f"  Expected old faculty: {expected_old_list}\n"
@@ -362,10 +433,14 @@ def apply_overrides(data_dir: str = DEFAULT_DATA_DIR, overrides_path: str = DEFA
             "meetings": target_sec["meetings"],
         })
 
+    # Apply dropped sections
+    dropped_info = apply_dropped_sections(sections, dropped_path=DEFAULT_DROPPED_PATH, date_str=DEFAULT_DROPPED_DATE)
+    print(f"Applied dropped sections: {len(dropped_info['applied'])} marked dropped, {len(dropped_info['not_found'])} not found")
+
     # Save updated sections.json
     with open(sections_path, "w", encoding="utf-8") as f:
         json.dump(sections, f, indent=2, ensure_ascii=False)
-    print(f"Updated sections: {sections_path} ({len(sections)} sections, {len(applied_records)} overrides applied)")
+    print(f"Updated sections: {sections_path} ({len(sections)} sections, {len(applied_records)} overrides applied, {len(dropped_info['applied'])} dropped)")
 
     # Rebuild courses.json and faculty.json
     new_courses, new_faculty = rebuild_courses_and_faculty(sections)
@@ -525,6 +600,92 @@ Sections present in `sections.json` without matching entries in `faculty-timings
             with open(anomalies_path, "a", encoding="utf-8") as f:
                 f.write(override_audit_text)
             print(f"Appended override audit trail to {anomalies_path}")
+
+    # Append/Update Dropped Sections in docs/data-changes.md
+    dropped_header = f"## Fall 2026 Dropped Sections Sync ({DEFAULT_DROPPED_DATE})"
+    dropped_applied = dropped_info["applied"]
+    dropped_not_found = dropped_info["not_found"]
+
+    dropped_rows = []
+    for s in dropped_applied:
+        day_str = "/".join(dict.fromkeys(m["day"] for m in s.get("meetings", []))) if s.get("meetings") else "TBA"
+        if s.get("meetings"):
+            s_min = s["meetings"][0]["start"]
+            e_min = s["meetings"][0]["end"]
+            time_str = f"{s_min//60:02d}:{s_min%60:02d}-{e_min//60:02d}:{e_min%60:02d}"
+            r_str = s["meetings"][0].get("room", "TBA") or "TBA"
+        else:
+            time_str = "TBA"
+            r_str = "TBA"
+        fac_str = ", ".join(s.get("faculty", [])) if s.get("faculty") else "TBA"
+        dropped_rows.append(
+            f"| {s['program']} | {s['courseCode']} {s['title']} | {s['section']} | {day_str} {time_str} | {r_str} | {fac_str} |"
+        )
+
+    fully_dropped_courses = [c["code"] for c in new_courses if c.get("allDropped")]
+
+    dropped_content = f"""
+{dropped_header}
+Synced dropped sections from the Fall 2026 portal update.
+
+### Summary
+- Input entries: {len(dropped_applied) + len(dropped_not_found)}
+- Applied dropped sections: {len(dropped_applied)}
+- Not found in dataset: {len(dropped_not_found)} ({', '.join([f"{nf['courseCode']} {nf['section']}" for nf in dropped_not_found])})
+- Fully dropped courses: {len(fully_dropped_courses)} ({', '.join(fully_dropped_courses)})
+- Faculty removed with 0 active sections remaining: {len(removed_faculty)}
+""" + "\n".join([f"  - `{rf['id']}` ({rf['name']})" for rf in removed_faculty]) + f"""
+- Total sections: {len(sections)} ({len(dropped_applied)} dropped, {len(sections) - len(dropped_applied)} active)
+- Total courses: {len(new_courses)} ({len(fully_dropped_courses)} fully dropped, {len(new_courses) - len(fully_dropped_courses)} with active sections)
+- Total faculty with active sections: {len(new_faculty)}
+
+### Applied Dropped Sections ({len(dropped_applied)} sections)
+| Program | Course | Section | Time | Room | Faculty |
+|---|---|---|---|---|---|
+""" + "\n".join(dropped_rows) + "\n"
+
+    with open(changes_md_path, "r", encoding="utf-8") as f:
+        existing_doc = f.read()
+
+    if dropped_header in existing_doc:
+        parts = existing_doc.split(dropped_header)
+        prefix = parts[0]
+        rest = parts[1]
+        next_sec_idx = rest.find("\n## ")
+        suffix = rest[next_sec_idx:] if next_sec_idx != -1 else ""
+        final_doc = prefix.rstrip() + "\n" + dropped_content.strip() + "\n" + suffix.lstrip()
+    else:
+        final_doc = existing_doc.rstrip() + "\n" + dropped_content
+
+    with open(changes_md_path, "w", encoding="utf-8") as f:
+        f.write(final_doc)
+
+    # Append dropped sections to data/anomalies.md
+    if os.path.exists(anomalies_path):
+        with open(anomalies_path, "r", encoding="utf-8") as f:
+            current_anom = f.read()
+        dropped_marker = f"## Post-Extraction Dropped Sections (Fall 2026 Portal Sync - {DEFAULT_DROPPED_DATE})"
+        if dropped_marker not in current_anom:
+            dropped_anom_text = f"\n\n{dropped_marker}\n"
+            dropped_anom_text += f"Applied {len(dropped_applied)} dropped sections from Fall 2026 portal update:\n"
+            for s in dropped_applied:
+                dropped_anom_text += f"- {s['program']} {s['courseCode']} {s['section']}: Marked status='dropped'\n"
+            if dropped_not_found:
+                dropped_anom_text += f"\nSections not found in dataset ({len(dropped_not_found)} total, not created):\n"
+                for nf in dropped_not_found:
+                    dropped_anom_text += f"- {nf['program']} {nf['courseCode']} {nf['section']}\n"
+            if fully_dropped_courses:
+                dropped_anom_text += f"\nCourses with all sections dropped ({len(fully_dropped_courses)} total):\n"
+                for c in fully_dropped_courses:
+                    dropped_anom_text += f"- {c}\n"
+            if removed_faculty:
+                dropped_anom_text += f"\nRemoved faculty with zero active teaching assignments ({len(removed_faculty)} total):\n"
+                for rf in removed_faculty:
+                    dropped_anom_text += f"- {rf['name']} (id: {rf['id']}) - 0 active sections remaining\n"
+
+            with open(anomalies_path, "a", encoding="utf-8") as f:
+                f.write(dropped_anom_text)
+            print(f"Appended dropped sections audit trail to {anomalies_path}")
 
     return {
         "applied": len(applied_records),

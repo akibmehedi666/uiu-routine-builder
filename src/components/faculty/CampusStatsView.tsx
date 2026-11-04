@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { getCampusStats, HeatmapCell } from '../../lib/campusStats';
 import { DAYS_LIST, Day } from '../../types';
+import { MostDroppedCard } from './MostDroppedCard';
 
 interface CampusStatsViewProps {
   onSelectRoom: (room: string) => void;
@@ -73,6 +74,11 @@ export function CampusStatsView({ onSelectRoom }: CampusStatsViewProps) {
           <p className="text-2xl font-black text-stone-900 mt-1">{stats.busiestDay.day}</p>
           <p className="text-[11px] text-stone-400 mt-0.5">{stats.busiestDay.count} sections running</p>
         </div>
+      </div>
+
+      {/* Leaderboard Card: Most Dropped Sections */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+        <MostDroppedCard />
       </div>
 
       {/* 1. Campus Heatmap */}

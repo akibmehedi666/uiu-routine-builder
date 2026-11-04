@@ -254,12 +254,12 @@ export function validateSavedRoutine(
       tbaFacultyCount++;
     }
 
-    if (!liveSec) {
+    if (!liveSec || liveSec.status === 'dropped') {
       diffs.push({
         courseCode: savedSec.courseCode,
         section: savedSec.section,
         type: 'missing',
-        details: 'Section no longer offered in current trimester routine.',
+        details: liveSec?.status === 'dropped' ? 'Section dropped' : 'Section no longer offered in current trimester routine.',
       });
       continue;
     }
