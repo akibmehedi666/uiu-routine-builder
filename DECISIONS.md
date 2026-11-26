@@ -593,3 +593,10 @@ Following a session interruption audit:
   - Removed the left time-label column and the 480px card max-width cap in `ExamTimeline` / `ExamCard` to eliminate empty horizontal space.
   - Grouped exams by day into full-width agenda rows (`[time chip] [dot + course code + title] [program chips + N sections] [N rooms] [Sections & rooms toggle]`), using thin `"Morning" / "Midday" / "Afternoon"` sub-labels only when a day has 2+ distinct time slots.
   - Expanded `"Sections & rooms"` renders a full-width multi-column grid (up to 3 columns on desktop).
+
+## Decision 21: Faculty Directory Leaderboard Collapsed by Default & Pluralization
+- **Collapsed by Default (`isLeaderboardsOpen = false`)**:
+  - `Teaching Load Leaderboard` on `/faculty-directory` now always initializes collapsed on every load (no localStorage, sessionStorage, or URL persistence) so the directory list and Spotlight stay immediately accessible without vertical push-down.
+  - `getFacultyLeaderboards()` is deferred via `useMemo` until the user clicks Expand (`aria-expanded`, `aria-controls="teaching-load-leaderboard-panel"`, keyboard focus ring, `motion-reduce:animate-none`).
+- **Pluralization Helper (`src/lib/format.ts`)**:
+  - Added shared `plural(n, singular, pluralForm?)` helper and applied it across Faculty Spotlight, mobile accordion cards, and detail tiles (`1 section` vs `2 sections`, `1 course` vs `2 courses`).
