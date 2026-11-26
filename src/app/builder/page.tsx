@@ -62,8 +62,15 @@ import {
   filterValidLocks,
   getLockStatus,
 } from '../../lib/lockUtils';
+import { useExams } from '../../hooks/useExams';
+import { detectExamClashes, isExamExemptCourse } from '../../lib/exams';
+import { RoutineExamsView } from '../../components/RoutineExamsView';
 
-const allSections = (sectionsJson as unknown as Section[]).filter((s) => s.status !== 'dropped');
+const rawSectionsList = sectionsJson as unknown as Section[];
+const droppedSectionIdSet = new Set(
+  rawSectionsList.filter((s) => s.status === 'dropped').map((s) => s.id)
+);
+const allSections = rawSectionsList.filter((s) => s.status !== 'dropped');
 const allCourses = coursesJson as unknown as Course[];
 const allFaculty = facultyJson as unknown as Faculty[];
 
@@ -163,6 +170,8 @@ export default function BuilderPage() {
 
   // Mobile Workspace Navigation Tab (< 1024px)
   const [mobileTab, setMobileTab] = useState<'courses' | 'preferences' | 'results'>('courses');
+  // Results sub-view: Routine timetable vs Mid-term Exams
+  const [resultsView, setResultsView] = useState<'routine' | 'exams'>('routine');
 
   // Compute active filters count for Preferences mobile badge
   const activeFiltersCount = useMemo(() => {
@@ -752,6 +761,69 @@ export default function BuilderPage() {
     });
   }, [viewingSavedRoutine, effectiveSections, request.filterDayOff, request.filterTimeWindow]);
 
+  // Lazily load mid-term exams only when courses or saved/shared routine are active
+  const shouldLoadExams =
+    (request.selectedCourses?.length || 0) > 0 ||
+    Boolean(viewingSavedRoutine) ||
+    Boolean(comparingSavedRoutines);
+  const { exams } = useExams(shouldLoadExams);
+
+  const effectiveCourseMap = useMemo(() => {
+    const m = new Map<string, Course>();
+    for (const c of effectiveCourses) {
+      m.set(c.code, c);
+    }
+    return m;
+  }, [effectiveCourses]);
+
+  // Exam clash report for Courses panel (based on selectedCourses + lockedSections)
+  const coursePanelExamReport = useMemo(() => {
+    if (exams.length === 0 || (request.selectedCourses?.length || 0) === 0) {
+      return null;
+    }
+    const selection = (request.selectedCourses || []).map((code) => {
+      const courseObj = effectiveCourseMap.get(code);
+      return {
+        course: courseObj || code,
+        sectionId: request.lockedSections?.[code] || null,
+        program: courseObj?.program,
+        isLab: isExamExemptCourse(courseObj || code, effectiveSections),
+      };
+    });
+    return detectExamClashes(selection, exams);
+  }, [exams, request.selectedCourses, request.lockedSections, effectiveCourseMap, effectiveSections]);
+
+  // Exam clash report for Results summary (uses actual sections in displayed routine)
+  const routineExamReport = useMemo(() => {
+    if (exams.length === 0 || !activeDisplaySchedule) {
+      return coursePanelExamReport;
+    }
+    const selection = activeDisplaySchedule.sections
+      .filter((sec) => sec.status !== 'dropped' && !droppedSectionIdSet.has(sec.id))
+      .map((sec) => {
+        const courseObj = effectiveCourseMap.get(sec.courseCode);
+        return {
+          course: courseObj || sec.courseCode,
+          sectionId: sec.id,
+          program: sec.program,
+          isLab: sec.kind === 'lab' || isExamExemptCourse(courseObj || sec.courseCode, effectiveSections),
+        };
+      });
+    return detectExamClashes(selection, exams);
+  }, [exams, activeDisplaySchedule, coursePanelExamReport, effectiveCourseMap, effectiveSections]);
+
+  const activeRoutineSectionsForExams = useMemo(() => {
+    if (!activeDisplaySchedule) return [];
+    return activeDisplaySchedule.sections.filter(
+      (sec) => sec.status !== 'dropped' && !droppedSectionIdSet.has(sec.id)
+    );
+  }, [activeDisplaySchedule]);
+
+  const handleOpenExamsTab = useCallback(() => {
+    setResultsView('exams');
+    setMobileTab('results');
+  }, []);
+
   // Comparison schedules list (switches if comparing saved routines)
   const activeComparisonSchedules = useMemo(() => {
     if (comparingSavedRoutines && comparingSavedRoutines.length > 0) {
@@ -1232,6 +1304,8 @@ export default function BuilderPage() {
             onOpenManualScheduleModal={openManualModal}
             mobileTab={mobileTab === 'preferences' ? 'preferences' : 'courses'}
             onRemoveBlockedSlot={handleRemoveBlockedSlot}
+            examReport={coursePanelExamReport}
+            onOpenExamsTab={handleOpenExamsTab}
           />
         </div>
 
@@ -1304,10 +1378,65 @@ export default function BuilderPage() {
           )}
 
           {/* Welcome / Solving / Conflict / Timetable View */}
+          {activeDisplaySchedule && exams.length > 0 && (
+            <div className="flex items-center justify-between gap-2">
+              <div
+                role="tablist"
+                aria-label="Results view"
+                className="inline-flex items-center p-1 rounded-card bg-surface border border-app-border shadow-2xs"
+              >
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={resultsView === 'routine'}
+                  onClick={() => setResultsView('routine')}
+                  className={`min-h-[36px] px-3.5 py-1.5 rounded-btn text-xs font-semibold transition-colors ${
+                    resultsView === 'routine'
+                      ? 'bg-orange-500 text-white shadow-2xs'
+                      : 'text-text-secondary hover:text-text-primary'
+                  }`}
+                >
+                  Routine
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={resultsView === 'exams'}
+                  onClick={() => setResultsView('exams')}
+                  className={`min-h-[36px] px-3.5 py-1.5 rounded-btn text-xs font-semibold transition-colors flex items-center gap-1.5 ${
+                    resultsView === 'exams'
+                      ? 'bg-orange-500 text-white shadow-2xs'
+                      : 'text-text-secondary hover:text-text-primary'
+                  }`}
+                >
+                  <span>Exams</span>
+                  {routineExamReport && routineExamReport.clashes.length > 0 && (
+                    <span
+                      className={`px-1.5 py-0.2 rounded-full text-[11px] font-bold ${
+                        resultsView === 'exams'
+                          ? 'bg-white/25 text-white'
+                          : 'bg-rose-100 text-rose-700'
+                      }`}
+                    >
+                      {routineExamReport.clashes.length} clash
+                    </span>
+                  )}
+                </button>
+              </div>
+            </div>
+          )}
+
           {viewingSavedRoutine ? (
             /* Always display saved timetable when viewing saved routine */
             <>
-              {activeDisplaySchedule && (
+              {activeDisplaySchedule && resultsView === 'exams' && exams.length > 0 ? (
+                <RoutineExamsView
+                  sections={activeRoutineSectionsForExams}
+                  courses={effectiveCourses}
+                  exams={exams}
+                  examReport={routineExamReport}
+                />
+              ) : activeDisplaySchedule ? (
                 <Timetable
                   schedule={activeDisplaySchedule}
                   currentRank={0}
@@ -1343,13 +1472,22 @@ export default function BuilderPage() {
                   }
                   isTruncated={false}
                   previewSection={previewSection}
+                  examReport={routineExamReport}
+                  onOpenExamsTab={handleOpenExamsTab}
                 />
-              )}
+              ) : null}
             </>
           ) : comparingSavedRoutines && comparingSavedRoutines.length > 0 ? (
             /* Comparing saved routines view */
             <>
-              {activeDisplaySchedule && (
+              {activeDisplaySchedule && resultsView === 'exams' && exams.length > 0 ? (
+                <RoutineExamsView
+                  sections={activeRoutineSectionsForExams}
+                  courses={effectiveCourses}
+                  exams={exams}
+                  examReport={routineExamReport}
+                />
+              ) : activeDisplaySchedule ? (
                 <Timetable
                   schedule={activeDisplaySchedule}
                   currentRank={currentRank}
@@ -1380,8 +1518,10 @@ export default function BuilderPage() {
                     ) : null
                   }
                   previewSection={previewSection}
+                  examReport={routineExamReport}
+                  onOpenExamsTab={handleOpenExamsTab}
                 />
-              )}
+              ) : null}
               <ScheduleComparison
                 schedules={activeComparisonSchedules}
                 activeRank={currentRank}
@@ -1427,7 +1567,14 @@ export default function BuilderPage() {
           ) : (
             /* Timetable View & Multi-Schedule Comparison */
             <>
-              {currentSchedule && (
+              {currentSchedule && resultsView === 'exams' && exams.length > 0 ? (
+                <RoutineExamsView
+                  sections={activeRoutineSectionsForExams}
+                  courses={effectiveCourses}
+                  exams={exams}
+                  examReport={routineExamReport}
+                />
+              ) : currentSchedule ? (
                 <Timetable
                   schedule={currentSchedule}
                   currentRank={currentRank}
@@ -1459,8 +1606,10 @@ export default function BuilderPage() {
                   }
                   isTruncated={results.truncated}
                   previewSection={previewSection}
+                  examReport={routineExamReport}
+                  onOpenExamsTab={handleOpenExamsTab}
                 />
-              )}
+              ) : null}
 
               {/* Multi-Schedule Comparison & Diff */}
               <ScheduleComparison

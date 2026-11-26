@@ -39,6 +39,8 @@ import {
   computeFYDPClashes,
   parseTimeString,
 } from '../lib/fixedCourses';
+import { ExamClashReport } from '../lib/exams';
+import { ExamClashSummary } from './ExamClashSummary';
 
 interface CourseSelectorProps {
   courses: Course[];
@@ -52,6 +54,8 @@ interface CourseSelectorProps {
   activeSection?: 'all' | 'courses' | 'preferences';
   mobileTab?: 'courses' | 'preferences';
   onRemoveBlockedSlot?: (courseCode: string) => void;
+  examReport?: ExamClashReport | null;
+  onOpenExamsTab?: () => void;
 }
 
 export function CourseSelector({
@@ -66,6 +70,8 @@ export function CourseSelector({
   activeSection = 'all',
   mobileTab = 'courses',
   onRemoveBlockedSlot,
+  examReport = null,
+  onOpenExamsTab,
 }: CourseSelectorProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -1009,6 +1015,17 @@ export function CourseSelector({
         </div>
       )}
 
+      {/* Exam Clash Summary Warning (Courses Panel) */}
+      {examReport && (
+        <div className={mobileTab === 'preferences' ? 'hidden lg:block' : 'block'}>
+          <ExamClashSummary
+            report={examReport}
+            variant="panel"
+            onOpenExams={onOpenExamsTab}
+          />
+        </div>
+      )}
+
       {/* 3. Selected Courses List */}
       <div ref={courseListRef} className="selected-courses-box space-y-2.5 overflow-visible lg:overflow-y-auto pr-0 lg:pr-1">
         {selectedFYDPCourses.length > 1 && (
@@ -1157,6 +1174,11 @@ export function CourseSelector({
                     <div className="text-[11px] text-text-secondary font-medium line-clamp-1 mt-0.5">
                       {course.title}
                     </div>
+                    {examReport?.unannouncedCourses.includes(course.code) && (
+                      <div className="text-[11px] text-text-muted mt-0.5">
+                        Exam not announced
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-1.5 flex-shrink-0">
