@@ -8,6 +8,7 @@ import {
   Calendar,
   Bookmark,
   GraduationCap,
+  ClipboardList,
 } from 'lucide-react';
 import Link from 'next/link';
 import { siteConfig } from '../config/site';
@@ -145,6 +146,14 @@ export function SiteFooter({ className = '', onOpenSavedRoutines }: SiteFooterPr
             >
               <GraduationCap className="w-3 h-3 text-orange-500" />
               <span>Faculty Directory</span>
+            </Link>
+            <span className="text-text-muted/60" aria-hidden="true">•</span>
+            <Link
+              href={siteConfig.links.exams}
+              className="hover:text-orange-600 transition-colors inline-flex items-center gap-1"
+            >
+              <ClipboardList className="w-3 h-3 text-orange-500" />
+              <span>Exam Schedule</span>
             </Link>
             <span className="text-text-muted/60" aria-hidden="true">•</span>
             <a
