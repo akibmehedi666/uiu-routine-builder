@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "extract:exams": "python scripts/extract_exams.py"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",

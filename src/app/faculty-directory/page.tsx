@@ -49,6 +49,7 @@ import {
 } from '../../lib/facultyStats';
 import { getCourseColor } from '../../utils/colors';
 import { Day, DAYS_LIST } from '../../types';
+import { plural } from '../../lib/format';
 import { usePinnedFaculty } from '../../hooks/usePinnedFaculty';
 import { BadgeIcon, BadgesLegendModal } from '../../components/faculty/BadgesLegendModal';
 import { CampusStatsView } from '../../components/faculty/CampusStatsView';
@@ -96,7 +97,6 @@ function FacultyDirectoryContent() {
 
   const allFaculty = useMemo(() => getAllFacultyStats(), []);
   const tbaGroups = useMemo(() => getTBASections(), []);
-  const leaderboards = useMemo(() => getFacultyLeaderboards(allFaculty), [allFaculty]);
 
   // Main view switcher: 'directory' | 'stats' | 'badges'
   const initialUrlTab = searchParams.get('tab');
@@ -172,8 +172,12 @@ function FacultyDirectoryContent() {
   // Copy link feedback
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
 
-  // Prominently featured Leaderboards section (open by default, collapsible)
-  const [isLeaderboardsOpen, setIsLeaderboardsOpen] = useState<boolean>(true);
+  // Teaching Load Leaderboard always starts collapsed per session (never persisted)
+  const [isLeaderboardsOpen, setIsLeaderboardsOpen] = useState<boolean>(false);
+  const leaderboards = useMemo(
+    () => (isLeaderboardsOpen ? getFacultyLeaderboards(allFaculty) : null),
+    [allFaculty, isLeaderboardsOpen]
+  );
   const [isTBAOpen, setIsTBAOpen] = useState<boolean>(false);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -450,11 +454,13 @@ function FacultyDirectoryContent() {
                       </h3>
                       <div className="flex items-center gap-3 text-xs text-text-secondary flex-wrap">
                         <span>
-                          <strong className="text-text-primary">{spotlightFaculty.totalSections}</strong> sections ({spotlightFaculty.theoryCourseCount} theory, {spotlightFaculty.labCourseCount} lab)
+                          <strong className="text-text-primary">{spotlightFaculty.totalSections}</strong>{' '}
+                          {plural(spotlightFaculty.totalSections, 'section').split(' ')[1]} ({spotlightFaculty.theoryCourseCount} theory, {spotlightFaculty.labCourseCount} lab)
                         </span>
                         <span>•</span>
                         <span>
-                          <strong className="text-text-primary">{spotlightFaculty.distinctCourseCount}</strong> courses
+                          <strong className="text-text-primary">{spotlightFaculty.distinctCourseCount}</strong>{' '}
+                          {plural(spotlightFaculty.distinctCourseCount, 'course').split(' ')[1]}
                         </span>
                         <span>•</span>
                         <span>
@@ -488,13 +494,17 @@ function FacultyDirectoryContent() {
 
             {/* 2. Highlighted Teaching Load Leaderboards Showcase */}
             <div className="bg-surface rounded-card border-2 border-orange-200/80 shadow-warm overflow-hidden">
-              <div className="px-4 py-3 bg-gradient-to-r from-orange-100/70 via-amber-50/50 to-surface border-b border-orange-200/70 flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-orange-500 text-white flex items-center justify-center font-bold shadow-2xs">
+              <div
+                className={`px-4 py-3 bg-gradient-to-r from-orange-100/70 via-amber-50/50 to-surface flex items-center justify-between gap-2 ${
+                  isLeaderboardsOpen ? 'border-b border-orange-200/70' : ''
+                }`}
+              >
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="w-8 h-8 rounded-lg bg-orange-500 text-white flex items-center justify-center font-bold shadow-2xs shrink-0">
                     <Trophy className="w-4 h-4 text-white" />
                   </div>
-                  <div>
-                    <div className="flex items-center gap-2">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <h2 className="text-sm font-bold text-text-primary">
                         Teaching Load Leaderboard
                       </h2>
@@ -502,18 +512,19 @@ function FacultyDirectoryContent() {
                         Top 5 Rankings
                       </span>
                     </div>
-                    <p className="text-[11px] text-text-muted">
-                      Click any instructor to view their complete teaching schedule & sections
+                    <p className="text-[11px] text-text-muted truncate">
+                      Click any instructor to view their complete teaching schedule &amp; sections
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 shrink-0">
                   <button
                     type="button"
-                    onClick={() => setIsLeaderboardsOpen(!isLeaderboardsOpen)}
-                    className="text-xs font-semibold text-text-secondary hover:text-orange-600 inline-flex items-center gap-1 cursor-pointer px-2.5 py-1 rounded hover:bg-orange-50/80 border border-transparent hover:border-orange-200 transition-colors"
+                    onClick={() => setIsLeaderboardsOpen((prev) => !prev)}
                     aria-expanded={isLeaderboardsOpen}
+                    aria-controls="teaching-load-leaderboard-panel"
+                    className="min-h-[44px] sm:min-h-[34px] text-xs font-semibold text-text-secondary hover:text-orange-600 inline-flex items-center gap-1 cursor-pointer px-2.5 py-1 rounded hover:bg-orange-50/80 border border-transparent hover:border-orange-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500"
                   >
                     <span>{isLeaderboardsOpen ? 'Collapse' : 'Expand'}</span>
                     {isLeaderboardsOpen ? (
@@ -525,8 +536,11 @@ function FacultyDirectoryContent() {
                 </div>
               </div>
 
-              {isLeaderboardsOpen && (
-                <div className="p-3.5 sm:p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 bg-bg-page/40">
+              {isLeaderboardsOpen && leaderboards && (
+                <div
+                  id="teaching-load-leaderboard-panel"
+                  className="p-3.5 sm:p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 bg-bg-page/40 animate-in fade-in slide-in-from-top-1 duration-200 motion-reduce:animate-none"
+                >
                   {/* Category 1: Most Theory Courses */}
                   <div className="bg-surface rounded-xl p-3 border border-blue-200 shadow-2xs space-y-2 flex flex-col justify-between">
                     <div>
@@ -1405,7 +1419,7 @@ function FacultyDirectoryContent() {
                           <div>
                             <span className="text-text-muted block font-medium">Campus Days:</span>
                             <span className="font-bold text-text-primary mt-0.5 block">
-                              {selectedFaculty.daysOnCampus} days ({selectedFaculty.activeDays.join(', ')})
+                              {plural(selectedFaculty.daysOnCampus, 'day')} ({selectedFaculty.activeDays.join(', ')})
                             </span>
                           </div>
                           <div>
@@ -1417,7 +1431,7 @@ function FacultyDirectoryContent() {
                           <div>
                             <span className="text-text-muted block font-medium">Campus Footprint:</span>
                             <span className="font-bold text-text-primary mt-0.5 block">
-                              {selectedFaculty.distinctFloors} floors ({selectedFaculty.rooms.length} rooms)
+                              {plural(selectedFaculty.distinctFloors, 'floor')} ({plural(selectedFaculty.rooms.length, 'room')})
                             </span>
                           </div>
                         </div>
@@ -1564,7 +1578,7 @@ function FacultyDirectoryContent() {
                             </h3>
                           </div>
                           <span className="text-xs text-text-muted">
-                            {selectedFaculty.courses.length} courses
+                            {plural(selectedFaculty.courses.length, 'course')}
                           </span>
                         </div>
 
@@ -1595,7 +1609,7 @@ function FacultyDirectoryContent() {
                                     {course.credit} Credits
                                   </span>
                                   <span className="px-2 py-0.5 rounded bg-orange-100 text-orange-900 font-semibold">
-                                    {course.sectionCount} {course.sectionCount === 1 ? 'section' : 'sections'}
+                                    {plural(course.sectionCount, 'section')}
                                   </span>
                                 </div>
                               </div>
@@ -1742,7 +1756,7 @@ function FacultyDirectoryContent() {
                               {f.name}
                             </span>
                             <span className="text-[11px] text-text-muted block truncate">
-                              {f.totalSections} sections · {f.distinctCourseCount} courses · {f.totalWeeklyHours}h
+                              {plural(f.totalSections, 'section')} · {plural(f.distinctCourseCount, 'course')} · {f.totalWeeklyHours}h
                             </span>
                           </div>
                         </button>

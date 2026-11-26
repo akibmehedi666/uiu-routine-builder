@@ -31,6 +31,8 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import { getLockStatus } from '../lib/lockUtils';
+import { ExamClashReport } from '../lib/exams';
+import { ExamClashSummary } from './ExamClashSummary';
 
 interface TimetableProps {
   schedule: ScheduleResult;
@@ -49,6 +51,8 @@ interface TimetableProps {
   savePopoverContent?: React.ReactNode;
   isTruncated?: boolean;
   previewSection?: Section | null;
+  examReport?: ExamClashReport | null;
+  onOpenExamsTab?: () => void;
 }
 
 // 8 slot markers from 08:30 to 16:30
@@ -79,6 +83,8 @@ export function Timetable({
   savePopoverContent,
   isTruncated,
   previewSection,
+  examReport = null,
+  onOpenExamsTab,
 }: TimetableProps) {
   const [copied, setCopied] = useState(false);
   const [isLockMenuOpen, setIsLockMenuOpen] = useState(false);
@@ -523,6 +529,12 @@ export function Timetable({
               0 Tentative
             </div>
           )}
+
+          <ExamClashSummary
+            report={examReport}
+            variant="chips"
+            onOpenExams={onOpenExamsTab}
+          />
         </div>
       </div>
 

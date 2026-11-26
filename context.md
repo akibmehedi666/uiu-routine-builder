@@ -32,6 +32,7 @@
   - `npm test` : Run all unit and static safety tests via Vitest (`vitest run`).
   - `npm run build` : Run Next.js production build (`next build`).
   - `python scripts/extract.py` : Re-extract course sections from raw PDF.
+  - `npm run extract:exams` : Re-extract mid-term exam schedule from SoSE notice board Excel (`scripts/extract_exams.py`).
   - `node scripts/generate-icons.js` : Re-generate favicon.ico, apple-icon.png, and PWA icons from `icon.svg`.
 
 ---
@@ -45,8 +46,11 @@ uiu-routine-builder/
 │   ├── courses.json         # 107 course catalog entries
 │   ├── faculty.json         # 207 faculty records with teaching assignments (full untruncated names)
 │   ├── faculty-id-aliases.json # 14 legacy-to-canonical faculty ID alias mappings
+│   ├── exams.json           # 472 mid-term exam rows (BSCSE & BSDS) with normalized 10-digit ID ranges
+│   ├── exam-meta.json       # Exam import metadata & summary counts
 │   └── anomalies.md         # Extraction audit trail (377 auto-resolved PDF anomalies)
 ├── docs/                    # Architecture logs, audit reports, user guide, investigation docs
+│   ├── exams-import.md      # Mid-term exam import report (unmatched, missing theory, initials mismatches)
 │   ├── name-fix.md          # Complete audit of 14 restored faculty names & 48 long name reviews
 │   ├── consistency-audit.md # Nav alignment, typography scale, BrandLogo audit
 │   ├── solver-design.md     # Backtracking algorithm, bitmasks, scoring model
@@ -60,6 +64,7 @@ uiu-routine-builder/
 │   └── icon-512.png         # PWA maskable icon (512x512)
 ├── scripts/
 │   ├── extract.py           # MCID stream grouping PDF parser (preserves full faculty names)
+│   ├── extract_exams.py     # SoSE mid-term exam Excel importer (BSCSE/BSDS, 9->10 digit ID normalization)
 │   └── generate-icons.js    # Sharp script to build favicon.ico, apple-icon, and PWA PNGs
 ├── src/
 │   ├── app/                 # Next.js App Router
@@ -72,6 +77,7 @@ uiu-routine-builder/
 │   │   │   ├── page.tsx     # Directory + Fall 2026 Stats view switcher
 │   │   │   ├── [id]/        # Profile view with static generation for canonical + legacy IDs
 │   │   │   └── compare/     # /faculty-directory/compare?a=...&b=... side-by-side comparison
+│   │   ├── exams/           # /exams route (Exam Schedule + _components/: StatStrip, StartHere, DayStrip, ExamCard, ExamTimeline, MyExamPlan)
 │   │   ├── courses/         # /courses route (Redirects to /faculty)
 │   │   ├── icon.svg         # Clean timetable blocks vector favicon
 │   │   ├── favicon.ico      # Multi-resolution ICO (16, 32, 48)
@@ -88,6 +94,8 @@ uiu-routine-builder/
 │   │   ├── CourseSelector.tsx # Left-panel course picker and mobile search sheet
 │   │   ├── Timetable.tsx    # 5-day desktop timetable view
 │   │   ├── DayListTimetable.tsx # Mobile Day-by-Day view
+│   │   ├── RoutineExamsView.tsx # Builder Results "Exams" tab + .ics export + ID-range tables
+│   │   ├── ExamClashSummary.tsx # Non-blocking mid-term exam clash & same-day warning chips
 │   │   ├── ScheduleComparison.tsx # Side-by-side routine compare drawer
 │   │   ├── SavedRoutinesDrawer.tsx # Drawer for saved routines & snapshot management
 │   │   ├── SaveRoutinePopover.tsx # Quick save popover
@@ -103,11 +111,14 @@ uiu-routine-builder/
 │   │   └── facultyBadges.ts # 12 faculty badge thresholds and definitions
 │   ├── hooks/
 │   │   ├── usePinnedFaculty.ts # "uiu-rb:pinned-faculty:v1" localStorage hook with cross-tab sync
+│   │   ├── useExams.ts      # Lazy dynamic-import hook for data/exams.json
 │   │   └── useSolver.ts     # Web Worker management, state machine, and cache
 │   ├── lib/
+│   │   ├── exams.ts         # Pure exam logic: ID normalization, room ranges, clash detection, .ics export
 │   │   ├── campusStats.ts   # Campus-wide section & meeting stats, heatmap data, histograms
 │   │   ├── roomSchedule.ts  # Room schedule indexing and floor parser
 │   │   ├── facultyAliases.ts # Legacy faculty ID backward compatibility resolution
+│   │   ├── format.ts        # Shared plural(n, singular) formatting helper
 │   │   ├── facultyStats.ts  # Pure faculty stats, badges, leaderboards, filters, search aliases
 │   │   ├── courseSearch.ts  # Pure, tokenized course search index with alias support
 │   │   ├── courseDirectory.ts # Course directory filtering, grouping, and natural sorting
@@ -165,6 +176,11 @@ uiu-routine-builder/
   3. Run `python scripts/extract.py`.
   4. Inspect `data/anomalies.md` and check that Sl 1 to N has zero gaps and zero duplicates.
   5. Run `npm test && npm run build` to verify compatibility.
+- **Mid-Term Exam Schedule Pipeline (`scripts/extract_exams.py`)**:
+  - Run `npm run extract:exams` to import `mid-term-exam-schedule_sose_notice-board_263.xlsx` (gitignored) into `data/exams.json`, `data/exam-meta.json`, and `docs/exams-import.md`.
+  - Keeps only `BSCSE` & `BSDS` rows, normalizes 9-digit legacy IDs to 10 digits, and matches against `data/sections.json` without overwriting faculty data.
+  - Loaded lazily via dynamic `import()` (`loadExamsData()` / `useExams()`) so Builder's initial bundle stays small.
+  - **Privacy rules**: No student ID is collected anywhere (ID lookup was removed because ID ranges overlap across sections; legacy `uiu-rb:student-id:v1` is cleared on load). Users inspect public section room & ID-range tables directly.
 
 ---
 
@@ -203,7 +219,7 @@ uiu-routine-builder/
 | Export iCal (.ics) | `export.ts` | Done | 12-week recurring schedule for Google/Apple Calendar |
 | Print / PDF Output | `globals.css` (`@media print`)| Done | Strips nav, toolbar, and background for clean PDF printing |
 | Course Directory | `/faculty` (`faculty/page.tsx`)| Done | Course-first directory, alias search (DSA, OS, etc.), UCAM cards |
-| Faculty Directory | `/faculty-directory` (`faculty-directory/page.tsx`)| Done | Faculty-first directory: search, filters, card grid, daily spotlight, leaderboards, compare, TBA tracker |
+| Faculty Directory | `/faculty-directory` (`faculty-directory/page.tsx`)| Done | Faculty-first directory: search, filters, card grid, daily spotlight, collapsed-by-default leaderboards, compare, TBA tracker |
 | Faculty Detail Profile | `/faculty-directory/[id]` (`faculty-directory/[id]/page.tsx`)| Done | Static SSG (207 faculty), profile header, weekly timetable mini-grid, courses & sections, co-instructors |
 | Invariant SiteNav | `SiteNav.tsx` | Done | Single instance in root layout, 3-column grid, 0px shift |
 | Site Footer Credit | `SiteFooter.tsx` | Done | Compact creator credit (Md. Akib Mehedi) & feedback link |
@@ -218,13 +234,14 @@ uiu-routine-builder/
   - `/faculty` : Course Directory (UCAM-inspired course-first directory).
   - `/faculty-directory` : Faculty Directory (searchable instructor list, leaderboards, spotlight, compare).
   - `/faculty-directory/[id]` : Faculty detail profile with weekly teaching timetable and course sections (SSG for all 207 faculty).
+  - `/exams` : Mid-term Exam Schedule (64 unique exams across 472 sections; StatStrip, StartHere, DayStrip, Morning/Midday/Afternoon chips, full-width agenda rows & list view, sticky `My exam plan` panel synced with Builder, Next Exam countdown, and public section ID-range tables).
   - `/courses` : Immediate redirect to `/faculty`.
 - **Navigation Bar (`SiteNav`)**:
   - Rendered **once** from root `src/app/layout.tsx`. Never re-mounts on navigation.
   - Desktop height 64px (`h-16`), mobile height 52px (`h-[52px]`).
   - Layout: CSS Grid `grid-cols-[1fr_auto_1fr] items-center`.
     - Left (start): `<BrandLogo size="nav" />` and brand text.
-    - Center: Nav links (`Home`, `Builder`, `Course Directory`, `Faculty Directory`) with reserved 2px transparent bottom border (`border-b-2 border-transparent`, active `border-orange-500 font-semibold text-orange-600`), ensuring mathematically invariant coordinates across routes.
+    - Center: Nav links (`Home`, `Builder`, `Course Directory`, `Faculty Directory`, `Exams`) driven from `NAV_ITEMS` in `src/config/nav.ts` with reserved 2px transparent bottom border (`border-b-2 border-transparent`, active `border-orange-500 font-semibold text-orange-600`), ensuring mathematically invariant coordinates across routes.
     - Right (end): Route-driven action cluster configured in `src/config/nav.ts`.
 - **Page Max-Width Knob**:
   - Single source of truth: `--page-max-w: 1440px;` in `src/app/globals.css`.

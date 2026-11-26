@@ -553,3 +553,50 @@ Following a session interruption audit:
 - **Verification**:
   - All 223 Vitest tests passing across 17 test files.
   - Clean Next.js production build (`npm run build`).
+
+## Decision 18: Mid-Term Exam Schedule Integration & Privacy-Preserving Room Lookup
+- **Context & Source Data**:
+  - Imported Fall 2026 mid-term exam schedule from SoSE notice board Excel (`mid-term-exam-schedule_sose_notice-board_263.xlsx`, gitignored) via `scripts/extract_exams.py` (`npm run extract:exams`).
+  - Filtered 574 rows down to 472 `BSCSE` (434) and `BSDS` (38) rows (102 `BSEEE`/`BSCE` rows dropped). Matched 463 rows to `data/sections.json` using merged `/` course codes + program + section letter; kept 9 unmatched rows with `sectionId: null` and reported all discrepancies and teacher-initials mismatches (report-only, faculty data untouched) in `docs/exams-import.md`.
+  - Normalized 9-digit legacy student IDs to 10 digits (`011131140` -> `0111310140`) for consistent lexicographical range comparison (`idFrom <= idTo`).
+- **Bundle & Runtime Safety**:
+  - `data/exams.json` is dynamically imported via `loadExamsData()` / `useExams()` only on views that need it so Builder's initial JS bundle stays small.
+  - Missing or empty `exams.json` causes all exam UI elements to hide silently without errors.
+  - Saved routines never persist exam data; exam info is derived at render time and dropped sections are excluded by default.
+  - Solver, scoring, bitmask constraints, section IDs, and faculty data remain strictly untouched; exam clash detection is purely informational and non-blocking.
+- **Privacy Design Limit (Selected-Courses-Only Room Lookup)**:
+  - The Student ID room finder (`StudentIdRoomLookup` + `lookupStudentRoomForCourse`) is intentionally scoped ONLY to the user's selected courses (in Builder's `Routine | Exams` view and `/exams` `"My courses only"` mode).
+  - There is NO global `"student ID -> all exams/courses"` reverse search anywhere in the UI or library, preventing the tool from being used to look up or enumerate other students' full schedules.
+  - The student ID lives in React component state only, with an explicit opt-in `"Remember on this device"` checkbox (default OFF, stored in `uiu-rb:student-id:v1` with a `"Forget"` button), and is never written to URLs, share links, saved routines, `.ics` exports, analytics, or console logs.
+
+## Decision 19: `/exams` Page Redesign — Unique Exams Model & My Exam Plan Panel
+- **Unique Exam Grouping (`groupUniqueExams`)**:
+  - Raw `data/exams.json` holds 472 section-level rows. Counting rows inflated exam counts (e.g. "472 exams" or "9 exams" when searching Operating Systems).
+  - Defined an **exam** as `(courseCode, date, startMin, endMin)`, merging `BSCSE` and `BSDS` rows of the same course/slot into a single `UniqueExam` (64 unique exams across 472 active sections; `CSE 4165` Web Programming has 2 distinct time slots = 2 exams). Dropped sections remain excluded.
+  - Everywhere counts appear (header, stat strip, day tiles, timeline day headers, filter summary, `My exam plan`), unique exams are displayed as the primary count and sections as a muted secondary count (e.g., `"64 exams · 472 sections"`).
+- **Page Layout & Glanceable Structure**:
+  - Header + 4-tile `StatStrip` (Exam days, Total exams, Busiest day, Your exams) + dismissible `StartHere` 3-step onboarding strip (when 0 courses selected).
+  - Large mode switch (`My exams | All exams`, defaulting to `My exams` when courses are selected) + secondary `By date | List` view toggle.
+  - Two-column desktop layout (`>= 1100px`: timeline/list left, sticky 360px `My exam plan` panel right; below `1100px`, collapsible plan card above results) eliminates dead horizontal space when few results match.
+  - Replaced raw slot chips with 3 time-of-day groups (`Morning` < 11:00, `Midday` 11:00–13:59, `Afternoon` >= 14:00) and a horizontal 7-day calendar `DayStrip` with proportional bars and user-exam indicator dots.
+  - Timeline view groups exams by Date -> Time slot -> responsive card grid (`minmax(min(100%, 300px), 1fr)` with `max-w-[480px]` when 1–2 cards) and highlights user courses in `All exams` mode with Builder's course dot color, orange left border, and `"In your routine"` tag.
+- **My Exam Plan Side Panel & Privacy Limits**:
+  - Quick-add search writes directly to the shared `uiu_routine_builder_state` storage used by `/builder`, keeping course selection synced across both pages.
+  - Reuses clash detection and `.ics`/text export helpers (with zero student ID collection and zero ID leakage into URLs `?q=&program=&date=&time=&mode=&view=`, exports, or saved routines).
+
+## Decision 20: Remove Student-ID Lookup & Switch `/exams` to Full-Width Agenda Rows
+- **ID Lookup Removed**:
+  - Removed the student-ID room lookup input, `StudentIdRoomLookup`, `findRoomForId`, `lookupStudentRoomForCourse`, `normalizeStudentId`, and localStorage ID persistence (`uiu-rb:student-id:v1` is actively cleared on load via `clearLegacyStudentIdStorage()`).
+  - Reason: ID ranges overlap across sections/rooms and no student ID should be collected anywhere in the app.
+  - Kept the public `"Sections & rooms"` expandable table (showing section letter, room, and ID range) with the note `"Find your section's room by your ID range."` so students can check their own section's room directly by eye. `.ics` exports omit `LOCATION`.
+- **Full-Width Agenda Rows**:
+  - Removed the left time-label column and the 480px card max-width cap in `ExamTimeline` / `ExamCard` to eliminate empty horizontal space.
+  - Grouped exams by day into full-width agenda rows (`[time chip] [dot + course code + title] [program chips + N sections] [N rooms] [Sections & rooms toggle]`), using thin `"Morning" / "Midday" / "Afternoon"` sub-labels only when a day has 2+ distinct time slots.
+  - Expanded `"Sections & rooms"` renders a full-width multi-column grid (up to 3 columns on desktop).
+
+## Decision 21: Faculty Directory Leaderboard Collapsed by Default & Pluralization
+- **Collapsed by Default (`isLeaderboardsOpen = false`)**:
+  - `Teaching Load Leaderboard` on `/faculty-directory` now always initializes collapsed on every load (no localStorage, sessionStorage, or URL persistence) so the directory list and Spotlight stay immediately accessible without vertical push-down.
+  - `getFacultyLeaderboards()` is deferred via `useMemo` until the user clicks Expand (`aria-expanded`, `aria-controls="teaching-load-leaderboard-panel"`, keyboard focus ring, `motion-reduce:animate-none`).
+- **Pluralization Helper (`src/lib/format.ts`)**:
+  - Added shared `plural(n, singular, pluralForm?)` helper and applied it across Faculty Spotlight, mobile accordion cards, and detail tiles (`1 section` vs `2 sections`, `1 course` vs `2 courses`).
