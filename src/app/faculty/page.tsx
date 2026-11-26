@@ -51,6 +51,14 @@ import { formatTime24 } from '../../utils/export';
 import { applyFixedCourseOverlay, isFixedCourse, isManualScheduleCourse } from '../../lib/fixedCourses';
 import { PAGE_MAX_W } from '../../config/layout';
 import { DroppedSectionsPanel } from '../../components/DroppedSectionsPanel';
+import { useExams } from '../../hooks/useExams';
+import {
+  ExamRow,
+  getExamForSection,
+  getExamsForCourse,
+  isExamExemptCourse,
+  formatExamDateShort,
+} from '../../lib/exams';
 
 /**
  * Highlights matching search query substrings in text with a subtle orange mark
@@ -118,6 +126,8 @@ function CourseDirectoryContent() {
     () => buildCourseDirectory(effectiveCourses, effectiveSections),
     [effectiveCourses, effectiveSections]
   );
+
+  const { exams } = useExams(true);
 
   const [showDroppedView, setShowDroppedView] = useState(false);
 
@@ -944,6 +954,7 @@ function CourseDirectoryContent() {
                 sections={filteredSections}
                 facultyGroups={facultyGroups}
                 builderRequest={builderRequest}
+                exams={exams}
                 onToggleCourse={handleToggleCourseSelection}
                 onCopySections={() => handleCopySections(selectedCourse)}
                 onTogglePreference={handleTogglePreference}
@@ -1139,6 +1150,7 @@ function CourseDirectoryContent() {
                           })
                         )}
                         builderRequest={builderRequest}
+                        exams={exams}
                         onToggleCourse={handleToggleCourseSelection}
                         onCopySections={() => handleCopySections(c)}
                         onTogglePreference={handleTogglePreference}
@@ -1285,6 +1297,7 @@ interface SelectedCourseSectionViewProps {
   sections: CourseDirectorySection[];
   facultyGroups: { facultyName: string; facultyId: string; sections: CourseDirectorySection[] }[];
   builderRequest: Partial<SolveRequest>;
+  exams: ExamRow[];
   onToggleCourse: (courseCode: string) => void;
   onCopySections: () => void;
   onTogglePreference: (type: 'prefer' | 'avoid', courseCode: string, facultyId: string) => void;
@@ -1312,6 +1325,7 @@ function SelectedCourseSectionView({
   sections,
   facultyGroups,
   builderRequest,
+  exams,
   onToggleCourse,
   onCopySections,
   onTogglePreference,
@@ -1334,6 +1348,32 @@ function SelectedCourseSectionView({
 }: SelectedCourseSectionViewProps) {
   const isSelectedInBuilder = builderRequest.selectedCourses?.includes(course.code);
 
+  const courseExamBadge = useMemo(() => {
+    if (!exams || exams.length === 0) return null;
+    if (course.isLab || isExamExemptCourse(course)) return null;
+    const courseExams = getExamsForCourse(course.program, course.code, exams, {
+      includeDropped: showDropped,
+    });
+    if (courseExams.length === 0) {
+      return { kind: 'unannounced' as const, label: 'Exam not announced' };
+    }
+    const slotMap = new Map<string, { date: string; startMin: number }>();
+    for (const ex of courseExams) {
+      const k = `${ex.date}|${ex.startMin}|${ex.endMin}`;
+      if (!slotMap.has(k)) {
+        slotMap.set(k, { date: ex.date, startMin: ex.startMin });
+      }
+    }
+    if (slotMap.size > 1) {
+      return { kind: 'multi' as const, label: `${slotMap.size} exam slots` };
+    }
+    const only = Array.from(slotMap.values())[0];
+    return {
+      kind: 'single' as const,
+      label: `Exam ${formatExamDateShort(only.date)} - ${formatTime24(only.startMin)}`,
+    };
+  }, [exams, course, showDropped]);
+
   return (
     <div className="space-y-4">
       {/* 1. Course Header Card (sticky within pane) */}
@@ -1353,6 +1393,19 @@ function SelectedCourseSectionView({
               {course.allDropped && (
                 <span className="px-2 py-0.5 rounded text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
                   All sections dropped
+                </span>
+              )}
+              {courseExamBadge && (
+                <span
+                  className={`px-2 py-0.5 rounded text-xs font-semibold border ${
+                    courseExamBadge.kind === 'unannounced'
+                      ? 'bg-subtle text-text-muted border-app-border'
+                      : courseExamBadge.kind === 'multi'
+                      ? 'bg-amber-50 text-amber-800 border-amber-200'
+                      : 'bg-sky-50 text-sky-800 border-sky-200'
+                  }`}
+                >
+                  {courseExamBadge.label}
                 </span>
               )}
             </div>
@@ -1652,6 +1705,8 @@ function SelectedCourseSectionView({
                     section={sec}
                     courseCode={course.code}
                     builderRequest={builderRequest}
+                    exams={exams}
+                    showDropped={showDropped}
                     onTogglePreference={onTogglePreference}
                     onOpenFacultyPopover={onOpenFacultyPopover}
                   />
@@ -1667,6 +1722,8 @@ function SelectedCourseSectionView({
               section={sec}
               courseCode={course.code}
               builderRequest={builderRequest}
+              exams={exams}
+              showDropped={showDropped}
               onTogglePreference={onTogglePreference}
               onOpenFacultyPopover={onOpenFacultyPopover}
             />
@@ -1686,17 +1743,28 @@ interface SectionRowItemProps {
   section: CourseDirectorySection;
   courseCode: string;
   builderRequest: Partial<SolveRequest>;
+  exams: ExamRow[];
+  showDropped: boolean;
   onTogglePreference: (type: 'prefer' | 'avoid', courseCode: string, facultyId: string) => void;
   onOpenFacultyPopover: (facultyName: string, courseCode: string, e: React.MouseEvent) => void;
+}
+
+function formatExam24Short(startMin: number, endMin: number): string {
+  const fmt = (m: number) =>
+    `${Math.floor(m / 60).toString().padStart(2, '0')}:${(m % 60).toString().padStart(2, '0')}`;
+  return `${fmt(startMin)}-${fmt(endMin)}`;
 }
 
 function SectionRowItem({
   section,
   courseCode,
   builderRequest,
+  exams,
+  showDropped,
   onTogglePreference,
   onOpenFacultyPopover,
 }: SectionRowItemProps) {
+  const [roomsExpanded, setRoomsExpanded] = useState(false);
   const prefList = builderRequest.preferredFaculty?.[courseCode] || [];
   const avoidList = builderRequest.avoidFaculty?.[courseCode] || [];
   const isPreferred = prefList.includes(section.primaryFacultyId);
@@ -1714,6 +1782,14 @@ function SectionRowItem({
   const updatedSpeech = section.updated ? ', Updated in UCAM' : '';
   const isDropped = section.status === 'dropped';
   const accessibleLabel = `Section ${section.section}, ${section.primaryFaculty}, ${meetingSpeech}${roomSpeech}${updatedSpeech}${isDropped ? ', Dropped' : ''}`;
+
+  const sectionExam =
+    exams.length > 0 &&
+    section.kind !== 'lab' &&
+    !isExamExemptCourse(courseCode) &&
+    (!isDropped || showDropped)
+      ? getExamForSection(section.id, exams, { includeDropped: isDropped && showDropped })
+      : null;
 
   return (
     <div
@@ -1811,6 +1887,50 @@ function SectionRowItem({
               </span>
             )}
           </div>
+
+          {/* Exam info line (hidden for labs and when exams data absent) */}
+          {sectionExam && (
+            <div className="pt-1 space-y-1 text-[11px] text-text-muted">
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span>
+                  Exam: {formatExamDateShort(sectionExam.date)},{' '}
+                  {formatExam24Short(sectionExam.startMin, sectionExam.endMin)}
+                  {sectionExam.rooms.length > 0
+                    ? ` - Rooms: ${sectionExam.rooms.map((r) => r.room).join(', ')}`
+                    : ''}
+                </span>
+                {sectionExam.rooms.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setRoomsExpanded((prev) => !prev)}
+                    aria-expanded={roomsExpanded}
+                    className="text-orange-600 hover:text-orange-700 font-semibold underline inline-flex items-center gap-0.5"
+                  >
+                    <span>
+                      {roomsExpanded
+                        ? 'Hide ranges'
+                        : `${sectionExam.rooms.length} room${
+                            sectionExam.rooms.length === 1 ? '' : 's'
+                          }`}
+                    </span>
+                  </button>
+                )}
+              </div>
+
+              {roomsExpanded && sectionExam.rooms.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 pt-0.5">
+                  {sectionExam.rooms.map((r, idx) => (
+                    <span
+                      key={`${r.room}-${idx}`}
+                      className="px-2 py-0.5 rounded bg-page border border-app-border font-mono text-[11px] text-text-secondary"
+                    >
+                      Room {r.room}: {r.idFrom}–{r.idTo}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
