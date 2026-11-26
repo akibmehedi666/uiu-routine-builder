@@ -77,7 +77,7 @@ uiu-routine-builder/
 │   │   │   ├── page.tsx     # Directory + Fall 2026 Stats view switcher
 │   │   │   ├── [id]/        # Profile view with static generation for canonical + legacy IDs
 │   │   │   └── compare/     # /faculty-directory/compare?a=...&b=... side-by-side comparison
-│   │   ├── exams/           # /exams route (Mid-term Exam Schedule + My Courses room lookup)
+│   │   ├── exams/           # /exams route (Exam Schedule redesign + _components/: StatStrip, StartHere, DayStrip, ExamCard, ExamTimeline, MyExamPlan)
 │   │   ├── courses/         # /courses route (Redirects to /faculty)
 │   │   ├── icon.svg         # Clean timetable blocks vector favicon
 │   │   ├── favicon.ico      # Multi-resolution ICO (16, 32, 48)
@@ -234,7 +234,7 @@ uiu-routine-builder/
   - `/faculty` : Course Directory (UCAM-inspired course-first directory).
   - `/faculty-directory` : Faculty Directory (searchable instructor list, leaderboards, spotlight, compare).
   - `/faculty-directory/[id]` : Faculty detail profile with weekly teaching timetable and course sections (SSG for all 207 faculty).
-  - `/exams` : Mid-term Exam Schedule (search, program/date/time filters, "My courses only" mode, room-by-ID lookup, Copy/.ics export).
+  - `/exams` : Mid-term Exam Schedule (64 unique exams across 472 sections; StatStrip, StartHere, DayStrip, Morning/Midday/Afternoon chips, timeline/list views, sticky `My exam plan` panel synced with Builder, Next Exam countdown, and selected-courses-only room lookup).
   - `/courses` : Immediate redirect to `/faculty`.
 - **Navigation Bar (`SiteNav`)**:
   - Rendered **once** from root `src/app/layout.tsx`. Never re-mounts on navigation.

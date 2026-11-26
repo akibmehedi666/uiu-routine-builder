@@ -568,3 +568,18 @@ Following a session interruption audit:
   - The Student ID room finder (`StudentIdRoomLookup` + `lookupStudentRoomForCourse`) is intentionally scoped ONLY to the user's selected courses (in Builder's `Routine | Exams` view and `/exams` `"My courses only"` mode).
   - There is NO global `"student ID -> all exams/courses"` reverse search anywhere in the UI or library, preventing the tool from being used to look up or enumerate other students' full schedules.
   - The student ID lives in React component state only, with an explicit opt-in `"Remember on this device"` checkbox (default OFF, stored in `uiu-rb:student-id:v1` with a `"Forget"` button), and is never written to URLs, share links, saved routines, `.ics` exports, analytics, or console logs.
+
+## Decision 19: `/exams` Page Redesign — Unique Exams Model & My Exam Plan Panel
+- **Unique Exam Grouping (`groupUniqueExams`)**:
+  - Raw `data/exams.json` holds 472 section-level rows. Counting rows inflated exam counts (e.g. "472 exams" or "9 exams" when searching Operating Systems).
+  - Defined an **exam** as `(courseCode, date, startMin, endMin)`, merging `BSCSE` and `BSDS` rows of the same course/slot into a single `UniqueExam` (64 unique exams across 472 active sections; `CSE 4165` Web Programming has 2 distinct time slots = 2 exams). Dropped sections remain excluded.
+  - Everywhere counts appear (header, stat strip, day tiles, timeline day headers, filter summary, `My exam plan`), unique exams are displayed as the primary count and sections as a muted secondary count (e.g., `"64 exams · 472 sections"`).
+- **Page Layout & Glanceable Structure**:
+  - Header + 4-tile `StatStrip` (Exam days, Total exams, Busiest day, Your exams) + dismissible `StartHere` 3-step onboarding strip (when 0 courses selected).
+  - Large mode switch (`My exams | All exams`, defaulting to `My exams` when courses are selected) + secondary `By date | List` view toggle.
+  - Two-column desktop layout (`>= 1100px`: timeline/list left, sticky 360px `My exam plan` panel right; below `1100px`, collapsible plan card above results) eliminates dead horizontal space when few results match.
+  - Replaced raw slot chips with 3 time-of-day groups (`Morning` < 11:00, `Midday` 11:00–13:59, `Afternoon` >= 14:00) and a horizontal 7-day calendar `DayStrip` with proportional bars and user-exam indicator dots.
+  - Timeline view groups exams by Date -> Time slot -> responsive card grid (`minmax(min(100%, 300px), 1fr)` with `max-w-[480px]` when 1–2 cards) and highlights user courses in `All exams` mode with Builder's course dot color, orange left border, and `"In your routine"` tag.
+- **My Exam Plan Side Panel & Privacy Limits**:
+  - Quick-add search writes directly to the shared `uiu_routine_builder_state` storage used by `/builder`, keeping course selection synced across both pages.
+  - Reuses `StudentIdRoomLookup`, clash detection, and `.ics`/text export helpers with the strict selected-courses-only limit and zero ID leakage into URLs (`?q=&program=&date=&time=&mode=&view=`), exports, or saved routines.
