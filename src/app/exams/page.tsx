@@ -26,9 +26,9 @@ import {
   getNextExam,
   groupUniqueExams,
   isExamExemptCourse,
-  lookupStudentRoomForCourse,
   parseExamsPageParams,
   serializeExamsPageParams,
+  clearLegacyStudentIdStorage,
 } from '../../lib/exams';
 import { naturalCourseCodeSort } from '../../lib/courseSearch';
 import { StatStrip } from './_components/StatStrip';
@@ -48,7 +48,6 @@ import {
   AlertTriangle,
   CheckCircle2,
   Info,
-  MapPin,
   Clock,
   BookOpen,
   ArrowRight,
@@ -101,9 +100,6 @@ function ExamsPageContent() {
   const [viewMode, setViewMode] = useState<'date' | 'list'>('date');
   const [sortBy, setSortBy] = useState<'date' | 'code'>('date');
 
-  // Student ID (lives in component state only; opt-in localStorage handled inside StudentIdRoomLookup)
-  const [activeStudentId, setActiveStudentId] = useState<string | null>(null);
-
   // Mobile side-panel collapse state (< 1100px)
   const [mobilePlanExpanded, setMobilePlanExpanded] = useState(false);
 
@@ -111,9 +107,10 @@ function ExamsPageContent() {
   const quickAddInputRef = useRef<HTMLInputElement>(null);
   const urlHydratedRef = useRef(false);
 
-  // 1. Hydrate shared Builder state & StartHere dismissal on mount
+  // 1. Hydrate shared Builder state, StartHere dismissal, and clear legacy student ID key
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    clearLegacyStudentIdStorage();
     let loadedCourses: string[] = [];
     try {
       const raw =
@@ -376,17 +373,6 @@ function ExamsPageContent() {
     () => (mode === 'mine' ? getNextExam(myUniqueExams) : { status: 'none' as const }),
     [mode, myUniqueExams]
   );
-
-  const nextExamRoomLookup = useMemo(() => {
-    if (nextExamResult.status !== 'upcoming' || !activeStudentId) return null;
-    const ex = nextExamResult.exam;
-    const courseRows = getExamsForCourse(null, ex.courseCode, activeRows);
-    const lockedId = lockedSections[ex.courseCode];
-    const ownRow = lockedId
-      ? courseRows.find((r) => r.sectionId === lockedId) || courseRows[0] || null
-      : courseRows[0] || null;
-    return lookupStudentRoomForCourse(ownRow, courseRows, activeStudentId);
-  }, [nextExamResult, activeStudentId, activeRows, lockedSections]);
 
   // Filter & sort UniqueExams for the active mode
   const filteredExams = useMemo(() => {
@@ -655,8 +641,6 @@ function ExamsPageContent() {
                   selectedCourses={selectedCourses}
                   lockedSections={lockedSections}
                   examReport={myExamReport}
-                  activeStudentId={activeStudentId}
-                  onApplyStudentId={setActiveStudentId}
                   onAddCourse={handleAddCourse}
                   onRemoveCourse={handleRemoveCourse}
                   quickAddInputRef={quickAddInputRef}
@@ -711,12 +695,6 @@ function ExamsPageContent() {
                                   nextExamResult.exam.endMin
                                 )}
                               </span>
-                              {nextExamRoomLookup?.status === 'found-own' && (
-                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-chip bg-emerald-50 text-emerald-900 border border-emerald-300 font-bold">
-                                  <MapPin className="w-3.5 h-3.5 text-emerald-600" />
-                                  Room {nextExamRoomLookup.room}
-                                </span>
-                              )}
                             </div>
                           </div>
                         </div>
@@ -954,7 +932,7 @@ function ExamsPageContent() {
                       </h2>
                       <p className="text-sm text-text-secondary max-w-md mx-auto">
                         1. Add your courses &rarr; 2. See your dates and clashes
-                        &rarr; 3. Enter your student ID to find your room.
+                        &rarr; 3. Check your section&apos;s room by ID range.
                       </p>
                     </div>
                     <div className="flex items-center justify-center gap-2.5 flex-wrap">
@@ -1008,12 +986,10 @@ function ExamsPageContent() {
                 ) : (
                   <ExamTimeline
                     exams={filteredExams}
-                    allActiveRows={activeRows}
                     viewMode={viewMode}
                     mode={mode}
                     userCourseSet={userCourseSet}
                     lockedSections={lockedSections}
-                    activeStudentId={activeStudentId}
                   />
                 )}
               </div>

@@ -582,4 +582,14 @@ Following a session interruption audit:
   - Timeline view groups exams by Date -> Time slot -> responsive card grid (`minmax(min(100%, 300px), 1fr)` with `max-w-[480px]` when 1–2 cards) and highlights user courses in `All exams` mode with Builder's course dot color, orange left border, and `"In your routine"` tag.
 - **My Exam Plan Side Panel & Privacy Limits**:
   - Quick-add search writes directly to the shared `uiu_routine_builder_state` storage used by `/builder`, keeping course selection synced across both pages.
-  - Reuses `StudentIdRoomLookup`, clash detection, and `.ics`/text export helpers with the strict selected-courses-only limit and zero ID leakage into URLs (`?q=&program=&date=&time=&mode=&view=`), exports, or saved routines.
+  - Reuses clash detection and `.ics`/text export helpers (with zero student ID collection and zero ID leakage into URLs `?q=&program=&date=&time=&mode=&view=`, exports, or saved routines).
+
+## Decision 20: Remove Student-ID Lookup & Switch `/exams` to Full-Width Agenda Rows
+- **ID Lookup Removed**:
+  - Removed the student-ID room lookup input, `StudentIdRoomLookup`, `findRoomForId`, `lookupStudentRoomForCourse`, `normalizeStudentId`, and localStorage ID persistence (`uiu-rb:student-id:v1` is actively cleared on load via `clearLegacyStudentIdStorage()`).
+  - Reason: ID ranges overlap across sections/rooms and no student ID should be collected anywhere in the app.
+  - Kept the public `"Sections & rooms"` expandable table (showing section letter, room, and ID range) with the note `"Find your section's room by your ID range."` so students can check their own section's room directly by eye. `.ics` exports omit `LOCATION`.
+- **Full-Width Agenda Rows**:
+  - Removed the left time-label column and the 480px card max-width cap in `ExamTimeline` / `ExamCard` to eliminate empty horizontal space.
+  - Grouped exams by day into full-width agenda rows (`[time chip] [dot + course code + title] [program chips + N sections] [N rooms] [Sections & rooms toggle]`), using thin `"Morning" / "Midday" / "Afternoon"` sub-labels only when a day has 2+ distinct time slots.
+  - Expanded `"Sections & rooms"` renders a full-width multi-column grid (up to 3 columns on desktop).

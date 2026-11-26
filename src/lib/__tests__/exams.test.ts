@@ -1,9 +1,6 @@
 import {
-  normalizeStudentId,
   getExamForSection,
   getExamsForCourse,
-  findRoomForId,
-  lookupStudentRoomForCourse,
   detectExamClashes,
   exportExamsToICS,
   exportExamsToText,
@@ -18,7 +15,7 @@ import {
   parseExamsPageParams,
   serializeExamsPageParams,
   ExamRow,
-} from '../exams';
+} from '../lib/exams';
 import { serializeToParams } from '../../utils/urlSync';
 import { buildSavedRoutineObject, encodeSharedRoutineUrl } from '../../utils/savedRoutinesStorage';
 import { ScheduleResult, Section, SolveRequest } from '../../types';
@@ -196,46 +193,6 @@ const SAMPLE_EXAMS: ExamRow[] = [
 ];
 
 describe('exams pure logic', () => {
-  describe('normalizeStudentId', () => {
-    it('normalizes 9-digit legacy IDs by inserting 0 before last 3 digits', () => {
-      expect(normalizeStudentId('011131140')).toBe('0111310140');
-      expect(normalizeStudentId('011202072')).toBe('0112020072');
-    });
-
-    it('keeps valid 10-digit IDs intact and strips spaces/dashes', () => {
-      expect(normalizeStudentId('0112230263')).toBe('0112230263');
-      expect(normalizeStudentId(' 011-223-0263 ')).toBe('0112230263');
-      expect(normalizeStudentId('011-131-140')).toBe('0111310140');
-    });
-
-    it('rejects invalid lengths or non-digit characters', () => {
-      expect(normalizeStudentId('')).toBeNull();
-      expect(normalizeStudentId('12345678')).toBeNull();
-      expect(normalizeStudentId('12345678901')).toBeNull();
-      expect(normalizeStudentId('011223026A')).toBeNull();
-    });
-  });
-
-  describe('range check boundaries and mixed-length ranges', () => {
-    it('matches inclusive start and end boundaries', () => {
-      const row = SAMPLE_EXAMS[2]; // 601: 0111310140 - 0112230263
-      expect(findRoomForId(row, '0111310140')).toBe('601');
-      expect(findRoomForId(row, '011131140')).toBe('601'); // 9-digit equivalent of start
-      expect(findRoomForId(row, '0112230263')).toBe('601');
-      expect(findRoomForId(row, '0111310139')).toBeNull();
-      expect(findRoomForId(row, '0112230264')).toBeNull();
-    });
-
-    it('handles mixed-length range ends defensively', () => {
-      const mixedRow: ExamRow = {
-        ...SAMPLE_EXAMS[0],
-        rooms: [{ room: '601', idFrom: '011131140', idTo: '0112230263' }],
-      };
-      expect(findRoomForId(mixedRow, '011131500')).toBe('601');
-      expect(findRoomForId(mixedRow, '0112020072')).toBe('601');
-    });
-  });
-
   describe('code-list matching and program separation', () => {
     it('matches any code in merged courseCodes list (e.g. CSE 4509/CSE 4511/CSI 309)', () => {
       expect(getExamsForCourse('BSCSE', 'CSE 4509', SAMPLE_EXAMS)).toHaveLength(2);
@@ -322,46 +279,21 @@ describe('exams pure logic', () => {
     });
   });
 
-  describe('room lookup (own section / other section / not found)', () => {
-    it('finds room in own section, other section, or returns not-found', () => {
-      const own = SAMPLE_EXAMS[0]; // Sec A: 0112020072-0112330055 (303)
-      const courseExams = getExamsForCourse('BSCSE', 'CSE 4509', SAMPLE_EXAMS);
-
-      const resOwn = lookupStudentRoomForCourse(own, courseExams, '0112020072');
-      expect(resOwn.status).toBe('found-own');
-      if (resOwn.status === 'found-own') {
-        expect(resOwn.room).toBe('303');
-      }
-
-      // ID 011182112 -> 0111820112 is in Sec B (room 305)
-      const resOther = lookupStudentRoomForCourse(own, courseExams, '011182112');
-      expect(resOther.status).toBe('found-other');
-      if (resOther.status === 'found-other') {
-        expect(resOther.section).toBe('B');
-        expect(resOther.room).toBe('305');
-      }
-
-      const resNone = lookupStudentRoomForCourse(own, courseExams, '0119999999');
-      expect(resNone.status).toBe('not-found');
-    });
-  });
-
-  describe('privacy invariants', () => {
-    it('never leaks student ID into generated URLs, ICS, text export, or saved routine objects', () => {
-      const secretId = '0112230263';
+  describe('exports and no student-ID collection', () => {
+    it('exports ICS without LOCATION or VALARM and never stores exam data in saved routines', () => {
       const urlParams = serializeToParams({
         selectedCourses: ['CSE 4509'],
         lockedSections: { 'CSE 4509': 'BSCSE-CSE 4509-A' },
       });
-      expect(urlParams).not.toContain(secretId);
+      expect(urlParams).toContain('CSE');
 
-      const ics = exportExamsToICS([{ exam: SAMPLE_EXAMS[0], foundRoom: '303' }]);
-      expect(ics).toContain('LOCATION:Room 303, UIU Campus');
-      expect(ics).not.toContain(secretId);
+      const ics = exportExamsToICS([{ exam: SAMPLE_EXAMS[0] }]);
+      expect(ics).toContain('SUMMARY:CSE 4509 Mid-term (Sec A)');
+      expect(ics).not.toContain('LOCATION:');
       expect(ics).not.toContain('VALARM');
 
-      const txt = exportExamsToText([{ exam: SAMPLE_EXAMS[0], foundRoom: '303' }]);
-      expect(txt).not.toContain(secretId);
+      const txt = exportExamsToText([{ exam: SAMPLE_EXAMS[0] }]);
+      expect(txt).toContain('CSE 4509');
 
       const mockSec: Section = {
         id: 'BSCSE-CSE 4509-A',
@@ -416,26 +348,14 @@ describe('exams pure logic', () => {
         schedule: mockSchedule,
         request: mockReq,
       });
-      const savedJson = JSON.stringify(saved);
-      expect(savedJson).not.toContain(secretId);
-      expect(savedJson).not.toContain('exams');
-
-      const shareToken = encodeSharedRoutineUrl(saved);
-      expect(shareToken).not.toContain(secretId);
+      expect(JSON.stringify(saved)).not.toContain('exams');
+      expect(encodeSharedRoutineUrl(saved)).toBeTruthy();
     });
   });
 
   describe('unique exam grouping and counts', () => {
     it('merges BSCSE and BSDS rows of the same course and slot into one exam', () => {
       const grouped = groupUniqueExams(SAMPLE_EXAMS);
-      // SAMPLE_EXAMS has 10 rows:
-      // - CSE 4509 A & B (1 exam, 2 sections)
-      // - CSE 3811 A (1 exam, 1 section)
-      // - CSE 4889 A (1 exam, 1 section)
-      // - CSE 3521 A (BSCSE) + BA (BSDS) -> merged into 1 exam, 2 sections
-      // - CSE 4165 A (slot 1) and C (slot 2) -> 2 exams, 1 section each
-      // - CSE 3411 A (1 exam, 1 section)
-      // - CSE 4811 A (dropped -> excluded)
       expect(grouped).toHaveLength(7);
       const { examCount, sectionCount } = countExamsAndSections(grouped);
       expect(examCount).toBe(7);
@@ -457,12 +377,12 @@ describe('exams pure logic', () => {
 
   describe('timeOfDay boundaries', () => {
     it('classifies Morning (<11:00), Midday (11:00..13:59), Afternoon (>=14:00)', () => {
-      expect(timeOfDay(510)).toBe('morning'); // 08:30
-      expect(timeOfDay(659)).toBe('morning'); // 10:59
-      expect(timeOfDay(660)).toBe('midday');  // 11:00
-      expect(timeOfDay(839)).toBe('midday');  // 13:59
-      expect(timeOfDay(840)).toBe('afternoon'); // 14:00
-      expect(timeOfDay(870)).toBe('afternoon'); // 14:30
+      expect(timeOfDay(510)).toBe('morning');
+      expect(timeOfDay(659)).toBe('morning');
+      expect(timeOfDay(660)).toBe('midday');
+      expect(timeOfDay(839)).toBe('midday');
+      expect(timeOfDay(840)).toBe('afternoon');
+      expect(timeOfDay(870)).toBe('afternoon');
     });
   });
 
@@ -520,8 +440,8 @@ describe('exams pure logic', () => {
     });
   });
 
-  describe('deep-link parsing and privacy', () => {
-    it('parses valid params, falls back on invalid values, and never serializes student ID', () => {
+  describe('deep-link parsing', () => {
+    it('parses valid params, falls back on invalid values, and ignores unknown ID params', () => {
       const parsed = parseExamsPageParams(
         '?q=CSE+4509&program=BSCSE&date=2026-12-05&time=morning&mode=all&view=list&id=0112230263',
         true

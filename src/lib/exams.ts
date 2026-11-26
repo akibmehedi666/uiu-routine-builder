@@ -4,8 +4,6 @@ import { isManualScheduleCourse } from './fixedCourses';
 import { resolveSectionId } from './sectionAliases';
 import { formatTime24 } from '../utils/export';
 
-export const STUDENT_ID_STORAGE_KEY = 'uiu-rb:student-id:v1';
-
 export interface ExamRoomRange {
   room: string;
   idFrom: string; // normalized 10-digit string
@@ -71,15 +69,8 @@ export interface ExamClashReport {
   knownTheoryCount: number;
 }
 
-export type StudentRoomLookupResult =
-  | { status: 'invalid-id' }
-  | { status: 'found-own'; room: string; exam: ExamRow }
-  | { status: 'found-other'; room: string; section: string; exam: ExamRow }
-  | { status: 'not-found' };
-
 export interface RoutineExamExportItem {
   exam: ExamRow;
-  foundRoom?: string | null;
 }
 
 let cachedExamsPromise: Promise<ExamRow[]> | null = null;
@@ -101,23 +92,6 @@ export async function loadExamsData(): Promise<ExamRow[]> {
 
 function normalizeCodeKey(code: string): string {
   return String(code || '').replace(/\s+/g, '').toUpperCase();
-}
-
-/**
- * Normalizes a 9- or 10-digit UIU student ID into a 10-digit string.
- * Strips spaces and dashes. For 9-digit legacy IDs, inserts "0" before the last 3 digits
- * (e.g. "011131140" -> "0111310140"). Returns null for invalid inputs.
- */
-export function normalizeStudentId(input: string): string | null {
-  if (typeof input !== 'string') return null;
-  const cleaned = input.replace(/[\s-]+/g, '').trim();
-  if (!/^\d{9,10}$/.test(cleaned)) {
-    return null;
-  }
-  if (cleaned.length === 9) {
-    return `${cleaned.slice(0, -3)}0${cleaned.slice(-3)}`;
-  }
-  return cleaned;
 }
 
 /**
@@ -192,60 +166,6 @@ export function getExamsForCourse(
     if (normalizeCodeKey(e.courseCode) === target) return true;
     return e.courseCodes.some((c) => normalizeCodeKey(c) === target);
   });
-}
-
-/**
- * Finds the assigned room for a student ID within an exam row using normalized 10-digit inclusive bounds.
- */
-export function findRoomForId(examRow: ExamRow, studentId: string): string | null {
-  const normId = normalizeStudentId(studentId);
-  if (!normId || !examRow || !Array.isArray(examRow.rooms)) return null;
-
-  for (const r of examRow.rooms) {
-    const fromNorm = normalizeStudentId(r.idFrom);
-    const toNorm = normalizeStudentId(r.idTo);
-    if (!fromNorm || !toNorm) continue;
-    if (normId >= fromNorm && normId <= toNorm) {
-      return r.room;
-    }
-  }
-  return null;
-}
-
-/**
- * Searches for a student's room in their selected section's exam row, falling back to
- * other active sections of the same course if not found in their own section.
- */
-export function lookupStudentRoomForCourse(
-  ownExam: ExamRow | null,
-  allCourseExams: ExamRow[],
-  studentId: string
-): StudentRoomLookupResult {
-  const normId = normalizeStudentId(studentId);
-  if (!normId) return { status: 'invalid-id' };
-
-  if (ownExam) {
-    const ownRoom = findRoomForId(ownExam, normId);
-    if (ownRoom) {
-      return { status: 'found-own', room: ownRoom, exam: ownExam };
-    }
-  }
-
-  for (const other of allCourseExams) {
-    if (other.sectionStatus === 'dropped') continue;
-    if (ownExam && other.id === ownExam.id) continue;
-    const room = findRoomForId(other, normId);
-    if (room) {
-      return {
-        status: 'found-other',
-        room,
-        section: other.section,
-        exam: other,
-      };
-    }
-  }
-
-  return { status: 'not-found' };
 }
 
 /**
@@ -489,12 +409,11 @@ export function exportExamsToText(items: RoutineExamExportItem[]): string {
     '',
   ];
 
-  for (const { exam, foundRoom } of sorted) {
-    const roomStr = foundRoom
-      ? `Room ${foundRoom}`
-      : exam.rooms.length > 0
-      ? `Rooms: ${exam.rooms.map((r) => r.room).join(', ')}`
-      : 'Room TBA';
+  for (const { exam } of sorted) {
+    const roomStr =
+      exam.rooms.length > 0
+        ? `Rooms: ${exam.rooms.map((r) => r.room).join(', ')}`
+        : 'Room TBA';
     lines.push(
       `${formatExamDateShort(exam.date)} (${exam.dayOfWeek}) | ${formatExamTimeRange(
         exam.startMin,
@@ -516,7 +435,7 @@ function pad2(n: number): string {
 
 /**
  * Generates an RFC 5545 iCalendar (.ics) string for mid-term exams.
- * Timed events with TZID=Asia/Dhaka, no VALARM reminders, and NEVER contains student IDs.
+ * Timed events with TZID=Asia/Dhaka, no VALARM reminders, and leaves LOCATION empty.
  */
 export function exportExamsToICS(items: RoutineExamExportItem[]): string {
   const sorted = [...items].sort(
@@ -536,7 +455,7 @@ export function exportExamsToICS(items: RoutineExamExportItem[]): string {
     'X-WR-TIMEZONE:Asia/Dhaka',
   ];
 
-  for (const { exam, foundRoom } of sorted) {
+  for (const { exam } of sorted) {
     const dateCompact = exam.date.replace(/-/g, '');
     const sH = pad2(Math.floor(exam.startMin / 60));
     const sM = pad2(exam.startMin % 60);
@@ -544,11 +463,6 @@ export function exportExamsToICS(items: RoutineExamExportItem[]): string {
     const eM = pad2(exam.endMin % 60);
 
     const uid = `exam-${exam.id.replace(/\s+/g, '')}-${dateCompact}@uiu.ac.bd`;
-    const location = foundRoom
-      ? `Room ${foundRoom}, UIU Campus`
-      : exam.rooms.length > 0
-      ? `Rooms ${exam.rooms.map((r) => r.room).join(', ')}, UIU Campus`
-      : 'UIU Campus';
 
     lines.push('BEGIN:VEVENT');
     lines.push(`UID:${uid}`);
@@ -556,7 +470,6 @@ export function exportExamsToICS(items: RoutineExamExportItem[]): string {
     lines.push(`DTSTART;TZID=Asia/Dhaka:${dateCompact}T${sH}${sM}00`);
     lines.push(`DTEND;TZID=Asia/Dhaka:${dateCompact}T${eH}${eM}00`);
     lines.push(`SUMMARY:${exam.courseCode} Mid-term (Sec ${exam.section})`);
-    lines.push(`LOCATION:${location}`);
     lines.push(
       `DESCRIPTION:Course: ${exam.courseTitle}\\nSection: ${exam.section}\\nConfirm room on the SoSE notice board.`
     );
@@ -569,30 +482,14 @@ export function exportExamsToICS(items: RoutineExamExportItem[]): string {
 }
 
 /**
- * Safely reads saved student ID from localStorage (returns '' if unavailable).
+ * One-time cleanup for legacy saved student ID key in localStorage.
  */
-export function loadStoredStudentId(): string {
-  if (typeof window === 'undefined') return '';
-  try {
-    return window.localStorage.getItem(STUDENT_ID_STORAGE_KEY) || '';
-  } catch {
-    return '';
-  }
-}
-
-/**
- * Safely writes or removes student ID in localStorage.
- */
-export function saveStoredStudentId(studentId: string | null): void {
+export function clearLegacyStudentIdStorage(): void {
   if (typeof window === 'undefined') return;
   try {
-    if (!studentId) {
-      window.localStorage.removeItem(STUDENT_ID_STORAGE_KEY);
-    } else {
-      window.localStorage.setItem(STUDENT_ID_STORAGE_KEY, studentId);
-    }
+    window.localStorage.removeItem('uiu-rb:student-id:v1');
   } catch {
-    // Ignore storage quota or private mode blocks
+    // Ignore private mode or storage errors
   }
 }
 

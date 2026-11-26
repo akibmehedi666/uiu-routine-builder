@@ -3,73 +3,52 @@
 import React, { useMemo } from 'react';
 import {
   UniqueExam,
-  ExamRow,
   TimeOfDayGroup,
   TIME_OF_DAY_META,
-  StudentRoomLookupResult,
   countExamsAndSections,
   formatExamCountSummary,
   formatExamDayLabel,
   formatExamTimeRange,
-  getExamsForCourse,
-  lookupStudentRoomForCourse,
 } from '../../../lib/exams';
 import { getCourseColor } from '../../../utils/colors';
 import { ExamCard } from './ExamCard';
-import { Sunrise, Sun, Sunset, BookmarkCheck } from 'lucide-react';
+import { Sunrise, Sun, Sunset, BookmarkCheck, Calendar } from 'lucide-react';
 
 interface ExamTimelineProps {
   exams: UniqueExam[];
-  allActiveRows: ExamRow[];
   viewMode: 'date' | 'list';
   mode: 'mine' | 'all';
   userCourseSet: Set<string>;
   lockedSections: Record<string, string>;
-  activeStudentId: string | null;
 }
 
 function TimeOfDayIcon({ group }: { group: TimeOfDayGroup }) {
   if (group === 'morning') {
-    return <Sunrise className="w-4 h-4 text-amber-600 shrink-0" />;
+    return <Sunrise className="w-3.5 h-3.5 text-amber-600 shrink-0" />;
   }
   if (group === 'midday') {
-    return <Sun className="w-4 h-4 text-orange-500 shrink-0" />;
+    return <Sun className="w-3.5 h-3.5 text-orange-500 shrink-0" />;
   }
-  return <Sunset className="w-4 h-4 text-rose-500 shrink-0" />;
+  return <Sunset className="w-3.5 h-3.5 text-rose-500 shrink-0" />;
 }
 
 export function ExamTimeline({
   exams,
-  allActiveRows,
   viewMode,
   mode,
   userCourseSet,
   lockedSections,
-  activeStudentId,
 }: ExamTimelineProps) {
   const isCourseSelected = (exam: UniqueExam) =>
     userCourseSet.has(exam.courseCode) ||
     exam.courseCodes.some((c) => userCourseSet.has(c));
 
-  const getLookupForExam = (
-    exam: UniqueExam
-  ): { lookup: StudentRoomLookupResult | null; lockedLabel: string | null } => {
+  const getLockedLabel = (exam: UniqueExam): string | null => {
     const lockedId = lockedSections[exam.courseCode];
     const matchedLocked = lockedId
       ? exam.sections.find((s) => s.sectionId === lockedId)
       : null;
-    const lockedLabel = matchedLocked ? matchedLocked.section : null;
-
-    if (mode !== 'mine' || !activeStudentId) {
-      return { lookup: null, lockedLabel };
-    }
-
-    const courseRows = getExamsForCourse(null, exam.courseCode, allActiveRows);
-    const ownRow = matchedLocked
-      ? courseRows.find((r) => r.id === matchedLocked.id) || null
-      : courseRows[0] || null;
-    const lookup = lookupStudentRoomForCourse(ownRow, courseRows, activeStudentId);
-    return { lookup, lockedLabel };
+    return matchedLocked ? matchedLocked.section : null;
   };
 
   // Group into Date -> Time Slot -> UniqueExam[]
@@ -139,18 +118,16 @@ export function ExamTimeline({
                 <th className="py-3 px-3.5 font-semibold">Course</th>
                 <th className="py-3 px-3.5 font-semibold whitespace-nowrap">Programs</th>
                 <th className="py-3 px-3.5 font-semibold whitespace-nowrap">Sections</th>
-                <th className="py-3 px-3.5 font-semibold">Rooms</th>
+                <th className="py-3 px-3.5 font-semibold whitespace-nowrap">Rooms</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-app-border text-[13px]">
               {exams.map((exam) => {
                 const isUser = isCourseSelected(exam);
-                const { lookup } = getLookupForExam(exam);
                 const dotColor = isUser
                   ? getCourseColor(exam.courseCode).accent
                   : '#9CA3AF';
-                const visibleRooms = exam.roomsSummary.slice(0, 3);
-                const extra = Math.max(0, exam.roomsSummary.length - 3);
+                const roomCount = exam.roomsSummary.length;
 
                 return (
                   <tr
@@ -206,24 +183,10 @@ export function ExamTimeline({
                     <td className="py-3 px-3.5 whitespace-nowrap font-medium text-text-primary">
                       {exam.sectionCount}
                     </td>
-                    <td className="py-3 px-3.5 text-text-secondary">
-                      <div className="flex flex-wrap items-center gap-1.5">
-                        {lookup?.status === 'found-own' && (
-                          <span className="px-2 py-0.5 rounded-chip bg-emerald-50 text-emerald-900 border border-emerald-300 text-xs font-bold">
-                            Room {lookup.room}
-                          </span>
-                        )}
-                        {lookup?.status === 'found-other' && (
-                          <span className="px-2 py-0.5 rounded-chip bg-amber-50 text-amber-900 border border-amber-300 text-xs font-semibold">
-                            Sec {lookup.section} (Room {lookup.room})
-                          </span>
-                        )}
-                        <span>
-                          {exam.roomsSummary.length === 0
-                            ? 'TBA'
-                            : `${visibleRooms.join(', ')}${extra > 0 ? ` +${extra}` : ''}`}
-                        </span>
-                      </div>
+                    <td className="py-3 px-3.5 whitespace-nowrap text-text-secondary">
+                      {roomCount === 0
+                        ? 'TBA'
+                        : `${roomCount} ${roomCount === 1 ? 'room' : 'rooms'}`}
                     </td>
                   </tr>
                 );
@@ -235,75 +198,74 @@ export function ExamTimeline({
     );
   }
 
-  // TIMELINE VIEW ("By date")
+  // FULL-WIDTH AGENDA ROWS GROUPED BY DAY
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {timelineDays.map((day) => {
         const counts = countExamsAndSections(day.exams);
+        const showSlotSubLabels = day.slots.length >= 2;
+
         return (
           <section
             key={day.date}
             aria-label={`Exams on ${day.dayLabel}`}
-            className="space-y-3"
+            className="rounded-card bg-surface border border-app-border shadow-warm overflow-hidden"
           >
             {/* Day Header */}
-            <div className="flex items-center justify-between gap-2 pb-2 border-b border-app-border">
-              <h3 className="text-lg font-semibold text-text-primary">
-                {day.dayLabel}
-              </h3>
-              <span className="px-2.5 py-0.5 rounded-full bg-subtle border border-app-border text-xs font-semibold text-text-secondary">
+            <div className="px-4 py-3 bg-subtle border-b border-app-border flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 min-w-0">
+                <Calendar className="w-4 h-4 text-orange-500 shrink-0" />
+                <h3 className="text-lg font-semibold text-text-primary truncate">
+                  {day.dayLabel}
+                </h3>
+              </div>
+              <span className="px-2.5 py-0.5 rounded-full bg-surface border border-app-border text-xs font-semibold text-text-secondary shrink-0">
                 {formatExamCountSummary(counts.examCount, counts.sectionCount)}
               </span>
             </div>
 
-            {/* Time Slot Rows */}
-            <div className="space-y-4">
-              {day.slots.map((slot) => {
-                const constrainCards = slot.exams.length <= 2;
-                return (
+            {/* Agenda Rows (grouped by time slot only when a day has 2+ slots) */}
+            {showSlotSubLabels ? (
+              <div>
+                {day.slots.map((slot, slotIdx) => (
                   <div
                     key={slot.slotKey}
-                    className="grid grid-cols-1 md:grid-cols-[176px_1fr] gap-3 items-start"
+                    className={slotIdx > 0 ? 'border-t border-app-border' : ''}
                   >
-                    {/* Left Time Label */}
-                    <div className="md:pt-2 flex md:flex-col items-center md:items-start gap-2 md:gap-0.5">
-                      <div className="inline-flex items-center gap-1.5 text-sm font-semibold text-text-primary">
-                        <TimeOfDayIcon group={slot.timeGroup} />
-                        <span>{TIME_OF_DAY_META[slot.timeGroup].label}</span>
-                      </div>
-                      <span className="text-xs font-medium text-text-muted tabular-nums">
-                        {formatExamTimeRange(slot.startMin, slot.endMin)}
+                    <div className="px-4 py-1.5 bg-page/80 border-b border-app-border flex items-center gap-2 text-xs font-semibold text-text-secondary">
+                      <TimeOfDayIcon group={slot.timeGroup} />
+                      <span>{TIME_OF_DAY_META[slot.timeGroup].label}</span>
+                      <span className="text-text-muted font-normal tabular-nums">
+                        · {formatExamTimeRange(slot.startMin, slot.endMin)}
                       </span>
                     </div>
-
-                    {/* Right Responsive Card Grid */}
-                    <div
-                      className="grid gap-3 min-w-0"
-                      style={{
-                        gridTemplateColumns:
-                          'repeat(auto-fill, minmax(min(100%, 300px), 1fr))',
-                      }}
-                    >
-                      {slot.exams.map((exam) => {
-                        const isUser = isCourseSelected(exam);
-                        const { lookup, lockedLabel } = getLookupForExam(exam);
-                        return (
-                          <ExamCard
-                            key={exam.key}
-                            exam={exam}
-                            isUserCourse={isUser}
-                            highlightUserCourse={mode === 'all'}
-                            studentLookup={lookup}
-                            lockedSectionLabel={lockedLabel}
-                            constrainWidth={constrainCards}
-                          />
-                        );
-                      })}
+                    <div className="divide-y divide-app-border">
+                      {slot.exams.map((exam) => (
+                        <ExamCard
+                          key={exam.key}
+                          exam={exam}
+                          isUserCourse={isCourseSelected(exam)}
+                          highlightUserCourse={mode === 'all'}
+                          lockedSectionLabel={getLockedLabel(exam)}
+                        />
+                      ))}
                     </div>
                   </div>
-                );
-              })}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="divide-y divide-app-border">
+                {day.exams.map((exam) => (
+                  <ExamCard
+                    key={exam.key}
+                    exam={exam}
+                    isUserCourse={isCourseSelected(exam)}
+                    highlightUserCourse={mode === 'all'}
+                    lockedSectionLabel={getLockedLabel(exam)}
+                  />
+                ))}
+              </div>
+            )}
           </section>
         );
       })}

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { PlusCircle, CalendarCheck2, MapPin, X, ArrowRight } from 'lucide-react';
+import { PlusCircle, CalendarCheck2, ListChecks, X, ArrowRight } from 'lucide-react';
 
 interface StartHereProps {
   onQuickAddClick: () => void;
@@ -27,7 +27,7 @@ export function StartHere({
           </h2>
           <p className="text-sm text-text-secondary mt-0.5">
             Add the courses you are taking this trimester to see your exam dates,
-            clashes, and room numbers.
+            clashes, and section room ranges.
           </p>
         </div>
 
@@ -99,14 +99,14 @@ export function StartHere({
             <span className="w-6 h-6 rounded-full bg-surface border border-app-border text-text-primary text-xs font-bold flex items-center justify-center shrink-0">
               3
             </span>
-            <MapPin className="w-4 h-4 text-orange-600 shrink-0" />
+            <ListChecks className="w-4 h-4 text-orange-600 shrink-0" />
             <span className="text-sm font-semibold text-text-primary">
-              Enter your student ID to find your room
+              Check sections &amp; rooms
             </span>
           </div>
           <p className="text-xs text-text-secondary">
-            Your ID stays in this browser only and matches rooms strictly for
-            your selected courses.
+            Expand any exam row to check your section&apos;s room and student ID
+            range directly.
           </p>
         </div>
       </div>

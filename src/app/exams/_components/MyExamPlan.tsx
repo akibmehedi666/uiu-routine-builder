@@ -10,13 +10,11 @@ import {
   formatExamTimeRange,
   getExamsForCourse,
   isExamExemptCourse,
-  lookupStudentRoomForCourse,
   exportExamsToText,
   exportExamsToICS,
   RoutineExamExportItem,
 } from '../../../lib/exams';
 import { downloadFile } from '../../../utils/export';
-import { StudentIdRoomLookup } from '../../../components/StudentIdRoomLookup';
 import {
   Search,
   Plus,
@@ -28,7 +26,6 @@ import {
   ChevronDown,
   AlertTriangle,
   CheckCircle2,
-  MapPin,
 } from 'lucide-react';
 
 interface MyExamPlanProps {
@@ -38,8 +35,6 @@ interface MyExamPlanProps {
   selectedCourses: string[];
   lockedSections: Record<string, string>;
   examReport: ExamClashReport | null;
-  activeStudentId: string | null;
-  onApplyStudentId: (id: string | null) => void;
   onAddCourse: (courseCode: string) => void;
   onRemoveCourse: (courseCode: string) => void;
   quickAddInputRef?: React.RefObject<HTMLInputElement>;
@@ -54,8 +49,6 @@ export function MyExamPlan({
   selectedCourses,
   lockedSections,
   examReport,
-  activeStudentId,
-  onApplyStudentId,
   onAddCourse,
   onRemoveCourse,
   quickAddInputRef,
@@ -68,7 +61,6 @@ export function MyExamPlan({
   const localInputRef = useRef<HTMLInputElement>(null);
   const inputRef = quickAddInputRef || localInputRef;
 
-  // Deduplicate courses by code (BSCSE/BSDS dual-listed courses appear once)
   const uniqueCourses = useMemo(() => {
     const map = new Map<string, Course>();
     for (const c of courses) {
@@ -104,7 +96,6 @@ export function MyExamPlan({
       .slice(0, 12);
   }, [uniqueCourses, quickQuery]);
 
-  // Resolve export items & room lookup per selected course
   const selectedCourseDetails = useMemo(() => {
     return selectedCourses.map((code) => {
       const courseObj = courseByCode.get(code);
@@ -121,31 +112,20 @@ export function MyExamPlan({
         (u) => u.courseCode === code || u.courseCodes.includes(code)
       );
 
-      const lookup =
-        !isExempt && activeStudentId && courseRows.length > 0
-          ? lookupStudentRoomForCourse(ownRow, courseRows, activeStudentId)
-          : null;
-
       return {
         code,
-        courseObj,
         isExempt,
         uniqueForCourse,
         ownRow,
-        lookup,
       };
     });
-  }, [selectedCourses, courseByCode, allActiveRows, lockedSections, myUniqueExams, activeStudentId]);
+  }, [selectedCourses, courseByCode, allActiveRows, lockedSections, myUniqueExams]);
 
   const exportItems: RoutineExamExportItem[] = useMemo(() => {
     const items: RoutineExamExportItem[] = [];
     for (const d of selectedCourseDetails) {
       if (!d.ownRow) continue;
-      const foundRoom =
-        d.lookup && (d.lookup.status === 'found-own' || d.lookup.status === 'found-other')
-          ? d.lookup.room
-          : null;
-      items.push({ exam: d.ownRow, foundRoom });
+      items.push({ exam: d.ownRow });
     }
     return items;
   }, [selectedCourseDetails]);
@@ -280,7 +260,7 @@ export function MyExamPlan({
         )}
       </div>
 
-      {/* Selected Courses Chips List */}
+      {/* Selected Courses List (date/time only) */}
       {selectedCourseDetails.length === 0 ? (
         <div className="p-3.5 rounded-btn bg-subtle/70 border border-dashed border-app-border text-xs text-text-muted">
           No courses selected yet. Search above to add your courses and sync
@@ -304,31 +284,13 @@ export function MyExamPlan({
             return (
               <div
                 key={d.code}
-                className="p-2.5 rounded-btn bg-page border border-app-border flex items-start justify-between gap-2"
+                className="p-2.5 rounded-btn bg-page border border-app-border flex items-center justify-between gap-2"
               >
-                <div className="min-w-0 space-y-0.5">
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className="text-xs font-bold text-text-primary">
-                      {d.code}
-                    </span>
-                    {d.lookup?.status === 'found-own' && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-chip bg-emerald-50 text-emerald-900 border border-emerald-300 text-xs font-bold">
-                        <MapPin className="w-3 h-3 text-emerald-600" />
-                        <span>Room {d.lookup.room}</span>
-                      </span>
-                    )}
+                <div className="min-w-0">
+                  <div className="text-xs font-bold text-text-primary">
+                    {d.code}
                   </div>
                   <div className="text-xs text-text-muted">{slotText}</div>
-                  {d.lookup?.status === 'found-other' && (
-                    <div className="text-xs text-amber-800 font-medium">
-                      Listed under Sec {d.lookup.section} (Room {d.lookup.room})
-                    </div>
-                  )}
-                  {d.lookup?.status === 'not-found' && (
-                    <div className="text-xs text-text-muted">
-                      ID not in room ranges — check notice board.
-                    </div>
-                  )}
                 </div>
 
                 <button
@@ -392,14 +354,6 @@ export function MyExamPlan({
         </div>
       )}
 
-      {/* Find My Room (Shared Privacy-Preserving Component) */}
-      {selectedCourses.length > 0 && (
-        <StudentIdRoomLookup
-          activeStudentId={activeStudentId}
-          onApplyStudentId={onApplyStudentId}
-        />
-      )}
-
       {/* Actions */}
       {exportItems.length > 0 && (
         <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-app-border">
@@ -443,7 +397,6 @@ export function MyExamPlan({
       aria-label="My exam plan"
       className="rounded-card bg-surface border border-app-border shadow-warm p-4 min-[1100px]:sticky min-[1100px]:top-20 min-[1100px]:max-h-[calc(100dvh-96px)] min-[1100px]:overflow-y-auto"
     >
-      {/* Header (acts as collapsible toggle below 1100px) */}
       <div className="flex items-center justify-between gap-2 pb-3 border-b border-app-border">
         <div className="flex items-center gap-2">
           <h2 className="text-lg font-semibold text-text-primary">My exam plan</h2>
@@ -467,7 +420,6 @@ export function MyExamPlan({
         </button>
       </div>
 
-      {/* Body: always visible >= 1100px, collapsible below 1100px */}
       <div className={`pt-3.5 ${mobileExpanded ? 'block' : 'hidden min-[1100px]:block'}`}>
         {panelBody}
       </div>

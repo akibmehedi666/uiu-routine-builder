@@ -1,29 +1,26 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import {
   ExamRow,
   ExamClashReport,
   getExamForSection,
-  getExamsForCourse,
-  lookupStudentRoomForCourse,
   isExamExemptCourse,
   formatExamDateShort,
   formatExamTimeRange,
   exportExamsToText,
   exportExamsToICS,
   RoutineExamExportItem,
+  clearLegacyStudentIdStorage,
 } from '../lib/exams';
 import { downloadFile } from '../utils/export';
 import { Course, Section } from '../types';
 import { EXAMS_NOTE, EXAMS_UPDATED } from '../config/site';
-import { StudentIdRoomLookup } from './StudentIdRoomLookup';
 import { ExamClashSummary } from './ExamClashSummary';
 import {
   Copy,
   Check,
   Calendar as CalendarIcon,
-  MapPin,
   Clock,
   AlertTriangle,
   ChevronDown,
@@ -42,8 +39,11 @@ export function RoutineExamsView({
   exams,
   examReport,
 }: RoutineExamsViewProps) {
-  const [activeStudentId, setActiveStudentId] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    clearLegacyStudentIdStorage();
+  }, []);
 
   const courseByCode = useMemo(() => {
     const m = new Map<string, Course>();
@@ -58,7 +58,6 @@ export function RoutineExamsView({
     const items: {
       section: Section;
       exam: ExamRow;
-      allCourseExams: ExamRow[];
       hasClash: boolean;
     }[] = [];
     const missing: Section[] = [];
@@ -87,16 +86,9 @@ export function RoutineExamsView({
         continue;
       }
 
-      const allCourseExams = getExamsForCourse(
-        sec.program,
-        sec.courseCode,
-        exams
-      );
-
       items.push({
         section: sec,
         exam,
-        allCourseExams,
         hasClash: clashingCourses.has(sec.courseCode),
       });
     }
@@ -111,24 +103,6 @@ export function RoutineExamsView({
     return { resolvedItems: items, unannouncedCourses: missing };
   }, [sections, courseByCode, exams, examReport]);
 
-  // Compute student room lookups per item
-  const itemsWithRoom = useMemo(() => {
-    return resolvedItems.map((item) => {
-      const lookup = activeStudentId
-        ? lookupStudentRoomForCourse(
-            item.exam,
-            item.allCourseExams,
-            activeStudentId
-          )
-        : null;
-      const foundRoom =
-        lookup && (lookup.status === 'found-own' || lookup.status === 'found-other')
-          ? lookup.room
-          : null;
-      return { ...item, lookup, foundRoom };
-    });
-  }, [resolvedItems, activeStudentId]);
-
   // Group sorted exams by date
   const groupedByDate = useMemo(() => {
     const map = new Map<
@@ -136,10 +110,10 @@ export function RoutineExamsView({
       {
         date: string;
         dayOfWeek: string;
-        items: typeof itemsWithRoom;
+        items: typeof resolvedItems;
       }
     >();
-    for (const item of itemsWithRoom) {
+    for (const item of resolvedItems) {
       if (!map.has(item.exam.date)) {
         map.set(item.exam.date, {
           date: item.exam.date,
@@ -150,15 +124,11 @@ export function RoutineExamsView({
       map.get(item.exam.date)!.items.push(item);
     }
     return Array.from(map.values());
-  }, [itemsWithRoom]);
+  }, [resolvedItems]);
 
   const exportPayload: RoutineExamExportItem[] = useMemo(
-    () =>
-      itemsWithRoom.map((item) => ({
-        exam: item.exam,
-        foundRoom: item.foundRoom,
-      })),
-    [itemsWithRoom]
+    () => resolvedItems.map((item) => ({ exam: item.exam })),
+    [resolvedItems]
   );
 
   const handleCopyList = async () => {
@@ -233,14 +203,6 @@ export function RoutineExamsView({
         </div>
       )}
 
-      {/* Student ID Room Lookup (Privacy-Preserved, Selected Courses Only) */}
-      {resolvedItems.length > 0 && (
-        <StudentIdRoomLookup
-          activeStudentId={activeStudentId}
-          onApplyStudentId={setActiveStudentId}
-        />
-      )}
-
       {/* Exam List Grouped by Date */}
       {groupedByDate.length === 0 ? (
         <div className="p-8 text-center rounded-card bg-surface border border-dashed border-app-border text-xs text-text-muted">
@@ -269,72 +231,40 @@ export function RoutineExamsView({
 
               {/* Exam Rows */}
               <div className="divide-y divide-app-border">
-                {group.items.map(({ exam, hasClash, lookup }) => (
+                {group.items.map(({ exam, hasClash }) => (
                   <div
                     key={exam.id}
                     className={`p-3.5 sm:p-4 space-y-2.5 transition-colors ${
                       hasClash ? 'bg-rose-50/60' : 'bg-surface'
                     }`}
                   >
-                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
-                      <div className="space-y-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-bold text-sm text-text-primary">
-                            {exam.courseCode}
+                    <div className="space-y-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-bold text-sm text-text-primary">
+                          {exam.courseCode}
+                        </span>
+                        <span className="px-2 py-0.5 rounded bg-subtle border border-app-border text-[11px] font-bold text-text-primary">
+                          Sec {exam.section}
+                        </span>
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-orange-50 text-orange-800 border border-orange-200 text-[11px] font-semibold">
+                          <Clock className="w-3 h-3 text-orange-600 shrink-0" />
+                          <span>
+                            {formatExamTimeRange(exam.startMin, exam.endMin)}
                           </span>
-                          <span className="px-2 py-0.5 rounded bg-subtle border border-app-border text-[11px] font-bold text-text-primary">
-                            Sec {exam.section}
+                        </span>
+                        {hasClash && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-rose-100 text-rose-800 border border-rose-300 text-[11px] font-bold">
+                            <AlertTriangle className="w-3 h-3 text-rose-600 shrink-0" />
+                            <span>Exam clash</span>
                           </span>
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-orange-50 text-orange-800 border border-orange-200 text-[11px] font-semibold">
-                            <Clock className="w-3 h-3 text-orange-600 shrink-0" />
-                            <span>
-                              {formatExamTimeRange(exam.startMin, exam.endMin)}
-                            </span>
-                          </span>
-                          {hasClash && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-rose-100 text-rose-800 border border-rose-300 text-[11px] font-bold">
-                              <AlertTriangle className="w-3 h-3 text-rose-600 shrink-0" />
-                              <span>Exam clash</span>
-                            </span>
-                          )}
-                        </div>
-                        <div className="text-xs text-text-secondary font-medium">
-                          {exam.courseTitle}
-                        </div>
+                        )}
                       </div>
-
-                      {/* Prominent Room Chip when lookup found */}
-                      {lookup?.status === 'found-own' && (
-                        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-chip bg-emerald-50 text-emerald-900 border border-emerald-300 text-xs font-bold shrink-0 shadow-2xs">
-                          <MapPin className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                          <span>Room {lookup.room}</span>
-                        </div>
-                      )}
+                      <div className="text-xs text-text-secondary font-medium">
+                        {exam.courseTitle}
+                      </div>
                     </div>
 
-                    {/* Lookup warnings / fallbacks */}
-                    {lookup?.status === 'found-other' && (
-                      <div className="p-2.5 rounded-btn bg-amber-50 border border-amber-300 text-amber-900 text-xs flex items-center gap-2 font-medium">
-                        <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
-                        <span>
-                          Your ID is listed under section{' '}
-                          <strong>{lookup.section}</strong> (Room{' '}
-                          <strong>{lookup.room}</strong>)
-                        </span>
-                      </div>
-                    )}
-
-                    {lookup?.status === 'not-found' && (
-                      <div className="p-2.5 rounded-btn bg-subtle border border-app-border text-text-secondary text-xs flex items-center gap-2">
-                        <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
-                        <span>
-                          Your ID isn&apos;t in any room range for this course.
-                          Check the notice board.
-                        </span>
-                      </div>
-                    )}
-
-                    {/* Collapsed Rooms by ID range when no active lookup (or always expandable) */}
+                    {/* Collapsed Rooms by ID range */}
                     {exam.rooms.length > 0 && (
                       <details className="text-[11px] group">
                         <summary className="cursor-pointer text-text-muted hover:text-text-primary select-none inline-flex items-center gap-1 font-medium py-0.5">
@@ -345,20 +275,25 @@ export function RoutineExamsView({
                           </span>
                           <ChevronDown className="w-3 h-3 group-open:rotate-180 transition-transform" />
                         </summary>
-                        <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-1.5">
-                          {exam.rooms.map((r, idx) => (
-                            <div
-                              key={`${r.room}-${idx}`}
-                              className="px-2.5 py-1.5 rounded bg-page border border-app-border flex items-center justify-between gap-2"
-                            >
-                              <span className="font-bold text-text-primary">
-                                Room {r.room}
-                              </span>
-                              <span className="font-mono text-text-muted">
-                                {r.idFrom} – {r.idTo}
-                              </span>
-                            </div>
-                          ))}
+                        <div className="mt-2 space-y-1.5">
+                          <p className="text-[11px] text-text-muted">
+                            Find your section&apos;s room by your ID range.
+                          </p>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                            {exam.rooms.map((r, idx) => (
+                              <div
+                                key={`${r.room}-${idx}`}
+                                className="px-2.5 py-1.5 rounded bg-page border border-app-border flex items-center justify-between gap-2"
+                              >
+                                <span className="font-bold text-text-primary">
+                                  Room {r.room}
+                                </span>
+                                <span className="font-mono text-text-muted">
+                                  {r.idFrom} – {r.idTo}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       </details>
                     )}

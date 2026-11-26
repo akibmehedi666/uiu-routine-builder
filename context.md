@@ -77,7 +77,7 @@ uiu-routine-builder/
 │   │   │   ├── page.tsx     # Directory + Fall 2026 Stats view switcher
 │   │   │   ├── [id]/        # Profile view with static generation for canonical + legacy IDs
 │   │   │   └── compare/     # /faculty-directory/compare?a=...&b=... side-by-side comparison
-│   │   ├── exams/           # /exams route (Exam Schedule redesign + _components/: StatStrip, StartHere, DayStrip, ExamCard, ExamTimeline, MyExamPlan)
+│   │   ├── exams/           # /exams route (Exam Schedule + _components/: StatStrip, StartHere, DayStrip, ExamCard, ExamTimeline, MyExamPlan)
 │   │   ├── courses/         # /courses route (Redirects to /faculty)
 │   │   ├── icon.svg         # Clean timetable blocks vector favicon
 │   │   ├── favicon.ico      # Multi-resolution ICO (16, 32, 48)
@@ -94,9 +94,8 @@ uiu-routine-builder/
 │   │   ├── CourseSelector.tsx # Left-panel course picker and mobile search sheet
 │   │   ├── Timetable.tsx    # 5-day desktop timetable view
 │   │   ├── DayListTimetable.tsx # Mobile Day-by-Day view
-│   │   ├── RoutineExamsView.tsx # Builder Results "Exams" tab + .ics export + room-by-ID lookup
+│   │   ├── RoutineExamsView.tsx # Builder Results "Exams" tab + .ics export + ID-range tables
 │   │   ├── ExamClashSummary.tsx # Non-blocking mid-term exam clash & same-day warning chips
-│   │   ├── StudentIdRoomLookup.tsx # Privacy-preserving student ID room finder (selected courses only)
 │   │   ├── ScheduleComparison.tsx # Side-by-side routine compare drawer
 │   │   ├── SavedRoutinesDrawer.tsx # Drawer for saved routines & snapshot management
 │   │   ├── SaveRoutinePopover.tsx # Quick save popover
@@ -180,7 +179,7 @@ uiu-routine-builder/
   - Run `npm run extract:exams` to import `mid-term-exam-schedule_sose_notice-board_263.xlsx` (gitignored) into `data/exams.json`, `data/exam-meta.json`, and `docs/exams-import.md`.
   - Keeps only `BSCSE` & `BSDS` rows, normalizes 9-digit legacy IDs to 10 digits, and matches against `data/sections.json` without overwriting faculty data.
   - Loaded lazily via dynamic `import()` (`loadExamsData()` / `useExams()`) so Builder's initial bundle stays small.
-  - **Privacy rules**: Student ID lookup (`StudentIdRoomLookup`) works strictly for the user's selected courses only (no ID -> all courses lookup), stores ID in component state (with opt-in `"Remember on this device"` in `uiu-rb:student-id:v1`), and never puts the ID in URLs, saved routines, `.ics` exports, analytics, or logs.
+  - **Privacy rules**: No student ID is collected anywhere (ID lookup was removed because ID ranges overlap across sections; legacy `uiu-rb:student-id:v1` is cleared on load). Users inspect public section room & ID-range tables directly.
 
 ---
 
@@ -234,7 +233,7 @@ uiu-routine-builder/
   - `/faculty` : Course Directory (UCAM-inspired course-first directory).
   - `/faculty-directory` : Faculty Directory (searchable instructor list, leaderboards, spotlight, compare).
   - `/faculty-directory/[id]` : Faculty detail profile with weekly teaching timetable and course sections (SSG for all 207 faculty).
-  - `/exams` : Mid-term Exam Schedule (64 unique exams across 472 sections; StatStrip, StartHere, DayStrip, Morning/Midday/Afternoon chips, timeline/list views, sticky `My exam plan` panel synced with Builder, Next Exam countdown, and selected-courses-only room lookup).
+  - `/exams` : Mid-term Exam Schedule (64 unique exams across 472 sections; StatStrip, StartHere, DayStrip, Morning/Midday/Afternoon chips, full-width agenda rows & list view, sticky `My exam plan` panel synced with Builder, Next Exam countdown, and public section ID-range tables).
   - `/courses` : Immediate redirect to `/faculty`.
 - **Navigation Bar (`SiteNav`)**:
   - Rendered **once** from root `src/app/layout.tsx`. Never re-mounts on navigation.
