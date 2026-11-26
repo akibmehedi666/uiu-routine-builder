@@ -37,6 +37,9 @@ export interface SiteConfig {
 
 export const DATA_UPDATED = '2026-11-05';
 export const DATA_NOTE = 'Sections synced with the UCAM portal';
+export const EXAMS_UPDATED = '2026-11-26';
+export const EXAMS_NOTE =
+  'Mid-term exam schedule from the SoSE notice board. Confirm on the notice board, dates and rooms may change.';
 
 export const siteConfig: SiteConfig = {
   name: 'UIU Routine Builder',

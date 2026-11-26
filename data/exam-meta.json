@@ -1,0 +1,21 @@
+{
+  "sourceFile": "mid-term-exam-schedule_sose_notice-board_263.xlsx",
+  "importedAt": "2026-11-26T12:13:01+06:00",
+  "counts": {
+    "totalRows": 574,
+    "keptRows": 472,
+    "droppedDeptRows": 102,
+    "droppedDeptBreakdown": {
+      "BSCE": 22,
+      "BSEEE": 80
+    },
+    "matchedRows": 463,
+    "unmatchedRows": 9,
+    "droppedSectionRows": 0,
+    "activeTheoryWithoutExam": 35,
+    "activeSingleDayWithoutExam": 42,
+    "multiSlotCourses": 1,
+    "rangeAnomalies": 0,
+    "initialsMismatches": 268
+  }
+}
