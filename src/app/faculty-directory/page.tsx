@@ -49,6 +49,7 @@ import {
 } from '../../lib/facultyStats';
 import { getCourseColor } from '../../utils/colors';
 import { Day, DAYS_LIST } from '../../types';
+import { plural } from '../../lib/format';
 import { usePinnedFaculty } from '../../hooks/usePinnedFaculty';
 import { BadgeIcon, BadgesLegendModal } from '../../components/faculty/BadgesLegendModal';
 import { CampusStatsView } from '../../components/faculty/CampusStatsView';
@@ -453,11 +454,13 @@ function FacultyDirectoryContent() {
                       </h3>
                       <div className="flex items-center gap-3 text-xs text-text-secondary flex-wrap">
                         <span>
-                          <strong className="text-text-primary">{spotlightFaculty.totalSections}</strong> sections ({spotlightFaculty.theoryCourseCount} theory, {spotlightFaculty.labCourseCount} lab)
+                          <strong className="text-text-primary">{spotlightFaculty.totalSections}</strong>{' '}
+                          {plural(spotlightFaculty.totalSections, 'section').split(' ')[1]} ({spotlightFaculty.theoryCourseCount} theory, {spotlightFaculty.labCourseCount} lab)
                         </span>
                         <span>•</span>
                         <span>
-                          <strong className="text-text-primary">{spotlightFaculty.distinctCourseCount}</strong> courses
+                          <strong className="text-text-primary">{spotlightFaculty.distinctCourseCount}</strong>{' '}
+                          {plural(spotlightFaculty.distinctCourseCount, 'course').split(' ')[1]}
                         </span>
                         <span>•</span>
                         <span>
@@ -1416,7 +1419,7 @@ function FacultyDirectoryContent() {
                           <div>
                             <span className="text-text-muted block font-medium">Campus Days:</span>
                             <span className="font-bold text-text-primary mt-0.5 block">
-                              {selectedFaculty.daysOnCampus} days ({selectedFaculty.activeDays.join(', ')})
+                              {plural(selectedFaculty.daysOnCampus, 'day')} ({selectedFaculty.activeDays.join(', ')})
                             </span>
                           </div>
                           <div>
@@ -1428,7 +1431,7 @@ function FacultyDirectoryContent() {
                           <div>
                             <span className="text-text-muted block font-medium">Campus Footprint:</span>
                             <span className="font-bold text-text-primary mt-0.5 block">
-                              {selectedFaculty.distinctFloors} floors ({selectedFaculty.rooms.length} rooms)
+                              {plural(selectedFaculty.distinctFloors, 'floor')} ({plural(selectedFaculty.rooms.length, 'room')})
                             </span>
                           </div>
                         </div>
@@ -1575,7 +1578,7 @@ function FacultyDirectoryContent() {
                             </h3>
                           </div>
                           <span className="text-xs text-text-muted">
-                            {selectedFaculty.courses.length} courses
+                            {plural(selectedFaculty.courses.length, 'course')}
                           </span>
                         </div>
 
@@ -1606,7 +1609,7 @@ function FacultyDirectoryContent() {
                                     {course.credit} Credits
                                   </span>
                                   <span className="px-2 py-0.5 rounded bg-orange-100 text-orange-900 font-semibold">
-                                    {course.sectionCount} {course.sectionCount === 1 ? 'section' : 'sections'}
+                                    {plural(course.sectionCount, 'section')}
                                   </span>
                                 </div>
                               </div>
@@ -1753,7 +1756,7 @@ function FacultyDirectoryContent() {
                               {f.name}
                             </span>
                             <span className="text-[11px] text-text-muted block truncate">
-                              {f.totalSections} sections · {f.distinctCourseCount} courses · {f.totalWeeklyHours}h
+                              {plural(f.totalSections, 'section')} · {plural(f.distinctCourseCount, 'course')} · {f.totalWeeklyHours}h
                             </span>
                           </div>
                         </button>
