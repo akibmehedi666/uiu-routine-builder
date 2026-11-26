@@ -30,6 +30,8 @@ export interface CourseDirectorySection {
   fixed?: boolean;
   manual?: boolean;
   synthetic?: boolean;
+  status?: 'active' | 'dropped';
+  droppedAt?: string;
   updated?: boolean;
   updatedNote?: string;
   updatedOn?: string;
@@ -51,6 +53,8 @@ export interface CourseDirectoryItem {
   pairedCourseCode?: string;
   sections: CourseDirectorySection[];
   sectionCount: number;
+  allDropped?: boolean;
+  droppedSectionCount?: number;
   facultyCount: number;
   facultyNames: string[];
   searchNormalized: string;
@@ -274,6 +278,8 @@ export function buildCourseDirectory(
         fixed: s.fixed,
         manual: s.manual,
         synthetic: s.synthetic,
+        status: s.status || 'active',
+        droppedAt: s.droppedAt,
         updated: s.updated,
         updatedNote: s.updatedNote,
         updatedOn: s.updatedOn,
@@ -283,6 +289,9 @@ export function buildCourseDirectory(
 
     // Natural sort sections: A, B, ... Z, AA, AB...
     processedSections.sort((a, b) => naturalSectionSort(a.section, b.section));
+
+    const activeSections = processedSections.filter((s) => s.status !== 'dropped');
+    const droppedSections = processedSections.filter((s) => s.status === 'dropped');
 
     const isLab =
       c.credit <= 2 &&
@@ -310,7 +319,9 @@ export function buildCourseDirectory(
       isManual,
       pairedCourseCode: c.labCode || c.theoryCode,
       sections: processedSections,
-      sectionCount: processedSections.length,
+      sectionCount: activeSections.length,
+      allDropped: processedSections.length > 0 && activeSections.length === 0,
+      droppedSectionCount: droppedSections.length,
       facultyCount: facultyNames.length,
       facultyNames,
       searchNormalized: normalizeForSearch(`${c.code} ${c.title} ${facultyNames.join(' ')}`),

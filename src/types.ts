@@ -27,6 +27,8 @@ export interface Section {
   fixed?: boolean;
   synthetic?: boolean;
   manual?: boolean;
+  status?: 'active' | 'dropped';
+  droppedAt?: string;
   updated?: boolean;
   updatedNote?: string;
   updatedOn?: string;
@@ -41,6 +43,8 @@ export interface Course {
   hasLab: boolean;
   labCode?: string;
   theoryCode?: string;
+  activeSectionCount?: number;
+  allDropped?: boolean;
 }
 
 export interface FacultyCourseOffering {
@@ -51,6 +55,7 @@ export interface FacultyCourseOffering {
   kind: string;
   days: Day[];
   time: string;
+  droppedAt?: string;
   updated?: boolean;
   updatedNote?: string;
   updatedOn?: string;
@@ -61,6 +66,7 @@ export interface Faculty {
   id: string;
   name: string;
   courses: FacultyCourseOffering[];
+  droppedSections?: FacultyCourseOffering[];
 }
 
 export interface FilterTimeWindow {

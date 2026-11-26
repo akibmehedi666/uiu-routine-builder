@@ -63,7 +63,7 @@ import {
   getLockStatus,
 } from '../../lib/lockUtils';
 
-const allSections = sectionsJson as unknown as Section[];
+const allSections = (sectionsJson as unknown as Section[]).filter((s) => s.status !== 'dropped');
 const allCourses = coursesJson as unknown as Course[];
 const allFaculty = facultyJson as unknown as Faculty[];
 
@@ -569,19 +569,21 @@ export default function BuilderPage() {
     );
   }, [request.selectedCourses, request.lockedSections]);
 
-  // Exclude unselected fixed courses from solver input
+  // Exclude unselected fixed courses and fully dropped courses from solver input
   const effectiveSolveRequest = useMemo(() => {
     const unselectedFixed = new Set(
       (request.selectedCourses || []).filter(
         (c) => isFixedCourse(c) && !request.lockedSections?.[c]
       )
     );
-    if (unselectedFixed.size === 0) return request;
+    const activeCourseCodes = new Set(effectiveSections.map((s) => s.courseCode));
     return {
       ...request,
-      selectedCourses: (request.selectedCourses || []).filter((c) => !unselectedFixed.has(c)),
+      selectedCourses: (request.selectedCourses || []).filter(
+        (c) => !unselectedFixed.has(c) && activeCourseCodes.has(c)
+      ),
     };
-  }, [request]);
+  }, [request, effectiveSections]);
 
   // Trigger solve on debounced request changes
   useEffect(() => {

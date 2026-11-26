@@ -751,28 +751,40 @@ export function CourseSelector({
                 ) : (
                   filteredCourses.slice(0, 15).map((course) => {
                     const isSelected = (request.selectedCourses || []).includes(course.code);
+                    const isAllDropped = !sections.some((s) => s.courseCode === course.code);
 
                     return (
                       <div
                         key={course.code}
-                        tabIndex={0}
+                        tabIndex={isAllDropped && !isSelected ? -1 : 0}
                         role="button"
-                        aria-label={isSelected ? `${course.code} is added. Click to remove` : `Add ${course.code}`}
+                        aria-disabled={isAllDropped && !isSelected ? true : undefined}
+                        aria-label={
+                          isSelected
+                            ? `${course.code} is added. Click to remove`
+                            : isAllDropped
+                            ? `${course.code}: No sections available (dropped)`
+                            : `Add ${course.code}`
+                        }
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') {
                             e.preventDefault();
                             if (isSelected) {
                               handleInitiateRemove(course.code);
-                            } else {
+                            } else if (!isAllDropped) {
                               handleAddCourse(course.code);
                             }
                           }
                         }}
-                        className="w-full p-2.5 hover:bg-subtle focus:bg-subtle flex items-center justify-between group transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-orange-400"
+                        className={`w-full p-2.5 flex items-center justify-between group transition-colors ${
+                          isAllDropped && !isSelected
+                            ? 'opacity-50 cursor-not-allowed bg-subtle/40'
+                            : 'hover:bg-subtle focus:bg-subtle cursor-pointer focus:outline-none focus:ring-1 focus:ring-orange-400'
+                        }`}
                         onClick={() => {
                           if (isSelected) {
                             handleInitiateRemove(course.code);
-                          } else {
+                          } else if (!isAllDropped) {
                             if (onOpenExplorer) {
                               onOpenExplorer(course.code);
                             } else {
@@ -822,6 +834,10 @@ export function CourseSelector({
                               Added · click to remove
                             </span>
                           </button>
+                        ) : isAllDropped ? (
+                          <span className="px-2 py-0.5 rounded text-[11px] font-medium text-text-muted bg-subtle border border-app-border shrink-0">
+                            No sections available (dropped)
+                          </span>
                         ) : (
                           <button
                             type="button"
@@ -915,17 +931,22 @@ export function CourseSelector({
             ) : (
               filteredCourses.map((course) => {
                 const isSelected = (request.selectedCourses || []).includes(course.code);
+                const isAllDropped = !sections.some((s) => s.courseCode === course.code);
                 return (
                   <div
                     key={course.code}
                     onClick={() => {
                       if (isSelected) {
                         executeRemoveCourse(course.code, false);
-                      } else {
+                      } else if (!isAllDropped) {
                         handleAddCourse(course.code, true);
                       }
                     }}
-                    className="min-h-[48px] p-3 flex items-center justify-between gap-3 active:bg-subtle cursor-pointer transition-colors"
+                    className={`min-h-[48px] p-3 flex items-center justify-between gap-3 transition-colors ${
+                      isAllDropped && !isSelected
+                        ? 'opacity-50 cursor-not-allowed bg-subtle/30'
+                        : 'active:bg-subtle cursor-pointer'
+                    }`}
                   >
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-1.5 flex-wrap">
@@ -962,6 +983,10 @@ export function CourseSelector({
                         <Check className="w-3.5 h-3.5 text-success" />
                         <span>Added</span>
                       </button>
+                    ) : isAllDropped ? (
+                      <span className="px-2 py-0.5 rounded text-[11px] font-medium text-text-muted bg-subtle border border-app-border shrink-0">
+                        No sections available (dropped)
+                      </span>
                     ) : (
                       <button
                         type="button"
@@ -1068,12 +1093,13 @@ export function CourseSelector({
               return `${m.day} ${sH}:${sM}-${eH}:${eM}`;
             };
 
-            // Has paired lab not yet selected?
+            // Has paired lab not yet selected (and has available sections)?
             const canAddLab =
               !isFixed &&
               course.hasLab &&
               course.labCode &&
-              !request.selectedCourses.includes(course.labCode);
+              !request.selectedCourses.includes(course.labCode) &&
+              sections.some((s) => s.courseCode === course.labCode);
 
             return (
               <div
@@ -1220,8 +1246,13 @@ export function CourseSelector({
                   </button>
                 )}
 
-                {/* Required Fixed FYDP Section Picker vs Manual vs Normal Lock/Faculty */}
-                {isFixed ? (
+                {/* Dropped Course Warning vs Fixed FYDP vs Manual vs Normal Lock/Faculty */}
+                {courseSections.length === 0 ? (
+                  <div className="p-2.5 rounded-btn bg-amber-50 border border-amber-300 text-amber-800 text-xs flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 flex-shrink-0 text-amber-600" />
+                    <span className="font-semibold">All sections of this course were dropped</span>
+                  </div>
+                ) : isFixed ? (
                   <div className="space-y-2 pt-1">
                     {/* Section Picker Label */}
                     <div className="flex items-center justify-between text-xs">

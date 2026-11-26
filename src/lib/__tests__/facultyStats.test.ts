@@ -30,10 +30,11 @@ describe('Faculty Stats Data Layer & Integrity Tests', () => {
       expect(allFaculty.some((f) => f.name.toLowerCase() === 'tba')).toBe(false);
     });
 
-    it('sum of sections across faculty plus TBA sections equals raw sections + multi-faculty duplicates', () => {
+    it('sum of sections across faculty plus TBA sections equals raw active sections', () => {
       const tbaGroups = getTBASections();
       const tbaSectionsCount = tbaGroups.reduce((acc, g) => acc + g.sections.length, 0);
-      const expectedTbaCount = rawSections.filter((s) => s.faculty.includes('TBA')).length;
+      const activeRawSections = (rawSections as any[]).filter((s) => s.status !== 'dropped');
+      const expectedTbaCount = activeRawSections.filter((s) => s.faculty.includes('TBA')).length;
       expect(tbaSectionsCount).toBe(expectedTbaCount);
 
       const totalFacultyAssignedSections = allFaculty.reduce(
@@ -41,25 +42,19 @@ describe('Faculty Stats Data Layer & Integrity Tests', () => {
         0
       );
 
-      // Section CSE 4399 A has 2 faculty members: Siddique Md. Lutful Kabir and Mr. Angkon Deb
-      // So it is counted on both faculty pages (+1).
-      // Total sections in sections.json is 791.
-      expect(totalFacultyAssignedSections + tbaSectionsCount).toBe(rawSections.length + 1);
-      expect(rawSections.length).toBe(791);
+      // Section CSE 4399 A (co-taught by Siddique and Angkon) was dropped in Fall 2026 update.
+      // Active assigned sections (653) + active TBA sections (85) = 738 active sections.
+      expect(totalFacultyAssignedSections + tbaSectionsCount).toBe(activeRawSections.length);
+      expect((rawSections as any[]).length).toBe(791);
+      expect(activeRawSections.length).toBe(738);
     });
 
-    it('multi-faculty section CSE 4399 is credited to both instructors', () => {
+    it('instructors whose only section was CSE 4399 (dropped) are cleaned up from active directory', () => {
       const angkon = getFacultyStatsById('mr-angkon-deb');
       const siddique = getFacultyStatsById('siddique-md-lutful-kabir');
 
-      expect(angkon).toBeDefined();
-      expect(siddique).toBeDefined();
-
-      const angkonHasCSE4399 = angkon?.courses.some((c) => c.courseCode === 'CSE 4399');
-      const siddiqueHasCSE4399 = siddique?.courses.some((c) => c.courseCode === 'CSE 4399');
-
-      expect(angkonHasCSE4399).toBe(true);
-      expect(siddiqueHasCSE4399).toBe(true);
+      expect(angkon).toBeUndefined();
+      expect(siddique).toBeUndefined();
     });
   });
 

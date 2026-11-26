@@ -28,6 +28,8 @@ export interface FacultyMeeting {
 
 export interface FacultyCourseSection {
   id: string;
+  courseCode?: string;
+  courseTitle?: string;
   section: string;
   kind: Section['kind'];
   credit: number;
@@ -109,6 +111,8 @@ export interface FacultyStats {
     facultyName: string;
     sharedCourses: string[];
   }[];
+  droppedSections?: FacultyCourseSection[];
+  droppedCount?: number;
 }
 
 export interface TBASection {
@@ -410,6 +414,7 @@ export function getAllFacultyStats(): FacultyStats[] {
   const courseFacultyMap = new Map<string, Set<string>>();
   for (const [fid, secList] of facultySectionMap.entries()) {
     for (const s of secList) {
+      if (s.status === 'dropped') continue;
       if (!courseFacultyMap.has(s.courseCode)) {
         courseFacultyMap.set(s.courseCode, new Set());
       }
@@ -420,6 +425,12 @@ export function getAllFacultyStats(): FacultyStats[] {
   const result: FacultyStats[] = [];
 
   for (const [fid, secList] of facultySectionMap.entries()) {
+    const activeSecList = secList.filter((s) => s.status !== 'dropped');
+    const droppedSecList = secList.filter((s) => s.status === 'dropped');
+
+    // Remove from active directory any faculty with zero active sections
+    if (activeSecList.length === 0) continue;
+
     const name = facultyNameMap.get(fid) || fid;
     const sortName = stripFacultyTitle(name);
 
@@ -457,7 +468,7 @@ export function getAllFacultyStats(): FacultyStats[] {
       afternoon: 0,
     };
 
-    for (const s of secList) {
+    for (const s of activeSecList) {
       programsSet.add(s.program);
       distinctCourseCodes.add(s.courseCode);
       if (s.kind === 'lab') {
@@ -632,7 +643,7 @@ export function getAllFacultyStats(): FacultyStats[] {
       lateShiftSections,
       labSections,
       distinctCourses: distinctCourseCodes.size,
-      totalSections: secList.length,
+      totalSections: activeSecList.length,
       satTueSections,
       maxMarathonChain,
       distinctFloors: floorSet.size,
@@ -671,6 +682,25 @@ export function getAllFacultyStats(): FacultyStats[] {
       })
       .slice(0, 6);
 
+    const droppedSections: FacultyCourseSection[] = droppedSecList.map((s) => ({
+      id: s.id,
+      courseCode: s.courseCode,
+      courseTitle: s.title,
+      section: s.section,
+      kind: s.kind,
+      credit: s.credit,
+      tentative: s.tentative,
+      days: Array.from(new Set(s.meetings.map((m) => m.day))),
+      timeRange: formatMeetingTimeRange(s.meetings),
+      room: s.meetings[0]?.room || null,
+      meetings: s.meetings,
+      program: s.program,
+      updated: s.updated,
+      updatedNote: s.updatedNote,
+      updatedOn: s.updatedOn,
+      updatedKind: s.updatedKind,
+    }));
+
     result.push({
       id: fid,
       name,
@@ -682,7 +712,7 @@ export function getAllFacultyStats(): FacultyStats[] {
       distinctCourseCount: distinctCourseCodes.size,
       theoryCourseCount: theoryCourseCodes.size,
       labCourseCount: labCourseCodes.size,
-      totalSections: secList.length,
+      totalSections: activeSecList.length,
       totalWeeklyMinutes,
       totalWeeklyHours: Math.round((totalWeeklyMinutes / 60) * 10) / 10,
       totalCredits,
@@ -702,6 +732,8 @@ export function getAllFacultyStats(): FacultyStats[] {
       maxMarathonChain,
       badges,
       teachesWith,
+      droppedSections,
+      droppedCount: droppedSecList.length,
     });
   }
 
@@ -731,6 +763,7 @@ export function getTBASections(): TBACourseGroup[] {
   const tbaSections: TBASection[] = [];
 
   for (const s of sections) {
+    if (s.status === 'dropped') continue;
     const isTBA =
       !s.facultyIds ||
       s.facultyIds.length === 0 ||
@@ -1030,4 +1063,173 @@ export function getDailyFacultySpotlight(
   }
   const idx = Math.abs(hash) % allFaculty.length;
   return allFaculty[idx];
+}
+
+/**
+ * Leaderboard entry for most dropped sections (Fall 2026 portal update)
+ */
+export interface MostDroppedLeaderboardEntry {
+  rank: string; // e.g. "=1", "4", "5"
+  facultyId: string;
+  name: string;
+  initials: string;
+  avatarColor: { bg: string; text: string; border: string };
+  droppedCount: number;
+  totalSections: number;
+  sectionsDetail: string; // e.g. "CSE 2118 E, L"
+  barPercentage: number;
+  hasActiveSections: boolean;
+}
+
+export interface MostDroppedRankingResult {
+  entries: MostDroppedLeaderboardEntry[];
+  tbaDroppedCount: number;
+}
+
+let cachedMostDroppedLeaderboard: MostDroppedRankingResult | null = null;
+
+export function getMostDroppedFacultyLeaderboard(): MostDroppedRankingResult {
+  if (cachedMostDroppedLeaderboard) return cachedMostDroppedLeaderboard;
+
+  const sections = rawSections as Section[];
+  const activeFacultyList = rawFaculty as { id: string; name: string }[];
+  const activeFacultyIds = new Set(activeFacultyList.map((f) => f.id));
+
+  // Map of facultyId -> { name, droppedSections: { courseCode: string; section: string }[], totalSections: number }
+  const facultyDroppedMap = new Map<
+    string,
+    {
+      name: string;
+      dropped: { courseCode: string; section: string }[];
+      totalSections: number;
+    }
+  >();
+
+  let tbaDroppedCount = 0;
+
+  for (const s of sections) {
+    const isDropped = s.status === 'dropped';
+    const isTBA =
+      !s.facultyIds ||
+      s.facultyIds.length === 0 ||
+      s.faculty.includes('TBA') ||
+      s.facultyIds.includes('tba');
+
+    if (isDropped && isTBA) {
+      tbaDroppedCount++;
+    }
+
+    if (!s.facultyIds || s.facultyIds.length === 0) continue;
+
+    for (let i = 0; i < s.facultyIds.length; i++) {
+      const fid = s.facultyIds[i];
+      if (!fid || fid === 'tba') continue;
+      const fName = s.faculty[i] || s.faculty[0] || fid;
+
+      if (!facultyDroppedMap.has(fid)) {
+        facultyDroppedMap.set(fid, {
+          name: fName,
+          dropped: [],
+          totalSections: 0,
+        });
+      }
+
+      const rec = facultyDroppedMap.get(fid)!;
+      rec.totalSections++;
+      if (isDropped) {
+        rec.dropped.push({ courseCode: s.courseCode, section: s.section });
+      }
+    }
+  }
+
+  // Filter to only faculty who have at least 1 dropped section
+  const facultyWithDropped = Array.from(facultyDroppedMap.entries())
+    .filter(([_, data]) => data.dropped.length > 0)
+    .map(([fid, data]) => {
+      // Group dropped sections by course code
+      const courseMap = new Map<string, string[]>();
+      for (const d of data.dropped) {
+        if (!courseMap.has(d.courseCode)) {
+          courseMap.set(d.courseCode, []);
+        }
+        courseMap.get(d.courseCode)!.push(d.section);
+      }
+
+      // Sort sections naturally within each course
+      const courseDetails: string[] = [];
+      const sortedCodes = Array.from(courseMap.keys()).sort();
+      for (const code of sortedCodes) {
+        const secs = courseMap.get(code)!.sort((a, b) =>
+          a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' })
+        );
+        courseDetails.push(`${code} ${secs.join(', ')}`);
+      }
+
+      return {
+        facultyId: fid,
+        name: data.name,
+        initials: getFacultyInitials(data.name),
+        avatarColor: getFacultyAvatarColor(data.name),
+        droppedCount: data.dropped.length,
+        totalSections: data.totalSections,
+        sectionsDetail: courseDetails.join(', '),
+        hasActiveSections: activeFacultyIds.has(fid),
+      };
+    });
+
+  // Sort: 1) droppedCount desc, 2) totalSections desc, 3) name A-Z
+  facultyWithDropped.sort((a, b) => {
+    if (b.droppedCount !== a.droppedCount) {
+      return b.droppedCount - a.droppedCount;
+    }
+    if (b.totalSections !== a.totalSections) {
+      return b.totalSections - a.totalSections;
+    }
+    return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
+  });
+
+  const maxDropped = facultyWithDropped.length > 0 ? facultyWithDropped[0].droppedCount : 1;
+
+  // Assign ranks with "=" prefix for ties
+  // A tie occurs when both droppedCount and totalSections are identical
+  const rankedEntries: MostDroppedLeaderboardEntry[] = [];
+  let i = 0;
+  while (i < facultyWithDropped.length) {
+    let j = i;
+    while (
+      j < facultyWithDropped.length &&
+      facultyWithDropped[j].droppedCount === facultyWithDropped[i].droppedCount &&
+      facultyWithDropped[j].totalSections === facultyWithDropped[i].totalSections
+    ) {
+      j++;
+    }
+
+    const isTie = j - i > 1;
+    const rankLabel = isTie ? `=${i + 1}` : `${i + 1}`;
+
+    for (let k = i; k < j; k++) {
+      const item = facultyWithDropped[k];
+      rankedEntries.push({
+        rank: rankLabel,
+        facultyId: item.facultyId,
+        name: item.name,
+        initials: item.initials,
+        avatarColor: item.avatarColor,
+        droppedCount: item.droppedCount,
+        totalSections: item.totalSections,
+        sectionsDetail: item.sectionsDetail,
+        barPercentage: Math.round((item.droppedCount / maxDropped) * 100),
+        hasActiveSections: item.hasActiveSections,
+      });
+    }
+
+    i = j;
+  }
+
+  cachedMostDroppedLeaderboard = {
+    entries: rankedEntries.slice(0, 5),
+    tbaDroppedCount,
+  };
+
+  return cachedMostDroppedLeaderboard;
 }

@@ -400,3 +400,11 @@ Key prompts and tasks executed during development:
 
 
 
+19. `dropped-sections-sync`: Fall 2026 UCAM portal update (2026-11-05):
+    - Applied 53 dropped sections out of 58 inputs in `data/sections.json` (`status: "dropped"`, `droppedAt: "2026-11-05"`). 5 not found logged to `data/anomalies.md`.
+    - Total sections strictly invariant at 791 (53 dropped, 738 active).
+    - 4 courses fully dropped (`CSE 4133`, `CSE 4399`, `CSE 4811`, `CSE 4817`) flagged with `allDropped: true`.
+    - 6 zero-section faculty pruned from active directory, leaving 186 active faculty. Dropped sections tracked under `droppedSections`.
+    - Course Directory (`/faculty`): Header chip, `?view=dropped` query param, collapsible Dropped Sections panel with search/program filters, struck-through dropped section rows, disabled Prefer/Avoid controls.
+    - Faculty Directory (`/faculty-directory`): Added "Most dropped sections" leaderboard card with tie ranks (`=1`), percentage bar, and TBA footnote. Dropped sections listed in collapsed details on faculty profile page.
+    - Stale user state: Stale locks cleared with notice, saved routines show "Section dropped".

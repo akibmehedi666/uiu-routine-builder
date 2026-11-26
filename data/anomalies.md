@@ -499,3 +499,81 @@ Applied remaining Fall 2026 timetable sync from `faculty-timings.csv`:
 - Pruned 1 faculty with 0 active teaching assignments: Ms. Mehreen Hossain Chowdhury (id: ms-mehreen-hossain-chowdhury).
 - Section total invariant: 791 sections. Total faculty: 192. TBA sections: 96.
 - Backward compatibility: mapped legacy section IDs in `data/section-id-aliases.json`.
+
+
+## Post-Extraction Dropped Sections (Fall 2026 Portal Sync - 2026-11-05)
+Applied 53 dropped sections from Fall 2026 portal update:
+- BSCSE ACT 2111 I: Marked status='dropped'
+- BSCSE CSE 1110 R: Marked status='dropped'
+- BSCSE CSE 1110 S: Marked status='dropped'
+- BSCSE CSE 1112 S: Marked status='dropped'
+- BSCSE CSE 1115 E: Marked status='dropped'
+- BSCSE CSE 1116 H: Marked status='dropped'
+- BSCSE CSE 1326 D: Marked status='dropped'
+- BSCSE CSE 2118 E: Marked status='dropped'
+- BSCSE CSE 2118 F: Marked status='dropped'
+- BSCSE CSE 2118 L: Marked status='dropped'
+- BSCSE CSE 2218 H: Marked status='dropped'
+- BSCSE CSE 2218 I: Marked status='dropped'
+- BSCSE CSE 3412 C: Marked status='dropped'
+- BSCSE CSE 3422 O: Marked status='dropped'
+- BSCSE CSE 3522 D: Marked status='dropped'
+- BSCSE CSE 3522 F: Marked status='dropped'
+- BSCSE CSE 3522 G: Marked status='dropped'
+- BSCSE CSE 3711 A: Marked status='dropped'
+- BSCSE CSE 3712 C: Marked status='dropped'
+- BSCSE CSE 3812 I: Marked status='dropped'
+- BSCSE CSE 3812 J: Marked status='dropped'
+- BSCSE CSE 4133 A: Marked status='dropped'
+- BSCSE CSE 4165 L: Marked status='dropped'
+- BSCSE CSE 4181 A: Marked status='dropped'
+- BSCSE CSE 4326 K: Marked status='dropped'
+- BSCSE CSE 4399 A: Marked status='dropped'
+- BSCSE CSE 4451 F: Marked status='dropped'
+- BSCSE CSE 4510 B: Marked status='dropped'
+- BSCSE CSE 4531 I: Marked status='dropped'
+- BSCSE CSE 4811 A: Marked status='dropped'
+- BSCSE CSE 4817 A: Marked status='dropped'
+- BSCSE EEE 2113 K: Marked status='dropped'
+- BSCSE EEE 2123 F: Marked status='dropped'
+- BSCSE EEE 2124 I: Marked status='dropped'
+- BSCSE EEE 4261 A: Marked status='dropped'
+- BSCSE ENG 1011 AS: Marked status='dropped'
+- BSCSE ENG 1011 AT: Marked status='dropped'
+- BSCSE ENG 1011 AU: Marked status='dropped'
+- BSCSE ENG 1011 AV: Marked status='dropped'
+- BSCSE ENG 1013 AE: Marked status='dropped'
+- BSCSE ENG 1013 AN: Marked status='dropped'
+- BSCSE GED 1005 D: Marked status='dropped'
+- BSCSE MATH 2183 B: Marked status='dropped'
+- BSCSE MATH 2201 B: Marked status='dropped'
+- BSCSE PHY 2106 D: Marked status='dropped'
+- BSCSE PMG 4101 A: Marked status='dropped'
+- BSDS DS 1501 BC: Marked status='dropped'
+- BSDS DS 1502 BB: Marked status='dropped'
+- BSDS DS 4217 BA: Marked status='dropped'
+- BSDS DS 4817 BA: Marked status='dropped'
+- BSDS DS 4891 BA: Marked status='dropped'
+- BSDS DS 4892 BB: Marked status='dropped'
+- BSDS MATH 2107 BA: Marked status='dropped'
+
+Sections not found in dataset (5 total, not created):
+- BSCSE CSE 1325 H
+- BSCSE CSE 4325 K
+- BSCSE CSE 4509 J
+- BSCSE MATH 1151 AA
+- BSDS DS 1116 BB
+
+Courses with all sections dropped (4 total):
+- CSE 4133
+- CSE 4399
+- CSE 4811
+- CSE 4817
+
+Removed faculty with zero active teaching assignments (6 total):
+- Emrul Kayes Raceme (id: emrul-kayes-raceme) - 0 active sections remaining
+- K M Faizullah Fuhad (id: k-m-faizullah-fuhad) - 0 active sections remaining
+- Mr. Angkon Deb (id: mr-angkon-deb) - 0 active sections remaining
+- Mr. Masnoon Muztahid (id: mr-masnoon-muztahid) - 0 active sections remaining
+- Rifa Noor (id: rifa-noor) - 0 active sections remaining
+- Siddique Md. Lutful Kabir (id: siddique-md-lutful-kabir) - 0 active sections remaining

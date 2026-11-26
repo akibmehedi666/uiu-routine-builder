@@ -34,7 +34,7 @@ import {
 import { PAGE_MAX_W } from '../../config/layout';
 import { SiteFooter } from '../../components/SiteFooter';
 import { UpdatedSectionBadge } from '../../components/UpdatedSectionBadge';
-import { DATA_UPDATED } from '../../config/site';
+import { DATA_UPDATED, DATA_NOTE } from '../../config/site';
 import {
   getAllFacultyStats,
   getTBASections,
@@ -54,6 +54,7 @@ import { BadgeIcon, BadgesLegendModal } from '../../components/faculty/BadgesLeg
 import { CampusStatsView } from '../../components/faculty/CampusStatsView';
 import { RoomScheduleSheet } from '../../components/faculty/RoomScheduleSheet';
 import { FacultyBadgesView } from '../../components/faculty/FacultyBadgesView';
+import { MostDroppedCard } from '../../components/faculty/MostDroppedCard';
 
 function HighlightText({ text, query }: { text: string; query: string }) {
   if (!query || !query.trim()) return <>{text}</>;
@@ -498,7 +499,7 @@ function FacultyDirectoryContent() {
                         Teaching Load Leaderboard
                       </h2>
                       <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-900 border border-orange-200">
-                        Top 5 in 5 Categories
+                        Top 5 Rankings
                       </span>
                     </div>
                     <p className="text-[11px] text-text-muted">
@@ -525,7 +526,7 @@ function FacultyDirectoryContent() {
               </div>
 
               {isLeaderboardsOpen && (
-                <div className="p-3.5 sm:p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3.5 bg-bg-page/40">
+                <div className="p-3.5 sm:p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 bg-bg-page/40">
                   {/* Category 1: Most Theory Courses */}
                   <div className="bg-surface rounded-xl p-3 border border-blue-200 shadow-2xs space-y-2 flex flex-col justify-between">
                     <div>
@@ -765,6 +766,9 @@ function FacultyDirectoryContent() {
                       </ol>
                     </div>
                   </div>
+
+                  {/* Category 6: Most Dropped Sections */}
+                  <MostDroppedCard onSelectFaculty={handleSelectFaculty} />
                 </div>
               )}
             </div>
@@ -1910,7 +1914,7 @@ function FacultyDirectoryContent() {
 
         {/* Footer Note */}
         <p className="text-[11px] text-text-muted text-center pt-2">
-          Based on the Fall 2026 offering PDF, updated {DATA_UPDATED}. Assignments may change.
+          Based on the Fall 2026 offering PDF, updated {DATA_UPDATED} ({DATA_NOTE}). Assignments may change.
         </p>
       </main>
 

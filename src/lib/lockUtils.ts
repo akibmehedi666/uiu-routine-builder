@@ -140,8 +140,10 @@ export function filterValidLocks(
   const staleCodes: string[] = [];
 
   for (const [code, secId] of Object.entries(lockedSections)) {
-    // If it's a fixed course with a manual section or real section, verify presence
-    const exists = availableSections.some((s) => s.courseCode === code && s.id === secId);
+    // If it's a fixed course with a manual section or real section, verify presence (exclude dropped)
+    const exists = availableSections.some(
+      (s) => s.courseCode === code && s.id === secId && s.status !== 'dropped'
+    );
     if (exists) {
       validLocks[code] = secId;
     } else {

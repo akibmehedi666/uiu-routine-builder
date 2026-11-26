@@ -35,8 +35,8 @@ export interface SiteConfig {
   };
 }
 
-export const DATA_UPDATED = '2026-10-24';
-export const DATA_NOTE = 'Faculty assignments synced with the UCAM portal.';
+export const DATA_UPDATED = '2026-11-05';
+export const DATA_NOTE = 'Sections synced with the UCAM portal';
 
 export const siteConfig: SiteConfig = {
   name: 'UIU Routine Builder',

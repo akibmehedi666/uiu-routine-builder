@@ -76,7 +76,8 @@
         ],
         "time": "671..820"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "abrar-mahmud",
@@ -139,7 +140,9 @@
           "Wed"
         ],
         "time": "911..990"
-      },
+      }
+    ],
+    "droppedSections": [
       {
         "program": "BSCSE",
         "code": "CSE 4531",
@@ -150,7 +153,8 @@
           "Sat",
           "Tue"
         ],
-        "time": "510..590"
+        "time": "510..590",
+        "droppedAt": "2026-11-05"
       }
     ]
   },
@@ -267,7 +271,8 @@
         "updatedNote": "Schedule updated in UCAM",
         "updatedKind": "schedule"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "abu-shafin-mohammad-mahdee-jameel",
@@ -297,7 +302,8 @@
         ],
         "time": "671..750"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "ahmed-abdullah-bin-farooqi-rayhan",
@@ -327,7 +333,8 @@
         ],
         "time": "911..990"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "al-amin-hossain",
@@ -381,7 +388,8 @@
         ],
         "time": "510..590"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "al-sakib-khan-pathan",
@@ -413,18 +421,6 @@
         "program": "BSDS",
         "code": "DS 4217",
         "title": "Data Privacy and Ethics",
-        "section": "BA",
-        "kind": "theory",
-        "days": [
-          "Sat",
-          "Tue"
-        ],
-        "time": "911..990"
-      },
-      {
-        "program": "BSDS",
-        "code": "DS 4217",
-        "title": "Data Privacy and Ethics",
         "section": "BB",
         "kind": "theory",
         "days": [
@@ -432,6 +428,21 @@
           "Wed"
         ],
         "time": "591..670"
+      }
+    ],
+    "droppedSections": [
+      {
+        "program": "BSDS",
+        "code": "DS 4217",
+        "title": "Data Privacy and Ethics",
+        "section": "BA",
+        "kind": "theory",
+        "days": [
+          "Sat",
+          "Tue"
+        ],
+        "time": "911..990",
+        "droppedAt": "2026-11-05"
       }
     ]
   },
@@ -463,7 +474,8 @@
         ],
         "time": "751..830"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "amit-bin-tariqul",
@@ -491,7 +503,8 @@
         ],
         "time": "840..990"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "anika-tasnim-rodela",
@@ -549,7 +562,8 @@
         "updatedNote": "Faculty updated in UCAM",
         "updatedKind": "faculty"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "anindya-hoque",
@@ -625,7 +639,8 @@
         ],
         "time": "911..990"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "antara-chowdhury",
@@ -643,7 +658,8 @@
         ],
         "time": "831..910"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "arnab-bhattacharjee",
@@ -719,7 +735,8 @@
         ],
         "time": "671..820"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "ashek-ahmed",
@@ -750,6 +767,20 @@
         "time": "671..750"
       },
       {
+        "program": "BSDS",
+        "code": "MATH 2107",
+        "title": "Linear Algebra",
+        "section": "BB",
+        "kind": "theory",
+        "days": [
+          "Sat",
+          "Tue"
+        ],
+        "time": "831..910"
+      }
+    ],
+    "droppedSections": [
+      {
         "program": "BSCSE",
         "code": "MATH 2201",
         "title": "Coordinate Geometry and Vector Analysis",
@@ -759,7 +790,8 @@
           "Sat",
           "Tue"
         ],
-        "time": "911..990"
+        "time": "911..990",
+        "droppedAt": "2026-11-05"
       },
       {
         "program": "BSDS",
@@ -771,19 +803,8 @@
           "Sun",
           "Wed"
         ],
-        "time": "831..910"
-      },
-      {
-        "program": "BSDS",
-        "code": "MATH 2107",
-        "title": "Linear Algebra",
-        "section": "BB",
-        "kind": "theory",
-        "days": [
-          "Sat",
-          "Tue"
-        ],
-        "time": "831..910"
+        "time": "831..910",
+        "droppedAt": "2026-11-05"
       }
     ]
   },
@@ -869,7 +890,8 @@
         ],
         "time": "591..670"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "asif-abrar",
@@ -945,7 +967,8 @@
         ],
         "time": "510..590"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "asif-ahmed-utsa",
@@ -1021,7 +1044,8 @@
         ],
         "time": "911..990"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "asnuva-tanvin",
@@ -1093,7 +1117,8 @@
         ],
         "time": "591..670"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "azizur-rahman-anik",
@@ -1169,7 +1194,8 @@
         ],
         "time": "911..990"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "charles-aunkan-gomes",
@@ -1245,7 +1271,8 @@
         ],
         "time": "591..670"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "chowdhury-omar-sharif",
@@ -1263,7 +1290,8 @@
         ],
         "time": "751..830"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "christina-miti-rozario",
@@ -1281,36 +1309,13 @@
         ],
         "time": "591..670"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "dewan-md-farid",
     "name": "Dewan Md. Farid",
     "courses": [
-      {
-        "program": "BSCSE",
-        "code": "CSE 4817",
-        "title": "Big Data Analytics",
-        "section": "A",
-        "kind": "theory",
-        "days": [
-          "Sat",
-          "Tue"
-        ],
-        "time": "751..830"
-      },
-      {
-        "program": "BSDS",
-        "code": "DS 4817",
-        "title": "Big Data",
-        "section": "BA",
-        "kind": "theory",
-        "days": [
-          "Sun",
-          "Wed"
-        ],
-        "time": "510..590"
-      },
       {
         "program": "BSDS",
         "code": "DS 4817",
@@ -1322,6 +1327,34 @@
           "Wed"
         ],
         "time": "671..750"
+      }
+    ],
+    "droppedSections": [
+      {
+        "program": "BSCSE",
+        "code": "CSE 4817",
+        "title": "Big Data Analytics",
+        "section": "A",
+        "kind": "theory",
+        "days": [
+          "Sat",
+          "Tue"
+        ],
+        "time": "751..830",
+        "droppedAt": "2026-11-05"
+      },
+      {
+        "program": "BSDS",
+        "code": "DS 4817",
+        "title": "Big Data",
+        "section": "BA",
+        "kind": "theory",
+        "days": [
+          "Sun",
+          "Wed"
+        ],
+        "time": "510..590",
+        "droppedAt": "2026-11-05"
       }
     ]
   },
@@ -1407,7 +1440,8 @@
         "updatedNote": "Section/schedule updated in UCAM",
         "updatedKind": "schedule"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "dil-nusrat",
@@ -1425,7 +1459,8 @@
         ],
         "time": "671..750"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "diniya-tahrin-bhuiyan",
@@ -1435,32 +1470,10 @@
         "program": "BSCSE",
         "code": "CSE 2118",
         "title": "Advanced Object Oriented Programming L",
-        "section": "E",
-        "kind": "single-day-theory",
-        "days": [
-          "Mon"
-        ],
-        "time": "671..820"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 2118",
-        "title": "Advanced Object Oriented Programming L",
         "section": "J",
         "kind": "single-day-theory",
         "days": [
           "Wed"
-        ],
-        "time": "840..990"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 2118",
-        "title": "Advanced Object Oriented Programming L",
-        "section": "L",
-        "kind": "single-day-theory",
-        "days": [
-          "Mon"
         ],
         "time": "840..990"
       },
@@ -1497,22 +1510,31 @@
         ],
         "time": "510..660"
       }
-    ]
-  },
-  {
-    "id": "emrul-kayes-raceme",
-    "name": "Emrul Kayes Raceme",
-    "courses": [
+    ],
+    "droppedSections": [
       {
         "program": "BSCSE",
-        "code": "CSE 3412",
-        "title": "System Analysis and Design Laboratory",
-        "section": "C",
-        "kind": "lab",
+        "code": "CSE 2118",
+        "title": "Advanced Object Oriented Programming L",
+        "section": "E",
+        "kind": "single-day-theory",
         "days": [
-          "Sat"
+          "Mon"
         ],
-        "time": "840..990"
+        "time": "671..820",
+        "droppedAt": "2026-11-05"
+      },
+      {
+        "program": "BSCSE",
+        "code": "CSE 2118",
+        "title": "Advanced Object Oriented Programming L",
+        "section": "L",
+        "kind": "single-day-theory",
+        "days": [
+          "Mon"
+        ],
+        "time": "840..990",
+        "droppedAt": "2026-11-05"
       }
     ]
   },
@@ -1544,7 +1566,8 @@
         ],
         "time": "591..670"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "fairoz-anika",
@@ -1596,7 +1619,9 @@
           "Wed"
         ],
         "time": "831..910"
-      },
+      }
+    ],
+    "droppedSections": [
       {
         "program": "BSCSE",
         "code": "CSE 3812",
@@ -1606,7 +1631,8 @@
         "days": [
           "Wed"
         ],
-        "time": "510..660"
+        "time": "510..660",
+        "droppedAt": "2026-11-05"
       }
     ]
   },
@@ -1670,7 +1696,9 @@
         "updatedOn": "2026-10-24",
         "updatedNote": "Schedule updated in UCAM",
         "updatedKind": "schedule"
-      },
+      }
+    ],
+    "droppedSections": [
       {
         "program": "BSCSE",
         "code": "CSE 4165",
@@ -1681,10 +1709,7 @@
           "Tue"
         ],
         "time": "510..660",
-        "updated": true,
-        "updatedOn": "2026-10-24",
-        "updatedNote": "Schedule updated in UCAM",
-        "updatedKind": "schedule"
+        "droppedAt": "2026-11-05"
       }
     ]
   },
@@ -1716,7 +1741,8 @@
         ],
         "time": "911..990"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "fazlul-hoque",
@@ -1733,7 +1759,8 @@
         ],
         "time": "671..820"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "golam-mohammed-bhuiyan",
@@ -1763,7 +1790,8 @@
         ],
         "time": "751..830"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "hafijul-hoque-chowdhury",
@@ -1838,7 +1866,8 @@
         ],
         "time": "911..990"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "hamudi-hasan-sonet",
@@ -1874,7 +1903,8 @@
         "updatedNote": "Section/schedule updated in UCAM",
         "updatedKind": "schedule"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "hasan-sarwar",
@@ -1903,7 +1933,8 @@
         ],
         "time": "510..660"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "humaira-anzum-neha",
@@ -1979,7 +2010,8 @@
         ],
         "time": "591..670"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "imran-hossain",
@@ -2054,7 +2086,8 @@
         ],
         "time": "671..820"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "ishrat-jahan",
@@ -2120,24 +2153,13 @@
         ],
         "time": "911..990"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "ismat-zarin",
     "name": "Ismat Zarin",
     "courses": [
-      {
-        "program": "BSCSE",
-        "code": "ENG 1013",
-        "title": "English II",
-        "section": "AE",
-        "kind": "theory",
-        "days": [
-          "Sun",
-          "Wed"
-        ],
-        "time": "510..590"
-      },
       {
         "program": "BSCSE",
         "code": "ENG 1013",
@@ -2149,6 +2171,21 @@
           "Wed"
         ],
         "time": "591..670"
+      }
+    ],
+    "droppedSections": [
+      {
+        "program": "BSCSE",
+        "code": "ENG 1013",
+        "title": "English II",
+        "section": "AE",
+        "kind": "theory",
+        "days": [
+          "Sun",
+          "Wed"
+        ],
+        "time": "510..590",
+        "droppedAt": "2026-11-05"
       }
     ]
   },
@@ -2192,7 +2229,8 @@
         ],
         "time": "510..590"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "jannatun-noor-mukta",
@@ -2220,7 +2258,8 @@
         ],
         "time": "510..660"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "jashodhan-saha",
@@ -2274,7 +2313,8 @@
         ],
         "time": "751..830"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "jerin-hasan-priya",
@@ -2365,7 +2405,8 @@
         ],
         "time": "671..820"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "joyonty-ghosh",
@@ -2395,24 +2436,8 @@
         ],
         "time": "510..590"
       }
-    ]
-  },
-  {
-    "id": "k-m-faizullah-fuhad",
-    "name": "K M Faizullah Fuhad",
-    "courses": [
-      {
-        "program": "BSCSE",
-        "code": "CSE 2118",
-        "title": "Advanced Object Oriented Programming L",
-        "section": "F",
-        "kind": "single-day-theory",
-        "days": [
-          "Sat"
-        ],
-        "time": "840..990"
-      }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "kaspia-kabir",
@@ -2442,7 +2467,8 @@
         ],
         "time": "911..990"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "kazi-abdun-noor",
@@ -2485,17 +2511,6 @@
         "program": "BSCSE",
         "code": "CSE 4181",
         "title": "Mobile Application Development",
-        "section": "A",
-        "kind": "single-day-theory",
-        "days": [
-          "Sun"
-        ],
-        "time": "510..660"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 4181",
-        "title": "Mobile Application Development",
         "section": "B",
         "kind": "single-day-theory",
         "days": [
@@ -2513,6 +2528,20 @@
           "Mon"
         ],
         "time": "671..820"
+      }
+    ],
+    "droppedSections": [
+      {
+        "program": "BSCSE",
+        "code": "CSE 4181",
+        "title": "Mobile Application Development",
+        "section": "A",
+        "kind": "single-day-theory",
+        "days": [
+          "Sun"
+        ],
+        "time": "510..660",
+        "droppedAt": "2026-11-05"
       }
     ]
   },
@@ -2590,7 +2619,8 @@
         ],
         "time": "751..830"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "khandoker-makjum-wahid",
@@ -2620,7 +2650,8 @@
         ],
         "time": "751..830"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "kirsten-gudgeon",
@@ -2638,7 +2669,8 @@
         ],
         "time": "751..830"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "labib-rashid-inan",
@@ -2656,23 +2688,13 @@
         ],
         "time": "591..670"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "liakat-omar-rihan",
     "name": "Liakat Omar Rihan",
     "courses": [
-      {
-        "program": "BSCSE",
-        "code": "CSE 4326",
-        "title": "Microprocessors and Microcontrollers Laboratory",
-        "section": "K",
-        "kind": "lab",
-        "days": [
-          "Wed"
-        ],
-        "time": "840..990"
-      },
       {
         "program": "BSCSE",
         "code": "EEE 2113",
@@ -2684,6 +2706,20 @@
           "Tue"
         ],
         "time": "831..910"
+      }
+    ],
+    "droppedSections": [
+      {
+        "program": "BSCSE",
+        "code": "CSE 4326",
+        "title": "Microprocessors and Microcontrollers Laboratory",
+        "section": "K",
+        "kind": "lab",
+        "days": [
+          "Wed"
+        ],
+        "time": "840..990",
+        "droppedAt": "2026-11-05"
       }
     ]
   },
@@ -2749,7 +2785,8 @@
         ],
         "time": "840..990"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "m-m-rafin-mahmud",
@@ -2779,7 +2816,8 @@
         ],
         "time": "671..750"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "mahmudul-hasan",
@@ -2851,7 +2889,8 @@
         ],
         "time": "840..990"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "mahtab-uddin",
@@ -2893,7 +2932,8 @@
         ],
         "time": "671..750"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "mallika-datta",
@@ -2911,7 +2951,8 @@
         ],
         "time": "751..830"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "md-abid-hossain",
@@ -2975,7 +3016,8 @@
         ],
         "time": "510..660"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "md-anowarul-abedin",
@@ -2995,18 +3037,6 @@
       },
       {
         "program": "BSCSE",
-        "code": "CSE 4133",
-        "title": "Business Intelligence",
-        "section": "A",
-        "kind": "theory",
-        "days": [
-          "Sun",
-          "Wed"
-        ],
-        "time": "751..830"
-      },
-      {
-        "program": "BSCSE",
         "code": "TEC 2499",
         "title": "Technology Entrepreneurship",
         "section": "A",
@@ -3016,6 +3046,21 @@
           "Tue"
         ],
         "time": "591..670"
+      }
+    ],
+    "droppedSections": [
+      {
+        "program": "BSCSE",
+        "code": "CSE 4133",
+        "title": "Business Intelligence",
+        "section": "A",
+        "kind": "theory",
+        "days": [
+          "Sun",
+          "Wed"
+        ],
+        "time": "751..830",
+        "droppedAt": "2026-11-05"
       }
     ]
   },
@@ -3059,7 +3104,8 @@
         ],
         "time": "831..910"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "md-asaduzzaman",
@@ -3119,7 +3165,8 @@
         ],
         "time": "840..990"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "md-belal-hussain-ripon",
@@ -3137,7 +3184,8 @@
         ],
         "time": "911..990"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "md-benzir-ahmed",
@@ -3179,7 +3227,8 @@
         ],
         "time": "831..910"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "md-enamul-haque",
@@ -3286,7 +3335,8 @@
         ],
         "time": "510..660"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "md-foysal-ahamed",
@@ -3314,7 +3364,8 @@
         ],
         "time": "840..990"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "md-golam-hossain",
@@ -3350,7 +3401,8 @@
         "updatedNote": "Section/schedule updated in UCAM",
         "updatedKind": "schedule"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "md-iqbal-bahar-chowdhury",
@@ -3368,7 +3420,8 @@
         ],
         "time": "671..750"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "md-kamruzzaman",
@@ -3385,7 +3438,8 @@
         ],
         "time": "840..990"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "md-mainul-islam",
@@ -3402,7 +3456,8 @@
         ],
         "time": "840..990"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "md-mehedi-hasan",
@@ -3488,7 +3543,8 @@
         ],
         "time": "840..990"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "md-minhajul-islam",
@@ -3526,7 +3582,8 @@
         "updatedNote": "Section/schedule updated in UCAM",
         "updatedKind": "schedule"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "md-motaharul-islam",
@@ -3542,18 +3599,6 @@
           "Sat"
         ],
         "time": "510..660"
-      },
-      {
-        "program": "BSCSE",
-        "code": "EEE 4261",
-        "title": "Green Computing",
-        "section": "A",
-        "kind": "theory",
-        "days": [
-          "Sun",
-          "Wed"
-        ],
-        "time": "510..590"
       },
       {
         "program": "BSCSE",
@@ -3578,6 +3623,21 @@
           "Wed"
         ],
         "time": "831..910"
+      }
+    ],
+    "droppedSections": [
+      {
+        "program": "BSCSE",
+        "code": "EEE 4261",
+        "title": "Green Computing",
+        "section": "A",
+        "kind": "theory",
+        "days": [
+          "Sun",
+          "Wed"
+        ],
+        "time": "510..590",
+        "droppedAt": "2026-11-05"
       }
     ]
   },
@@ -3655,7 +3715,8 @@
         ],
         "time": "510..660"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "md-muhyminul-haque",
@@ -3689,35 +3750,12 @@
         "program": "BSCSE",
         "code": "CSE 3712",
         "title": "Computer Networks Laboratory",
-        "section": "C",
-        "kind": "lab",
-        "days": [
-          "Sun"
-        ],
-        "time": "840..990"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 3712",
-        "title": "Computer Networks Laboratory",
         "section": "K",
         "kind": "lab",
         "days": [
           "Wed"
         ],
         "time": "840..990"
-      },
-      {
-        "program": "BSCSE",
-        "code": "PMG 4101",
-        "title": "Project Management",
-        "section": "A",
-        "kind": "theory",
-        "days": [
-          "Sat",
-          "Tue"
-        ],
-        "time": "510..590"
       },
       {
         "program": "BSCSE",
@@ -3730,6 +3768,33 @@
           "Wed"
         ],
         "time": "751..830"
+      }
+    ],
+    "droppedSections": [
+      {
+        "program": "BSCSE",
+        "code": "CSE 3712",
+        "title": "Computer Networks Laboratory",
+        "section": "C",
+        "kind": "lab",
+        "days": [
+          "Sun"
+        ],
+        "time": "840..990",
+        "droppedAt": "2026-11-05"
+      },
+      {
+        "program": "BSCSE",
+        "code": "PMG 4101",
+        "title": "Project Management",
+        "section": "A",
+        "kind": "theory",
+        "days": [
+          "Sat",
+          "Tue"
+        ],
+        "time": "510..590",
+        "droppedAt": "2026-11-05"
       }
     ]
   },
@@ -3763,18 +3828,6 @@
         "program": "BSDS",
         "code": "DS 4891",
         "title": "Data Analytics",
-        "section": "BA",
-        "kind": "theory",
-        "days": [
-          "Sun",
-          "Wed"
-        ],
-        "time": "510..590"
-      },
-      {
-        "program": "BSDS",
-        "code": "DS 4891",
-        "title": "Data Analytics",
         "section": "BB",
         "kind": "theory",
         "days": [
@@ -3793,6 +3846,21 @@
           "Tue"
         ],
         "time": "510..660"
+      }
+    ],
+    "droppedSections": [
+      {
+        "program": "BSDS",
+        "code": "DS 4891",
+        "title": "Data Analytics",
+        "section": "BA",
+        "kind": "theory",
+        "days": [
+          "Sun",
+          "Wed"
+        ],
+        "time": "510..590",
+        "droppedAt": "2026-11-05"
       },
       {
         "program": "BSDS",
@@ -3803,7 +3871,8 @@
         "days": [
           "Wed"
         ],
-        "time": "840..990"
+        "time": "840..990",
+        "droppedAt": "2026-11-05"
       }
     ]
   },
@@ -3823,7 +3892,8 @@
         ],
         "time": "751..830"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "md-nure-alam-dipu",
@@ -3840,7 +3910,8 @@
         ],
         "time": "671..820"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "md-romizul-islam",
@@ -3905,7 +3976,8 @@
         ],
         "time": "671..820"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "md-saiful-azad",
@@ -3959,7 +4031,8 @@
         ],
         "time": "751..830"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "md-saiful-islam",
@@ -4000,7 +4073,8 @@
         ],
         "time": "840..990"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "md-sajjad-hossain",
@@ -4076,7 +4150,8 @@
         ],
         "time": "510..590"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "md-sanzed-alam",
@@ -4118,7 +4193,8 @@
         ],
         "time": "591..670"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "md-shadman-aadeeb",
@@ -4172,7 +4248,8 @@
         ],
         "time": "671..750"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "md-shafqat-talukder",
@@ -4238,7 +4315,8 @@
         ],
         "time": "751..830"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "md-shohrab-hossain",
@@ -4279,7 +4357,8 @@
         ],
         "time": "840..990"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "md-siam",
@@ -4355,7 +4434,8 @@
         ],
         "time": "840..990"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "md-suzauddola",
@@ -4421,7 +4501,8 @@
         ],
         "time": "831..910"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "md-taky-shaharair",
@@ -4500,7 +4581,8 @@
         ],
         "time": "831..910"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "md-tanvir-raihan",
@@ -4576,7 +4658,8 @@
         ],
         "time": "831..910"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "md-taqi-yasir",
@@ -4606,7 +4689,8 @@
         ],
         "time": "831..910"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "md-tarek-hasan",
@@ -4660,7 +4744,8 @@
         ],
         "time": "591..670"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "md-zahin-alam",
@@ -4678,7 +4763,8 @@
         ],
         "time": "911..990"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "md-zunaid-ul-alam",
@@ -4742,7 +4828,8 @@
         ],
         "time": "831..910"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "miftahul-sheikh",
@@ -4841,7 +4928,8 @@
         "updatedNote": "Faculty updated in UCAM",
         "updatedKind": "faculty"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "minhajul-bashir",
@@ -4869,7 +4957,8 @@
         ],
         "time": "671..820"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "mir-md-fazle-rabbi",
@@ -4899,7 +4988,8 @@
         ],
         "time": "591..670"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "mobashara-islam",
@@ -4917,7 +5007,8 @@
         ],
         "time": "751..830"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "mobaswirul-islam",
@@ -4933,21 +5024,6 @@
           "Sun"
         ],
         "time": "510..660"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 1112",
-        "title": "Structured Programming Language Laboratory",
-        "section": "S",
-        "kind": "lab",
-        "days": [
-          "Wed"
-        ],
-        "time": "510..660",
-        "updated": true,
-        "updatedOn": "2026-10-24",
-        "updatedNote": "Section/schedule updated in UCAM",
-        "updatedKind": "schedule"
       },
       {
         "program": "BSCSE",
@@ -4997,6 +5073,20 @@
         ],
         "time": "831..910"
       }
+    ],
+    "droppedSections": [
+      {
+        "program": "BSCSE",
+        "code": "CSE 1112",
+        "title": "Structured Programming Language Laboratory",
+        "section": "S",
+        "kind": "lab",
+        "days": [
+          "Wed"
+        ],
+        "time": "510..660",
+        "droppedAt": "2026-11-05"
+      }
     ]
   },
   {
@@ -5025,7 +5115,8 @@
         ],
         "time": "671..820"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "mohammad-akhtaruzzaman",
@@ -5055,7 +5146,8 @@
         ],
         "time": "510..590"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "mohammad-johirul-islam",
@@ -5087,7 +5179,8 @@
         "updatedNote": "Section/schedule updated in UCAM",
         "updatedKind": "schedule"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "mohammad-mahmudul-hasan-chowdhury",
@@ -5121,18 +5214,6 @@
         "program": "BSCSE",
         "code": "MATH 2183",
         "title": "Calculus and Linear Algebra",
-        "section": "B",
-        "kind": "theory",
-        "days": [
-          "Sat",
-          "Tue"
-        ],
-        "time": "911..990"
-      },
-      {
-        "program": "BSCSE",
-        "code": "MATH 2183",
-        "title": "Calculus and Linear Algebra",
         "section": "D",
         "kind": "theory",
         "days": [
@@ -5140,6 +5221,21 @@
           "Tue"
         ],
         "time": "751..830"
+      }
+    ],
+    "droppedSections": [
+      {
+        "program": "BSCSE",
+        "code": "MATH 2183",
+        "title": "Calculus and Linear Algebra",
+        "section": "B",
+        "kind": "theory",
+        "days": [
+          "Sat",
+          "Tue"
+        ],
+        "time": "911..990",
+        "droppedAt": "2026-11-05"
       }
     ]
   },
@@ -5182,7 +5278,8 @@
         ],
         "time": "840..990"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "mohammad-nurul-huda",
@@ -5235,7 +5332,8 @@
         ],
         "time": "671..820"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "mohammad-shahriar-rahman",
@@ -5252,7 +5350,8 @@
         ],
         "time": "671..820"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "mohmmad-ali",
@@ -5288,7 +5387,8 @@
         "updatedNote": "Section/schedule updated in UCAM",
         "updatedKind": "schedule"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "mohsina-rahman",
@@ -5330,7 +5430,8 @@
         ],
         "time": "591..670"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "mosharof-hossain",
@@ -5360,25 +5461,8 @@
         ],
         "time": "591..670"
       }
-    ]
-  },
-  {
-    "id": "mr-angkon-deb",
-    "name": "Mr. Angkon Deb",
-    "courses": [
-      {
-        "program": "BSCSE",
-        "code": "CSE 4399",
-        "title": "Special Topics - Embedded Machine Learning",
-        "section": "A",
-        "kind": "theory",
-        "days": [
-          "Sat",
-          "Tue"
-        ],
-        "time": "591..670"
-      }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "mr-mabsur-fatin-bin-hossain",
@@ -5407,24 +5491,8 @@
         ],
         "time": "510..590"
       }
-    ]
-  },
-  {
-    "id": "mr-masnoon-muztahid",
-    "name": "Mr. Masnoon Muztahid",
-    "courses": [
-      {
-        "program": "BSDS",
-        "code": "DS 1502",
-        "title": "Programming for Data Science Laboratory",
-        "section": "BB",
-        "kind": "lab",
-        "days": [
-          "Tue"
-        ],
-        "time": "510..660"
-      }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "mr-syed-tauhid-zuhori",
@@ -5454,7 +5522,8 @@
         ],
         "time": "911..990"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "muhaiminul-islam-adnan",
@@ -5508,24 +5577,13 @@
         ],
         "time": "671..750"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "muhammad-anwarul-azim",
     "name": "Muhammad Anwarul Azim",
     "courses": [
-      {
-        "program": "BSCSE",
-        "code": "CSE 4811",
-        "title": "Natural Language Processing",
-        "section": "A",
-        "kind": "theory",
-        "days": [
-          "Sun",
-          "Wed"
-        ],
-        "time": "510..590"
-      },
       {
         "program": "BSDS",
         "code": "DS 4213",
@@ -5549,6 +5607,21 @@
           "Wed"
         ],
         "time": "751..830"
+      }
+    ],
+    "droppedSections": [
+      {
+        "program": "BSCSE",
+        "code": "CSE 4811",
+        "title": "Natural Language Processing",
+        "section": "A",
+        "kind": "theory",
+        "days": [
+          "Sun",
+          "Wed"
+        ],
+        "time": "510..590",
+        "droppedAt": "2026-11-05"
       }
     ]
   },
@@ -5591,7 +5664,8 @@
         ],
         "time": "510..660"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "muhammad-saiful-islam",
@@ -5613,7 +5687,8 @@
         "updatedNote": "Faculty updated in UCAM",
         "updatedKind": "faculty"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "muntasir-ahmad",
@@ -5631,7 +5706,8 @@
         ],
         "time": "751..830"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "nabila-sabrin-sworna",
@@ -5697,7 +5773,8 @@
         ],
         "time": "510..590"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "nabila-sultana",
@@ -5735,7 +5812,8 @@
         "updatedNote": "Section/schedule updated in UCAM",
         "updatedKind": "schedule"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "nahid-ferdous-aurna",
@@ -5789,7 +5867,8 @@
         ],
         "time": "510..590"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "nahin-f-siddiqui",
@@ -5806,18 +5885,6 @@
           "Tue"
         ],
         "time": "510..590"
-      },
-      {
-        "program": "BSCSE",
-        "code": "CSE 4451",
-        "title": "Human Computer Interaction",
-        "section": "F",
-        "kind": "theory",
-        "days": [
-          "Sun",
-          "Wed"
-        ],
-        "time": "911..990"
       },
       {
         "program": "BSCSE",
@@ -5864,6 +5931,21 @@
           "Wed"
         ],
         "time": "671..750"
+      }
+    ],
+    "droppedSections": [
+      {
+        "program": "BSCSE",
+        "code": "CSE 4451",
+        "title": "Human Computer Interaction",
+        "section": "F",
+        "kind": "theory",
+        "days": [
+          "Sun",
+          "Wed"
+        ],
+        "time": "911..990",
+        "droppedAt": "2026-11-05"
       }
     ]
   },
@@ -5919,7 +6001,8 @@
         ],
         "time": "831..910"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "nazmul-hasan",
@@ -5997,7 +6080,8 @@
         ],
         "time": "751..830"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "nazmun-nahar-showmi",
@@ -6019,7 +6103,8 @@
         "updatedNote": "Section/schedule updated in UCAM",
         "updatedKind": "schedule"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "nousin-laila-bristi",
@@ -6037,7 +6122,8 @@
         ],
         "time": "671..750"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "novia-nurain",
@@ -6067,7 +6153,8 @@
         ],
         "time": "591..670"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "nusaiba-zaman-manifa",
@@ -6141,7 +6228,8 @@
         ],
         "time": "671..820"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "nusrat-jahan-tithi",
@@ -6195,24 +6283,13 @@
         ],
         "time": "591..670"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "nusrath-jahan-borna",
     "name": "Nusrath Jahan Borna",
     "courses": [
-      {
-        "program": "BSCSE",
-        "code": "ENG 1011",
-        "title": "English I",
-        "section": "AT",
-        "kind": "theory",
-        "days": [
-          "Sun",
-          "Wed"
-        ],
-        "time": "671..750"
-      },
       {
         "program": "BSCSE",
         "code": "ENG 1013",
@@ -6248,6 +6325,21 @@
           "Wed"
         ],
         "time": "831..910"
+      }
+    ],
+    "droppedSections": [
+      {
+        "program": "BSCSE",
+        "code": "ENG 1011",
+        "title": "English I",
+        "section": "AT",
+        "kind": "theory",
+        "days": [
+          "Sun",
+          "Wed"
+        ],
+        "time": "671..750",
+        "droppedAt": "2026-11-05"
       }
     ]
   },
@@ -6302,7 +6394,8 @@
         ],
         "time": "591..670"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "pranta-biswas",
@@ -6375,7 +6468,8 @@
         ],
         "time": "840..990"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "rafid-nahiyan-farabi",
@@ -6437,7 +6531,9 @@
           "Wed"
         ],
         "time": "510..660"
-      },
+      }
+    ],
+    "droppedSections": [
       {
         "program": "BSCSE",
         "code": "GED 1005",
@@ -6447,7 +6543,8 @@
         "days": [
           "Mon"
         ],
-        "time": "510..660"
+        "time": "510..660",
+        "droppedAt": "2026-11-05"
       }
     ]
   },
@@ -6482,23 +6579,13 @@
         ],
         "time": "671..820"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "raiyan-janik-monir",
     "name": "Raiyan Janik Monir",
     "courses": [
-      {
-        "program": "BSCSE",
-        "code": "CSE 2218",
-        "title": "Data Structure and Algorithms II Laboratory",
-        "section": "I",
-        "kind": "lab",
-        "days": [
-          "Mon"
-        ],
-        "time": "840..990"
-      },
       {
         "program": "BSCSE",
         "code": "CSE 2218",
@@ -6546,6 +6633,20 @@
           "Tue"
         ],
         "time": "510..660"
+      }
+    ],
+    "droppedSections": [
+      {
+        "program": "BSCSE",
+        "code": "CSE 2218",
+        "title": "Data Structure and Algorithms II Laboratory",
+        "section": "I",
+        "kind": "lab",
+        "days": [
+          "Mon"
+        ],
+        "time": "840..990",
+        "droppedAt": "2026-11-05"
       }
     ]
   },
@@ -6612,7 +6713,8 @@
         ],
         "time": "510..660"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "rejwan-ahmed",
@@ -6629,7 +6731,8 @@
         ],
         "time": "671..820"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "riasat-azim",
@@ -6670,25 +6773,8 @@
         ],
         "time": "751..830"
       }
-    ]
-  },
-  {
-    "id": "rifa-noor",
-    "name": "Rifa Noor",
-    "courses": [
-      {
-        "program": "BSCSE",
-        "code": "ENG 1011",
-        "title": "English I",
-        "section": "AU",
-        "kind": "theory",
-        "days": [
-          "Sun",
-          "Wed"
-        ],
-        "time": "751..830"
-      }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "rizvan-jawad-ruhan",
@@ -6764,7 +6850,8 @@
         ],
         "time": "831..910"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "rubaiya-rahtin-khan",
@@ -6806,7 +6893,8 @@
         ],
         "time": "751..830"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "rusafa-islam-aurchi",
@@ -6828,7 +6916,8 @@
         "updatedNote": "Section/schedule updated in UCAM",
         "updatedKind": "schedule"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "s-m-hasibul-hassan-rizvee",
@@ -6885,7 +6974,8 @@
         ],
         "time": "671..820"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "s-m-kausar-parvej",
@@ -6932,17 +7022,6 @@
       },
       {
         "program": "BSCSE",
-        "code": "CSE 1326",
-        "title": "Digital Logic Design Laboratory",
-        "section": "D",
-        "kind": "lab",
-        "days": [
-          "Sat"
-        ],
-        "time": "510..660"
-      },
-      {
-        "program": "BSCSE",
         "code": "CSE 2213",
         "title": "Discrete Mathematics",
         "section": "N",
@@ -6952,6 +7031,20 @@
           "Wed"
         ],
         "time": "831..910"
+      }
+    ],
+    "droppedSections": [
+      {
+        "program": "BSCSE",
+        "code": "CSE 1326",
+        "title": "Digital Logic Design Laboratory",
+        "section": "D",
+        "kind": "lab",
+        "days": [
+          "Sat"
+        ],
+        "time": "510..660",
+        "droppedAt": "2026-11-05"
       }
     ]
   },
@@ -6983,24 +7076,13 @@
         ],
         "time": "751..830"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "sadia-afrin",
     "name": "Sadia Afrin",
     "courses": [
-      {
-        "program": "BSCSE",
-        "code": "ENG 1011",
-        "title": "English I",
-        "section": "AS",
-        "kind": "theory",
-        "days": [
-          "Sun",
-          "Wed"
-        ],
-        "time": "911..990"
-      },
       {
         "program": "BSCSE",
         "code": "ENG 1011",
@@ -7012,6 +7094,21 @@
           "Wed"
         ],
         "time": "751..830"
+      }
+    ],
+    "droppedSections": [
+      {
+        "program": "BSCSE",
+        "code": "ENG 1011",
+        "title": "English I",
+        "section": "AS",
+        "kind": "theory",
+        "days": [
+          "Sun",
+          "Wed"
+        ],
+        "time": "911..990",
+        "droppedAt": "2026-11-05"
       }
     ]
   },
@@ -7031,7 +7128,8 @@
         ],
         "time": "751..830"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "sadia-islam",
@@ -7113,7 +7211,8 @@
         ],
         "time": "671..750"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "sadia-zaman",
@@ -7135,7 +7234,8 @@
         "updatedNote": "Section/schedule updated in UCAM",
         "updatedKind": "schedule"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "sagar-dutta",
@@ -7153,7 +7253,8 @@
         ],
         "time": "510..590"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "saidul-islam",
@@ -7183,7 +7284,8 @@
         ],
         "time": "671..750"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "saifullah-mahbub",
@@ -7199,7 +7301,9 @@
           "Sat"
         ],
         "time": "671..820"
-      },
+      }
+    ],
+    "droppedSections": [
       {
         "program": "BSCSE",
         "code": "CSE 3522",
@@ -7210,10 +7314,7 @@
           "Sat"
         ],
         "time": "840..990",
-        "updated": true,
-        "updatedOn": "2026-10-24",
-        "updatedNote": "Section/schedule updated in UCAM",
-        "updatedKind": "schedule"
+        "droppedAt": "2026-11-05"
       }
     ]
   },
@@ -7294,7 +7395,8 @@
         ],
         "time": "510..590"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "sajjad-ahmed",
@@ -7311,7 +7413,8 @@
         ],
         "time": "671..820"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "sajjad-hossain",
@@ -7329,7 +7432,8 @@
         ],
         "time": "831..910"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "sakibul-satter-shupto",
@@ -7359,7 +7463,8 @@
         ],
         "time": "831..910"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "samin-sharaf-somik",
@@ -7425,7 +7530,8 @@
         ],
         "time": "510..590"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "saqif-kaisar",
@@ -7481,24 +7587,13 @@
         ],
         "time": "591..670"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "sarwat-amin",
     "name": "Sarwat Amin",
     "courses": [
-      {
-        "program": "BSCSE",
-        "code": "EEE 2123",
-        "title": "Electronics",
-        "section": "F",
-        "kind": "theory",
-        "days": [
-          "Sun",
-          "Wed"
-        ],
-        "time": "510..590"
-      },
       {
         "program": "BSCSE",
         "code": "EEE 2123",
@@ -7522,6 +7617,21 @@
           "Wed"
         ],
         "time": "751..830"
+      }
+    ],
+    "droppedSections": [
+      {
+        "program": "BSCSE",
+        "code": "EEE 2123",
+        "title": "Electronics",
+        "section": "F",
+        "kind": "theory",
+        "days": [
+          "Sun",
+          "Wed"
+        ],
+        "time": "510..590",
+        "droppedAt": "2026-11-05"
       }
     ]
   },
@@ -7625,7 +7735,8 @@
         ],
         "time": "840..990"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "sayem-shahad",
@@ -7703,7 +7814,8 @@
         "updatedNote": "Faculty updated in UCAM",
         "updatedKind": "faculty"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "shahil-yasar-haque",
@@ -7797,7 +7909,8 @@
         ],
         "time": "840..990"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "shahriar-mahmud",
@@ -7873,7 +7986,8 @@
         ],
         "time": "591..670"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "shaila-ahsan",
@@ -7915,7 +8029,8 @@
         ],
         "time": "751..830"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "shakila-aziz",
@@ -7932,7 +8047,9 @@
           "Tue"
         ],
         "time": "591..670"
-      },
+      }
+    ],
+    "droppedSections": [
       {
         "program": "BSCSE",
         "code": "ACT 2111",
@@ -7943,7 +8060,8 @@
           "Sat",
           "Tue"
         ],
-        "time": "751..830"
+        "time": "751..830",
+        "droppedAt": "2026-11-05"
       }
     ]
   },
@@ -7951,17 +8069,6 @@
     "id": "sheikh-mohammed-al-hadi-elaf",
     "name": "Sheikh Mohammed Al Hadi Elaf",
     "courses": [
-      {
-        "program": "BSCSE",
-        "code": "CSE 1110",
-        "title": "Introduction to Computer Systems",
-        "section": "S",
-        "kind": "single-day-theory",
-        "days": [
-          "Sat"
-        ],
-        "time": "510..660"
-      },
       {
         "program": "BSCSE",
         "code": "CSE 1111",
@@ -8024,6 +8131,20 @@
           "Wed"
         ],
         "time": "911..990"
+      }
+    ],
+    "droppedSections": [
+      {
+        "program": "BSCSE",
+        "code": "CSE 1110",
+        "title": "Introduction to Computer Systems",
+        "section": "S",
+        "kind": "single-day-theory",
+        "days": [
+          "Sat"
+        ],
+        "time": "510..660",
+        "droppedAt": "2026-11-05"
       }
     ]
   },
@@ -8101,7 +8222,8 @@
         ],
         "time": "671..750"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "shihab-ahmed",
@@ -8177,7 +8299,8 @@
         ],
         "time": "840..990"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "shoib-ahmed-shourav",
@@ -8231,7 +8354,8 @@
         ],
         "time": "751..830"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "siana-rizwan",
@@ -8247,18 +8371,6 @@
           "Tue"
         ],
         "time": "671..820"
-      },
-      {
-        "program": "BSDS",
-        "code": "DS 1501",
-        "title": "Programming for Data Science",
-        "section": "BC",
-        "kind": "theory",
-        "days": [
-          "Sat",
-          "Tue"
-        ],
-        "time": "831..910"
       },
       {
         "program": "BSDS",
@@ -8284,23 +8396,20 @@
         ],
         "time": "751..830"
       }
-    ]
-  },
-  {
-    "id": "siddique-md-lutful-kabir",
-    "name": "Siddique Md. Lutful Kabir",
-    "courses": [
+    ],
+    "droppedSections": [
       {
-        "program": "BSCSE",
-        "code": "CSE 4399",
-        "title": "Special Topics - Embedded Machine Learning",
-        "section": "A",
+        "program": "BSDS",
+        "code": "DS 1501",
+        "title": "Programming for Data Science",
+        "section": "BC",
         "kind": "theory",
         "days": [
           "Sat",
           "Tue"
         ],
-        "time": "591..670"
+        "time": "831..910",
+        "droppedAt": "2026-11-05"
       }
     ]
   },
@@ -8366,7 +8475,8 @@
         ],
         "time": "671..820"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "sidratul-tanzila-tasmi",
@@ -8450,7 +8560,8 @@
         ],
         "time": "831..910"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "sudipto-mondal",
@@ -8513,7 +8624,8 @@
         ],
         "time": "671..820"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "sumaiya-tarannum",
@@ -8543,7 +8655,8 @@
         ],
         "time": "831..910"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "suman-ahmmed",
@@ -8572,7 +8685,8 @@
         ],
         "time": "510..660"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "syed-abu-ammar-muhammad-zarif",
@@ -8646,7 +8760,8 @@
         ],
         "time": "840..990"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "syed-samin-sadaf",
@@ -8712,7 +8827,8 @@
         ],
         "time": "751..830"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "taki-yashir",
@@ -8788,7 +8904,8 @@
         ],
         "time": "840..990"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "taniah-mahmuda-tinni",
@@ -8838,7 +8955,8 @@
         "updatedNote": "Section/schedule updated in UCAM",
         "updatedKind": "schedule"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "tanmoy-bipro-das",
@@ -8880,7 +8998,8 @@
         ],
         "time": "831..910"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "tanveer-ahmed-khan-fahim",
@@ -8922,7 +9041,8 @@
         ],
         "time": "911..990"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "tanzila-amir",
@@ -8952,7 +9072,8 @@
         ],
         "time": "831..910"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "tasmia-binte-sogir",
@@ -9028,7 +9149,8 @@
         ],
         "time": "671..820"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "tasmin-sanjida",
@@ -9104,7 +9226,8 @@
         ],
         "time": "510..660"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "tasneem-jahan-tumpa",
@@ -9146,7 +9269,8 @@
         ],
         "time": "911..990"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "tasriad-ahmed-tias",
@@ -9226,23 +9350,13 @@
         ],
         "time": "911..990"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "umama-rahman",
     "name": "Umama Rahman",
     "courses": [
-      {
-        "program": "BSCSE",
-        "code": "CSE 1110",
-        "title": "Introduction to Computer Systems",
-        "section": "R",
-        "kind": "single-day-theory",
-        "days": [
-          "Tue"
-        ],
-        "time": "510..660"
-      },
       {
         "program": "BSDS",
         "code": "CSE 2217",
@@ -9289,6 +9403,20 @@
         ],
         "time": "840..990"
       }
+    ],
+    "droppedSections": [
+      {
+        "program": "BSCSE",
+        "code": "CSE 1110",
+        "title": "Introduction to Computer Systems",
+        "section": "R",
+        "kind": "single-day-theory",
+        "days": [
+          "Tue"
+        ],
+        "time": "510..660",
+        "droppedAt": "2026-11-05"
+      }
     ]
   },
   {
@@ -9307,24 +9435,13 @@
         ],
         "time": "831..910"
       }
-    ]
+    ],
+    "droppedSections": []
   },
   {
     "id": "zaara-zabeen-arpa",
     "name": "Zaara Zabeen Arpa",
     "courses": [
-      {
-        "program": "BSCSE",
-        "code": "CSE 3711",
-        "title": "Computer Networks",
-        "section": "A",
-        "kind": "theory",
-        "days": [
-          "Sat",
-          "Tue"
-        ],
-        "time": "510..590"
-      },
       {
         "program": "BSCSE",
         "code": "CSE 3711",
@@ -9383,6 +9500,21 @@
         ],
         "time": "911..990"
       }
+    ],
+    "droppedSections": [
+      {
+        "program": "BSCSE",
+        "code": "CSE 3711",
+        "title": "Computer Networks",
+        "section": "A",
+        "kind": "theory",
+        "days": [
+          "Sat",
+          "Tue"
+        ],
+        "time": "510..590",
+        "droppedAt": "2026-11-05"
+      }
     ]
   },
   {
@@ -9425,7 +9557,9 @@
         "updatedOn": "2026-10-24",
         "updatedNote": "Section/schedule updated in UCAM",
         "updatedKind": "schedule"
-      },
+      }
+    ],
+    "droppedSections": [
       {
         "program": "BSCSE",
         "code": "CSE 3522",
@@ -9436,10 +9570,7 @@
           "Sat"
         ],
         "time": "840..990",
-        "updated": true,
-        "updatedOn": "2026-10-24",
-        "updatedNote": "Section/schedule updated in UCAM",
-        "updatedKind": "schedule"
+        "droppedAt": "2026-11-05"
       }
     ]
   },
@@ -9447,18 +9578,6 @@
     "id": "zolakha-akter-shifa",
     "name": "Zolakha Akter Shifa",
     "courses": [
-      {
-        "program": "BSCSE",
-        "code": "ENG 1011",
-        "title": "English I",
-        "section": "AV",
-        "kind": "theory",
-        "days": [
-          "Sat",
-          "Tue"
-        ],
-        "time": "831..910"
-      },
       {
         "program": "BSCSE",
         "code": "ENG 1011",
@@ -9482,6 +9601,21 @@
           "Wed"
         ],
         "time": "831..910"
+      }
+    ],
+    "droppedSections": [
+      {
+        "program": "BSCSE",
+        "code": "ENG 1011",
+        "title": "English I",
+        "section": "AV",
+        "kind": "theory",
+        "days": [
+          "Sat",
+          "Tue"
+        ],
+        "time": "831..910",
+        "droppedAt": "2026-11-05"
       }
     ]
   }

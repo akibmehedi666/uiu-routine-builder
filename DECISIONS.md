@@ -528,3 +528,28 @@ Following a session interruption audit:
 
 
 
+
+
+## Decision 17: Fall 2026 UCAM Portal Dropped Sections Update (2026-11-05)
+- **Context & Source of Truth**:
+  - Synced against portal update listing 58 dropped sections.
+  - 53 sections matched existing records in `data/sections.json`; 5 entries were not found in the dataset (`CSE 1325 H`, `CSE 4325 K`, `CSE 4509 J`, `MATH 1151 AA`, `DS 1116 BB`) and were logged to `data/anomalies.md`.
+  - Overrides applied idempotently via `data/overrides/2026-fall-dropped-sections.json` and executed via `scripts/apply_overrides.py`.
+- **Data Invariants**:
+  - Total section count strictly maintained at 791 (53 marked with `status: "dropped"` and `droppedAt: "2026-11-05"`, 738 active sections).
+  - Derived course catalog `data/courses.json`: 107 courses preserved; `activeSectionCount` added; 4 courses have all sections dropped (`CSE 4133`, `CSE 4399`, `CSE 4811`, `CSE 4817`) and are flagged with `allDropped: true`.
+  - Derived faculty catalog `data/faculty.json`: 6 faculty with 0 active sections pruned from the active directory (`emrul-kayes-raceme`, `k-m-faizullah-fuhad`, `mr-angkon-deb`, `mr-masnoon-muztahid`, `rifa-noor`, `siddique-md-lutful-kabir`), leaving 186 active faculty. Dropped sections attached to faculty under `droppedSections`.
+- **UI & Views Added/Updated**:
+  - **Course Directory (`src/app/faculty/page.tsx`)**:
+    - Header chip indicating "53 sections dropped" with view toggle / query param `?view=dropped`.
+    - Collapsible Dropped Sections panel (`src/components/DroppedSectionsPanel.tsx`) with search, program filters (ALL / BSCSE / BSDS), natural course code sorting, and direct links to active faculty profiles.
+    - Struck-through styling and disabled/hidden Prefer/Avoid controls for dropped sections.
+    - "All sections dropped" badge for fully dropped courses.
+  - **Faculty Directory & Ranking (`src/app/faculty-directory/page.tsx`, `src/lib/facultyStats.ts`)**:
+    - Added "Most dropped sections" leaderboard card (`src/components/faculty/MostDroppedCard.tsx`) showing top 5 faculty ranked by dropped section count with tie rank format (`=1`), percentage bar, and TBA footnote (11 dropped sections had no faculty assigned).
+    - Faculty profile details page (`FacultyDetailView.tsx`) shows collapsed `<details>` list for dropped sections.
+  - **Solver & Routine Storage**:
+    - Solver domains exclude dropped sections; stale locked sections trigger clear notice; saved routines display "Section dropped" tag for affected entries.
+- **Verification**:
+  - All 223 Vitest tests passing across 17 test files.
+  - Clean Next.js production build (`npm run build`).

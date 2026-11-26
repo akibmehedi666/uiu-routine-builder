@@ -4,28 +4,36 @@
     "title": "Financial and Managerial Accounting",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 10,
+    "allDropped": false
   },
   {
     "code": "BDS 1201",
     "title": "History of the Emergence of Bangladesh",
     "program": "BSCSE",
     "credit": 2,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 5,
+    "allDropped": false
   },
   {
     "code": "BIO 3105",
     "title": "Biology for Engineers",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 14,
+    "allDropped": false
   },
   {
     "code": "CSE 1110",
     "title": "Introduction to Computer Systems",
     "program": "BSCSE",
     "credit": 1,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 18,
+    "allDropped": false
   },
   {
     "code": "CSE 1111",
@@ -33,7 +41,9 @@
     "program": "BSCSE",
     "credit": 3,
     "hasLab": true,
-    "labCode": "CSE 1112"
+    "labCode": "CSE 1112",
+    "activeSectionCount": 21,
+    "allDropped": false
   },
   {
     "code": "CSE 1112",
@@ -41,7 +51,9 @@
     "program": "BSCSE",
     "credit": 1,
     "hasLab": false,
-    "theoryCode": "CSE 1111"
+    "theoryCode": "CSE 1111",
+    "activeSectionCount": 22,
+    "allDropped": false
   },
   {
     "code": "CSE 1115",
@@ -49,7 +61,9 @@
     "program": "BSCSE",
     "credit": 3,
     "hasLab": true,
-    "labCode": "CSE 1116"
+    "labCode": "CSE 1116",
+    "activeSectionCount": 7,
+    "allDropped": false
   },
   {
     "code": "CSE 1116",
@@ -57,7 +71,9 @@
     "program": "BSCSE",
     "credit": 1,
     "hasLab": false,
-    "theoryCode": "CSE 1115"
+    "theoryCode": "CSE 1115",
+    "activeSectionCount": 7,
+    "allDropped": false
   },
   {
     "code": "CSE 1325",
@@ -65,7 +81,9 @@
     "program": "BSCSE",
     "credit": 3,
     "hasLab": true,
-    "labCode": "CSE 1326"
+    "labCode": "CSE 1326",
+    "activeSectionCount": 7,
+    "allDropped": false
   },
   {
     "code": "CSE 1326",
@@ -73,21 +91,27 @@
     "program": "BSCSE",
     "credit": 1,
     "hasLab": false,
-    "theoryCode": "CSE 1325"
+    "theoryCode": "CSE 1325",
+    "activeSectionCount": 6,
+    "allDropped": false
   },
   {
     "code": "CSE 2118",
     "title": "Advanced Object Oriented Programming L",
     "program": "BSCSE",
     "credit": 1,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 9,
+    "allDropped": false
   },
   {
     "code": "CSE 2213",
     "title": "Discrete Mathematics",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 38,
+    "allDropped": false
   },
   {
     "code": "CSE 2215",
@@ -95,7 +119,9 @@
     "program": "BSCSE",
     "credit": 3,
     "hasLab": true,
-    "labCode": "CSE 2216"
+    "labCode": "CSE 2216",
+    "activeSectionCount": 11,
+    "allDropped": false
   },
   {
     "code": "CSE 2216",
@@ -103,7 +129,9 @@
     "program": "BSCSE",
     "credit": 1,
     "hasLab": false,
-    "theoryCode": "CSE 2215"
+    "theoryCode": "CSE 2215",
+    "activeSectionCount": 12,
+    "allDropped": false
   },
   {
     "code": "CSE 2217",
@@ -111,7 +139,9 @@
     "program": "BSCSE",
     "credit": 3,
     "hasLab": true,
-    "labCode": "CSE 2218"
+    "labCode": "CSE 2218",
+    "activeSectionCount": 12,
+    "allDropped": false
   },
   {
     "code": "CSE 2218",
@@ -119,21 +149,27 @@
     "program": "BSCSE",
     "credit": 1,
     "hasLab": false,
-    "theoryCode": "CSE 2217"
+    "theoryCode": "CSE 2217",
+    "activeSectionCount": 15,
+    "allDropped": false
   },
   {
     "code": "CSE 2233",
     "title": "Theory of Computation",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 7,
+    "allDropped": false
   },
   {
     "code": "CSE 3313",
     "title": "Computer Architecture",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 12,
+    "allDropped": false
   },
   {
     "code": "CSE 3411",
@@ -141,7 +177,9 @@
     "program": "BSCSE",
     "credit": 3,
     "hasLab": true,
-    "labCode": "CSE 3412"
+    "labCode": "CSE 3412",
+    "activeSectionCount": 14,
+    "allDropped": false
   },
   {
     "code": "CSE 3412",
@@ -149,7 +187,9 @@
     "program": "BSCSE",
     "credit": 1,
     "hasLab": false,
-    "theoryCode": "CSE 3411"
+    "theoryCode": "CSE 3411",
+    "activeSectionCount": 14,
+    "allDropped": false
   },
   {
     "code": "CSE 3421",
@@ -157,7 +197,9 @@
     "program": "BSCSE",
     "credit": 3,
     "hasLab": true,
-    "labCode": "CSE 3422"
+    "labCode": "CSE 3422",
+    "activeSectionCount": 12,
+    "allDropped": false
   },
   {
     "code": "CSE 3422",
@@ -165,7 +207,9 @@
     "program": "BSCSE",
     "credit": 1,
     "hasLab": false,
-    "theoryCode": "CSE 3421"
+    "theoryCode": "CSE 3421",
+    "activeSectionCount": 14,
+    "allDropped": false
   },
   {
     "code": "CSE 3521",
@@ -173,7 +217,9 @@
     "program": "BSCSE",
     "credit": 3,
     "hasLab": true,
-    "labCode": "CSE 3522"
+    "labCode": "CSE 3522",
+    "activeSectionCount": 12,
+    "allDropped": false
   },
   {
     "code": "CSE 3522",
@@ -181,7 +227,9 @@
     "program": "BSCSE",
     "credit": 1,
     "hasLab": false,
-    "theoryCode": "CSE 3521"
+    "theoryCode": "CSE 3521",
+    "activeSectionCount": 13,
+    "allDropped": false
   },
   {
     "code": "CSE 3711",
@@ -189,7 +237,9 @@
     "program": "BSCSE",
     "credit": 3,
     "hasLab": true,
-    "labCode": "CSE 3712"
+    "labCode": "CSE 3712",
+    "activeSectionCount": 10,
+    "allDropped": false
   },
   {
     "code": "CSE 3712",
@@ -197,14 +247,18 @@
     "program": "BSCSE",
     "credit": 1,
     "hasLab": false,
-    "theoryCode": "CSE 3711"
+    "theoryCode": "CSE 3711",
+    "activeSectionCount": 11,
+    "allDropped": false
   },
   {
     "code": "CSE 3715",
     "title": "Data Communication",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 1,
+    "allDropped": false
   },
   {
     "code": "CSE 3811",
@@ -212,7 +266,9 @@
     "program": "BSCSE",
     "credit": 3,
     "hasLab": true,
-    "labCode": "CSE 3812"
+    "labCode": "CSE 3812",
+    "activeSectionCount": 12,
+    "allDropped": false
   },
   {
     "code": "CSE 3812",
@@ -220,42 +276,54 @@
     "program": "BSCSE",
     "credit": 1,
     "hasLab": false,
-    "theoryCode": "CSE 3811"
+    "theoryCode": "CSE 3811",
+    "activeSectionCount": 12,
+    "allDropped": false
   },
   {
     "code": "CSE 4000A",
     "title": "Final Year Design Project - I",
     "program": "BSCSE",
     "credit": 2,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 10,
+    "allDropped": false
   },
   {
     "code": "CSE 4125",
     "title": "Ethical Hacking and Network Defense",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 1,
+    "allDropped": false
   },
   {
     "code": "CSE 4133",
     "title": "Business Intelligence",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 0,
+    "allDropped": true
   },
   {
     "code": "CSE 4165",
     "title": "Web Programming",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 17,
+    "allDropped": false
   },
   {
     "code": "CSE 4181",
     "title": "Mobile Application Development",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 1,
+    "allDropped": false
   },
   {
     "code": "CSE 4325",
@@ -263,7 +331,9 @@
     "program": "BSCSE",
     "credit": 3,
     "hasLab": true,
-    "labCode": "CSE 4326"
+    "labCode": "CSE 4326",
+    "activeSectionCount": 10,
+    "allDropped": false
   },
   {
     "code": "CSE 4326",
@@ -271,42 +341,54 @@
     "program": "BSCSE",
     "credit": 1,
     "hasLab": false,
-    "theoryCode": "CSE 4325"
+    "theoryCode": "CSE 4325",
+    "activeSectionCount": 12,
+    "allDropped": false
   },
   {
     "code": "CSE 4327",
     "title": "VLSI Design",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 1,
+    "allDropped": false
   },
   {
     "code": "CSE 4399",
     "title": "Special Topics - Embedded Machine Learning",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 0,
+    "allDropped": true
   },
   {
     "code": "CSE 4435",
     "title": "Software Architecture",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 3,
+    "allDropped": false
   },
   {
     "code": "CSE 4451",
     "title": "Human Computer Interaction",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 5,
+    "allDropped": false
   },
   {
     "code": "CSE 4495",
     "title": "Software Testing and Quality Assurance",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 3,
+    "allDropped": false
   },
   {
     "code": "CSE 4509",
@@ -314,7 +396,9 @@
     "program": "BSCSE",
     "credit": 3,
     "hasLab": true,
-    "labCode": "CSE 4510"
+    "labCode": "CSE 4510",
+    "activeSectionCount": 9,
+    "allDropped": false
   },
   {
     "code": "CSE 4510",
@@ -322,105 +406,135 @@
     "program": "BSCSE",
     "credit": 1,
     "hasLab": false,
-    "theoryCode": "CSE 4509"
+    "theoryCode": "CSE 4509",
+    "activeSectionCount": 11,
+    "allDropped": false
   },
   {
     "code": "CSE 4531",
     "title": "Computer Security",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 8,
+    "allDropped": false
   },
   {
     "code": "CSE 4587",
     "title": "Cloud Computing",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 2,
+    "allDropped": false
   },
   {
     "code": "CSE 4611",
     "title": "Compiler Design",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 3,
+    "allDropped": false
   },
   {
     "code": "CSE 4777",
     "title": "Networks Security",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 1,
+    "allDropped": false
   },
   {
     "code": "CSE 4811",
     "title": "Natural Language Processing",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 0,
+    "allDropped": true
   },
   {
     "code": "CSE 4813",
     "title": "Deep Learning",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 1,
+    "allDropped": false
   },
   {
     "code": "CSE 4817",
     "title": "Big Data Analytics",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 0,
+    "allDropped": true
   },
   {
     "code": "CSE 4883",
     "title": "Digital Image Processing",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 5,
+    "allDropped": false
   },
   {
     "code": "CSE 4889",
     "title": "Machine Learning",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 8,
+    "allDropped": false
   },
   {
     "code": "CSE 4891",
     "title": "Data Mining",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 6,
+    "allDropped": false
   },
   {
     "code": "CSE 4893",
     "title": "Introduction to Bioinformatics",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 1,
+    "allDropped": false
   },
   {
     "code": "CSE 4945",
     "title": "UI: Concepts and Design",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 3,
+    "allDropped": false
   },
   {
     "code": "ECO 4101",
     "title": "Economics",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 8,
+    "allDropped": false
   },
   {
     "code": "EEE 2113",
     "title": "Electrical Circuits",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 10,
+    "allDropped": false
   },
   {
     "code": "EEE 2123",
@@ -428,7 +542,9 @@
     "program": "BSCSE",
     "credit": 3,
     "hasLab": true,
-    "labCode": "EEE 2124"
+    "labCode": "EEE 2124",
+    "activeSectionCount": 8,
+    "allDropped": false
   },
   {
     "code": "EEE 2124",
@@ -436,70 +552,90 @@
     "program": "BSCSE",
     "credit": 1,
     "hasLab": false,
-    "theoryCode": "EEE 2123"
+    "theoryCode": "EEE 2123",
+    "activeSectionCount": 10,
+    "allDropped": false
   },
   {
     "code": "EEE 4261",
     "title": "Green Computing",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 9,
+    "allDropped": false
   },
   {
     "code": "ENG 1011",
     "title": "English I",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 18,
+    "allDropped": false
   },
   {
     "code": "ENG 1013",
     "title": "English II",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 17,
+    "allDropped": false
   },
   {
     "code": "GED 1005",
     "title": "AI Literacy and Prompt Engineering",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 7,
+    "allDropped": false
   },
   {
     "code": "IPE 3401",
     "title": "Industrial and Operational Management",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 5,
+    "allDropped": false
   },
   {
     "code": "MATH 1151",
     "title": "Fundamental Calculus",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 23,
+    "allDropped": false
   },
   {
     "code": "MATH 2183",
     "title": "Calculus and Linear Algebra",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 11,
+    "allDropped": false
   },
   {
     "code": "MATH 2201",
     "title": "Coordinate Geometry and Vector Analysis",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 10,
+    "allDropped": false
   },
   {
     "code": "MATH 2205",
     "title": "Probability and Statistics",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 14,
+    "allDropped": false
   },
   {
     "code": "PHY 2105",
@@ -507,7 +643,9 @@
     "program": "BSCSE",
     "credit": 3,
     "hasLab": true,
-    "labCode": "PHY 2106"
+    "labCode": "PHY 2106",
+    "activeSectionCount": 16,
+    "allDropped": false
   },
   {
     "code": "PHY 2106",
@@ -515,35 +653,45 @@
     "program": "BSCSE",
     "credit": 1,
     "hasLab": false,
-    "theoryCode": "PHY 2105"
+    "theoryCode": "PHY 2105",
+    "activeSectionCount": 10,
+    "allDropped": false
   },
   {
     "code": "PMG 4101",
     "title": "Project Management",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 11,
+    "allDropped": false
   },
   {
     "code": "SOC 2101",
     "title": "Society, Environment and Engineering Ethics",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 10,
+    "allDropped": false
   },
   {
     "code": "TEC 2499",
     "title": "Technology Entrepreneurship",
     "program": "BSCSE",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 1,
+    "allDropped": false
   },
   {
     "code": "BIO 3107",
     "title": "Biology",
     "program": "BSDS",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 2,
+    "allDropped": false
   },
   {
     "code": "CSE 2215",
@@ -551,7 +699,9 @@
     "program": "BSDS",
     "credit": 3,
     "hasLab": true,
-    "labCode": "CSE 2216"
+    "labCode": "CSE 2216",
+    "activeSectionCount": 2,
+    "allDropped": false
   },
   {
     "code": "CSE 2216",
@@ -559,7 +709,9 @@
     "program": "BSDS",
     "credit": 1,
     "hasLab": false,
-    "theoryCode": "CSE 2215"
+    "theoryCode": "CSE 2215",
+    "activeSectionCount": 2,
+    "allDropped": false
   },
   {
     "code": "CSE 2217",
@@ -567,7 +719,9 @@
     "program": "BSDS",
     "credit": 3,
     "hasLab": true,
-    "labCode": "CSE 2218"
+    "labCode": "CSE 2218",
+    "activeSectionCount": 2,
+    "allDropped": false
   },
   {
     "code": "CSE 2218",
@@ -575,7 +729,9 @@
     "program": "BSDS",
     "credit": 1,
     "hasLab": false,
-    "theoryCode": "CSE 2217"
+    "theoryCode": "CSE 2217",
+    "activeSectionCount": 2,
+    "allDropped": false
   },
   {
     "code": "CSE 3521",
@@ -583,7 +739,9 @@
     "program": "BSDS",
     "credit": 3,
     "hasLab": true,
-    "labCode": "CSE 3522"
+    "labCode": "CSE 3522",
+    "activeSectionCount": 2,
+    "allDropped": false
   },
   {
     "code": "CSE 3522",
@@ -591,14 +749,18 @@
     "program": "BSDS",
     "credit": 1,
     "hasLab": false,
-    "theoryCode": "CSE 3521"
+    "theoryCode": "CSE 3521",
+    "activeSectionCount": 2,
+    "allDropped": false
   },
   {
     "code": "DS 1101",
     "title": "Fundamentals of Data Science",
     "program": "BSDS",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 2,
+    "allDropped": false
   },
   {
     "code": "DS 1115",
@@ -606,7 +768,9 @@
     "program": "BSDS",
     "credit": 3,
     "hasLab": true,
-    "labCode": "DS 1116"
+    "labCode": "DS 1116",
+    "activeSectionCount": 4,
+    "allDropped": false
   },
   {
     "code": "DS 1116",
@@ -614,7 +778,9 @@
     "program": "BSDS",
     "credit": 1,
     "hasLab": false,
-    "theoryCode": "DS 1115"
+    "theoryCode": "DS 1115",
+    "activeSectionCount": 5,
+    "allDropped": false
   },
   {
     "code": "DS 1501",
@@ -622,7 +788,9 @@
     "program": "BSDS",
     "credit": 3,
     "hasLab": true,
-    "labCode": "DS 1502"
+    "labCode": "DS 1502",
+    "activeSectionCount": 4,
+    "allDropped": false
   },
   {
     "code": "DS 1502",
@@ -630,28 +798,36 @@
     "program": "BSDS",
     "credit": 1,
     "hasLab": false,
-    "theoryCode": "DS 1501"
+    "theoryCode": "DS 1501",
+    "activeSectionCount": 4,
+    "allDropped": false
   },
   {
     "code": "DS 2251",
     "title": "Bayesian Statistics",
     "program": "BSDS",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 1,
+    "allDropped": false
   },
   {
     "code": "DS 3101",
     "title": "Advanced Probability and Statistics",
     "program": "BSDS",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 1,
+    "allDropped": false
   },
   {
     "code": "DS 3120",
     "title": "Technical Report Writing and Presentation",
     "program": "BSDS",
     "credit": 2,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 2,
+    "allDropped": false
   },
   {
     "code": "DS 3521",
@@ -659,7 +835,9 @@
     "program": "BSDS",
     "credit": 3,
     "hasLab": true,
-    "labCode": "DS 3522"
+    "labCode": "DS 3522",
+    "activeSectionCount": 2,
+    "allDropped": false
   },
   {
     "code": "DS 3522",
@@ -667,98 +845,126 @@
     "program": "BSDS",
     "credit": 1,
     "hasLab": false,
-    "theoryCode": "DS 3521"
+    "theoryCode": "DS 3521",
+    "activeSectionCount": 2,
+    "allDropped": false
   },
   {
     "code": "DS 3881",
     "title": "Regression and Time Series Analysis",
     "program": "BSDS",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 1,
+    "allDropped": false
   },
   {
     "code": "DS 3885",
     "title": "Data Wrangling",
     "program": "BSDS",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 2,
+    "allDropped": false
   },
   {
     "code": "DS 4000A",
     "title": "Capstone Project - I",
     "program": "BSDS",
     "credit": 2,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 1,
+    "allDropped": false
   },
   {
     "code": "DS 4115",
     "title": "Marketing Analytics",
     "program": "BSDS",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 2,
+    "allDropped": false
   },
   {
     "code": "DS 4123",
     "title": "Human Computer Interaction",
     "program": "BSDS",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 1,
+    "allDropped": false
   },
   {
     "code": "DS 4211",
     "title": "Deep Learning",
     "program": "BSDS",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 1,
+    "allDropped": false
   },
   {
     "code": "DS 4213",
     "title": "Natural Language Processing",
     "program": "BSDS",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 2,
+    "allDropped": false
   },
   {
     "code": "DS 4217",
     "title": "Data Privacy and Ethics",
     "program": "BSDS",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 1,
+    "allDropped": false
   },
   {
     "code": "DS 4229",
     "title": "Data Warehousing",
     "program": "BSDS",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 1,
+    "allDropped": false
   },
   {
     "code": "DS 4491",
     "title": "Machine Learning Systems Design",
     "program": "BSDS",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 1,
+    "allDropped": false
   },
   {
     "code": "DS 4523",
     "title": "Simulation and Modeling",
     "program": "BSDS",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 1,
+    "allDropped": false
   },
   {
     "code": "DS 4817",
     "title": "Big Data",
     "program": "BSDS",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 1,
+    "allDropped": false
   },
   {
     "code": "DS 4889",
     "title": "Machine Learning",
     "program": "BSDS",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 1,
+    "allDropped": false
   },
   {
     "code": "DS 4891",
@@ -766,7 +972,9 @@
     "program": "BSDS",
     "credit": 3,
     "hasLab": true,
-    "labCode": "DS 4892"
+    "labCode": "DS 4892",
+    "activeSectionCount": 1,
+    "allDropped": false
   },
   {
     "code": "DS 4892",
@@ -774,20 +982,26 @@
     "program": "BSDS",
     "credit": 1,
     "hasLab": false,
-    "theoryCode": "DS 4891"
+    "theoryCode": "DS 4891",
+    "activeSectionCount": 1,
+    "allDropped": false
   },
   {
     "code": "MATH 1153",
     "title": "Advanced Calculus",
     "program": "BSDS",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 1,
+    "allDropped": false
   },
   {
     "code": "MATH 2107",
     "title": "Linear Algebra",
     "program": "BSDS",
     "credit": 3,
-    "hasLab": false
+    "hasLab": false,
+    "activeSectionCount": 1,
+    "allDropped": false
   }
 ]
