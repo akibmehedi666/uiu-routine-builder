@@ -118,6 +118,7 @@ uiu-routine-builder/
 │   │   ├── campusStats.ts   # Campus-wide section & meeting stats, heatmap data, histograms
 │   │   ├── roomSchedule.ts  # Room schedule indexing and floor parser
 │   │   ├── facultyAliases.ts # Legacy faculty ID backward compatibility resolution
+│   │   ├── format.ts        # Shared plural(n, singular) formatting helper
 │   │   ├── facultyStats.ts  # Pure faculty stats, badges, leaderboards, filters, search aliases
 │   │   ├── courseSearch.ts  # Pure, tokenized course search index with alias support
 │   │   ├── courseDirectory.ts # Course directory filtering, grouping, and natural sorting
@@ -218,7 +219,7 @@ uiu-routine-builder/
 | Export iCal (.ics) | `export.ts` | Done | 12-week recurring schedule for Google/Apple Calendar |
 | Print / PDF Output | `globals.css` (`@media print`)| Done | Strips nav, toolbar, and background for clean PDF printing |
 | Course Directory | `/faculty` (`faculty/page.tsx`)| Done | Course-first directory, alias search (DSA, OS, etc.), UCAM cards |
-| Faculty Directory | `/faculty-directory` (`faculty-directory/page.tsx`)| Done | Faculty-first directory: search, filters, card grid, daily spotlight, leaderboards, compare, TBA tracker |
+| Faculty Directory | `/faculty-directory` (`faculty-directory/page.tsx`)| Done | Faculty-first directory: search, filters, card grid, daily spotlight, collapsed-by-default leaderboards, compare, TBA tracker |
 | Faculty Detail Profile | `/faculty-directory/[id]` (`faculty-directory/[id]/page.tsx`)| Done | Static SSG (207 faculty), profile header, weekly timetable mini-grid, courses & sections, co-instructors |
 | Invariant SiteNav | `SiteNav.tsx` | Done | Single instance in root layout, 3-column grid, 0px shift |
 | Site Footer Credit | `SiteFooter.tsx` | Done | Compact creator credit (Md. Akib Mehedi) & feedback link |
