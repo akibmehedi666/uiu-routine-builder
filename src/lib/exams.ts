@@ -595,3 +595,491 @@ export function saveStoredStudentId(studentId: string | null): void {
     // Ignore storage quota or private mode blocks
   }
 }
+
+export type TimeOfDayGroup = 'morning' | 'midday' | 'afternoon';
+
+export const TIME_OF_DAY_META: Record<
+  TimeOfDayGroup,
+  { label: string; tooltip: string }
+> = {
+  morning: {
+    label: 'Morning',
+    tooltip: '08:30 AM - 10:30 AM, 09:00 AM - 11:00 AM',
+  },
+  midday: {
+    label: 'Midday',
+    tooltip: '11:00 AM - 01:00 PM, 11:45 AM - 01:45 PM',
+  },
+  afternoon: {
+    label: 'Afternoon',
+    tooltip: '02:30 PM - 04:30 PM',
+  },
+};
+
+export interface ExamProgramCount {
+  program: 'BSCSE' | 'BSDS';
+  sectionCount: number;
+}
+
+export interface UniqueExamSection {
+  id: string;
+  section: string;
+  program: 'BSCSE' | 'BSDS';
+  rooms: ExamRoomRange[];
+  status: 'active' | 'dropped' | null;
+  sectionId: string | null;
+}
+
+export interface UniqueExam {
+  key: string;
+  courseCode: string;
+  courseCodes: string[];
+  courseTitle: string;
+  date: string;
+  dayOfWeek: string;
+  startMin: number;
+  endMin: number;
+  timeOfDay: TimeOfDayGroup;
+  programs: ExamProgramCount[];
+  sections: UniqueExamSection[];
+  sectionCount: number;
+  roomsSummary: string[];
+}
+
+export interface ExamDayStat {
+  date: string;
+  dayOfWeek: string;
+  dayNumber: number;
+  monthLabel: string;
+  examCount: number;
+  sectionCount: number;
+  hasUserExam: boolean;
+  ratio: number; // 0..1 proportional to max examCount
+}
+
+export interface ExamDayStatsSummary {
+  days: ExamDayStat[];
+  totalDays: number;
+  dateRangeLabel: string;
+  busiestDay: { date: string; dayOfWeek: string; examCount: number } | null;
+}
+
+export type NextExamResult =
+  | { status: 'none' }
+  | { status: 'completed' }
+  | { status: 'upcoming'; exam: UniqueExam; daysUntil: number; label: string };
+
+export interface ExamsPageUrlState {
+  q: string;
+  program: 'ALL' | 'BSCSE' | 'BSDS';
+  date: string;
+  time: 'ALL' | TimeOfDayGroup;
+  mode: 'mine' | 'all';
+  view: 'date' | 'list';
+}
+
+const SHORT_MONTHS = [
+  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+];
+
+const WEEKDAYS_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+/**
+ * Classifies exam start time (minutes since midnight) into Morning / Midday / Afternoon.
+ * - Morning: start < 11:00 (660)
+ * - Midday: 11:00 <= start < 14:00 (660..839)
+ * - Afternoon: start >= 14:00 (840+)
+ */
+export function timeOfDay(startMin: number): TimeOfDayGroup {
+  if (startMin < 660) return 'morning';
+  if (startMin < 840) return 'midday';
+  return 'afternoon';
+}
+
+/**
+ * Formats YYYY-MM-DD (e.g. "2026-11-26") into "Nov 26, 2026".
+ */
+export function formatDate(dateIso: string): string {
+  const parts = dateIso.split('-');
+  if (parts.length !== 3) return dateIso;
+  const year = parseInt(parts[0], 10);
+  const monthIdx = parseInt(parts[1], 10) - 1;
+  const day = parseInt(parts[2], 10);
+  const monthName = SHORT_MONTHS[monthIdx];
+  if (!monthName || Number.isNaN(day) || Number.isNaN(year)) return dateIso;
+  return `${monthName} ${day}, ${year}`;
+}
+
+/**
+ * Formats YYYY-MM-DD (e.g. "2026-12-05") into "Sat, Dec 5".
+ */
+export function formatExamDayLabel(dateIso: string): string {
+  const parts = dateIso.split('-');
+  if (parts.length !== 3) return dateIso;
+  const year = parseInt(parts[0], 10);
+  const monthIdx = parseInt(parts[1], 10) - 1;
+  const day = parseInt(parts[2], 10);
+  const monthName = SHORT_MONTHS[monthIdx];
+  if (!monthName || Number.isNaN(day) || Number.isNaN(year)) return dateIso;
+  const utc = new Date(Date.UTC(year, monthIdx, day));
+  const weekday = WEEKDAYS_SHORT[utc.getUTCDay()];
+  return `${weekday}, ${monthName} ${day}`;
+}
+
+function naturalSectionCompare(a: string, b: string): number {
+  const aAlpha = a.replace(/[0-9]/g, '');
+  const bAlpha = b.replace(/[0-9]/g, '');
+  if (aAlpha.length !== bAlpha.length) {
+    return aAlpha.length - bAlpha.length;
+  }
+  return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+}
+
+/**
+ * Groups raw section-level exam rows into unique exams defined by
+ * (canonical courseCode, date, startMin, endMin), merging BSCSE and BSDS rows
+ * of the same course and time slot into a single exam.
+ */
+export function groupUniqueExams(
+  rows: ExamRow[],
+  options?: { includeDropped?: boolean }
+): UniqueExam[] {
+  if (!rows || rows.length === 0) return [];
+
+  const groups = new Map<
+    string,
+    {
+      courseCode: string;
+      courseCodes: Set<string>;
+      courseTitle: string;
+      date: string;
+      dayOfWeek: string;
+      startMin: number;
+      endMin: number;
+      programCounts: Map<'BSCSE' | 'BSDS', number>;
+      sections: UniqueExamSection[];
+      roomsSet: Set<string>;
+    }
+  >();
+
+  for (const row of rows) {
+    if (!options?.includeDropped && row.sectionStatus === 'dropped') {
+      continue;
+    }
+
+    const key = `${row.courseCode}|${row.date}|${row.startMin}|${row.endMin}`;
+    let group = groups.get(key);
+    if (!group) {
+      group = {
+        courseCode: row.courseCode,
+        courseCodes: new Set<string>(),
+        courseTitle: row.courseTitle,
+        date: row.date,
+        dayOfWeek: row.dayOfWeek,
+        startMin: row.startMin,
+        endMin: row.endMin,
+        programCounts: new Map<'BSCSE' | 'BSDS', number>(),
+        sections: [],
+        roomsSet: new Set<string>(),
+      };
+      groups.set(key, group);
+    }
+
+    for (const c of row.courseCodes) {
+      group.courseCodes.add(c);
+    }
+    group.programCounts.set(
+      row.program,
+      (group.programCounts.get(row.program) || 0) + 1
+    );
+    group.sections.push({
+      id: row.id,
+      section: row.section,
+      program: row.program,
+      rooms: row.rooms,
+      status: row.sectionStatus,
+      sectionId: row.sectionId,
+    });
+    for (const rm of row.rooms) {
+      group.roomsSet.add(rm.room);
+    }
+  }
+
+  const result: UniqueExam[] = [];
+  for (const [key, g] of groups.entries()) {
+    const programs: ExamProgramCount[] = (['BSCSE', 'BSDS'] as const)
+      .filter((p) => (g.programCounts.get(p) || 0) > 0)
+      .map((p) => ({
+        program: p,
+        sectionCount: g.programCounts.get(p) || 0,
+      }));
+
+    const sortedSections = [...g.sections].sort(
+      (a, b) =>
+        naturalSectionCompare(a.section, b.section) ||
+        a.program.localeCompare(b.program)
+    );
+
+    result.push({
+      key,
+      courseCode: g.courseCode,
+      courseCodes: Array.from(g.courseCodes),
+      courseTitle: g.courseTitle,
+      date: g.date,
+      dayOfWeek: g.dayOfWeek,
+      startMin: g.startMin,
+      endMin: g.endMin,
+      timeOfDay: timeOfDay(g.startMin),
+      programs,
+      sections: sortedSections,
+      sectionCount: sortedSections.length,
+      roomsSummary: Array.from(g.roomsSet),
+    });
+  }
+
+  return result.sort(
+    (a, b) =>
+      a.date.localeCompare(b.date) ||
+      a.startMin - b.startMin ||
+      a.courseCode.localeCompare(b.courseCode, undefined, { numeric: true })
+  );
+}
+
+/**
+ * Counts unique exams and total sections across an array of UniqueExam objects.
+ */
+export function countExamsAndSections(exams: UniqueExam[]): {
+  examCount: number;
+  sectionCount: number;
+} {
+  let sectionCount = 0;
+  for (const e of exams) {
+    sectionCount += e.sectionCount;
+  }
+  return { examCount: exams.length, sectionCount };
+}
+
+/**
+ * Formats exam + section counts as "64 exams · 472 sections" or "1 exam · 9 sections".
+ */
+export function formatExamCountSummary(
+  examCount: number,
+  sectionCount: number
+): string {
+  const examWord = examCount === 1 ? 'exam' : 'exams';
+  const secWord = sectionCount === 1 ? 'section' : 'sections';
+  return `${examCount} ${examWord} · ${sectionCount} ${secWord}`;
+}
+
+/**
+ * Computes per-day statistics, date range label, and busiest day from unique exams.
+ */
+export function dayStats(
+  uniqueExams: UniqueExam[],
+  userCourseCodes: string[] = []
+): ExamDayStatsSummary {
+  if (!uniqueExams || uniqueExams.length === 0) {
+    return {
+      days: [],
+      totalDays: 0,
+      dateRangeLabel: '',
+      busiestDay: null,
+    };
+  }
+
+  const userCodeSet = new Set(userCourseCodes.map(normalizeCodeKey));
+  const map = new Map<
+    string,
+    {
+      date: string;
+      dayOfWeek: string;
+      dayNumber: number;
+      monthLabel: string;
+      examCount: number;
+      sectionCount: number;
+      hasUserExam: boolean;
+    }
+  >();
+
+  for (const exam of uniqueExams) {
+    const parts = exam.date.split('-');
+    const monthIdx = parseInt(parts[1] || '1', 10) - 1;
+    const dayNumber = parseInt(parts[2] || '1', 10);
+    const monthLabel = SHORT_MONTHS[monthIdx] || '';
+
+    let entry = map.get(exam.date);
+    if (!entry) {
+      entry = {
+        date: exam.date,
+        dayOfWeek: exam.dayOfWeek,
+        dayNumber,
+        monthLabel,
+        examCount: 0,
+        sectionCount: 0,
+        hasUserExam: false,
+      };
+      map.set(exam.date, entry);
+    }
+
+    entry.examCount++;
+    entry.sectionCount += exam.sectionCount;
+    if (
+      userCodeSet.has(normalizeCodeKey(exam.courseCode)) ||
+      exam.courseCodes.some((c) => userCodeSet.has(normalizeCodeKey(c)))
+    ) {
+      entry.hasUserExam = true;
+    }
+  }
+
+  const sorted = Array.from(map.values()).sort((a, b) =>
+    a.date.localeCompare(b.date)
+  );
+  const maxCount = Math.max(1, ...sorted.map((d) => d.examCount));
+
+  const days: ExamDayStat[] = sorted.map((d) => ({
+    ...d,
+    ratio: d.examCount / maxCount,
+  }));
+
+  let busiest = days[0];
+  for (const d of days) {
+    if (d.examCount > busiest.examCount) {
+      busiest = d;
+    }
+  }
+
+  const first = days[0];
+  const last = days[days.length - 1];
+  const dateRangeLabel =
+    first.date === last.date
+      ? `${first.monthLabel} ${first.dayNumber}`
+      : first.monthLabel === last.monthLabel
+      ? `${first.monthLabel} ${first.dayNumber}–${last.dayNumber}`
+      : `${first.monthLabel} ${first.dayNumber}–${last.monthLabel} ${last.dayNumber}`;
+
+  return {
+    days,
+    totalDays: days.length,
+    dateRangeLabel,
+    busiestDay: {
+      date: busiest.date,
+      dayOfWeek: busiest.dayOfWeek,
+      examCount: busiest.examCount,
+    },
+  };
+}
+
+function toIsoDateOnly(dateOrIso?: Date | string): string {
+  if (typeof dateOrIso === 'string') {
+    return dateOrIso.slice(0, 10);
+  }
+  const d = dateOrIso ?? new Date();
+  const y = d.getFullYear();
+  const m = (d.getMonth() + 1).toString().padStart(2, '0');
+  const day = d.getDate().toString().padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function parseUtcEpochDay(dateIso: string): number {
+  const parts = dateIso.split('-').map((n) => parseInt(n, 10));
+  if (parts.length !== 3 || parts.some(Number.isNaN)) return 0;
+  return Math.floor(Date.UTC(parts[0], parts[1] - 1, parts[2]) / 86400000);
+}
+
+/**
+ * Finds the next upcoming exam relative to today's date (or provided reference date).
+ * Returns "Today", "Tomorrow", or "in N days", or { status: 'completed' } if all are past.
+ */
+export function getNextExam(
+  uniqueExams: UniqueExam[],
+  nowDate?: Date | string
+): NextExamResult {
+  if (!uniqueExams || uniqueExams.length === 0) {
+    return { status: 'none' };
+  }
+
+  const todayIso = toIsoDateOnly(nowDate);
+  const sorted = [...uniqueExams].sort(
+    (a, b) => a.date.localeCompare(b.date) || a.startMin - b.startMin
+  );
+
+  const upcoming = sorted.find((e) => e.date >= todayIso);
+  if (!upcoming) {
+    return { status: 'completed' };
+  }
+
+  const daysUntil = Math.max(
+    0,
+    parseUtcEpochDay(upcoming.date) - parseUtcEpochDay(todayIso)
+  );
+  const label =
+    daysUntil === 0
+      ? 'Today'
+      : daysUntil === 1
+      ? 'Tomorrow'
+      : `in ${daysUntil} days`;
+
+  return {
+    status: 'upcoming',
+    exam: upcoming,
+    daysUntil,
+    label,
+  };
+}
+
+/**
+ * Parses deep-link query params for /exams with safe fallbacks on invalid values.
+ * Never reads or returns any student ID.
+ */
+export function parseExamsPageParams(
+  search: string,
+  hasSelectedCourses: boolean
+): ExamsPageUrlState {
+  const params = new URLSearchParams(search);
+  const q = params.get('q') || '';
+
+  const rawProg = (params.get('program') || '').toUpperCase();
+  const program: ExamsPageUrlState['program'] =
+    rawProg === 'BSCSE' || rawProg === 'BSDS' ? rawProg : 'ALL';
+
+  const rawDate = params.get('date') || '';
+  const date = /^\d{4}-\d{2}-\d{2}$/.test(rawDate) ? rawDate : 'ALL';
+
+  const rawTime = (params.get('time') || '').toLowerCase();
+  const time: ExamsPageUrlState['time'] =
+    rawTime === 'morning' || rawTime === 'midday' || rawTime === 'afternoon'
+      ? rawTime
+      : 'ALL';
+
+  const rawMode = (params.get('mode') || '').toLowerCase();
+  const legacyMine = params.get('mine');
+  let mode: ExamsPageUrlState['mode'];
+  if (rawMode === 'mine' || rawMode === 'all') {
+    mode = rawMode;
+  } else if (legacyMine === '1' || legacyMine === 'true') {
+    mode = 'mine';
+  } else {
+    mode = hasSelectedCourses ? 'mine' : 'all';
+  }
+
+  const rawView = (params.get('view') || '').toLowerCase();
+  const view: ExamsPageUrlState['view'] = rawView === 'list' ? 'list' : 'date';
+
+  return { q, program, date, time, mode, view };
+}
+
+/**
+ * Serializes /exams filter/view state into query string params.
+ * Never includes student ID.
+ */
+export function serializeExamsPageParams(state: ExamsPageUrlState): string {
+  const params = new URLSearchParams();
+  if (state.q.trim()) params.set('q', state.q.trim());
+  if (state.program !== 'ALL') params.set('program', state.program);
+  if (state.date !== 'ALL') params.set('date', state.date);
+  if (state.time !== 'ALL') params.set('time', state.time);
+  params.set('mode', state.mode);
+  if (state.view !== 'date') params.set('view', state.view);
+  return params.toString();
+}

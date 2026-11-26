@@ -7,6 +7,16 @@ import {
   detectExamClashes,
   exportExamsToICS,
   exportExamsToText,
+  groupUniqueExams,
+  countExamsAndSections,
+  formatExamCountSummary,
+  timeOfDay,
+  formatDate,
+  formatExamDayLabel,
+  getNextExam,
+  dayStats,
+  parseExamsPageParams,
+  serializeExamsPageParams,
   ExamRow,
 } from '../exams';
 import { serializeToParams } from '../../utils/urlSync';
@@ -412,6 +422,134 @@ describe('exams pure logic', () => {
 
       const shareToken = encodeSharedRoutineUrl(saved);
       expect(shareToken).not.toContain(secretId);
+    });
+  });
+
+  describe('unique exam grouping and counts', () => {
+    it('merges BSCSE and BSDS rows of the same course and slot into one exam', () => {
+      const grouped = groupUniqueExams(SAMPLE_EXAMS);
+      // SAMPLE_EXAMS has 10 rows:
+      // - CSE 4509 A & B (1 exam, 2 sections)
+      // - CSE 3811 A (1 exam, 1 section)
+      // - CSE 4889 A (1 exam, 1 section)
+      // - CSE 3521 A (BSCSE) + BA (BSDS) -> merged into 1 exam, 2 sections
+      // - CSE 4165 A (slot 1) and C (slot 2) -> 2 exams, 1 section each
+      // - CSE 3411 A (1 exam, 1 section)
+      // - CSE 4811 A (dropped -> excluded)
+      expect(grouped).toHaveLength(7);
+      const { examCount, sectionCount } = countExamsAndSections(grouped);
+      expect(examCount).toBe(7);
+      expect(sectionCount).toBe(9);
+      expect(formatExamCountSummary(examCount, sectionCount)).toBe('7 exams · 9 sections');
+
+      const dbms = grouped.find((e) => e.courseCode === 'CSE 3521');
+      expect(dbms).toBeDefined();
+      expect(dbms?.sectionCount).toBe(2);
+      expect(dbms?.programs).toEqual([
+        { program: 'BSCSE', sectionCount: 1 },
+        { program: 'BSDS', sectionCount: 1 },
+      ]);
+
+      const webProg = grouped.filter((e) => e.courseCode === 'CSE 4165');
+      expect(webProg).toHaveLength(2);
+    });
+  });
+
+  describe('timeOfDay boundaries', () => {
+    it('classifies Morning (<11:00), Midday (11:00..13:59), Afternoon (>=14:00)', () => {
+      expect(timeOfDay(510)).toBe('morning'); // 08:30
+      expect(timeOfDay(659)).toBe('morning'); // 10:59
+      expect(timeOfDay(660)).toBe('midday');  // 11:00
+      expect(timeOfDay(839)).toBe('midday');  // 13:59
+      expect(timeOfDay(840)).toBe('afternoon'); // 14:00
+      expect(timeOfDay(870)).toBe('afternoon'); // 14:30
+    });
+  });
+
+  describe('formatDate and formatExamDayLabel', () => {
+    it('formats ISO dates for display', () => {
+      expect(formatDate('2026-11-26')).toBe('Nov 26, 2026');
+      expect(formatExamDayLabel('2026-12-05')).toBe('Sat, Dec 5');
+      expect(formatExamDayLabel('2026-12-08')).toBe('Tue, Dec 8');
+    });
+  });
+
+  describe('getNextExam', () => {
+    it('computes today, tomorrow, in N days, and completed states', () => {
+      const grouped = groupUniqueExams(SAMPLE_EXAMS);
+
+      const resToday = getNextExam(grouped, '2026-12-05');
+      expect(resToday.status).toBe('upcoming');
+      if (resToday.status === 'upcoming') {
+        expect(resToday.label).toBe('Today');
+        expect(resToday.daysUntil).toBe(0);
+      }
+
+      const resTomorrow = getNextExam(grouped, '2026-12-04');
+      expect(resTomorrow.status).toBe('upcoming');
+      if (resTomorrow.status === 'upcoming') {
+        expect(resTomorrow.label).toBe('Tomorrow');
+        expect(resTomorrow.daysUntil).toBe(1);
+      }
+
+      const res9Days = getNextExam(grouped, '2026-11-26');
+      expect(res9Days.status).toBe('upcoming');
+      if (res9Days.status === 'upcoming') {
+        expect(res9Days.label).toBe('in 9 days');
+        expect(res9Days.daysUntil).toBe(9);
+      }
+
+      const resDone = getNextExam(grouped, '2026-12-20');
+      expect(resDone.status).toBe('completed');
+    });
+  });
+
+  describe('dayStats', () => {
+    it('aggregates days, busiest day, and user exam flags', () => {
+      const grouped = groupUniqueExams(SAMPLE_EXAMS);
+      const summary = dayStats(grouped, ['CSE 3521']);
+      expect(summary.totalDays).toBe(3);
+      expect(summary.dateRangeLabel).toBe('Dec 5–12');
+      expect(summary.busiestDay?.date).toBe('2026-12-05');
+      expect(summary.busiestDay?.examCount).toBe(3);
+
+      const dec7 = summary.days.find((d) => d.date === '2026-12-07');
+      expect(dec7?.hasUserExam).toBe(true);
+      const dec12 = summary.days.find((d) => d.date === '2026-12-12');
+      expect(dec12?.hasUserExam).toBe(false);
+    });
+  });
+
+  describe('deep-link parsing and privacy', () => {
+    it('parses valid params, falls back on invalid values, and never serializes student ID', () => {
+      const parsed = parseExamsPageParams(
+        '?q=CSE+4509&program=BSCSE&date=2026-12-05&time=morning&mode=all&view=list&id=0112230263',
+        true
+      );
+      expect(parsed).toEqual({
+        q: 'CSE 4509',
+        program: 'BSCSE',
+        date: '2026-12-05',
+        time: 'morning',
+        mode: 'all',
+        view: 'list',
+      });
+
+      const fallback = parseExamsPageParams(
+        '?program=INVALID&date=bad&time=midnight&mode=weird&view=grid',
+        true
+      );
+      expect(fallback).toEqual({
+        q: '',
+        program: 'ALL',
+        date: 'ALL',
+        time: 'ALL',
+        mode: 'mine',
+        view: 'date',
+      });
+
+      const qs = serializeExamsPageParams(parsed);
+      expect(qs).not.toContain('0112230263');
     });
   });
 });
