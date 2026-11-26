@@ -553,3 +553,18 @@ Following a session interruption audit:
 - **Verification**:
   - All 223 Vitest tests passing across 17 test files.
   - Clean Next.js production build (`npm run build`).
+
+## Decision 18: Mid-Term Exam Schedule Integration & Privacy-Preserving Room Lookup
+- **Context & Source Data**:
+  - Imported Fall 2026 mid-term exam schedule from SoSE notice board Excel (`mid-term-exam-schedule_sose_notice-board_263.xlsx`, gitignored) via `scripts/extract_exams.py` (`npm run extract:exams`).
+  - Filtered 574 rows down to 472 `BSCSE` (434) and `BSDS` (38) rows (102 `BSEEE`/`BSCE` rows dropped). Matched 463 rows to `data/sections.json` using merged `/` course codes + program + section letter; kept 9 unmatched rows with `sectionId: null` and reported all discrepancies and teacher-initials mismatches (report-only, faculty data untouched) in `docs/exams-import.md`.
+  - Normalized 9-digit legacy student IDs to 10 digits (`011131140` -> `0111310140`) for consistent lexicographical range comparison (`idFrom <= idTo`).
+- **Bundle & Runtime Safety**:
+  - `data/exams.json` is dynamically imported via `loadExamsData()` / `useExams()` only on views that need it so Builder's initial JS bundle stays small.
+  - Missing or empty `exams.json` causes all exam UI elements to hide silently without errors.
+  - Saved routines never persist exam data; exam info is derived at render time and dropped sections are excluded by default.
+  - Solver, scoring, bitmask constraints, section IDs, and faculty data remain strictly untouched; exam clash detection is purely informational and non-blocking.
+- **Privacy Design Limit (Selected-Courses-Only Room Lookup)**:
+  - The Student ID room finder (`StudentIdRoomLookup` + `lookupStudentRoomForCourse`) is intentionally scoped ONLY to the user's selected courses (in Builder's `Routine | Exams` view and `/exams` `"My courses only"` mode).
+  - There is NO global `"student ID -> all exams/courses"` reverse search anywhere in the UI or library, preventing the tool from being used to look up or enumerate other students' full schedules.
+  - The student ID lives in React component state only, with an explicit opt-in `"Remember on this device"` checkbox (default OFF, stored in `uiu-rb:student-id:v1` with a `"Forget"` button), and is never written to URLs, share links, saved routines, `.ics` exports, analytics, or console logs.

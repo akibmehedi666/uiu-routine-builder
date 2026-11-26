@@ -32,6 +32,7 @@
   - `npm test` : Run all unit and static safety tests via Vitest (`vitest run`).
   - `npm run build` : Run Next.js production build (`next build`).
   - `python scripts/extract.py` : Re-extract course sections from raw PDF.
+  - `npm run extract:exams` : Re-extract mid-term exam schedule from SoSE notice board Excel (`scripts/extract_exams.py`).
   - `node scripts/generate-icons.js` : Re-generate favicon.ico, apple-icon.png, and PWA icons from `icon.svg`.
 
 ---
@@ -45,8 +46,11 @@ uiu-routine-builder/
 │   ├── courses.json         # 107 course catalog entries
 │   ├── faculty.json         # 207 faculty records with teaching assignments (full untruncated names)
 │   ├── faculty-id-aliases.json # 14 legacy-to-canonical faculty ID alias mappings
+│   ├── exams.json           # 472 mid-term exam rows (BSCSE & BSDS) with normalized 10-digit ID ranges
+│   ├── exam-meta.json       # Exam import metadata & summary counts
 │   └── anomalies.md         # Extraction audit trail (377 auto-resolved PDF anomalies)
 ├── docs/                    # Architecture logs, audit reports, user guide, investigation docs
+│   ├── exams-import.md      # Mid-term exam import report (unmatched, missing theory, initials mismatches)
 │   ├── name-fix.md          # Complete audit of 14 restored faculty names & 48 long name reviews
 │   ├── consistency-audit.md # Nav alignment, typography scale, BrandLogo audit
 │   ├── solver-design.md     # Backtracking algorithm, bitmasks, scoring model
@@ -60,6 +64,7 @@ uiu-routine-builder/
 │   └── icon-512.png         # PWA maskable icon (512x512)
 ├── scripts/
 │   ├── extract.py           # MCID stream grouping PDF parser (preserves full faculty names)
+│   ├── extract_exams.py     # SoSE mid-term exam Excel importer (BSCSE/BSDS, 9->10 digit ID normalization)
 │   └── generate-icons.js    # Sharp script to build favicon.ico, apple-icon, and PWA PNGs
 ├── src/
 │   ├── app/                 # Next.js App Router
@@ -72,6 +77,7 @@ uiu-routine-builder/
 │   │   │   ├── page.tsx     # Directory + Fall 2026 Stats view switcher
 │   │   │   ├── [id]/        # Profile view with static generation for canonical + legacy IDs
 │   │   │   └── compare/     # /faculty-directory/compare?a=...&b=... side-by-side comparison
+│   │   ├── exams/           # /exams route (Mid-term Exam Schedule + My Courses room lookup)
 │   │   ├── courses/         # /courses route (Redirects to /faculty)
 │   │   ├── icon.svg         # Clean timetable blocks vector favicon
 │   │   ├── favicon.ico      # Multi-resolution ICO (16, 32, 48)
@@ -88,6 +94,9 @@ uiu-routine-builder/
 │   │   ├── CourseSelector.tsx # Left-panel course picker and mobile search sheet
 │   │   ├── Timetable.tsx    # 5-day desktop timetable view
 │   │   ├── DayListTimetable.tsx # Mobile Day-by-Day view
+│   │   ├── RoutineExamsView.tsx # Builder Results "Exams" tab + .ics export + room-by-ID lookup
+│   │   ├── ExamClashSummary.tsx # Non-blocking mid-term exam clash & same-day warning chips
+│   │   ├── StudentIdRoomLookup.tsx # Privacy-preserving student ID room finder (selected courses only)
 │   │   ├── ScheduleComparison.tsx # Side-by-side routine compare drawer
 │   │   ├── SavedRoutinesDrawer.tsx # Drawer for saved routines & snapshot management
 │   │   ├── SaveRoutinePopover.tsx # Quick save popover
@@ -103,8 +112,10 @@ uiu-routine-builder/
 │   │   └── facultyBadges.ts # 12 faculty badge thresholds and definitions
 │   ├── hooks/
 │   │   ├── usePinnedFaculty.ts # "uiu-rb:pinned-faculty:v1" localStorage hook with cross-tab sync
+│   │   ├── useExams.ts      # Lazy dynamic-import hook for data/exams.json
 │   │   └── useSolver.ts     # Web Worker management, state machine, and cache
 │   ├── lib/
+│   │   ├── exams.ts         # Pure exam logic: ID normalization, room ranges, clash detection, .ics export
 │   │   ├── campusStats.ts   # Campus-wide section & meeting stats, heatmap data, histograms
 │   │   ├── roomSchedule.ts  # Room schedule indexing and floor parser
 │   │   ├── facultyAliases.ts # Legacy faculty ID backward compatibility resolution
@@ -165,6 +176,11 @@ uiu-routine-builder/
   3. Run `python scripts/extract.py`.
   4. Inspect `data/anomalies.md` and check that Sl 1 to N has zero gaps and zero duplicates.
   5. Run `npm test && npm run build` to verify compatibility.
+- **Mid-Term Exam Schedule Pipeline (`scripts/extract_exams.py`)**:
+  - Run `npm run extract:exams` to import `mid-term-exam-schedule_sose_notice-board_263.xlsx` (gitignored) into `data/exams.json`, `data/exam-meta.json`, and `docs/exams-import.md`.
+  - Keeps only `BSCSE` & `BSDS` rows, normalizes 9-digit legacy IDs to 10 digits, and matches against `data/sections.json` without overwriting faculty data.
+  - Loaded lazily via dynamic `import()` (`loadExamsData()` / `useExams()`) so Builder's initial bundle stays small.
+  - **Privacy rules**: Student ID lookup (`StudentIdRoomLookup`) works strictly for the user's selected courses only (no ID -> all courses lookup), stores ID in component state (with opt-in `"Remember on this device"` in `uiu-rb:student-id:v1`), and never puts the ID in URLs, saved routines, `.ics` exports, analytics, or logs.
 
 ---
 
@@ -218,13 +234,14 @@ uiu-routine-builder/
   - `/faculty` : Course Directory (UCAM-inspired course-first directory).
   - `/faculty-directory` : Faculty Directory (searchable instructor list, leaderboards, spotlight, compare).
   - `/faculty-directory/[id]` : Faculty detail profile with weekly teaching timetable and course sections (SSG for all 207 faculty).
+  - `/exams` : Mid-term Exam Schedule (search, program/date/time filters, "My courses only" mode, room-by-ID lookup, Copy/.ics export).
   - `/courses` : Immediate redirect to `/faculty`.
 - **Navigation Bar (`SiteNav`)**:
   - Rendered **once** from root `src/app/layout.tsx`. Never re-mounts on navigation.
   - Desktop height 64px (`h-16`), mobile height 52px (`h-[52px]`).
   - Layout: CSS Grid `grid-cols-[1fr_auto_1fr] items-center`.
     - Left (start): `<BrandLogo size="nav" />` and brand text.
-    - Center: Nav links (`Home`, `Builder`, `Course Directory`, `Faculty Directory`) with reserved 2px transparent bottom border (`border-b-2 border-transparent`, active `border-orange-500 font-semibold text-orange-600`), ensuring mathematically invariant coordinates across routes.
+    - Center: Nav links (`Home`, `Builder`, `Course Directory`, `Faculty Directory`, `Exams`) driven from `NAV_ITEMS` in `src/config/nav.ts` with reserved 2px transparent bottom border (`border-b-2 border-transparent`, active `border-orange-500 font-semibold text-orange-600`), ensuring mathematically invariant coordinates across routes.
     - Right (end): Route-driven action cluster configured in `src/config/nav.ts`.
 - **Page Max-Width Knob**:
   - Single source of truth: `--page-max-w: 1440px;` in `src/app/globals.css`.
