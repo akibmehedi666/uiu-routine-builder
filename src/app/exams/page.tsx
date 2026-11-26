@@ -1,138 +1,285 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, Suspense } from 'react';
+import React, { useState, useEffect, useMemo, useRef, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import coursesJson from '../../../data/courses.json';
-import { Course, SolveRequest } from '../../types';
+import sectionsJson from '../../../data/sections.json';
+import { Course, Section, SolveRequest } from '../../types';
 import { PAGE_MAX_W } from '../../config/layout';
-import { EXAMS_NOTE, EXAMS_UPDATED } from '../../config/site';
+import { EXAMS_UPDATED } from '../../config/site';
 import { SiteFooter } from '../../components/SiteFooter';
 import { useExams } from '../../hooks/useExams';
-import { ExamClashSummary } from '../../components/ExamClashSummary';
-import { StudentIdRoomLookup } from '../../components/StudentIdRoomLookup';
 import {
-  ExamRow,
+  UniqueExam,
+  TimeOfDayGroup,
+  TIME_OF_DAY_META,
+  ExamsPageUrlState,
+  countExamsAndSections,
+  dayStats,
   detectExamClashes,
-  exportExamsToICS,
-  exportExamsToText,
+  formatDate,
+  formatExamCountSummary,
   formatExamDateShort,
   formatExamTimeRange,
   getExamsForCourse,
+  getNextExam,
+  groupUniqueExams,
   isExamExemptCourse,
   lookupStudentRoomForCourse,
+  parseExamsPageParams,
+  serializeExamsPageParams,
 } from '../../lib/exams';
-import { downloadFile, formatTime24 } from '../../utils/export';
 import { naturalCourseCodeSort } from '../../lib/courseSearch';
+import { StatStrip } from './_components/StatStrip';
+import { StartHere } from './_components/StartHere';
+import { DayStrip } from './_components/DayStrip';
+import { ExamTimeline } from './_components/ExamTimeline';
+import { MyExamPlan } from './_components/MyExamPlan';
 import {
   Search,
   X,
+  Sunrise,
+  Sun,
+  Sunset,
+  RotateCcw,
   Calendar,
-  Clock,
-  Copy,
-  Check,
-  LayoutGrid,
   List,
+  AlertTriangle,
+  CheckCircle2,
+  Info,
+  MapPin,
+  Clock,
   BookOpen,
   ArrowRight,
-  MapPin,
-  AlertTriangle,
-  ChevronDown,
-  RotateCcw,
 } from 'lucide-react';
 
 const allCourses = coursesJson as unknown as Course[];
+const allSections = (sectionsJson as unknown as Section[]).filter(
+  (s) => s.status !== 'dropped'
+);
 
-interface CourseCardGroup {
-  key: string;
-  program: 'BSCSE' | 'BSDS';
-  courseCode: string;
-  courseTitle: string;
-  date: string;
-  dayOfWeek: string;
-  startMin: number;
-  endMin: number;
-  rows: ExamRow[];
-}
+const START_HERE_DISMISSED_KEY = 'uiu-rb:exams-start-here-dismissed:v1';
+
+const DEFAULT_SOLVE_WEIGHTS = {
+  facultyPreference: 30,
+  minimizeGaps: 25,
+  compactDays: 20,
+  avoidEarlyLate: 15,
+  avoidTentative: 10,
+};
 
 function ExamsPageContent() {
   const searchParams = useSearchParams();
   const { exams, loaded } = useExams(true);
 
-  // Only show non-dropped exam rows
-  const activeExams = useMemo(
+  const activeRows = useMemo(
     () => exams.filter((e) => e.sectionStatus !== 'dropped'),
     [exams]
   );
 
-  // Filters & view state
+  // Shared Builder working state
+  const [builderState, setBuilderState] = useState<Partial<SolveRequest>>({
+    selectedCourses: [],
+    preferredFaculty: {},
+    avoidFaculty: {},
+    lockedSections: {},
+    filterDayOff: [],
+    weights: DEFAULT_SOLVE_WEIGHTS,
+  });
+  const [storageHydrated, setStorageHydrated] = useState(false);
+
+  // StartHere dismissal
+  const [startHereDismissed, setStartHereDismissed] = useState(false);
+
+  // URL-synced filters & view state
   const [searchQuery, setSearchQuery] = useState('');
   const [programFilter, setProgramFilter] = useState<'ALL' | 'BSCSE' | 'BSDS'>('ALL');
   const [dateFilter, setDateFilter] = useState<string>('ALL');
-  const [timeFilter, setTimeFilter] = useState<string>('ALL');
-  const [mineOnly, setMineOnly] = useState(false);
+  const [timeFilter, setTimeFilter] = useState<'ALL' | TimeOfDayGroup>('ALL');
+  const [mode, setMode] = useState<'mine' | 'all'>('all');
+  const [viewMode, setViewMode] = useState<'date' | 'list'>('date');
   const [sortBy, setSortBy] = useState<'date' | 'code'>('date');
-  const [viewMode, setViewMode] = useState<'by-date' | 'list'>('by-date');
-  const [expandedGroupKeys, setExpandedGroupKeys] = useState<Set<string>>(new Set());
 
-  // Shared Builder working state for "My courses only"
-  const [builderState, setBuilderState] = useState<Partial<SolveRequest>>({
-    selectedCourses: [],
-    lockedSections: {},
-  });
-
-  // Student ID room lookup (in component state only, only for "My courses only")
+  // Student ID (lives in component state only; opt-in localStorage handled inside StudentIdRoomLookup)
   const [activeStudentId, setActiveStudentId] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
 
-  // Load Builder shared working state from storage
+  // Mobile side-panel collapse state (< 1100px)
+  const [mobilePlanExpanded, setMobilePlanExpanded] = useState(false);
+
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const quickAddInputRef = useRef<HTMLInputElement>(null);
+  const urlHydratedRef = useRef(false);
+
+  // 1. Hydrate shared Builder state & StartHere dismissal on mount
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    let loadedCourses: string[] = [];
     try {
       const raw =
         sessionStorage.getItem('uiu_routine_builder_state') ||
         localStorage.getItem('uiu_routine_builder_state');
       if (raw) {
-        setBuilderState(JSON.parse(raw));
+        const parsed = JSON.parse(raw) as Partial<SolveRequest>;
+        setBuilderState(parsed);
+        loadedCourses = parsed.selectedCourses || [];
+      }
+    } catch {
+      // ignore storage errors
+    }
+
+    try {
+      if (localStorage.getItem(START_HERE_DISMISSED_KEY) === 'true') {
+        setStartHereDismissed(true);
       }
     } catch {
       // ignore
     }
-  }, []);
 
-  // Hydrate initial filters from URL (?q=&program=&date=&mine=1)
-  const hasHydratedUrl = React.useRef(false);
-  useEffect(() => {
-    if (hasHydratedUrl.current) return;
-    hasHydratedUrl.current = true;
-
-    const q = searchParams.get('q');
-    if (q) setSearchQuery(q);
-
-    const prog = searchParams.get('program');
-    if (prog && ['BSCSE', 'BSDS'].includes(prog.toUpperCase())) {
-      setProgramFilter(prog.toUpperCase() as 'BSCSE' | 'BSDS');
+    if (loadedCourses.length > 0) {
+      setMobilePlanExpanded(true);
     }
 
-    const d = searchParams.get('date');
-    if (d) setDateFilter(d);
+    // Hydrate URL params once we know whether courses exist
+    if (!urlHydratedRef.current) {
+      urlHydratedRef.current = true;
+      const parsedUrl = parseExamsPageParams(
+        window.location.search,
+        loadedCourses.length > 0
+      );
+      setSearchQuery(parsedUrl.q);
+      setProgramFilter(parsedUrl.program);
+      setDateFilter(parsedUrl.date);
+      setTimeFilter(parsedUrl.time);
+      setMode(parsedUrl.mode);
+      setViewMode(parsedUrl.view);
+    }
 
-    const m = searchParams.get('mine');
-    if (m === '1' || m === 'true') setMineOnly(true);
+    setStorageHydrated(true);
+
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'uiu_routine_builder_state' && e.newValue) {
+        try {
+          setBuilderState(JSON.parse(e.newValue));
+        } catch {
+          // ignore
+        }
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
   }, [searchParams]);
 
-  // Sync deep links (?q=&program=&date=&mine=1) — NEVER include student ID
+  // 2. Sync URL params cleanly (NEVER student ID)
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const params = new URLSearchParams();
-    if (searchQuery.trim()) params.set('q', searchQuery.trim());
-    if (programFilter !== 'ALL') params.set('program', programFilter);
-    if (dateFilter !== 'ALL') params.set('date', dateFilter);
-    if (mineOnly) params.set('mine', '1');
-    const qs = params.toString();
+    if (!storageHydrated || typeof window === 'undefined') return;
+    const state: ExamsPageUrlState = {
+      q: searchQuery,
+      program: programFilter,
+      date: dateFilter,
+      time: timeFilter,
+      mode,
+      view: viewMode,
+    };
+    const qs = serializeExamsPageParams(state);
     const nextUrl = qs ? `${window.location.pathname}?${qs}` : window.location.pathname;
     window.history.replaceState(null, '', nextUrl);
-  }, [searchQuery, programFilter, dateFilter, mineOnly]);
+  }, [storageHydrated, searchQuery, programFilter, dateFilter, timeFilter, mode, viewMode]);
+
+  // 3. Keyboard "/" shortcut to focus search
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName || '';
+      if (['INPUT', 'SELECT', 'TEXTAREA'].includes(tag)) {
+        if (e.key === 'Escape') {
+          (e.target as HTMLElement).blur();
+        }
+        return;
+      }
+      if (e.key === '/') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
+
+  // Shared Builder state mutators (keep Builder & /exams synced)
+  const updateSharedBuilderState = (
+    updater: (prev: Partial<SolveRequest>) => Partial<SolveRequest>
+  ) => {
+    setBuilderState((prev) => {
+      const next = updater(prev);
+      try {
+        const json = JSON.stringify(next);
+        sessionStorage.setItem('uiu_routine_builder_state', json);
+        localStorage.setItem('uiu_routine_builder_state', json);
+      } catch {
+        // ignore storage errors
+      }
+      return next;
+    });
+  };
+
+  const handleAddCourse = (courseCode: string) => {
+    updateSharedBuilderState((prev) => {
+      const current = prev.selectedCourses || [];
+      if (current.includes(courseCode)) return prev;
+      return {
+        ...prev,
+        selectedCourses: [...current, courseCode],
+      };
+    });
+  };
+
+  const handleRemoveCourse = (courseCode: string) => {
+    updateSharedBuilderState((prev) => {
+      const current = prev.selectedCourses || [];
+      const newPref = { ...(prev.preferredFaculty || {}) };
+      const newAvoid = { ...(prev.avoidFaculty || {}) };
+      const newLock = { ...(prev.lockedSections || {}) };
+      delete newPref[courseCode];
+      delete newAvoid[courseCode];
+      delete newLock[courseCode];
+      return {
+        ...prev,
+        selectedCourses: current.filter((c) => c !== courseCode),
+        preferredFaculty: newPref,
+        avoidFaculty: newAvoid,
+        lockedSections: newLock,
+      };
+    });
+  };
+
+  const handleDismissStartHere = () => {
+    setStartHereDismissed(true);
+    try {
+      localStorage.setItem(START_HERE_DISMISSED_KEY, 'true');
+    } catch {
+      // ignore
+    }
+  };
+
+  const handleFocusQuickAdd = () => {
+    setMobilePlanExpanded(true);
+    setTimeout(() => {
+      quickAddInputRef.current?.focus();
+      quickAddInputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 60);
+  };
+
+  const selectedCourses = useMemo(
+    () => builderState.selectedCourses || [],
+    [builderState.selectedCourses]
+  );
+
+  const lockedSections = useMemo(
+    () => builderState.lockedSections || {},
+    [builderState.lockedSections]
+  );
+
+  const userCourseSet = useMemo(() => new Set(selectedCourses), [selectedCourses]);
 
   const courseByCode = useMemo(() => {
     const map = new Map<string, Course>();
@@ -142,57 +289,31 @@ function ExamsPageContent() {
     return map;
   }, []);
 
-  const selectedCourses = useMemo(
-    () => builderState.selectedCourses || [],
-    [builderState.selectedCourses]
+  // 4. Unique exams across entire active dataset (BSCSE + BSDS merged per course+date+slot)
+  const allUniqueExams = useMemo(
+    () => groupUniqueExams(activeRows),
+    [activeRows]
   );
 
-  // Unique dates with counts (after program filter so counts reflect context)
-  const dateChips = useMemo(() => {
-    const counts = new Map<string, { date: string; dayOfWeek: string; count: number }>();
-    for (const e of activeExams) {
-      if (programFilter !== 'ALL' && e.program !== programFilter) continue;
-      if (!counts.has(e.date)) {
-        counts.set(e.date, { date: e.date, dayOfWeek: e.dayOfWeek, count: 0 });
-      }
-      counts.get(e.date)!.count++;
-    }
-    return Array.from(counts.values()).sort((a, b) => a.date.localeCompare(b.date));
-  }, [activeExams, programFilter]);
+  const totalCounts = useMemo(
+    () => countExamsAndSections(allUniqueExams),
+    [allUniqueExams]
+  );
 
-  // Unique time slots
-  const timeSlotChips = useMemo(() => {
-    const map = new Map<string, { key: string; startMin: number; endMin: number; label: string }>();
-    for (const e of activeExams) {
-      const key = `${e.startMin}-${e.endMin}`;
-      if (!map.has(key)) {
-        map.set(key, {
-          key,
-          startMin: e.startMin,
-          endMin: e.endMin,
-          label: `${formatTime24(e.startMin)} - ${formatTime24(e.endMin)}`,
-        });
-      }
-    }
-    return Array.from(map.values()).sort(
-      (a, b) => a.startMin - b.startMin || a.endMin - b.endMin
-    );
-  }, [activeExams]);
-
-  // Set of exam IDs matching user's selected courses (and locked sections if chosen)
-  const myCourseExamRows = useMemo(() => {
-    if (selectedCourses.length === 0 || activeExams.length === 0) return [];
-    const matched: ExamRow[] = [];
+  // User's selected exam rows (honoring lockedSections if chosen)
+  const mySelectedExamRows = useMemo(() => {
+    if (selectedCourses.length === 0 || activeRows.length === 0) return [];
+    const matched: typeof activeRows = [];
     const seenIds = new Set<string>();
     for (const code of selectedCourses) {
       const courseObj = courseByCode.get(code);
-      if (isExamExemptCourse(courseObj || code)) continue;
-      const lockedId = builderState.lockedSections?.[code];
-      const rows = getExamsForCourse(courseObj?.program ?? null, code, activeExams);
-      const chosenRows = lockedId
+      if (isExamExemptCourse(courseObj || code, allSections)) continue;
+      const rows = getExamsForCourse(null, code, activeRows);
+      const lockedId = lockedSections[code];
+      const filtered = lockedId
         ? rows.filter((r) => r.sectionId === lockedId)
         : rows;
-      for (const r of chosenRows.length > 0 ? chosenRows : rows) {
+      for (const r of filtered.length > 0 ? filtered : rows) {
         if (!seenIds.has(r.id)) {
           seenIds.add(r.id);
           matched.push(r);
@@ -200,81 +321,141 @@ function ExamsPageContent() {
       }
     }
     return matched;
-  }, [selectedCourses, activeExams, courseByCode, builderState.lockedSections]);
+  }, [selectedCourses, activeRows, courseByCode, lockedSections]);
 
-  // Clash report for "My courses only"
+  const myUniqueExams = useMemo(
+    () => groupUniqueExams(mySelectedExamRows),
+    [mySelectedExamRows]
+  );
+
+  // Clash report for user's selected courses
   const myExamReport = useMemo(() => {
-    if (selectedCourses.length === 0 || activeExams.length === 0) return null;
+    if (selectedCourses.length === 0 || activeRows.length === 0) return null;
     const selection = selectedCourses.map((code) => {
       const courseObj = courseByCode.get(code);
       return {
         course: courseObj || code,
-        sectionId: builderState.lockedSections?.[code] || null,
+        sectionId: lockedSections[code] || null,
         program: courseObj?.program,
-        isLab: isExamExemptCourse(courseObj || code),
+        isLab: isExamExemptCourse(courseObj || code, allSections),
       };
     });
-    return detectExamClashes(selection, activeExams);
-  }, [selectedCourses, activeExams, courseByCode, builderState.lockedSections]);
+    return detectExamClashes(selection, activeRows);
+  }, [selectedCourses, activeRows, courseByCode, lockedSections]);
 
-  const myClashingCourseSet = useMemo(() => {
-    const s = new Set<string>();
-    if (myExamReport) {
-      for (const c of myExamReport.clashes) {
-        s.add(c.a);
-        s.add(c.b);
-      }
+  // Day stats for StatStrip & DayStrip
+  const allDayStats = useMemo(
+    () => dayStats(allUniqueExams, selectedCourses),
+    [allUniqueExams, selectedCourses]
+  );
+
+  // In My exams mode, DayStrip keeps all 7 exam dates visible, with user's exam counts & bars
+  const dayStripDays = useMemo(() => {
+    if (mode !== 'mine') return allDayStats.days;
+    const myMap = new Map<string, { examCount: number; sectionCount: number }>();
+    for (const e of myUniqueExams) {
+      const cur = myMap.get(e.date) || { examCount: 0, sectionCount: 0 };
+      cur.examCount += 1;
+      cur.sectionCount += e.sectionCount;
+      myMap.set(e.date, cur);
     }
-    return s;
-  }, [myExamReport]);
+    const maxMy = Math.max(1, ...Array.from(myMap.values()).map((v) => v.examCount));
+    return allDayStats.days.map((d) => {
+      const mine = myMap.get(d.date) || { examCount: 0, sectionCount: 0 };
+      return {
+        ...d,
+        examCount: mine.examCount,
+        sectionCount: mine.sectionCount,
+        ratio: mine.examCount > 0 ? mine.examCount / maxMy : 0,
+      };
+    });
+  }, [mode, allDayStats.days, myUniqueExams]);
 
-  // Filtered and sorted exam rows
+  // Next Exam (My exams mode)
+  const nextExamResult = useMemo(
+    () => (mode === 'mine' ? getNextExam(myUniqueExams) : { status: 'none' as const }),
+    [mode, myUniqueExams]
+  );
+
+  const nextExamRoomLookup = useMemo(() => {
+    if (nextExamResult.status !== 'upcoming' || !activeStudentId) return null;
+    const ex = nextExamResult.exam;
+    const courseRows = getExamsForCourse(null, ex.courseCode, activeRows);
+    const lockedId = lockedSections[ex.courseCode];
+    const ownRow = lockedId
+      ? courseRows.find((r) => r.sectionId === lockedId) || courseRows[0] || null
+      : courseRows[0] || null;
+    return lookupStudentRoomForCourse(ownRow, courseRows, activeStudentId);
+  }, [nextExamResult, activeStudentId, activeRows, lockedSections]);
+
+  // Filter & sort UniqueExams for the active mode
   const filteredExams = useMemo(() => {
-    const base = mineOnly ? myCourseExamRows : activeExams;
+    const base = mode === 'mine' ? myUniqueExams : allUniqueExams;
     const q = searchQuery.trim().toLowerCase();
     const qCompact = q.replace(/\s+/g, '');
 
-    const filtered = base.filter((e) => {
-      if (programFilter !== 'ALL' && e.program !== programFilter) return false;
-      if (dateFilter !== 'ALL' && e.date !== dateFilter) return false;
-      if (timeFilter !== 'ALL' && `${e.startMin}-${e.endMin}` !== timeFilter) {
-        return false;
+    const filtered: UniqueExam[] = [];
+    for (const exam of base) {
+      if (dateFilter !== 'ALL' && exam.date !== dateFilter) continue;
+      if (timeFilter !== 'ALL' && exam.timeOfDay !== timeFilter) continue;
+
+      // Program filter: filter sections within exam if programFilter != ALL
+      let workingExam = exam;
+      if (programFilter !== 'ALL') {
+        const progSections = exam.sections.filter((s) => s.program === programFilter);
+        if (progSections.length === 0) continue;
+        const roomsSet = new Set<string>();
+        for (const s of progSections) {
+          for (const r of s.rooms) roomsSet.add(r.room);
+        }
+        workingExam = {
+          ...exam,
+          programs: [{ program: programFilter, sectionCount: progSections.length }],
+          sections: progSections,
+          sectionCount: progSections.length,
+          roomsSummary: Array.from(roomsSet),
+        };
       }
+
       if (q) {
         const codeMatch =
-          e.courseCode.toLowerCase().includes(q) ||
-          e.courseCode.toLowerCase().replace(/\s+/g, '').includes(qCompact) ||
-          e.courseCodes.some(
+          workingExam.courseCode.toLowerCase().includes(q) ||
+          workingExam.courseCode.toLowerCase().replace(/\s+/g, '').includes(qCompact) ||
+          workingExam.courseCodes.some(
             (c) =>
               c.toLowerCase().includes(q) ||
               c.toLowerCase().replace(/\s+/g, '').includes(qCompact)
           );
-        const titleMatch = e.courseTitle.toLowerCase().includes(q);
-        const secMatch = e.section.toLowerCase() === q || `sec ${e.section.toLowerCase()}` === q;
-        if (!codeMatch && !titleMatch && !secMatch) return false;
+        const titleMatch = workingExam.courseTitle.toLowerCase().includes(q);
+        const secMatch = workingExam.sections.some(
+          (s) =>
+            s.section.toLowerCase() === q ||
+            `sec ${s.section.toLowerCase()}` === q
+        );
+        if (!codeMatch && !titleMatch && !secMatch) continue;
       }
-      return true;
-    });
+
+      filtered.push(workingExam);
+    }
 
     return [...filtered].sort((a, b) => {
       if (sortBy === 'code') {
-        const cCmp = naturalCourseCodeSort(a.courseCode, b.courseCode);
-        if (cCmp !== 0) return cCmp;
-        const pCmp = a.program.localeCompare(b.program);
-        if (pCmp !== 0) return pCmp;
-        return a.section.localeCompare(b.section, undefined, { numeric: true });
+        return (
+          naturalCourseCodeSort(a.courseCode, b.courseCode) ||
+          a.date.localeCompare(b.date) ||
+          a.startMin - b.startMin
+        );
       }
       return (
         a.date.localeCompare(b.date) ||
         a.startMin - b.startMin ||
-        naturalCourseCodeSort(a.courseCode, b.courseCode) ||
-        a.section.localeCompare(b.section, undefined, { numeric: true })
+        naturalCourseCodeSort(a.courseCode, b.courseCode)
       );
     });
   }, [
-    mineOnly,
-    myCourseExamRows,
-    activeExams,
+    mode,
+    myUniqueExams,
+    allUniqueExams,
     searchQuery,
     programFilter,
     dateFilter,
@@ -282,97 +463,10 @@ function ExamsPageContent() {
     sortBy,
   ]);
 
-  // Group filtered exams by date for "By date" view
-  const byDateGroups = useMemo(() => {
-    const dateMap = new Map<
-      string,
-      { date: string; dayOfWeek: string; cards: CourseCardGroup[]; rowCount: number }
-    >();
-
-    for (const e of filteredExams) {
-      if (!dateMap.has(e.date)) {
-        dateMap.set(e.date, {
-          date: e.date,
-          dayOfWeek: e.dayOfWeek,
-          cards: [],
-          rowCount: 0,
-        });
-      }
-      const bucket = dateMap.get(e.date)!;
-      bucket.rowCount++;
-
-      // Group same (program, courseCode, startMin, endMin) into one card showing sections count/letter
-      const groupKey = `${e.date}|${e.startMin}|${e.endMin}|${e.program}|${e.courseCode}`;
-      let card = bucket.cards.find((c) => c.key === groupKey);
-      if (!card) {
-        card = {
-          key: groupKey,
-          program: e.program,
-          courseCode: e.courseCode,
-          courseTitle: e.courseTitle,
-          date: e.date,
-          dayOfWeek: e.dayOfWeek,
-          startMin: e.startMin,
-          endMin: e.endMin,
-          rows: [],
-        };
-        bucket.cards.push(card);
-      }
-      card.rows.push(e);
-    }
-
-    const dates = Array.from(dateMap.values());
-    if (sortBy === 'date') {
-      dates.sort((a, b) => a.date.localeCompare(b.date));
-    }
-    return dates;
-  }, [filteredExams, sortBy]);
-
-  // Export items for "My courses only" (only when mineOnly is active)
-  const myExportItems = useMemo(() => {
-    if (!mineOnly) return [];
-    return filteredExams.map((exam) => {
-      if (!activeStudentId) return { exam, foundRoom: null };
-      const allCourseExams = getExamsForCourse(exam.program, exam.courseCode, activeExams);
-      const res = lookupStudentRoomForCourse(exam, allCourseExams, activeStudentId);
-      const foundRoom =
-        res.status === 'found-own' || res.status === 'found-other' ? res.room : null;
-      return { exam, foundRoom };
-    });
-  }, [mineOnly, filteredExams, activeStudentId, activeExams]);
-
-  const handleCopyMyExams = async () => {
-    const text = exportExamsToText(myExportItems);
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // ignore
-    }
-  };
-
-  const handleDownloadMyIcs = () => {
-    const ics = exportExamsToICS(myExportItems);
-    downloadFile(ics, 'UIU_My_Midterm_Exams_Fall_2026.ics', 'text/calendar');
-  };
-
-  const toggleGroupExpand = (key: string) => {
-    setExpandedGroupKeys((prev) => {
-      const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
-      return next;
-    });
-  };
-
-  const clearAllFilters = () => {
-    setSearchQuery('');
-    setProgramFilter('ALL');
-    setDateFilter('ALL');
-    setTimeFilter('ALL');
-    setSortBy('date');
-  };
+  const filteredCounts = useMemo(
+    () => countExamsAndSections(filteredExams),
+    [filteredExams]
+  );
 
   const hasActiveFilters =
     Boolean(searchQuery.trim()) ||
@@ -381,696 +475,549 @@ function ExamsPageContent() {
     timeFilter !== 'ALL' ||
     sortBy !== 'date';
 
+  const resetFilters = () => {
+    setSearchQuery('');
+    setProgramFilter('ALL');
+    setDateFilter('ALL');
+    setTimeFilter('ALL');
+    setSortBy('date');
+  };
+
+  // Unannounced selected theory courses (for My exams notice / empty state)
+  const unannouncedSelectedCourses = useMemo(
+    () => myExamReport?.unannouncedCourses || [],
+    [myExamReport]
+  );
+
   return (
     <div className="min-h-[100dvh] flex flex-col bg-page text-text-primary">
-      {/* Page Sub-Header */}
+      {/* A. Header */}
       <div className="border-b border-app-border bg-surface">
         <div className={`${PAGE_MAX_W} mx-auto px-4 sm:px-6 py-4 space-y-1.5`}>
           <div className="flex flex-wrap items-center gap-2.5">
             <h1 className="text-[28px] font-bold text-text-primary tracking-tight">
               Exam Schedule
             </h1>
-            {activeExams.length > 0 && (
+            {allUniqueExams.length > 0 && (
               <span className="px-2.5 py-0.5 rounded-full bg-orange-50 text-orange-700 border border-orange-200 text-xs font-bold">
-                {filteredExams.length} exams
+                {totalCounts.examCount} exams
               </span>
             )}
           </div>
-          <p className="text-xs text-text-secondary">
-            {EXAMS_NOTE}{' '}
-            <span className="text-text-muted font-medium">
-              Last updated {EXAMS_UPDATED}.
-            </span>
+          <p className="text-sm text-text-secondary">
+            Find your exams, check for clashes and see your room.
+          </p>
+          <p className="text-xs text-text-muted">
+            Mid-term schedule from the SoSE notice board. Last updated{' '}
+            {formatDate(EXAMS_UPDATED)}. Confirm on the notice board, dates and
+            rooms may change.
           </p>
         </div>
       </div>
 
-      {/* Main Content */}
-      <main className={`flex-1 ${PAGE_MAX_W} w-full mx-auto px-4 sm:px-6 py-5 space-y-4`}>
-        {loaded && activeExams.length === 0 ? (
+      {/* Main Container */}
+      <main className={`flex-1 ${PAGE_MAX_W} w-full mx-auto px-4 sm:px-6 py-5 space-y-5`}>
+        {loaded && activeRows.length === 0 ? (
           <div className="p-8 text-center rounded-card bg-surface border border-dashed border-app-border text-sm text-text-muted">
-            Mid-term exam schedule is not available yet.
+            Mid-term exam schedule is not available right now.
           </div>
         ) : (
           <>
-            {/* Toolbar */}
-            <div className="p-3.5 sm:p-4 rounded-card bg-surface border border-app-border shadow-warm space-y-3">
-              {/* Row 1: Search + Program + My courses only + Sort + View toggle */}
-              <div className="flex flex-col lg:flex-row lg:items-center gap-2.5">
-                {/* Search */}
-                <div className="relative flex-1 min-w-0">
-                  <Search className="w-4 h-4 text-text-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search course code, title, or section..."
-                    className="w-full min-h-[44px] sm:min-h-[38px] pl-9 pr-9 py-1.5 rounded-btn bg-page border border-app-border text-base sm:text-xs text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-500"
-                  />
-                  {searchQuery && (
-                    <button
-                      type="button"
-                      onClick={() => setSearchQuery('')}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 min-w-[32px] min-h-[32px] flex items-center justify-center text-text-muted hover:text-text-primary"
-                      aria-label="Clear search"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  )}
-                </div>
+            {/* B. Stat Strip (4 tiles) */}
+            <StatStrip
+              totalDays={allDayStats.totalDays}
+              dateRangeLabel={allDayStats.dateRangeLabel}
+              totalExams={totalCounts.examCount}
+              totalSections={totalCounts.sectionCount}
+              busiestDay={allDayStats.busiestDay}
+              selectedCoursesCount={selectedCourses.length}
+              myExamCount={myUniqueExams.length}
+              hasClashes={(myExamReport?.clashes.length || 0) > 0}
+              onClickYourExams={() => {
+                if (selectedCourses.length > 0) {
+                  setMode('mine');
+                } else {
+                  handleFocusQuickAdd();
+                }
+              }}
+            />
 
-                {/* Program Chips */}
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  {(['ALL', 'BSCSE', 'BSDS'] as const).map((prog) => (
-                    <button
-                      key={prog}
-                      type="button"
-                      onClick={() => setProgramFilter(prog)}
-                      className={`min-h-[44px] sm:min-h-[36px] px-3 py-1.5 rounded-chip text-xs font-semibold transition-colors ${
-                        programFilter === prog
-                          ? 'bg-orange-500 text-white shadow-2xs'
-                          : 'bg-page text-text-secondary hover:bg-subtle border border-app-border'
-                      }`}
-                    >
-                      {prog}
-                    </button>
-                  ))}
+            {/* C. Start Here Strip (only when no selected courses & not dismissed) */}
+            {storageHydrated &&
+              selectedCourses.length === 0 &&
+              !startHereDismissed && (
+                <StartHere
+                  onQuickAddClick={handleFocusQuickAdd}
+                  onBrowseAll={() => setMode('all')}
+                  onDismiss={handleDismissStartHere}
+                />
+              )}
 
-                  {/* My Courses Only Toggle */}
-                  <button
-                    type="button"
-                    aria-pressed={mineOnly}
-                    onClick={() => setMineOnly((prev) => !prev)}
-                    className={`min-h-[44px] sm:min-h-[36px] px-3 py-1.5 rounded-chip text-xs font-semibold border transition-colors flex items-center gap-1.5 ${
-                      mineOnly
-                        ? 'bg-orange-500 text-white border-orange-600 shadow-2xs'
-                        : 'bg-orange-50 text-orange-800 border-orange-200 hover:bg-orange-100'
-                    }`}
-                  >
-                    <BookOpen className="w-3.5 h-3.5 shrink-0" />
-                    <span>My courses only</span>
-                    {selectedCourses.length > 0 && (
-                      <span
-                        className={`px-1.5 py-0.2 rounded-full text-[11px] font-bold ${
-                          mineOnly ? 'bg-white/25 text-white' : 'bg-orange-200 text-orange-900'
-                        }`}
-                      >
-                        {selectedCourses.length}
-                      </span>
-                    )}
-                  </button>
-                </div>
-
-                {/* Sort & View Switcher */}
-                <div className="flex items-center justify-between sm:justify-end gap-2">
-                  <div className="flex items-center gap-1.5">
-                    <label htmlFor="exam-sort-select" className="text-xs text-text-muted">
-                      Sort:
-                    </label>
-                    <select
-                      id="exam-sort-select"
-                      value={sortBy}
-                      onChange={(e) => setSortBy(e.target.value as 'date' | 'code')}
-                      className="min-h-[44px] sm:min-h-[36px] px-2.5 py-1 rounded-btn bg-page border border-app-border text-base sm:text-xs font-medium text-text-primary focus:outline-none focus:border-orange-500"
-                    >
-                      <option value="date">Date</option>
-                      <option value="code">Course code</option>
-                    </select>
-                  </div>
-
-                  <div
-                    role="group"
-                    aria-label="Exam view mode"
-                    className="inline-flex items-center p-0.5 rounded-btn bg-subtle border border-app-border"
-                  >
-                    <button
-                      type="button"
-                      onClick={() => setViewMode('by-date')}
-                      className={`min-h-[40px] sm:min-h-[32px] px-2.5 py-1 rounded-btn text-xs font-semibold flex items-center gap-1 transition-colors ${
-                        viewMode === 'by-date'
-                          ? 'bg-orange-500 text-white shadow-2xs'
-                          : 'text-text-secondary hover:text-text-primary'
-                      }`}
-                    >
-                      <LayoutGrid className="w-3.5 h-3.5" />
-                      <span>By date</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setViewMode('list')}
-                      className={`min-h-[40px] sm:min-h-[32px] px-2.5 py-1 rounded-btn text-xs font-semibold flex items-center gap-1 transition-colors ${
-                        viewMode === 'list'
-                          ? 'bg-orange-500 text-white shadow-2xs'
-                          : 'text-text-secondary hover:text-text-primary'
-                      }`}
-                    >
-                      <List className="w-3.5 h-3.5" />
-                      <span>List</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Row 2: Date Chips (scrolls ONLY inside its own container) */}
-              <div className="min-w-0">
-                <div
-                  aria-label="Filter by exam date"
-                  className="flex items-center gap-1.5 overflow-x-auto pb-1"
+            {/* D. Mode Switch ("My exams | All exams") + View Switch ("By date | List") */}
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              {/* Primary Mode Segmented Control */}
+              <div
+                role="tablist"
+                aria-label="Exam schedule mode"
+                className="inline-flex items-center p-1 rounded-card bg-surface border border-app-border shadow-2xs"
+              >
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={mode === 'mine'}
+                  onClick={() => setMode('mine')}
+                  className={`min-h-[44px] sm:min-h-[38px] px-4 py-1.5 rounded-btn text-sm font-semibold transition-colors flex items-center gap-2 ${
+                    mode === 'mine'
+                      ? 'bg-orange-500 text-white shadow-xs'
+                      : 'text-text-secondary hover:text-text-primary'
+                  }`}
                 >
-                  <button
-                    type="button"
-                    onClick={() => setDateFilter('ALL')}
-                    className={`min-h-[44px] sm:min-h-[32px] px-3 py-1 rounded-chip text-xs font-semibold whitespace-nowrap shrink-0 transition-colors ${
-                      dateFilter === 'ALL'
-                        ? 'bg-orange-500 text-white shadow-2xs'
-                        : 'bg-page text-text-secondary hover:bg-subtle border border-app-border'
-                    }`}
-                  >
-                    All dates
-                  </button>
-                  {dateChips.map((d) => (
-                    <button
-                      key={d.date}
-                      type="button"
-                      onClick={() => setDateFilter(d.date)}
-                      className={`min-h-[44px] sm:min-h-[32px] px-3 py-1 rounded-chip text-xs font-semibold whitespace-nowrap shrink-0 transition-colors flex items-center gap-1 ${
-                        dateFilter === d.date
-                          ? 'bg-orange-500 text-white shadow-2xs'
-                          : 'bg-page text-text-secondary hover:bg-subtle border border-app-border'
+                  <span>My exams</span>
+                  {selectedCourses.length > 0 && (
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                        mode === 'mine'
+                          ? 'bg-white/25 text-white'
+                          : 'bg-orange-50 text-orange-700 border border-orange-200'
                       }`}
                     >
-                      <span>
-                        {formatExamDateShort(d.date)} ({d.dayOfWeek})
-                      </span>
-                      <span
-                        className={`text-[11px] ${
-                          dateFilter === d.date ? 'text-white/90' : 'text-text-muted'
-                        }`}
-                      >
-                        {d.count}
-                      </span>
-                    </button>
-                  ))}
-                </div>
+                      {myUniqueExams.length}
+                    </span>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={mode === 'all'}
+                  onClick={() => setMode('all')}
+                  className={`min-h-[44px] sm:min-h-[38px] px-4 py-1.5 rounded-btn text-sm font-semibold transition-colors flex items-center gap-2 ${
+                    mode === 'all'
+                      ? 'bg-orange-500 text-white shadow-xs'
+                      : 'text-text-secondary hover:text-text-primary'
+                  }`}
+                >
+                  <span>All exams</span>
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                      mode === 'all'
+                        ? 'bg-white/25 text-white'
+                        : 'bg-subtle text-text-secondary border border-app-border'
+                    }`}
+                  >
+                    {totalCounts.examCount}
+                  </span>
+                </button>
               </div>
 
-              {/* Row 3: Time Slot Chips + Reset */}
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="text-[11px] text-text-muted font-medium mr-0.5">
-                    Time:
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setTimeFilter('ALL')}
-                    className={`min-h-[36px] sm:min-h-[28px] px-2.5 py-1 rounded-chip text-[11px] font-semibold transition-colors ${
-                      timeFilter === 'ALL'
-                        ? 'bg-orange-500 text-white'
-                        : 'bg-page text-text-secondary hover:bg-subtle border border-app-border'
-                    }`}
-                  >
-                    All times
-                  </button>
-                  {timeSlotChips.map((slot) => (
-                    <button
-                      key={slot.key}
-                      type="button"
-                      onClick={() => setTimeFilter(slot.key)}
-                      className={`min-h-[36px] sm:min-h-[28px] px-2.5 py-1 rounded-chip text-[11px] font-semibold transition-colors ${
-                        timeFilter === slot.key
-                          ? 'bg-orange-500 text-white'
-                          : 'bg-page text-text-secondary hover:bg-subtle border border-app-border'
-                      }`}
-                    >
-                      {slot.label}
-                    </button>
-                  ))}
-                </div>
+              {/* Secondary View Switch: By date | List */}
+              <div
+                role="group"
+                aria-label="Layout view"
+                className="inline-flex items-center p-1 rounded-btn bg-surface border border-app-border shadow-2xs"
+              >
+                <button
+                  type="button"
+                  onClick={() => setViewMode('date')}
+                  className={`min-h-[44px] sm:min-h-[34px] px-3 py-1 rounded-btn text-xs font-semibold inline-flex items-center gap-1.5 transition-colors ${
+                    viewMode === 'date'
+                      ? 'bg-subtle text-orange-700 border border-orange-200'
+                      : 'text-text-secondary hover:text-text-primary border border-transparent'
+                  }`}
+                >
+                  <Calendar className="w-3.5 h-3.5" />
+                  <span>By date</span>
+                </button>
 
-                {hasActiveFilters && (
-                  <button
-                    type="button"
-                    onClick={clearAllFilters}
-                    className="text-xs font-semibold text-orange-600 hover:text-orange-700 underline inline-flex items-center gap-1"
-                  >
-                    <RotateCcw className="w-3.5 h-3.5" />
-                    <span>Reset filters</span>
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={() => setViewMode('list')}
+                  className={`min-h-[44px] sm:min-h-[34px] px-3 py-1 rounded-btn text-xs font-semibold inline-flex items-center gap-1.5 transition-colors ${
+                    viewMode === 'list'
+                      ? 'bg-subtle text-orange-700 border border-orange-200'
+                      : 'text-text-secondary hover:text-text-primary border border-transparent'
+                  }`}
+                >
+                  <List className="w-3.5 h-3.5" />
+                  <span>List</span>
+                </button>
               </div>
             </div>
 
-            {/* "My courses only" mode: Empty state OR Clash Chips + Copy/ICS + Student ID Room Lookup */}
-            {mineOnly && selectedCourses.length === 0 ? (
-              <div className="p-8 text-center rounded-card bg-surface border border-dashed border-app-border shadow-2xs space-y-3">
-                <div className="w-11 h-11 rounded-full bg-orange-50 text-orange-600 border border-orange-200 flex items-center justify-center mx-auto">
-                  <BookOpen className="w-5 h-5" />
-                </div>
-                <div className="space-y-1">
-                  <h2 className="text-base font-bold text-text-primary">
-                    No courses selected in Builder yet
-                  </h2>
-                  <p className="text-xs text-text-secondary max-w-md mx-auto">
-                    Select your courses in the Routine Builder first to filter
-                    your personal mid-term exam schedule, check clashes, and look
-                    up your room by student ID.
-                  </p>
-                </div>
-                <Link
-                  href="/builder"
-                  className="min-h-[44px] px-4 py-2 rounded-btn bg-orange-500 hover:bg-orange-600 text-white text-xs sm:text-sm font-semibold inline-flex items-center gap-1.5 shadow-xs transition-colors"
-                >
-                  <span>Go to Routine Builder</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
+            {/* E. Two-Column Layout (>= 1100px: Main left, Sticky Plan right; < 1100px: Plan above Main) */}
+            <div className="grid grid-cols-1 min-[1100px]:grid-cols-[1fr_360px] gap-5 items-start">
+              {/* Right Side Panel in DOM order-1 on < 1100px, order-2 on >= 1100px */}
+              <div className="order-1 min-[1100px]:order-2 w-full">
+                <MyExamPlan
+                  courses={allCourses}
+                  allActiveRows={activeRows}
+                  myUniqueExams={myUniqueExams}
+                  selectedCourses={selectedCourses}
+                  lockedSections={lockedSections}
+                  examReport={myExamReport}
+                  activeStudentId={activeStudentId}
+                  onApplyStudentId={setActiveStudentId}
+                  onAddCourse={handleAddCourse}
+                  onRemoveCourse={handleRemoveCourse}
+                  quickAddInputRef={quickAddInputRef}
+                  mobileExpanded={mobilePlanExpanded}
+                  onToggleMobileExpanded={() =>
+                    setMobilePlanExpanded((prev) => !prev)
+                  }
+                />
               </div>
-            ) : (
-              <>
-                {mineOnly && selectedCourses.length > 0 && (
-                  <div className="space-y-3">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <ExamClashSummary report={myExamReport} variant="chips" />
-                      </div>
-                      <div className="flex items-center gap-2 shrink-0 flex-wrap">
-                        <button
-                          type="button"
-                          onClick={handleCopyMyExams}
-                          disabled={filteredExams.length === 0}
-                          className="min-h-[44px] sm:min-h-[36px] px-3 py-1.5 rounded-btn bg-surface hover:bg-subtle disabled:opacity-40 text-text-primary border border-app-border text-xs font-semibold inline-flex items-center gap-1.5 transition-colors shadow-2xs"
-                        >
-                          {copied ? (
-                            <Check className="w-3.5 h-3.5 text-emerald-600" />
-                          ) : (
-                            <Copy className="w-3.5 h-3.5 text-text-muted" />
-                          )}
-                          <span>{copied ? 'Copied!' : 'Copy list'}</span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={handleDownloadMyIcs}
-                          disabled={filteredExams.length === 0}
-                          className="min-h-[44px] sm:min-h-[36px] px-3 py-1.5 rounded-btn bg-orange-500 hover:bg-orange-600 disabled:opacity-40 text-white text-xs font-semibold inline-flex items-center gap-1.5 transition-colors shadow-xs"
-                        >
-                          <Calendar className="w-3.5 h-3.5" />
-                          <span>Download .ics</span>
-                        </button>
-                      </div>
-                    </div>
 
-                    <StudentIdRoomLookup
-                      activeStudentId={activeStudentId}
-                      onApplyStudentId={setActiveStudentId}
-                    />
-                  </div>
+              {/* Left Main Column */}
+              <div className="order-2 min-[1100px]:order-1 min-w-0 space-y-4">
+                {/* Next Exam Card (My exams mode) */}
+                {mode === 'mine' && selectedCourses.length > 0 && (
+                  <>
+                    {nextExamResult.status === 'upcoming' && (
+                      <section
+                        aria-label="Next upcoming exam"
+                        className="p-4 rounded-card bg-surface border border-orange-300 shadow-warm flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                      >
+                        <div className="flex items-start sm:items-center gap-3.5 min-w-0">
+                          <div className="w-16 rounded-card bg-orange-50 border border-orange-200 p-2 text-center shrink-0">
+                            <div className="text-xs font-semibold text-orange-700 uppercase">
+                              {formatExamDateShort(nextExamResult.exam.date).split(' ')[0]}
+                            </div>
+                            <div className="text-2xl font-bold text-text-primary leading-tight tabular-nums">
+                              {formatExamDateShort(nextExamResult.exam.date).split(' ')[1]}
+                            </div>
+                            <div className="text-xs font-medium text-text-muted">
+                              {nextExamResult.exam.dayOfWeek}
+                            </div>
+                          </div>
+
+                          <div className="min-w-0 space-y-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="text-xs font-semibold uppercase tracking-wide text-orange-700">
+                                Next exam
+                              </span>
+                              <span className="px-2 py-0.5 rounded-chip bg-orange-500 text-white text-xs font-bold">
+                                {nextExamResult.label}
+                              </span>
+                            </div>
+                            <div className="text-base font-semibold text-text-primary">
+                              {nextExamResult.exam.courseCode} —{' '}
+                              {nextExamResult.exam.courseTitle}
+                            </div>
+                            <div className="text-xs text-text-secondary flex items-center gap-2 flex-wrap">
+                              <span className="inline-flex items-center gap-1 font-medium">
+                                <Clock className="w-3.5 h-3.5 text-orange-500" />
+                                {formatExamTimeRange(
+                                  nextExamResult.exam.startMin,
+                                  nextExamResult.exam.endMin
+                                )}
+                              </span>
+                              {nextExamRoomLookup?.status === 'found-own' && (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-chip bg-emerald-50 text-emerald-900 border border-emerald-300 font-bold">
+                                  <MapPin className="w-3.5 h-3.5 text-emerald-600" />
+                                  Room {nextExamRoomLookup.room}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </section>
+                    )}
+
+                    {nextExamResult.status === 'completed' && (
+                      <div className="p-3.5 rounded-card bg-emerald-50 border border-emerald-200 text-emerald-900 text-sm font-semibold flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <span>All your exams are completed.</span>
+                      </div>
+                    )}
+
+                    {/* Clash Banner (My exams mode) */}
+                    {myExamReport &&
+                      (myExamReport.knownTheoryCount > 0 ||
+                        myExamReport.unannouncedCourses.length > 0) && (
+                        <div className="space-y-2">
+                          {myExamReport.clashes.map((c, idx) => (
+                            <div
+                              key={`${c.a}-${c.b}-${idx}`}
+                              role="alert"
+                              className="p-3 rounded-card bg-rose-50 border border-rose-300 text-rose-900 text-sm font-semibold flex items-center gap-2"
+                            >
+                              <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+                              <span>
+                                Exam clash: {c.a} and {c.b} on{' '}
+                                {formatExamDateShort(c.date)}, {c.time}
+                              </span>
+                            </div>
+                          ))}
+
+                          {myExamReport.possible.map((p, idx) => (
+                            <div
+                              key={`${p.a}-${p.b}-poss-${idx}`}
+                              className="p-3 rounded-card bg-amber-50 border border-amber-300 text-amber-900 text-sm font-medium flex items-center gap-2"
+                            >
+                              <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                              <span>
+                                Possible clash: {p.a} and {p.b} on{' '}
+                                {formatExamDateShort(p.date)}, {p.time} (depends
+                                on section)
+                              </span>
+                            </div>
+                          ))}
+
+                          {myExamReport.sameDayGroups.map((g) => (
+                            <div
+                              key={g.date}
+                              className="p-2.5 rounded-card bg-sky-50 border border-sky-200 text-sky-900 text-xs font-medium flex items-center gap-2"
+                            >
+                              <Info className="w-4 h-4 text-sky-600 shrink-0" />
+                              <span>
+                                {g.count} exams on {formatExamDateShort(g.date)} (
+                                {g.courses.join(', ')})
+                              </span>
+                            </div>
+                          ))}
+
+                          {myExamReport.clashes.length === 0 &&
+                            myExamReport.possible.length === 0 &&
+                            myExamReport.allTheoryExamsKnown && (
+                              <div className="p-2.5 rounded-card bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-2">
+                                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                                <span>No exam clashes across your selected courses</span>
+                              </div>
+                            )}
+
+                          {unannouncedSelectedCourses.length > 0 && (
+                            <div className="p-2.5 rounded-card bg-subtle border border-app-border text-text-secondary text-xs">
+                              <span className="font-semibold text-text-primary">
+                                Exam not announced yet for:
+                              </span>{' '}
+                              {unannouncedSelectedCourses.join(', ')}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                  </>
                 )}
 
-                {/* Results */}
-                {filteredExams.length === 0 ? (
-                  <div className="p-8 text-center rounded-card bg-surface border border-dashed border-app-border text-xs text-text-muted space-y-2">
-                    <p className="font-semibold text-sm text-text-primary">
-                      No exams match the current filters
+                {/* Day Strip (Calendar) */}
+                <DayStrip
+                  days={dayStripDays}
+                  selectedDate={dateFilter}
+                  totalExamsCount={
+                    mode === 'mine' ? myUniqueExams.length : totalCounts.examCount
+                  }
+                  onSelectDate={setDateFilter}
+                />
+
+                {/* Filter Bar + Time-of-day Chips */}
+                <div className="p-3.5 rounded-card bg-surface border border-app-border shadow-2xs space-y-3">
+                  {/* Row 1: Search + Program + Sort */}
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2.5">
+                    <div className="relative flex-1 min-w-0">
+                      <Search className="w-4 h-4 text-text-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                      <input
+                        ref={searchInputRef}
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search course code, title, or section... (Press '/')"
+                        className="w-full min-h-[44px] sm:min-h-[38px] pl-9 pr-9 py-1.5 rounded-btn bg-page border border-app-border text-base sm:text-xs text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-500"
+                      />
+                      {searchQuery && (
+                        <button
+                          type="button"
+                          onClick={() => setSearchQuery('')}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 min-w-[32px] min-h-[32px] flex items-center justify-center text-text-muted hover:text-text-primary"
+                          aria-label="Clear search"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="flex items-center justify-between sm:justify-end gap-2 flex-wrap">
+                      <div className="flex items-center gap-1">
+                        {(['ALL', 'BSCSE', 'BSDS'] as const).map((prog) => (
+                          <button
+                            key={prog}
+                            type="button"
+                            onClick={() => setProgramFilter(prog)}
+                            className={`min-h-[44px] sm:min-h-[34px] px-2.5 py-1 rounded-chip text-xs font-semibold transition-colors ${
+                              programFilter === prog
+                                ? 'bg-orange-500 text-white shadow-2xs'
+                                : 'bg-page text-text-secondary hover:bg-subtle border border-app-border'
+                            }`}
+                          >
+                            {prog}
+                          </button>
+                        ))}
+                      </div>
+
+                      <div className="flex items-center gap-1.5">
+                        <label
+                          htmlFor="exam-sort-select"
+                          className="text-xs text-text-muted"
+                        >
+                          Sort:
+                        </label>
+                        <select
+                          id="exam-sort-select"
+                          value={sortBy}
+                          onChange={(e) =>
+                            setSortBy(e.target.value as 'date' | 'code')
+                          }
+                          className="min-h-[44px] sm:min-h-[34px] px-2.5 py-1 rounded-btn bg-page border border-app-border text-base sm:text-xs font-medium text-text-primary focus:outline-none focus:border-orange-500"
+                        >
+                          <option value="date">Date</option>
+                          <option value="code">Course code</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Row 2: Time-of-day Chips (Morning / Midday / Afternoon) */}
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <button
+                        type="button"
+                        onClick={() => setTimeFilter('ALL')}
+                        className={`min-h-[44px] sm:min-h-[32px] px-3 py-1 rounded-chip text-xs font-semibold transition-colors ${
+                          timeFilter === 'ALL'
+                            ? 'bg-orange-500 text-white shadow-2xs'
+                            : 'bg-page text-text-secondary hover:bg-subtle border border-app-border'
+                        }`}
+                      >
+                        All times
+                      </button>
+
+                      {(
+                        [
+                          { id: 'morning' as const, Icon: Sunrise },
+                          { id: 'midday' as const, Icon: Sun },
+                          { id: 'afternoon' as const, Icon: Sunset },
+                        ] as const
+                      ).map(({ id, Icon }) => {
+                        const meta = TIME_OF_DAY_META[id];
+                        const isActive = timeFilter === id;
+                        return (
+                          <button
+                            key={id}
+                            type="button"
+                            onClick={() => setTimeFilter(id)}
+                            title={meta.tooltip}
+                            className={`min-h-[44px] sm:min-h-[32px] px-3 py-1 rounded-chip text-xs font-semibold inline-flex items-center gap-1.5 transition-colors ${
+                              isActive
+                                ? 'bg-orange-500 text-white shadow-2xs'
+                                : 'bg-page text-text-secondary hover:bg-subtle border border-app-border'
+                            }`}
+                          >
+                            <Icon
+                              className={`w-3.5 h-3.5 ${
+                                isActive ? 'text-white' : 'text-orange-500'
+                              }`}
+                            />
+                            <span>{meta.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <div className="flex items-center gap-3 text-xs">
+                      <span className="font-semibold text-text-secondary">
+                        {formatExamCountSummary(
+                          filteredCounts.examCount,
+                          filteredCounts.sectionCount
+                        )}
+                      </span>
+                      {hasActiveFilters && (
+                        <button
+                          type="button"
+                          onClick={resetFilters}
+                          className="text-orange-600 hover:text-orange-700 font-semibold underline inline-flex items-center gap-1"
+                        >
+                          <RotateCcw className="w-3.5 h-3.5" />
+                          <span>Reset filters</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Main Results / Empty States */}
+                {mode === 'mine' && selectedCourses.length === 0 ? (
+                  <div className="p-6 sm:p-8 rounded-card bg-surface border border-dashed border-app-border text-center space-y-4">
+                    <div className="w-11 h-11 rounded-full bg-orange-50 text-orange-600 border border-orange-200 flex items-center justify-center mx-auto">
+                      <BookOpen className="w-5 h-5" />
+                    </div>
+                    <div className="space-y-1">
+                      <h2 className="text-lg font-semibold text-text-primary">
+                        No courses in your exam plan yet
+                      </h2>
+                      <p className="text-sm text-text-secondary max-w-md mx-auto">
+                        1. Add your courses &rarr; 2. See your dates and clashes
+                        &rarr; 3. Enter your student ID to find your room.
+                      </p>
+                    </div>
+                    <div className="flex items-center justify-center gap-2.5 flex-wrap">
+                      <button
+                        type="button"
+                        onClick={handleFocusQuickAdd}
+                        className="min-h-[44px] px-4 py-2 rounded-btn bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold shadow-xs transition-colors"
+                      >
+                        Add courses
+                      </button>
+                      <Link
+                        href="/builder"
+                        className="min-h-[44px] px-4 py-2 rounded-btn bg-surface hover:bg-subtle text-text-primary border border-app-border text-sm font-semibold inline-flex items-center gap-1.5 transition-colors"
+                      >
+                        <span>Open Builder</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
+                    </div>
+                  </div>
+                ) : mode === 'mine' &&
+                  myUniqueExams.length === 0 &&
+                  !hasActiveFilters ? (
+                  <div className="p-6 rounded-card bg-surface border border-app-border text-center space-y-2">
+                    <h2 className="text-base font-semibold text-text-primary">
+                      Exam not announced yet for:{' '}
+                      {unannouncedSelectedCourses.length > 0
+                        ? unannouncedSelectedCourses.join(', ')
+                        : selectedCourses.join(', ')}
+                    </h2>
+                    <p className="text-xs text-text-muted">
+                      Labs and project courses do not have scheduled mid-term
+                      exam halls.
                     </p>
+                  </div>
+                ) : filteredExams.length === 0 ? (
+                  <div className="p-8 rounded-card bg-surface border border-dashed border-app-border text-center space-y-3">
+                    <h2 className="text-base font-semibold text-text-primary">
+                      No exams match your filters
+                    </h2>
                     {hasActiveFilters && (
                       <button
                         type="button"
-                        onClick={clearAllFilters}
-                        className="min-h-[44px] sm:min-h-[36px] px-3.5 py-1.5 rounded-btn bg-subtle hover:bg-orange-50 text-orange-700 border border-app-border font-semibold inline-flex items-center gap-1.5"
+                        onClick={resetFilters}
+                        className="min-h-[44px] sm:min-h-[36px] px-4 py-1.5 rounded-btn bg-orange-500 hover:bg-orange-600 text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-xs transition-colors"
                       >
                         <RotateCcw className="w-3.5 h-3.5" />
                         <span>Reset filters</span>
                       </button>
                     )}
                   </div>
-                ) : viewMode === 'by-date' ? (
-                  /* BY DATE VIEW (day columns on desktop, stacked single-column on mobile) */
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 items-start">
-                    {byDateGroups.map((dayGroup) => (
-                      <section
-                        key={dayGroup.date}
-                        aria-label={`Exams on ${formatExamDateShort(dayGroup.date)}`}
-                        className="rounded-card bg-surface border border-app-border shadow-warm overflow-hidden"
-                      >
-                        <div className="px-4 py-3 bg-subtle border-b border-app-border flex items-center justify-between gap-2">
-                          <div className="flex items-center gap-2 min-w-0">
-                            <Calendar className="w-4 h-4 text-orange-500 shrink-0" />
-                            <h2 className="text-sm font-bold text-text-primary truncate">
-                              {formatExamDateShort(dayGroup.date)} ({dayGroup.dayOfWeek})
-                            </h2>
-                          </div>
-                          <span className="px-2 py-0.5 rounded-full bg-surface border border-app-border text-[11px] font-bold text-text-secondary shrink-0">
-                            {dayGroup.rowCount} section{dayGroup.rowCount === 1 ? '' : 's'}
-                          </span>
-                        </div>
-
-                        <div className="divide-y divide-app-border">
-                          {dayGroup.cards.map((card) => {
-                            const isExpanded = expandedGroupKeys.has(card.key);
-                            const isSingle = card.rows.length === 1;
-                            const singleRow = isSingle ? card.rows[0] : null;
-                            const hasClash = mineOnly && myClashingCourseSet.has(card.courseCode);
-
-                            // Room lookup in "My courses only" mode when a single row is shown
-                            const lookup =
-                              mineOnly && activeStudentId && singleRow
-                                ? lookupStudentRoomForCourse(
-                                    singleRow,
-                                    getExamsForCourse(
-                                      singleRow.program,
-                                      singleRow.courseCode,
-                                      activeExams
-                                    ),
-                                    activeStudentId
-                                  )
-                                : null;
-
-                            return (
-                              <div
-                                key={card.key}
-                                className={`p-3.5 space-y-2 ${
-                                  hasClash ? 'bg-rose-50/60' : 'bg-surface'
-                                }`}
-                              >
-                                <div className="flex items-start justify-between gap-2">
-                                  <div className="space-y-1 min-w-0">
-                                    <div className="flex items-center gap-1.5 flex-wrap">
-                                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-orange-50 text-orange-800 border border-orange-200 text-[11px] font-semibold">
-                                        <Clock className="w-3 h-3 text-orange-600 shrink-0" />
-                                        <span>
-                                          {formatExamTimeRange(card.startMin, card.endMin)}
-                                        </span>
-                                      </span>
-                                      <span className="px-1.5 py-0.2 rounded bg-subtle border border-app-border text-[11px] font-bold text-text-muted">
-                                        {card.program}
-                                      </span>
-                                      {hasClash && (
-                                        <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded bg-rose-100 text-rose-800 border border-rose-300 text-[11px] font-bold">
-                                          <AlertTriangle className="w-3 h-3 shrink-0" />
-                                          <span>Clash</span>
-                                        </span>
-                                      )}
-                                    </div>
-
-                                    <div className="flex items-center gap-2 flex-wrap">
-                                      <span className="font-bold text-sm text-text-primary">
-                                        {card.courseCode}
-                                      </span>
-                                      {isSingle && singleRow ? (
-                                        <span className="px-1.5 py-0.2 rounded bg-subtle border border-app-border text-[11px] font-bold text-text-primary">
-                                          Sec {singleRow.section}
-                                        </span>
-                                      ) : (
-                                        <span className="px-1.5 py-0.2 rounded bg-subtle border border-app-border text-[11px] font-semibold text-text-secondary">
-                                          {card.rows.length} sections
-                                        </span>
-                                      )}
-                                    </div>
-
-                                    <div className="text-xs text-text-secondary font-medium">
-                                      {card.courseTitle}
-                                    </div>
-                                  </div>
-
-                                  {lookup?.status === 'found-own' && (
-                                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-chip bg-emerald-50 text-emerald-900 border border-emerald-300 text-xs font-bold shrink-0">
-                                      <MapPin className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                                      <span>Room {lookup.room}</span>
-                                    </span>
-                                  )}
-                                </div>
-
-                                {lookup?.status === 'found-other' && (
-                                  <div className="p-2 rounded-btn bg-amber-50 border border-amber-300 text-amber-900 text-xs flex items-center gap-1.5 font-medium">
-                                    <AlertTriangle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                                    <span>
-                                      Your ID is listed under section{' '}
-                                      <strong>{lookup.section}</strong> (Room{' '}
-                                      <strong>{lookup.room}</strong>)
-                                    </span>
-                                  </div>
-                                )}
-
-                                {lookup?.status === 'not-found' && (
-                                  <div className="p-2 rounded-btn bg-subtle border border-app-border text-text-secondary text-xs flex items-center gap-1.5">
-                                    <AlertTriangle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                                    <span>
-                                      Your ID isn&apos;t in any room range for this course.
-                                      Check the notice board.
-                                    </span>
-                                  </div>
-                                )}
-
-                                {isSingle && singleRow ? (
-                                  <div className="text-[11px] text-text-muted space-y-1">
-                                    <div>
-                                      Rooms:{' '}
-                                      <span className="font-medium text-text-secondary">
-                                        {singleRow.rooms.map((r) => r.room).join(', ') || 'TBA'}
-                                      </span>
-                                    </div>
-                                    {singleRow.rooms.length > 0 && (
-                                      <details className="group">
-                                        <summary className="cursor-pointer text-orange-600 hover:text-orange-700 font-semibold underline inline-flex items-center gap-0.5">
-                                          <span>ID ranges</span>
-                                          <ChevronDown className="w-3 h-3 group-open:rotate-180 transition-transform" />
-                                        </summary>
-                                        <div className="mt-1.5 space-y-1">
-                                          {singleRow.rooms.map((r, idx) => (
-                                            <div
-                                              key={`${r.room}-${idx}`}
-                                              className="px-2 py-1 rounded bg-page border border-app-border flex items-center justify-between gap-2"
-                                            >
-                                              <span className="font-bold text-text-primary">
-                                                Room {r.room}
-                                              </span>
-                                              <span className="font-mono text-text-muted">
-                                                {r.idFrom}–{r.idTo}
-                                              </span>
-                                            </div>
-                                          ))}
-                                        </div>
-                                      </details>
-                                    )}
-                                  </div>
-                                ) : (
-                                  <div>
-                                    <button
-                                      type="button"
-                                      onClick={() => toggleGroupExpand(card.key)}
-                                      aria-expanded={isExpanded}
-                                      className="text-[11px] font-semibold text-orange-600 hover:text-orange-700 underline inline-flex items-center gap-1 py-0.5"
-                                    >
-                                      <span>
-                                        {isExpanded
-                                          ? 'Hide sections & rooms'
-                                          : `Show ${card.rows.length} sections & rooms (${card.rows
-                                              .map((r) => r.section)
-                                              .slice(0, 6)
-                                              .join(', ')}${card.rows.length > 6 ? '...' : ''})`}
-                                      </span>
-                                      <ChevronDown
-                                        className={`w-3 h-3 transition-transform ${
-                                          isExpanded ? 'rotate-180' : ''
-                                        }`}
-                                      />
-                                    </button>
-
-                                    {isExpanded && (
-                                      <div className="mt-2 space-y-1.5">
-                                        {card.rows.map((r) => {
-                                          const rowLookup =
-                                            mineOnly && activeStudentId
-                                              ? lookupStudentRoomForCourse(
-                                                  r,
-                                                  getExamsForCourse(
-                                                    r.program,
-                                                    r.courseCode,
-                                                    activeExams
-                                                  ),
-                                                  activeStudentId
-                                                )
-                                              : null;
-                                          return (
-                                            <div
-                                              key={r.id}
-                                              className="p-2 rounded bg-page border border-app-border text-[11px] space-y-1"
-                                            >
-                                              <div className="flex items-center justify-between gap-2">
-                                                <span className="font-bold text-text-primary">
-                                                  Sec {r.section}
-                                                </span>
-                                                <span className="text-text-secondary font-medium">
-                                                  Rooms: {r.rooms.map((rm) => rm.room).join(', ') || 'TBA'}
-                                                </span>
-                                              </div>
-                                              {rowLookup?.status === 'found-own' && (
-                                                <div className="text-emerald-800 font-bold">
-                                                  Your room: Room {rowLookup.room}
-                                                </div>
-                                              )}
-                                              {r.rooms.length > 0 && (
-                                                <div className="flex flex-wrap gap-1">
-                                                  {r.rooms.map((rm, idx) => (
-                                                    <span
-                                                      key={`${rm.room}-${idx}`}
-                                                      className="px-1.5 py-0.5 rounded bg-surface border border-app-border font-mono text-text-muted"
-                                                    >
-                                                      {rm.room}: {rm.idFrom}–{rm.idTo}
-                                                    </span>
-                                                  ))}
-                                                </div>
-                                              )}
-                                            </div>
-                                          );
-                                        })}
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </section>
-                    ))}
-                  </div>
                 ) : (
-                  /* LIST VIEW (Table on desktop, single-column stacked cards on mobile) */
-                  <>
-                    {/* Mobile stacked cards (< 768px) */}
-                    <div className="md:hidden space-y-2.5">
-                      {filteredExams.map((e) => {
-                        const lookup =
-                          mineOnly && activeStudentId
-                            ? lookupStudentRoomForCourse(
-                                e,
-                                getExamsForCourse(e.program, e.courseCode, activeExams),
-                                activeStudentId
-                              )
-                            : null;
-                        return (
-                          <div
-                            key={e.id}
-                            className="p-3.5 rounded-card bg-surface border border-app-border shadow-2xs space-y-1.5"
-                          >
-                            <div className="flex items-center justify-between gap-2">
-                              <div className="flex items-center gap-1.5 flex-wrap">
-                                <span className="font-bold text-sm text-text-primary">
-                                  {e.courseCode}
-                                </span>
-                                <span className="px-1.5 py-0.2 rounded bg-subtle border border-app-border text-[11px] font-bold">
-                                  Sec {e.section}
-                                </span>
-                                <span className="px-1.5 py-0.2 rounded bg-orange-50 text-orange-700 border border-orange-200 text-[11px] font-bold">
-                                  {e.program}
-                                </span>
-                              </div>
-                              {lookup?.status === 'found-own' && (
-                                <span className="px-2 py-0.5 rounded-chip bg-emerald-50 text-emerald-900 border border-emerald-300 text-xs font-bold shrink-0">
-                                  Room {lookup.room}
-                                </span>
-                              )}
-                            </div>
-                            <div className="text-xs text-text-secondary font-medium">
-                              {e.courseTitle}
-                            </div>
-                            <div className="text-xs text-text-primary font-semibold">
-                              {formatExamDateShort(e.date)} ({e.dayOfWeek}) •{' '}
-                              {formatExamTimeRange(e.startMin, e.endMin)}
-                            </div>
-                            <div className="text-[11px] text-text-muted">
-                              Rooms: {e.rooms.map((r) => r.room).join(', ') || 'TBA'}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-
-                    {/* Desktop table (>= 768px) */}
-                    <div className="hidden md:block rounded-card bg-surface border border-app-border shadow-warm overflow-hidden">
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse text-xs">
-                          <thead>
-                            <tr className="bg-subtle border-b border-app-border text-[11px] uppercase tracking-wider text-text-muted">
-                              <th className="py-2.5 px-3.5 font-bold">Date</th>
-                              <th className="py-2.5 px-3.5 font-bold">Time</th>
-                              <th className="py-2.5 px-3.5 font-bold">Course</th>
-                              <th className="py-2.5 px-3.5 font-bold">Sec</th>
-                              <th className="py-2.5 px-3.5 font-bold">Program</th>
-                              <th className="py-2.5 px-3.5 font-bold">Rooms</th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-app-border">
-                            {filteredExams.map((e) => {
-                              const hasClash =
-                                mineOnly && myClashingCourseSet.has(e.courseCode);
-                              const lookup =
-                                mineOnly && activeStudentId
-                                  ? lookupStudentRoomForCourse(
-                                      e,
-                                      getExamsForCourse(e.program, e.courseCode, activeExams),
-                                      activeStudentId
-                                    )
-                                  : null;
-                              return (
-                                <tr
-                                  key={e.id}
-                                  className={
-                                    hasClash
-                                      ? 'bg-rose-50/60 hover:bg-rose-50'
-                                      : 'hover:bg-subtle/60'
-                                  }
-                                >
-                                  <td className="py-2.5 px-3.5 whitespace-nowrap font-medium text-text-primary">
-                                    {formatExamDateShort(e.date)} ({e.dayOfWeek})
-                                  </td>
-                                  <td className="py-2.5 px-3.5 whitespace-nowrap text-text-secondary font-medium">
-                                    {formatExamTimeRange(e.startMin, e.endMin)}
-                                  </td>
-                                  <td className="py-2.5 px-3.5">
-                                    <div className="font-bold text-text-primary">
-                                      {e.courseCode}
-                                    </div>
-                                    <div className="text-[11px] text-text-muted">
-                                      {e.courseTitle}
-                                    </div>
-                                  </td>
-                                  <td className="py-2.5 px-3.5 font-bold text-text-primary">
-                                    {e.section}
-                                  </td>
-                                  <td className="py-2.5 px-3.5">
-                                    <span className="px-1.5 py-0.5 rounded bg-subtle border border-app-border text-[11px] font-bold text-text-secondary">
-                                      {e.program}
-                                    </span>
-                                  </td>
-                                  <td className="py-2.5 px-3.5">
-                                    <div className="flex flex-wrap items-center gap-1.5">
-                                      {lookup?.status === 'found-own' && (
-                                        <span className="px-2 py-0.5 rounded-chip bg-emerald-50 text-emerald-900 border border-emerald-300 text-[11px] font-bold">
-                                          Room {lookup.room}
-                                        </span>
-                                      )}
-                                      {lookup?.status === 'found-other' && (
-                                        <span className="px-2 py-0.5 rounded-chip bg-amber-50 text-amber-900 border border-amber-300 text-[11px] font-semibold">
-                                          Sec {lookup.section} (Room {lookup.room})
-                                        </span>
-                                      )}
-                                      <span className="text-text-secondary">
-                                        {e.rooms.map((r) => r.room).join(', ') || 'TBA'}
-                                      </span>
-                                    </div>
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  </>
+                  <ExamTimeline
+                    exams={filteredExams}
+                    allActiveRows={activeRows}
+                    viewMode={viewMode}
+                    mode={mode}
+                    userCourseSet={userCourseSet}
+                    lockedSections={lockedSections}
+                    activeStudentId={activeStudentId}
+                  />
                 )}
-              </>
-            )}
+              </div>
+            </div>
           </>
         )}
       </main>
@@ -1084,7 +1031,7 @@ export default function ExamsPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-[100dvh] bg-page flex items-center justify-center text-xs text-text-muted">
+        <div className="min-h-[100dvh] bg-page flex items-center justify-center text-sm text-text-muted">
           Loading exam schedule...
         </div>
       }
